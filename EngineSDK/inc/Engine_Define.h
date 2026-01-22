@@ -33,6 +33,7 @@ using namespace DirectX;
 #include <assert.h>
 #include <fstream>
 #include <iostream>
+#include <variant>
 //
 
 using namespace std;

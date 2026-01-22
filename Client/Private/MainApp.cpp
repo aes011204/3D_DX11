@@ -1,7 +1,9 @@
 #include "MainApp.h"
+
 #include "GameInstance.h"
 #include "ImguiManager.h"
 #include "Data_Manager.h"
+#include "Level_Loading.h"
 
 //NS_BEGIN(Client)
 
@@ -32,6 +34,9 @@ HRESULT CMainApp::Initialize()
         return E_FAIL;
 
     /* 게임의 시작을 위해 시작이 되는 레벨 할당과 동작을 시킨다 */
+    if (FAILED((m_pGameInstance->Change_Level(static_cast<_uint>(LEVLE::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext)))))
+        return E_FAIL;
+        
 
     //Imgui
     {
@@ -44,6 +49,10 @@ HRESULT CMainApp::Initialize()
 
 int CMainApp::Update(_float fTimeDelta)
 {
+
+    m_pGameInstance->Update_Engine(fTimeDelta);
+
+
     //Imgui
     {
         CImguiManager::GetInstance()->Update();
@@ -70,15 +79,16 @@ HRESULT CMainApp::Render()
     if (FAILED(m_pGameInstance->Clear_Buffers(&vClearColor)))
         return E_FAIL;
 
+
+    m_pGameInstance->Draw();
+
+
         
     //Imgui
     {
         CImguiManager::GetInstance()->Render();
     }
 
-    
-    //if (FAILED(m_pGameInstance->Bind_BackBufferRenderTarget(g_hWnd)))
-    //    return E_FAIL;
 
     m_pGameInstance->Present();
 

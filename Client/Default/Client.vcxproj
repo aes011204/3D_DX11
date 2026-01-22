@@ -137,8 +137,9 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Client_Define.h" />
-    <ClInclude Include="..\Public\Client_Struct.h" />
+    <ClInclude Include="..\Public\Client_Enum.h" />
     <ClInclude Include="..\Public\Data_Manager.h" />
+    <ClInclude Include="..\Public\Level_Loading.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
@@ -147,6 +148,7 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Data_Manager.cpp" />
+    <ClCompile Include="..\Private\Level_Loading.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
@@ -164,6 +166,10 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
   </ItemGroup>
   <ItemGroup>
     <None Include="ItemData.json" />
+    <None Include="Item_Equipment.json" />
+    <None Include="Item_Material.json" />
+    <None Include="Itme_Pursuit.json" />
+    <None Include="Itme_Trinket.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

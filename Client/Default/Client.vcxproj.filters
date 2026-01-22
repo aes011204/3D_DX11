@@ -10,6 +10,12 @@
     <Filter Include="00.MainApp">
       <UniqueIdentifier>{89d53a07-e260-4a66-92de-8ac0500dc749}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels">
+      <UniqueIdentifier>{e5c1af5e-e8ec-469b-8956-68904713a275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Data">
+      <UniqueIdentifier>{361b759b-91ec-4f79-a770-96602249a578}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -31,7 +37,8 @@
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Client_Struct.h" />
+    <ClInclude Include="..\Public\Client_Enum.h" />
+    <ClInclude Include="..\Public\Level_Loading.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -54,8 +61,23 @@
       <Filter>00.MainApp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Data_Manager.cpp" />
+    <ClCompile Include="..\Private\Level_Loading.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ItemData.json" />
+    <None Include="ItemData.json">
+      <Filter>97.Data</Filter>
+    </None>
+    <None Include="Itme_Pursuit.json">
+      <Filter>97.Data</Filter>
+    </None>
+    <None Include="Itme_Trinket.json">
+      <Filter>97.Data</Filter>
+    </None>
+    <None Include="Item_Equipment.json">
+      <Filter>97.Data</Filter>
+    </None>
+    <None Include="Item_Material.json">
+      <Filter>97.Data</Filter>
+    </None>
   </ItemGroup>
 </Project>

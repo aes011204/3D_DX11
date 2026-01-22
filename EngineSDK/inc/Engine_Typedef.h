@@ -5,11 +5,12 @@ namespace Engine
 {
 	typedef		bool						_bool;
 	typedef		signed char					_byte;
-	typedef		unsigned char				_ubyte;
-	typedef		char						_char;
+	typedef		unsigned char				_ubyte; // 정수 
+	typedef		char						_char; // 문자
 
-	typedef		wchar_t						_tchar;
+	typedef		wchar_t						_tchar; // 문자
 	typedef		wstring						_wstring;
+	typedef		string						_string;
 	
 	typedef		signed short				_short;
 	typedef		unsigned short				_ushort;

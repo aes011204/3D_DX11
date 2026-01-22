@@ -15,8 +15,8 @@ namespace Client
 	 const unsigned int g_iWinSizeX = { 1280 };
 	 const unsigned int g_iWinSizeY = { 720 };
 
+	enum class LEVLE { STATIC, LOADING, LOGO, GMAEPLAYE, END};
 }
-	 //extern UINT g_RsizeWidth;
-	 //extern UINT g_RsizeHeight;
+
 
 using namespace Client;

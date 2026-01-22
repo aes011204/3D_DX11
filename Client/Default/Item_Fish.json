@@ -1,0 +1,93 @@
+{
+    "Items": [
+        {
+            "ItemID": 1001,
+            "ItemType": "FISH",
+            "ItemName": "망치고등어",
+            "ItemDesc": "사실상 거의 가치가 없지만 굶주림을 면하기에는 충분합니다.",
+            "TexturePath": "//pass//",
+            "ItemShape": {
+                "Width": 2,
+                "Height": 1,
+                "Shape_Mask": [ [ 1, 1 ] ]
+            },
+            "SizeNum": 2,
+
+            "Cost": 10,
+            "FishTime": "DAY",
+            "SeaType_Mask": [ "COASTAL" ],
+
+            "IsRod": true,
+            "IsTrawl": true,
+            "IsPot": false,
+
+            "Mutation": [
+                {
+                    "MutName": "기괴한 고등어",
+                    "MutDesc": "손상된 비늘과 둥글납작한 눈깔은 한 번도 본 적 없는 모습일 겁니다.",
+                    "MutTexturePath": "//pass//",
+                    "MutCost": 30
+                },
+                {
+                    "MutName": "혹투성이 고등어",
+                    "MutDesc": "꿈틀꿈틀하는 혹 덩어리가 뒤틀리며 비늘 아래로 몸을 끌어당깁니다. 이런 모습으로 얼마나 오래 살 수 있었을까요?",
+                    "MutTexturePath": "//pass//",
+                    "MutCost": 35
+                },
+                {
+                    "MutName": "눈알 많은 고등어",
+                    "MutDesc": "아가미판이 여러 개의 눈알로 뒤덮여 있습니다. 남아도는 눈알은 필요 이상으로 주변을 미친 듯이 살핍니다. 모든 눈이 당신을 꿰뚫어 봅니다..",
+                    "MutTexturePath": "//pass//",
+                    "MutCost": 40
+                }
+            ]
+
+        },
+        {
+            "ItemID": 1002,
+            "ItemType": "FISH",
+            "ItemName": "대구",
+            "ItemDesc": "풍부하고 평범합니다.",
+            "TexturePath": "//pass//",
+            "ItemShape": {
+                "Width": 2,
+                "Height": 2,
+                "Shape_Mask": [
+                    [ 1, 1 ],
+                    [ 0, 1 ]
+                ]
+            },
+            "SizeNum": 3,
+
+            "Cost": 18,
+            "FishTime": "DAY",
+            "SeaType_Mask": [ "COASTAL" ],
+
+            "IsRod": true,
+            "IsTrawl": true,
+            "IsPot": false,
+
+            "Mutation": [
+                {
+                    "MutName": " 만물시 대구",
+                    "MutDesc": "눈을 깜빡이지 않은 채 바깥을 응시합니다. 눈은 큰 존재에게서 빌려왔지만 두뇌에서 그걸 모두 처리하지는 못합니다.",
+                    "MutTexturePath": "//pass//",
+                    "MutCost": 50
+                },
+                {
+                    "MutName": "송곳니 대구",
+                    "MutDesc": "비정상적으로 날카로운 이빨 사이로 작은 생선 덩어리들이 박혀 있습니다. 눈에는 굶주림이 가득합니다.",
+                    "MutTexturePath": "//pass//",
+                    "MutCost": 60
+                },
+                {
+                    "MutName": "삼두 대구",
+                    "MutDesc": "세 개의 머리가 한꺼번에 격렬하게 몸부림칩니다. 세 개의 입을 크게 벌렸다가 일제히 다물어 버립니다. 세 생명이 한 몸으로 삽니다. 이들은 운명 공동체입니다.",
+                    "MutTexturePath": "//pass//",
+                    "MutCost": 70
+                }
+            ]
+        }
+    ]
+}
+
