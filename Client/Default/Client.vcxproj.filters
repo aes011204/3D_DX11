@@ -16,6 +16,15 @@
     <Filter Include="97.Data">
       <UniqueIdentifier>{361b759b-91ec-4f79-a770-96602249a578}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Levels\00,Loading">
+      <UniqueIdentifier>{0d6b2487-d6cc-4011-8ef0-249de3e15086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="96.Inventory">
+      <UniqueIdentifier>{84394a4a-bcdb-4a25-b704-a7db2650be91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Data\00.JSON">
+      <UniqueIdentifier>{4bcf03e8-7397-4ce2-a45a-8ea9267e2ce7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -33,12 +42,37 @@
     <ClInclude Include="..\Public\MainApp.h">
       <Filter>00.MainApp</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Data_Manager.h" />
     <ClInclude Include="..\Public\Client_Define.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Client_Enum.h" />
-    <ClInclude Include="..\Public\Level_Loading.h" />
+    <ClInclude Include="..\Public\Level_GamePlay.h">
+      <Filter>01.Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Logo.h">
+      <Filter>01.Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Client_Enum.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Loader.h">
+      <Filter>01.Levels\00,Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Level_Loading.h">
+      <Filter>01.Levels\00,Loading</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Inventory.h">
+      <Filter>96.Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Inventory_Controller.h">
+      <Filter>96.Inventory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Data_Manager.h">
+      <Filter>97.Data</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InventoryUI.h" />
+    <ClInclude Include="..\Public\CDialogueDB.h">
+      <Filter>97.Data</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -60,24 +94,50 @@
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00.MainApp</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Data_Manager.cpp" />
-    <ClCompile Include="..\Private\Level_Loading.cpp" />
+    <ClCompile Include="..\Private\Level_Logo.cpp">
+      <Filter>01.Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_GamePlay.cpp">
+      <Filter>01.Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Loader.cpp">
+      <Filter>01.Levels\00,Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Level_Loading.cpp">
+      <Filter>01.Levels\00,Loading</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Data_Manager.cpp">
+      <Filter>97.Data</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Inventory.cpp">
+      <Filter>96.Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Inventory_Controller.cpp">
+      <Filter>96.Inventory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InventoryUI.cpp" />
+    <ClCompile Include="..\Private\CDialogueDB.cpp">
+      <Filter>97.Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ItemData.json">
-      <Filter>97.Data</Filter>
-    </None>
-    <None Include="Itme_Pursuit.json">
-      <Filter>97.Data</Filter>
-    </None>
-    <None Include="Itme_Trinket.json">
-      <Filter>97.Data</Filter>
-    </None>
     <None Include="Item_Equipment.json">
-      <Filter>97.Data</Filter>
+      <Filter>97.Data\00.JSON</Filter>
+    </None>
+    <None Include="Item_Fish.json">
+      <Filter>97.Data\00.JSON</Filter>
     </None>
     <None Include="Item_Material.json">
-      <Filter>97.Data</Filter>
+      <Filter>97.Data\00.JSON</Filter>
+    </None>
+    <None Include="Itme_Pursuit.json">
+      <Filter>97.Data\00.JSON</Filter>
+    </None>
+    <None Include="Itme_Trinket.json">
+      <Filter>97.Data\00.JSON</Filter>
+    </None>
+    <None Include="Dialogue.json">
+      <Filter>97.Data\00.JSON</Filter>
     </None>
   </ItemGroup>
 </Project>

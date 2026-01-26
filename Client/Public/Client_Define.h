@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h> // 다른데서 이 디파인만 포함해도 HWND,HINSTANCE 를 쓸수 있게 하기 위해 
+#include <process.h>
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;
@@ -15,7 +16,7 @@ namespace Client
 	 const unsigned int g_iWinSizeX = { 1280 };
 	 const unsigned int g_iWinSizeY = { 720 };
 
-	enum class LEVLE { STATIC, LOADING, LOGO, GMAEPLAYE, END};
+	enum class LEVEL { STATIC, LOADING, LOGO, GMAEPLAYE, END};
 }
 
 

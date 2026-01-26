@@ -30,12 +30,13 @@ namespace Client
 
 	// 아이템 관련
 
+    struct OccCell { _uint dx, dy; };
 
     struct Shape
     {
         _uint Width , Height = { 0 };
         vector<_ubyte> Shape_Mask = {}; // 0,1 로만 할건데 bool 문제생길수있음 // ex) [ 111, 101 ] 
-        vector<_ushort> Occ[3] = {}; // uint16_t //Shape_Mask 의 좌표 캐싱 // 회전도 같이 캐싱 // ex) {(0,0),(1,0),(2,0),(0,1),(0,2)}
+        vector<OccCell> Occ[3] = {}; // uint16_t //Shape_Mask 의 좌표 캐싱 // 회전도 같이 캐싱 // ex) {(0,0),(1,0),(2,0),(0,1),(0,2)}
         
     };
 
@@ -45,6 +46,7 @@ namespace Client
          _string MutName = {}; _string MutDesc = {}; _string MutTexturePath = {};
          _float MutCost = { 0 };
      };
+
     struct Fish_Def
     {
         float Cost = { 0 }; TIME FishTime = TIME::END; SEA_MASK SeaType_Mask = { 0 };
@@ -83,7 +85,7 @@ namespace Client
         ID_uint ItemInst_ID = { ID_Absence };
         ITEM_TYPE ItemType = ITEM_TYPE::END; // 이건 그냥 캐싱용으로 두자
 
-        _uint CurBaseX, CurBaseY = { 0 };
+        vector<OccCell> CurBase = {};
         _uint Rotation = { 0 };
 
         variant<monostate, Fish_Inst, Equip_Inst>  TypeDef;
@@ -107,12 +109,19 @@ namespace Client
 
 	};
 
+}
+
+
+namespace Client
+{
     /// 슬롯
     struct Slot
     {
         ID_uint ItemInst_ID = { ID_Absence };
         SLOT_TYPE slotType = SLOT_TYPE::END;
-        _bool IsLock = { false };
-        _bool IsUsable = { false };
+        _bool IsLock = { true };
+        _bool IsBroken = { false };
     };
+
+    enum class PLACE_COLOR { RED, ORANGE, GREEN ,END};
 }

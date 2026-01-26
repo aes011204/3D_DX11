@@ -36,6 +36,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 	// TODO: 여기에 코드를 입력합니다.
+	//비율이슈
+	//SetProcessDPIAware();
+	SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
 	// 전역 문자열을 초기화합니다.
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -51,9 +54,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_CLIENT));
 
 	MSG msg;
-
-	//비율이슈
-	SetProcessDPIAware();
 
 
 	CMainApp* pMainApp = CMainApp::Create();
@@ -145,8 +145,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 //
 ATOM MyRegisterClass(HINSTANCE hInstance)
 {
-	//WNDCLASSEXW wcex;
-	//WNDCLASSEXW wcex;
+	
+	WNDCLASSEXW wcex;
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
 
@@ -215,6 +215,22 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	UpdateWindow(hWnd);
 
 	return TRUE;
+	//g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+	//
+	//HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+	//	CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+	//
+	//if (!hWnd)
+	//{
+	//	return FALSE;
+	//}
+	//
+	//ShowWindow(hWnd, nCmdShow);
+	//UpdateWindow(hWnd);
+	//
+	//g_hWnd = hWnd;
+	//
+	//return TRUE;
 }
 
 //

@@ -5,7 +5,8 @@
 #include "Data_Manager.h"
 #include "Level_Loading.h"
 
-//NS_BEGIN(Client)
+#include "Inventory.h"
+
 
 CMainApp::CMainApp()
     : m_pGameInstance{ CGameInstance::GetInstance() }
@@ -34,15 +35,17 @@ HRESULT CMainApp::Initialize()
         return E_FAIL;
 
     /* 게임의 시작을 위해 시작이 되는 레벨 할당과 동작을 시킨다 */
-    if (FAILED((m_pGameInstance->Change_Level(static_cast<_uint>(LEVLE::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext)))))
+    if (FAILED((Ready_StartLevel(LEVEL::LOGO))))
         return E_FAIL;
-        
 
-    //Imgui
+
+    //test
+    CInventory::Create();
+
+    //Imgui- 젤 마지막에
     {
         CImguiManager::GetInstance()->Initialize(g_hWnd, m_pDevice, m_pContext);
     }
-
 
     return S_OK;
 }
@@ -67,6 +70,8 @@ int CMainApp::Update(_float fTimeDelta)
 
 void CMainApp::LateUpdate()
 {
+
+
 }
 
 HRESULT CMainApp::Render()
@@ -89,10 +94,19 @@ HRESULT CMainApp::Render()
         CImguiManager::GetInstance()->Render();
     }
 
-
     m_pGameInstance->Present();
 
     return S_OK;
+}
+
+HRESULT CMainApp::Ready_StartLevel(LEVEL eStartLevelID)
+{
+    if (eStartLevelID == LEVEL::LOADING)
+        return E_FAIL;
+    if (FAILED((m_pGameInstance->Change_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID)))))
+        return E_FAIL;
+
+
 }
 
 CMainApp* CMainApp::Create()

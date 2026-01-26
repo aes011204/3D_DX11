@@ -26,6 +26,12 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ ID
 	if (nullptr == m_pLevel_Manager)
 		return E_FAIL;
 
+
+	////Imgui- Á© ¸¶Áö¸·¿¡
+	//{
+	//	CImguiManager::GetInstance()->Initialize(EngineDesc.hWnd,*ppDevice, *ppContext);
+	//}
+
 	return S_OK;
 }
 
@@ -34,12 +40,26 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 {
 	m_pLevel_Manager->Update(fTimeDelta);
 
+
+	////Imgui
+	//{
+	//	CImguiManager::GetInstance()->Update();
+	//}
+	//float fps = 1.f / fTimeDelta;
+	//ImGui::Text("TimDelta = %.5f | FPS = %.1f ", fTimeDelta, fps);
+
 }
 
 void CGameInstance::Draw()
 {
 	m_pLevel_Manager->Render();
 
+
+
+	////Imgui
+	//{
+	//    CImguiManager::GetInstance()->Render();
+	//}
 }
 
 void CGameInstance::Clear_Resources(_uint iLevelIndex)

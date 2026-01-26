@@ -1,21 +1,3 @@
-//#ifdef _DEBUG
-//#ifdef new
-//#undef new
-//#endif
-//#endif
-//
-////  json, fstream 등 순수 C++ 라이브러리 include
-//#include <fstream>
-//#include <nlohmann/json.hpp>
-//
-////  그 다음에 엔진 쪽 헤더
-//#include "Data_Manager.h"
-////#include "Engine_Define.h"   // 필요하다면, 없으면 생략해도 됨
-//
-//// (원하면) 다시 new 매크로 켜기 ? 이 파일에서도 디버그 new 쓰고 싶으면
-//#ifdef _DEBUG
-//#define new DBG_NEW
-//#endif
 
 #include "Data_Manager.h"
 
@@ -33,7 +15,14 @@ HRESULT CData_Manager::Initialize()
 		return E_FAIL;
 	if (FAILED(Load_ItemDate("Item_Equipment.json")))
 		return E_FAIL;
+	if (FAILED(Load_ItemDate("Item_Material.json")))
+		return E_FAIL;
 	return S_OK;
+}
+
+const Item_Def& CData_Manager::GetItemByID(_uint ItemID)
+{
+	return m_vec_ItemDefs[GetIndexByID(ItemID)];
 }
 
 HRESULT CData_Manager::Load_ItemDate(const string& fileName)
@@ -169,7 +158,9 @@ HRESULT CData_Manager::Load_ItemDate(const string& fileName)
 		}
 
 		// 마지막 vec에 넣기
-		m_vec_item_Defs.push_back(item_def);
+		m_vec_ItemDefs.push_back(item_def);
+		m_map_ItemID.emplace(item_def.ItemID, m_vec_ItemDefs.size() - 1);
+		
 	}
 
 
@@ -317,6 +308,48 @@ SEA_MASK CData_Manager::BitFlag_SeaType(const nlohmann::json& node,const string 
 	return mask;
 }
 
+void CData_Manager::Compute_Occ(Shape& shape, _uint w, _uint h)
+{
+
+	_uint _w = {w};
+	_uint _h = {h};
+	for(_uint y =0; y < shape.Height; y++)
+	{
+		for(_uint x = 0; x < shape.Width; x++)
+		{
+			if(shape.Shape_Mask[y*w+x] == 1)
+			{
+				shape.Occ[0].push_back({ x,y });
+				
+			}
+		}
+	}
+
+	// 공식 90도 회전 = [x,y]->[h-1-y,x]
+	//Rotation 90
+	_w = h;_h = w;
+	for (_uint i = 0; i < shape.Occ[0].size(); i++)
+	{
+		shape.Occ[1].push_back({ _h - 1 - shape.Occ[0][i].dy,shape.Occ[0][i].dx });
+	}
+
+	//Rotation 180
+	_w = h;_h = w;
+	for (_uint i = 0; i < shape.Occ[0].size(); i++)
+	{
+		shape.Occ[2].push_back({ _h - 1 - shape.Occ[1][i].dy,shape.Occ[1][i].dx });
+	}
+
+	//Rotation 270
+	_w = h;_h = w;
+	for (_uint i = 0; i < shape.Occ[0].size(); i++)
+	{
+		shape.Occ[3].push_back({ _h - 1 - shape.Occ[2][i].dy,shape.Occ[2][i].dx });
+	}
+	
+
+}
+
 
 wstring CData_Manager::Utf8ToWstring(const string& str)
 {
@@ -335,6 +368,12 @@ wstring CData_Manager::Utf8ToWstring(const string& str)
 	return result;
 }
 
+_uint CData_Manager::GetIndexByID(_uint id)
+{
+	auto it = m_map_ItemID.find(id);
+	assert(it != m_map_ItemID.end());
+	return it->second;
+}
 
 CData_Manager* CData_Manager::Create()
 {

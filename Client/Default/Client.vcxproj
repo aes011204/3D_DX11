@@ -136,10 +136,17 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\CDialogueDB.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Client_Enum.h" />
     <ClInclude Include="..\Public\Data_Manager.h" />
+    <ClInclude Include="..\Public\Inventory.h" />
+    <ClInclude Include="..\Public\InventoryUI.h" />
+    <ClInclude Include="..\Public\Inventory_Controller.h" />
+    <ClInclude Include="..\Public\Level_GamePlay.h" />
     <ClInclude Include="..\Public\Level_Loading.h" />
+    <ClInclude Include="..\Public\Level_Logo.h" />
+    <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="framework.h" />
@@ -147,8 +154,15 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\CDialogueDB.cpp" />
     <ClCompile Include="..\Private\Data_Manager.cpp" />
+    <ClCompile Include="..\Private\Inventory.cpp" />
+    <ClCompile Include="..\Private\InventoryUI.cpp" />
+    <ClCompile Include="..\Private\Inventory_Controller.cpp" />
+    <ClCompile Include="..\Private\Level_GamePlay.cpp" />
     <ClCompile Include="..\Private\Level_Loading.cpp" />
+    <ClCompile Include="..\Private\Level_Logo.cpp" />
+    <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="Client.cpp" />
   </ItemGroup>
@@ -165,8 +179,9 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ItemData.json" />
+    <None Include="Dialogue.json" />
     <None Include="Item_Equipment.json" />
+    <None Include="Item_Fish.json" />
     <None Include="Item_Material.json" />
     <None Include="Itme_Pursuit.json" />
     <None Include="Itme_Trinket.json" />

@@ -12,6 +12,7 @@ using namespace DirectX;
 #include "../../EngineSDK/inc/imgui.h"
 #include "../../EngineSDK/inc/imgui_impl_dx11.h"
 #include "../../EngineSDK/inc/imgui_impl_win32.h"
+#include "../../EngineSDK/inc/ImguiManager.h"
 
 //Magic_Enum
 #include "../../Lib/magic_enum/magic_enum.hpp"

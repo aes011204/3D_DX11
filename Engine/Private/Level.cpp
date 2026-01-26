@@ -1,11 +1,15 @@
 #include "Level.h"
 
+#include "GameInstance.h"
+
 CLevel::CLevel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
+	,m_pGameInstance(CGameInstance::GetInstance())
 {
 	Safe_AddRef(pDevice);
 	Safe_AddRef(pContext);
+	Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CLevel::Initialize()
