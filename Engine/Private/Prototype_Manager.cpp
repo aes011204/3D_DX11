@@ -1,5 +1,8 @@
 #include "Prototype_Manager.h"
 
+#include "Component.h"
+#include "GameObject.h"
+
 CPrototype_Manager::CPrototype_Manager()
 {
 }
@@ -28,6 +31,30 @@ HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& str
     m_pPrototypes[iLevelIndex].emplace(strPrototypeTag, pPrototype);
 
     return S_OK;
+}
+
+CBase* CPrototype_Manager::Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg)
+{
+    /* 조건에 맞는 원형객체를 검색한다. */
+    CBase* pPrototype = Find_Prototype(iLevelIndex, strPrototypeTag);
+    if (nullptr == pPrototype)
+        return nullptr;
+
+    CBase* pInstance = { nullptr };
+
+
+    if(ePrototy == PROTOTYPE::GAMEOBJECT)
+        pInstance = static_cast<CGameObject*>(pPrototype)->Clone(pArg);
+    else
+        pInstance = static_cast<CComponent*>(pPrototype)->Clone(pArg);
+
+    if(pInstance == nullptr)
+    {
+        MSG_BOX("Failed to Cloned");
+        return nullptr;
+    }
+
+    return pInstance;
 }
 
 HRESULT CPrototype_Manager::Clear_Prototype(_uint iLevelIndex)

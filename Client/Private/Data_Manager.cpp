@@ -3,7 +3,8 @@
 
 
 
-IMPLEMENT_SINGLETON(CData_Manager);
+
+IMPLEMENT_SINGLETON(CData_Manager)
 
 CData_Manager::CData_Manager()
 {

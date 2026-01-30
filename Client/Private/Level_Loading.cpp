@@ -30,9 +30,11 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 
 void CLevel_Loading::Update(_float fTimeDelta)
 {
-	if( m_pLoader->Is_Finished() ==true&& GetKeyState(VK_RETURN) & 0x8000)
+	if( m_pLoader->Is_Finished() == true && GetKeyState(VK_RETURN) & 0x8000)
 	{
 		CLevel* pNextLevel = { nullptr };
+
+
 		
 		switch (m_eNextLevelID)
 		{
@@ -99,4 +101,6 @@ CLevel_Loading* CLevel_Loading::Create(ID3D11Device* pDevice, ID3D11DeviceContex
 void CLevel_Loading::Free()
 {
 	__super::Free();
+
+	Safe_Release(m_pLoader);
 }

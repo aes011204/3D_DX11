@@ -5,13 +5,13 @@
 CLevel_Manager::CLevel_Manager()
 	: m_pGameInstance(CGameInstance::GetInstance())
 {
-	Safe_AddRef(m_pCurLevel);
+	Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CLevel_Manager::Change_Level(_uint iNewLevelIndex, CLevel* pNewLevel)
 {
 	if (m_pCurLevel != nullptr)
-		m_pGameInstance->Clear_Resources(iNewLevelIndex);
+		m_pGameInstance->Clear_Resources(m_iCurLevelIdx);
 
 	if(0 != Safe_Release(m_pCurLevel))
 	{
@@ -46,8 +46,9 @@ CLevel_Manager* CLevel_Manager::Create()
 
 void CLevel_Manager::Free()
 {
-	CBase::Free();
+	__super::Free();
 	Safe_Release(m_pCurLevel);
+	Safe_Release(m_pGameInstance);
 
 
 }

@@ -1,10 +1,16 @@
 #include "Loader.h"
 
+#include <GameInstance.h>
+
+#include "BackGround.h"
+
 CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: m_pDevice(pDevice), m_pContext(pContext)
+	: m_pDevice(pDevice), m_pContext(pContext),
+	m_pGameInstance(CGameInstance::GetInstance())
 {
 	Safe_AddRef(m_pDevice);
 	Safe_AddRef(m_pContext);
+	Safe_AddRef(m_pGameInstance);
 }
 
 unsigned int APIENTRY ThreadMain(void* pArg)
@@ -67,24 +73,21 @@ HRESULT CLoader::Loading_For_LogoLevel()
 {
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
-
+	
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
-
+	
 	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
 
 	lstrcpy(m_szLoadingText, TEXT("모델를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
-
+	
 	lstrcpy(m_szLoadingText, TEXT("객체원형를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
+	/* Prototype_GameObject_BackGround */
+	if(FAILED(m_pGameInstance->Add_Prototype(ETOI(LEVEL::LOGO), TEXT("Prototype_GameObject_BackGround"),
+		CBackGround::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CBackGround");
+		return E_FAIL;
+	}
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
@@ -96,24 +99,19 @@ HRESULT CLoader::Loading_For_LogoLevel()
 HRESULT CLoader::Loading_For_GamePlayLevel()
 {
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
+	
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
+
 
 	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
+
 
 	lstrcpy(m_szLoadingText, TEXT("모델를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
+
 
 	lstrcpy(m_szLoadingText, TEXT("객체원형를 로딩 중 입니다."));
-	for (size_t i = 0; i < 99999999; i++)
-		_int iData = 10;
+
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
@@ -154,4 +152,5 @@ void CLoader::Free()
 
 	Safe_Release(m_pDevice);
 	Safe_Release(m_pContext);
+	Safe_Release(m_pGameInstance);
 }

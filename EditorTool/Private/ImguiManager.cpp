@@ -1,7 +1,7 @@
 #include "ImguiManager.h"
 
 
-CImguiManager* CImguiManager::m_pInstance = nullptr;
+//CImguiManager* CImguiManager::m_pInstance = nullptr;
 
 CImguiManager::CImguiManager()
 {
@@ -9,9 +9,33 @@ CImguiManager::CImguiManager()
 
 CImguiManager::~CImguiManager()
 {
-    Free();
+    
 }
+void CImguiManager::ApplyEditorDarkStyle()
+{
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowRounding = 6.0f;
+    style.FrameRounding = 4.0f;
+    style.ScrollbarRounding = 6.0f;
+    style.WindowPadding = ImVec2(10, 10);
+    style.FramePadding = ImVec2(8, 5);
+    style.ItemSpacing = ImVec2(8, 6);
 
+    ImVec4* c = style.Colors;
+    c[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.11f, 0.13f, 1.00f);
+    c[ImGuiCol_ChildBg] = ImVec4(0.08f, 0.09f, 0.11f, 1.00f);
+    c[ImGuiCol_FrameBg] = ImVec4(0.16f, 0.17f, 0.20f, 1.00f);
+    c[ImGuiCol_FrameBgHovered] = ImVec4(0.22f, 0.23f, 0.27f, 1.00f);
+    c[ImGuiCol_FrameBgActive] = ImVec4(0.26f, 0.27f, 0.32f, 1.00f);
+    c[ImGuiCol_Header] = ImVec4(0.20f, 0.21f, 0.25f, 1.00f);
+    c[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.27f, 0.33f, 1.00f);
+    c[ImGuiCol_HeaderActive] = ImVec4(0.30f, 0.32f, 0.40f, 1.00f);
+    c[ImGuiCol_Button] = ImVec4(0.18f, 0.19f, 0.22f, 1.00f);
+    c[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.25f, 0.30f, 1.00f);
+    c[ImGuiCol_ButtonActive] = ImVec4(0.28f, 0.30f, 0.38f, 1.00f);
+    c[ImGuiCol_TitleBg] = ImVec4(0.08f, 0.09f, 0.11f, 1.00f);
+    c[ImGuiCol_TitleBgActive] = ImVec4(0.10f, 0.11f, 0.13f, 1.00f);
+}
 
 
 void CImguiManager::Initialize(HWND _hWnd, ID3D11Device* _Device, ID3D11DeviceContext* _Context)
@@ -58,69 +82,117 @@ void CImguiManager::Initialize(HWND _hWnd, ID3D11Device* _Device, ID3D11DeviceCo
         ImGui_ImplWin32_Init(_hWnd);
         ImGui_ImplDX11_Init(_Device, _Context);
     }
-
+    ApplyEditorDarkStyle();
+}
+void CImguiManager::Begin()
+{
+    // Start the Dear ImGui frame
+    ImGui_ImplDX11_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
 }
 
-int CImguiManager::Update()
+void CImguiManager::Example()
 {
-    //imgui
+    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+    if (show_demo_window)
+        ImGui::ShowDemoWindow(&show_demo_window);
+
+    // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
     {
-        // Start the Dear ImGui frame
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
+        static float f = 0.0f;
+        static int counter = 0;
 
-        // 예시
+        ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-        {
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+        ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+        ImGui::Checkbox("Another Window", &show_another_window);
 
-            // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-            if (show_demo_window)
-                ImGui::ShowDemoWindow(&show_demo_window);
+        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+        ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
-            // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-            {
-                static float f = 0.0f;
-                static int counter = 0;
+        if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+            counter++;
+        ImGui::SameLine();
+        ImGui::Text("counter = %d", counter);
 
-                ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+        // io 는 ImGui 내부에 존재하는 단일 글로벌 상태 객체 // 매번 지역 참조로 받기 (읽기만 할거면 상관없음) // 맴버변수로 캐싱하면 나중에 위험(ImGuiContext를 여러 개 운영하려는 경우일떄는 ㄱㄴ)
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-                ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-                ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-                ImGui::Checkbox("Another Window", &show_another_window);
-
-                ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-                ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-                if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                    counter++;
-                ImGui::SameLine();
-                ImGui::Text("counter = %d", counter);
-
-                // io 는 ImGui 내부에 존재하는 단일 글로벌 상태 객체 // 매번 지역 참조로 받기 (읽기만 할거면 상관없음) // 맴버변수로 캐싱하면 나중에 위험(ImGuiContext를 여러 개 운영하려는 경우일떄는 ㄱㄴ)
-                ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-                ImGui::End();
-            }
-
-            // 3. Show another simple window.
-            if (show_another_window)
-            {
-                ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-                ImGui::Text("Hello from another window!");
-                if (ImGui::Button("Close Me"))
-                    show_another_window = false;
-                ImGui::End();
-            }
-        }
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::End();
     }
-    return 0;
+
+    // 3. Show another simple window.
+    if (show_another_window)
+    {
+        ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        ImGui::Text("Hello from another window!");
+        if (ImGui::Button("Close Me"))
+            show_another_window = false;
+        ImGui::End();
+    }
 }
 
-void CImguiManager::LateUpdate()
-{
-}
+//int CImguiManager::Update()
+//{
+//    //imgui
+//    {
+//        // Start the Dear ImGui frame
+//        ImGui_ImplDX11_NewFrame();
+//        ImGui_ImplWin32_NewFrame();
+//        ImGui::NewFrame();
+//
+//        // 예시
+//
+//        {
+//
+//            // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+//            if (show_demo_window)
+//                ImGui::ShowDemoWindow(&show_demo_window);
+//
+//            // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+//            {
+//                static float f = 0.0f;
+//                static int counter = 0;
+//
+//                ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+//
+//                ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+//                ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+//                ImGui::Checkbox("Another Window", &show_another_window);
+//
+//                ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+//                ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+//
+//                if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+//                    counter++;
+//                ImGui::SameLine();
+//                ImGui::Text("counter = %d", counter);
+//
+//                // io 는 ImGui 내부에 존재하는 단일 글로벌 상태 객체 // 매번 지역 참조로 받기 (읽기만 할거면 상관없음) // 맴버변수로 캐싱하면 나중에 위험(ImGuiContext를 여러 개 운영하려는 경우일떄는 ㄱㄴ)
+//                ImGuiIO& io = ImGui::GetIO(); (void)io;
+//
+//                ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+//                ImGui::End();
+//            }
+//
+//            // 3. Show another simple window.
+//            if (show_another_window)
+//            {
+//                ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+//                ImGui::Text("Hello from another window!");
+//                if (ImGui::Button("Close Me"))
+//                    show_another_window = false;
+//                ImGui::End();
+//            }
+//        }
+//    }
+//    return 0;
+//}
+
+
 
 void CImguiManager::Render()
 {
@@ -155,7 +227,7 @@ void CImguiManager::Render()
 
 CImguiManager* CImguiManager::Create()
 {
-    return nullptr;
+    return new CImguiManager;
 }
 
 void CImguiManager::Free()
@@ -164,4 +236,7 @@ void CImguiManager::Free()
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
+
+    delete this;
+
 }

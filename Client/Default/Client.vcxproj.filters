@@ -70,9 +70,10 @@
       <Filter>97.Data</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\InventoryUI.h" />
-    <ClInclude Include="..\Public\CDialogueDB.h">
+    <ClInclude Include="..\Public\DialogueDB.h">
       <Filter>97.Data</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\BackGround.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -116,9 +117,10 @@
       <Filter>96.Inventory</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\InventoryUI.cpp" />
-    <ClCompile Include="..\Private\CDialogueDB.cpp">
+    <ClCompile Include="..\Private\DialogueDB.cpp">
       <Filter>97.Data</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\BackGround.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

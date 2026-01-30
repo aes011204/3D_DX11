@@ -1,0 +1,38 @@
+#pragma once
+#include "Base.h"
+class CTimeOfDay :
+    public CBase
+{
+private:
+    CTimeOfDay();
+    virtual ~CTimeOfDay() = default;
+
+public:
+    HRESULT Initialize();
+    void Update(_float fDeltaTime);
+
+    void Set_TimeScale(_float timeScale);
+
+    void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
+private:
+    _float m_SecondPerDay = 1200; // 스케일이 1 일떄 게임의 하루는 현실 20분
+    _float m_TimeScale = { 1.f }; // 1 정상 0.5 절반 느림 2 두배 빠름
+
+    _uint m_Day = { 0 };
+
+    _float m_Second = { 0 }; // 초기준으로 저장 시간 필요할떄 계산
+
+
+    _float m_fTOD01 = 0.f; // 0~1 사이
+    _float m_fSunrise01 = 6.f / 24.f;
+    _float m_fSunset01 = 18.f / 24.f;
+
+    _bool IsNight = { false };
+
+public:
+    static CTimeOfDay* Create();
+    void Free()override;
+
+
+};
+

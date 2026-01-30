@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "ImguiManager.h"
 #include "Data_Manager.h"
+#include "DialogueDB.h"
 #include "Level_Loading.h"
 
 #include "Inventory.h"
@@ -21,13 +22,15 @@ HRESULT CMainApp::Initialize()
 
     /* 게임을 구동하기 위한 기초 초기화 작업을 수행한다 */
 
-    CData_Manager::GetInstance()->Create();
+    //CData_Manager::GetInstance()->Initialize();
+    //CDialogueDB::GetInstance()->Ready_DialogueDB();
 
 
     /* 엔진을 이용하기 위한 엔진 츠로젝트를 준비시킨다 */
     ENGINE_DESC EngineDesc{};
     EngineDesc.hWnd = g_hWnd;
     EngineDesc.eWinMode = WINMODE::WIN;
+    EngineDesc.iMaxLevelNum = ETOI(LEVEL::END);
     EngineDesc.iViewportHeight = g_iWinSizeY;
     EngineDesc.iViewportWidth = g_iWinSizeX;
 
@@ -40,12 +43,14 @@ HRESULT CMainApp::Initialize()
 
 
     //test
-    CInventory::Create();
+   // CInventory::Create();
 
-    //Imgui- 젤 마지막에
-    {
-        CImguiManager::GetInstance()->Initialize(g_hWnd, m_pDevice, m_pContext);
-    }
+    ////Imgui- 젤 마지막에
+    //{
+    //    CImguiManager::GetInstance()->Initialize(g_hWnd, m_pDevice, m_pContext);
+    //}
+
+    ImGui::SetCurrentContext(m_pGameInstance->GetContext());
 
     return S_OK;
 }
@@ -56,12 +61,12 @@ int CMainApp::Update(_float fTimeDelta)
     m_pGameInstance->Update_Engine(fTimeDelta);
 
 
-    //Imgui
-    {
-        CImguiManager::GetInstance()->Update();
-    }
-    float fps = 1.f / fTimeDelta;
-    ImGui::Text("TimDelta = %.5f | FPS = %.1f ", fTimeDelta, fps);
+    ////Imgui
+    //{
+    //    CImguiManager::GetInstance()->Update();
+    //}
+    //float fps = 1.f / fTimeDelta;
+    //ImGui::Text("TimDelta = %.5f | FPS = %.1f ", fTimeDelta, fps);
 
     return 0;
 }
@@ -89,10 +94,10 @@ HRESULT CMainApp::Render()
 
 
         
-    //Imgui
-    {
-        CImguiManager::GetInstance()->Render();
-    }
+    ////Imgui
+    //{
+    //    CImguiManager::GetInstance()->Render();
+    //}
 
     m_pGameInstance->Present();
 
@@ -106,7 +111,7 @@ HRESULT CMainApp::Ready_StartLevel(LEVEL eStartLevelID)
     if (FAILED((m_pGameInstance->Change_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID)))))
         return E_FAIL;
 
-
+    return S_OK;
 }
 
 CMainApp* CMainApp::Create()
@@ -125,9 +130,13 @@ void CMainApp::Free()
 {
     __super::Free();
 
-  
+    Safe_Release(m_pDevice);
+    Safe_Release(m_pContext);
+
+    m_pGameInstance->Release_Engine();
     Safe_Release(m_pGameInstance);
-    CData_Manager::GetInstance()->DestroyInstance();
+
+   // CData_Manager::GetInstance()->DestroyInstance();
     
 }
 

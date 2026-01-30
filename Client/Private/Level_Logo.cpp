@@ -11,6 +11,8 @@ CLevel_Logo::CLevel_Logo(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
 
 HRESULT CLevel_Logo::Initialize()
 {
+	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))));
+
 	return S_OK;
 }
 
@@ -25,6 +27,22 @@ void CLevel_Logo::Update(_float fTimeDelta)
 
 HRESULT CLevel_Logo::Render()
 {
+
+#ifdef _DEBUG
+	SetWindowText(g_hWnd, TEXT("현재 로고레벨 구동 중"));
+#endif
+	return S_OK;
+}
+
+HRESULT CLevel_Logo::Ready_Layer_BackGround(const _wstring& strLayerTag)
+{
+	if(FAILED(
+	m_pGameInstance->Add_GameObject(ETOI(LEVEL::LOGO), TEXT("Prototype_GameObject_BackGround"),
+		ETOI(LEVEL::LOGO), strLayerTag)))
+	{
+		return E_FAIL;
+	}
+
 	return S_OK;
 }
 

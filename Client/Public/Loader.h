@@ -5,6 +5,11 @@
 // 로딩을 위한 쓰레드를 생성한다
 // 지정된 레벨을 위한 자원을 로딩 한다
 
+NS_BEGIN(Engine)
+class CGameInstance;
+NS_END
+
+
 NS_BEGIN(Client)
 
 class CLoader :
@@ -29,6 +34,8 @@ private:
     ID3D11Device* m_pDevice = { nullptr };
     ID3D11DeviceContext* m_pContext = { nullptr };
 	// 이거 쓰레드에서 쓰는게 아니라 생성할 객체에 전달하는 용도 // 쓰레드에서 쓰면 큰일남
+
+    CGameInstance* m_pGameInstance = { nullptr };
 
     HANDLE m_hThread = {};
     CRITICAL_SECTION m_CriticalSection = {};

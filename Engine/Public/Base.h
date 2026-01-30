@@ -18,6 +18,10 @@ public:
 	// 리턴값 : 감소하기 이전의 레퍼런스 카운트 
 	unsigned int Release();
 
+	/// IMGUI
+	virtual void OnGui() {}
+	///
+
 protected:
 	unsigned int m_iRefCnt = {};// 유니폼 초기화, 이제 long XXX
 

@@ -9,6 +9,7 @@ namespace Engine
 	{
 		HWND hWnd;
 		WINMODE eWinMode;
+		unsigned int iMaxLevelNum;
 		unsigned int iViewportWidth;
 		unsigned int iViewportHeight;
 	}ENGINE_DESC;

@@ -1,18 +1,7 @@
-﻿#include "pch.h"
+﻿
 
-#ifdef _DEBUG
-#ifdef new
-#undef new
-#endif
-#endif
+#include "DialogueDB.h"
 
-#include <fstream>
-#include <nlohmann/json.hpp>
-#include "CDialogueDB.h"
-
-#ifdef _DEBUG
-#define new DBG_NEW
-#endif
 
 IMPLEMENT_SINGLETON(CDialogueDB)
 
@@ -27,11 +16,12 @@ CDialogueDB::~CDialogueDB()
 
 HRESULT CDialogueDB::Ready_DialogueDB()
 {
-
+    if (FAILED(Load_DialogueData("Dialogue.json")))
+        return E_FAIL;
     return S_OK;
 }
 
-HRESULT CDialogueDB::LoadFromJson(const string& fileName)
+HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
 {
     ifstream file(fileName, ios_base::in);
 
