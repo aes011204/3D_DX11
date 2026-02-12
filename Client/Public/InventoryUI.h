@@ -10,6 +10,7 @@ class CInventoryUI :
 {
 private:
     CInventoryUI();
+public:
     virtual ~CInventoryUI() = default;
 
 public:
@@ -20,11 +21,11 @@ public:
 private:
 
 
-    class CInventory_Controller* m_Inven_Ctrl = { nullptr };
+    class shared_ptr<class CInventory_Controller> m_Inven_Ctrl = { nullptr };
 
 
 public:
-    static CInventoryUI* Create();
+    static shared_ptr<CInventoryUI> Create();
     virtual void Free() override;
 };
 

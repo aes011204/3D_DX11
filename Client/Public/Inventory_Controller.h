@@ -10,6 +10,7 @@ class CInventory_Controller :
 {
 private:
     CInventory_Controller();
+public:
     virtual ~CInventory_Controller() = default;
 
 public:
@@ -21,11 +22,11 @@ private:
     vector<_float2> m_OffSet = {};
     bool Is_Dragging = false;
 
-    class CInventory* m_Inven = { nullptr };
-    class CInventoryUI* m_UIInven = { nullptr };
+    class shared_ptr<class CInventory> m_Inven = { nullptr };
+    class shared_ptr<class CInventoryUI> m_UIInven = { nullptr };
 
 public:
-    static CInventory_Controller* Create();
+    static shared_ptr<CInventory_Controller> Create();
     virtual void Free() override;
 };
 

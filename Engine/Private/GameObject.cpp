@@ -1,25 +1,16 @@
 #include "GameObject.h"
-
-#include "GameInstance.h"
 #include "Transform.h"
 
-CGameObject::CGameObject(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
-	: m_pDevice{pDevice},m_pContext{pContext},
-	m_pGameInstance{CGameInstance::GetInstance()}
+
+CGameObject::CGameObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+	: CEntity( pDevice ,pContext )
 {
-	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pContext);
-	Safe_AddRef(m_pGameInstance);
+	
 }
 
-CGameObject::CGameObject(const CGameObject& rhs)
-	: m_pDevice{ rhs.m_pDevice }, m_pContext{ rhs.m_pContext },
-	m_pGameInstance{ CGameInstance::GetInstance() }
+CGameObject::CGameObject(const CGameObject& prototype)
+	:CEntity(prototype)
 {
-	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pContext);
-	Safe_AddRef(m_pGameInstance);
-	//  레퍼런스 관리를 위해 디폴트 복사생성자가 아니라 만드거임
 }
 
 HRESULT CGameObject::Initialize_Prototype()
@@ -38,6 +29,15 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 	if (FAILED(m_pTransformCom->Initialize(pDesc)))
 		return E_FAIL;
+
+	m_pTransformCom->SetDefaultNameFromThisType();
+
+	if (nullptr == Get_Component(g_strTransformTag))
+	{
+		m_Components.emplace(g_strTransformTag, m_pTransformCom);
+		//Safe_AddRef(m_pTransformCom);
+	}
+
 	return S_OK;
 }
 
@@ -62,7 +62,5 @@ void CGameObject::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-	Safe_Release(m_pGameInstance);
+	//Safe_Release(m_pTransformCom);
 }

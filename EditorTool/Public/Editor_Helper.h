@@ -1,0 +1,24 @@
+#pragma once
+//#include "Engine_Define.h"
+//
+//NS_BEGIN(Editor)
+//_string ConvertW2A(const wstring& wstr)
+//{
+//    if (wstr.empty()) return "";
+//    int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+//    _string str(size, 0);
+//    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], size, nullptr, nullptr);
+//    if (!str.empty() && str.back() == '\0') str.pop_back();
+//    return str;
+//}
+//
+// wstring ConvertA2W(const _string& str)
+//{
+//    if (str.empty()) return L"";
+//    int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+//    wstring w(size, 0);
+//    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &w[0], size);
+//    if (!w.empty() && w.back() == L'\0') w.pop_back();
+//    return w;
+//}
+//NS_END

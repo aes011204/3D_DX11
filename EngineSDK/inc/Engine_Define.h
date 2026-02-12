@@ -3,22 +3,29 @@
 
 #include <d3d11.h>
 #include <DirectXMath.h>
+#include <d3dcompiler.h>
+
+#include "DirectXTK/DDSTextureLoader.h"
+#include "DirectXTK/WICTextureLoader.h"
+
 
 using namespace DirectX; 
 // 네임스페이스 선언을 전에 하지 않으면 에러남 / 이건 위에 #include <DirectXMath.h> 있어서 ㄱㅊ 
 
-
-//imgui
-#include "../../EngineSDK/inc/imgui.h"
-#include "../../EngineSDK/inc/imgui_impl_dx11.h"
-#include "../../EngineSDK/inc/imgui_impl_win32.h"
-#include "../../EngineSDK/inc/ImguiManager.h"
-
 //Magic_Enum
-#include "../../Lib/magic_enum/magic_enum.hpp"
+#include "magic_enum/magic_enum.hpp"
 
 //json
-#include "../../Lib/nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
+
+//fx11
+#include "Fx11/d3dx11effect.h"
+
+
+//// ImGui
+#include <imgui.h>
+#include <imgui_impl_dx11.h>
+#include <imgui_impl_win32.h>
 
 #include <vector>
 #include <list>
@@ -29,6 +36,19 @@ using namespace DirectX;
 #include <unordered_map>
 #include <ctime>
 
+// DInput
+
+#define DIRECTINPUT_VERSION	0x0800
+#include <dinput.h>
+#pragma warning(disable : 4251)
+#pragma comment(lib, "dinput8.lib")
+#pragma comment(lib, "dxguid.lib")
+
+// 스마트 포인터
+#include <memory>
+#include <wrl.h>
+using namespace Microsoft::WRL;
+
 // 내가 추가한 헤더
 #include <stack>
 #include <assert.h>
@@ -36,7 +56,12 @@ using namespace DirectX;
 #include <iostream>
 #include  <variant>
 #include  <queue>
+#include <mutex>
+#include <cstdarg> 
 //
+
+#include "DirectXTK/SimpleMath.h"
+using namespace DirectX::SimpleMath;
 
 using namespace std;
 
@@ -46,8 +71,14 @@ using namespace std;
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
 
-#define DIRECTINPUT_VERSION	0x0800
-#include <dinput.h>
+
+namespace Engine
+{
+	static const wstring g_strTransformTag = TEXT("Com_Transform");
+	static const wstring g_strUITransformTag = TEXT("Com_UITransform");
+}
+
+using namespace Engine;
 
 #pragma warning(disable : 4251)
 
@@ -66,6 +97,5 @@ using namespace std;
 #endif
 
 
-using namespace Engine;
 
 #endif // Engine_Define_h__

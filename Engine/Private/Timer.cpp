@@ -38,14 +38,14 @@ _float CTimer::Update_Timer()
     return m_fTimeDelta;
 }
 
-CTimer* CTimer::Create()
+shared_ptr<CTimer> CTimer::Create()
 {
-    CTimer* pInstance = new CTimer;
+    shared_ptr<CTimer> pInstance(new CTimer());
 
     if (FAILED(pInstance->Ready_Timer()))
     {
         MSG_BOX("Timer Create Failed");
-        Engine::Safe_Release(pInstance);
+
         return nullptr;
     }
 

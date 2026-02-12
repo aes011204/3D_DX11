@@ -11,6 +11,7 @@ class CInventory :
 {
 private:
     CInventory();
+public:
     virtual ~CInventory() = default;
 
 public:
@@ -24,7 +25,7 @@ private:
     vector<Item_Inst> m_Inventory = {};
 	vector<Slot> m_InvenSlot = {};
 
-    class CInventory_Controller* m_Controller;
+    class shared_ptr<class CInventory_Controller> m_Controller;
     // 컨트롤러는 싱글톤? 아님 여기서 만들어야 하나?
 
 public:// 아이템 넣고 뺴기
@@ -47,7 +48,7 @@ private:
     void Upgrade_Boat(vector<_char> upgrade);
 
 public:
-    static CInventory* Create(); 
+    static shared_ptr<CInventory> Create(); 
     void Free() override;
 };
 

@@ -40,6 +40,12 @@
     <Filter Include="01.Utility\04.Components">
       <UniqueIdentifier>{0f3a7460-fe48-44d4-8c17-47088582288a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\05.UI">
+      <UniqueIdentifier>{977e0374-b7ed-438c-8802-fb47d1768389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Components\VIIBufer">
+      <UniqueIdentifier>{98ebb3ad-cb51-4355-9d61-d0354b2e5ce6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -86,6 +92,51 @@
     <ClCompile Include="..\Private\Transform.cpp">
       <Filter>01.Utility\04.Components</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\UI.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Manager.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIButton.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIPanel.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UISlot.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UITransform.cpp">
+      <Filter>01.Utility\04.Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIImage.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIProgress.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIText.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Texture.cpp">
+      <Filter>01.Utility\04.Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Entity.cpp">
+      <Filter>01.Utility\99.SuperClass</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer.cpp">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DInput_Manager.cpp">
+      <Filter>00.System</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Rect.cpp">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UICanvas.cpp" />
+    <ClCompile Include="..\Private\Shader.cpp" />
+    <ClCompile Include="..\Private\Log_Manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -150,5 +201,51 @@
     <ClInclude Include="..\Public\Transform.h">
       <Filter>01.Utility\04.Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Manager.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIButton.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIPanel.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UISlot.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UITransform.h">
+      <Filter>01.Utility\04.Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIText.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIImage.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIProgress.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Texture.h">
+      <Filter>01.Utility\04.Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Entity.h">
+      <Filter>01.Utility\99.SuperClass</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer.h">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DInput_Manager.h">
+      <Filter>00.System</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Rect.h">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UICanvas.h" />
+    <ClInclude Include="..\Public\Engine_Helper.h" />
+    <ClInclude Include="..\Public\Shader.h" />
+    <ClInclude Include="..\Public\Log_Manager.h" />
   </ItemGroup>
 </Project>

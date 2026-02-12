@@ -2,11 +2,20 @@
 //#include "Base.h" // 베이스가 있어야 하는지 모르겠으니까 일단 패스
 #include "Engine_Define.h"
 #include <typeindex>
+
+NS_BEGIN(Engine)
+
 class CEventBus 
 {
+public:
+	CEventBus() {};
+	CEventBus(const CEventBus&) = delete;
+	CEventBus& operator=(const CEventBus&) = delete;
+	virtual ~CEventBus() {};
+
 	using anyHandler = function<void(const void*)>;
 
-	struct QueuedEvent { type_index type_index; shared_ptr<void> data; };
+	struct QueuedEvent { type_index m_TypeIndex; shared_ptr<void> data; };
 public:
 	template<typename EventT>
 	void Subscribe (function<void(const EventT&)> func)
@@ -25,7 +34,7 @@ public:
 		auto it = m_handlers.find(typeid(EventT));
 		if (it == m_handlers.end())
 		{
-			MSG_BOX("No Event in m_handler");
+			//MSG_BOX("No Event in m_handler");
 			return;
 		}
 			
@@ -49,7 +58,7 @@ public:
 		while (!m_EventQueue.empty())
 		{
 			QueuedEvent event = m_EventQueue.front();
-			auto it = m_handlers.find(event.type_index);
+			auto it = m_handlers.find(event.m_TypeIndex);
 
 			if (it != m_handlers.end())
 			{
@@ -94,3 +103,5 @@ private:
 	 auto sound = make_shared<CSound>();이렇게 하면 안전함
 
  */
+
+NS_END

@@ -7,6 +7,12 @@ CPrototype_Manager::CPrototype_Manager()
 {
 }
 
+
+CPrototype_Manager::~CPrototype_Manager()
+{
+    Free();
+}
+
 HRESULT CPrototype_Manager::Initialize(_uint iNumLevels)
 {
     m_iNumLevel = iNumLevels;
@@ -16,7 +22,7 @@ HRESULT CPrototype_Manager::Initialize(_uint iNumLevels)
     return S_OK;
 }
 
-HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, CBase* pPrototype)
+HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype)
 {
     if (iLevelIndex >= m_iNumLevel) // 배열 인댁스라서 
         return E_FAIL;
@@ -33,20 +39,20 @@ HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& str
     return S_OK;
 }
 
-CBase* CPrototype_Manager::Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg)
+shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg)
 {
     /* 조건에 맞는 원형객체를 검색한다. */
-    CBase* pPrototype = Find_Prototype(iLevelIndex, strPrototypeTag);
+    shared_ptr<CBase> pPrototype = Find_Prototype(iLevelIndex, strPrototypeTag);
     if (nullptr == pPrototype)
         return nullptr;
 
-    CBase* pInstance = { nullptr };
+    shared_ptr<CBase> pInstance = { nullptr };
 
 
     if(ePrototy == PROTOTYPE::GAMEOBJECT)
-        pInstance = static_cast<CGameObject*>(pPrototype)->Clone(pArg);
+        pInstance = static_pointer_cast<CGameObject>(pPrototype)->Clone(pArg);
     else
-        pInstance = static_cast<CComponent*>(pPrototype)->Clone(pArg);
+        pInstance = static_pointer_cast<CComponent>(pPrototype)->Clone(pArg);
 
     if(pInstance == nullptr)
     {
@@ -62,10 +68,10 @@ HRESULT CPrototype_Manager::Clear_Prototype(_uint iLevelIndex)
     if (iLevelIndex >= m_iNumLevel)
         return E_FAIL;
 
-    for (auto& pair : m_pPrototypes[iLevelIndex])
-    {
-        Safe_Release(pair.second);
-    }
+    //for (auto& pair : m_pPrototypes[iLevelIndex])
+    //{
+    //    Safe_Release(pair.second);
+    //}
     m_pPrototypes[iLevelIndex].clear();
 
     return S_OK;
@@ -73,7 +79,7 @@ HRESULT CPrototype_Manager::Clear_Prototype(_uint iLevelIndex)
 }
 
 
-CBase* CPrototype_Manager::Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag)
+shared_ptr<CBase> CPrototype_Manager::Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag)
 {
     if (iLevelIndex >= m_iNumLevel)
         return nullptr;
@@ -85,14 +91,13 @@ CBase* CPrototype_Manager::Find_Prototype(_uint iLevelIndex, const _wstring& str
     return iter->second;
 }
 
-CPrototype_Manager* CPrototype_Manager::Create(_uint iNumLevel)
+unique_ptr<CPrototype_Manager> CPrototype_Manager::Create(_uint iNumLevel)
 {
-    CPrototype_Manager* pInstance = new CPrototype_Manager();
+    unique_ptr<CPrototype_Manager> pInstance ( new CPrototype_Manager());
 
     if (FAILED(pInstance->Initialize(iNumLevel)))
     {
         MSG_BOX("Failed to Created : CPrototype_Manager");
-        Safe_Release(pInstance);
     }
     return pInstance;
 }
@@ -103,10 +108,10 @@ void CPrototype_Manager::Free()
 
     for(int i =0; i < m_iNumLevel;i++)
     {
-	    for(auto& pair : m_pPrototypes[i])
-	    {
-            Safe_Release(pair.second);
-	    }
+	    //for(auto& pair : m_pPrototypes[i])
+	    //{
+     //       Safe_Release(pair.second);
+	    //}
         m_pPrototypes[i].clear();
     }
     Safe_Delete_Array(m_pPrototypes); // 배열지우는 매크로 

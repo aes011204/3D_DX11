@@ -9,6 +9,7 @@ class CTimer_Manager : public CBase
 {
 private:
     explicit CTimer_Manager();
+public:
     virtual ~CTimer_Manager() = default;
 
 public:
@@ -17,13 +18,13 @@ public:
     HRESULT Add_Timer(const _wstring& timerTag);
 
 private:
-    map<_wstring, CTimer*> m_Timers;
+    map<_wstring, shared_ptr<CTimer>> m_Timers;
 private:
-    CTimer* Find_Timer(const _wstring& timerTag);
+    shared_ptr<CTimer> Find_Timer(const _wstring& timerTag);
 
 
 public:
-    static CTimer_Manager* Create();
+    static unique_ptr<CTimer_Manager> Create();
     void Free() override;
 
 };

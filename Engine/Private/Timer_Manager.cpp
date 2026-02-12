@@ -7,7 +7,7 @@ CTimer_Manager::CTimer_Manager()
 
 HRESULT CTimer_Manager::Add_Timer(const _wstring& timerTag)
 {
-    CTimer* timer = Find_Timer(timerTag);
+    shared_ptr<CTimer> timer = Find_Timer(timerTag);
 
     if (timer != nullptr)
         return E_FAIL;
@@ -24,7 +24,7 @@ HRESULT CTimer_Manager::Add_Timer(const _wstring& timerTag)
 
 _float CTimer_Manager::Compute_TimeDelta(const _wstring& timerTag)
 {
-    CTimer* timer = Find_Timer(move(timerTag));
+    shared_ptr<CTimer> timer = Find_Timer(move(timerTag));
 
     if (nullptr == timer)
         return 0.f;
@@ -32,7 +32,7 @@ _float CTimer_Manager::Compute_TimeDelta(const _wstring& timerTag)
     return timer->Update_Timer();
 }
 
-CTimer* CTimer_Manager::Find_Timer(const _wstring& timerTag)
+shared_ptr<CTimer> CTimer_Manager::Find_Timer(const _wstring& timerTag)
 {
   /*  auto iter
         = find_if(m_Timers.begin(), m_Timers.end(), CTag_Finder(move(timerTag)));*/
@@ -46,20 +46,18 @@ CTimer* CTimer_Manager::Find_Timer(const _wstring& timerTag)
     return it->second;
 }
 
-CTimer_Manager* CTimer_Manager::Create()
+unique_ptr<CTimer_Manager> CTimer_Manager::Create()
 {
-    return new CTimer_Manager;
+    unique_ptr<CTimer_Manager> pInstance(new CTimer_Manager());
+   return pInstance;
 }
 
 void CTimer_Manager::Free()
 {
     __super::Free();
 
-    //for_each(m_Timers.begin(), m_Timers.end(), CDeleteMap());
-    //m_Timers.clear();
-
-    for (auto& Pair : m_Timers)
-        Safe_Release(Pair.second); // 실제 안의 내용을 삭제 변경 해야 하므로 참조로 받아옴
+    //for (auto& Pair : m_Timers)
+    //    Safe_Release(Pair.second); // 실제 안의 내용을 삭제 변경 해야 하므로 참조로 받아옴
     m_Timers.clear();
 }
 

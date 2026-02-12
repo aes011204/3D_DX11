@@ -103,14 +103,14 @@ void CInventory_Controller::Update()
 
 }
 
-CInventory_Controller* CInventory_Controller::Create()
+shared_ptr<CInventory_Controller> CInventory_Controller::Create()
 {
-	CInventory_Controller* pInstance = new CInventory_Controller();
+	shared_ptr<CInventory_Controller> pInstance(new CInventory_Controller(),
+		[](CInventory_Controller* p) {p->Free(); delete p;});
 
 	if (FAILED(pInstance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CInventory_Controller");
-		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
@@ -118,6 +118,5 @@ CInventory_Controller* CInventory_Controller::Create()
 void CInventory_Controller::Free()
 {
 	__super::Free();
-	Safe_Release(m_Inven);
-	Safe_Release(m_UIInven);
+
 }

@@ -107,17 +107,21 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../Public/;../../EngineSDK/inc/;../../Lib/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);../Public/;../../Lib/;../../EditorTool/Public/;../../EngineSDK/inc/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../EngineSDK/lib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>../../EngineSDK/lib/EditorTool.lib;../../EngineSDK/lib/Engine.lib;d3d11.lib;
-
-dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../../EngineSDK/lib/Engine.lib;d3d11.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <FxCompile>
+      <ShaderType>Effect</ShaderType>
+    </FxCompile>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -137,6 +141,7 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\CLient_Helper.h" />
     <ClInclude Include="..\Public\DialogueDB.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Client_Enum.h" />
@@ -176,6 +181,9 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\EditorTool\Default\EditorTool.vcxproj">
+      <Project>{d1748550-79d1-4c31-b7f3-85e279944af8}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Engine\Default\Engine.vcxproj">
       <Project>{19a62025-55b6-4350-9a4c-91d5fa50a3f0}</Project>
     </ProjectReference>
@@ -187,6 +195,9 @@ dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     <None Include="Item_Material.json" />
     <None Include="Itme_Pursuit.json" />
     <None Include="Itme_Trinket.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

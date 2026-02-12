@@ -28,33 +28,33 @@ namespace Engine
 		}
 	}
 
-	template<typename T>
-	unsigned int Safe_AddRef(T& pInstance)
-	{
-		unsigned int		iRefCnt = {};
+	//template<typename T>
+	//unsigned int Safe_AddRef(T& pInstance)
+	//{
+	//	unsigned int		iRefCnt = {};
 
-		if (nullptr != pInstance)
-			iRefCnt = pInstance->AddRef();
+	//	if (nullptr != pInstance)
+	//		iRefCnt = pInstance->AddRef();
 
-		return iRefCnt;
-	}
+	//	return iRefCnt;
+	//}
 
 
-	template<typename T>
-	unsigned int Safe_Release(T& pInstance)
-	{
-		unsigned int		iRefCnt = {};
+	//template<typename T>
+	//unsigned int Safe_Release(T& pInstance)
+	//{
+	//	unsigned int		iRefCnt = {};
 
-		if (nullptr != pInstance)
-		{
-			iRefCnt = pInstance->Release();
+	//	if (nullptr != pInstance)
+	//	{
+	//		iRefCnt = pInstance->Release();
 
-			if (0 == iRefCnt)
-				pInstance = nullptr;
-		}
+	//		if (0 == iRefCnt)
+	//			pInstance = nullptr;
+	//	}
 
-		return iRefCnt;
-	}
+	//	return iRefCnt;
+	//}
 
 
 

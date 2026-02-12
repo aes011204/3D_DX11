@@ -15,23 +15,59 @@ public:
     struct TRANSFOM_DESC
     {
         _float					fSpeedPerSec = {};
-        _float					fRotationPerSec = {};
+        _float					fDegreePerSec = {};
     };
 private:
-    CTransform(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CTransform(const CTransform& rhs);
+    CTransform(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CTransform(const CTransform& prototype);
+public:
     virtual ~CTransform() = default;
 
 public:
+    _vector Get_State(STATE eState)
+    {
+        return XMLoadFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]));
+    }
+
+    _float3 Get_Scaled()
+    {
+        return _float3(
+            XMVectorGetX(XMVector3Length(Get_State(STATE::RIGHT))),
+            XMVectorGetX(XMVector3Length(Get_State(STATE::UP))),
+            XMVectorGetX(XMVector3Length(Get_State(STATE::LOOK)))
+        );
+    }
+
+    void Set_State(STATE eState, _fvector vState)//
+    {
+        XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]), vState);
+    }
+public:
     virtual HRESULT Initialize_Prototype() override;
     virtual HRESULT Initialize(void* pArg) override;
+
+public:
+    void SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ);//기존의 있는 크기에 배수가 아니라 스케일정보 바꿔줌
+    void Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);//저장된 크기의 배수로 키우기
+
+	void Go_Forward(_float fTimeDelta);
+    void Go_Backward(_float fTimeDelta);
+    void Go_Right(_float fTimeDelta);
+    void Go_Left(_float fTimeDelta);
+
+    void Rotation(_fvector vAxis, _float fDegree);//속도X 정해논 각도로 따라 항등상태에서 회전 하는거임
+    void Turn(_fvector vAxis, _float fTimeDelta);//나한테 저장된 회전 속도 만큼 서서히 회전
+
+    void LookAt(_fvector vAt);
+
+    void OnGui() override;
 private:
     _float4x4				m_WorldMatrix = {};
     _float					m_fSpeedPerSec = {};
-    _float					m_fRotationPerSec = {};
+    _float					m_fRadianPerSec = {};
 public:
-    static CTransform* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    virtual CTransform* Clone(void* pArg) override;
+    static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    virtual shared_ptr<CComponent> Clone(void* pArg)override;
     void Free();
 };
 

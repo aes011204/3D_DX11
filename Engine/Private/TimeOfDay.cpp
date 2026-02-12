@@ -20,7 +20,7 @@ void CTimeOfDay::Update(_float fDeltaTime)
 	m_fTOD01 = m_Second / m_SecondPerDay;
 
 
-	IsNight = (m_fTOD01 >= m_fSunset01) || (m_fTOD01 < m_fSunrise01);
+	IsNight = (m_fTOD01 >= m_fSunset01) || (m_fTOD01 < m_fSunrise01); 
 	
 }
 
@@ -45,7 +45,6 @@ CTimeOfDay* CTimeOfDay::Create()
 	if (FAILED(pInstance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CTimeOfDay");
-		Safe_Release(pInstance);
 	}
 	return pInstance;
 }

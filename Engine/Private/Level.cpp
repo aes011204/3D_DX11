@@ -2,14 +2,11 @@
 
 #include "GameInstance.h"
 
-CLevel::CLevel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLevel::CLevel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: m_pDevice(pDevice)
 	, m_pContext(pContext)
 	,m_pGameInstance(CGameInstance::GetInstance())
 {
-	Safe_AddRef(pDevice);
-	Safe_AddRef(pContext);
-	Safe_AddRef(m_pGameInstance);
 }
 
 HRESULT CLevel::Initialize()
@@ -31,8 +28,5 @@ void CLevel::Free()
 {
 	__super::Free();
 
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-	Safe_Release(m_pGameInstance);
 
 }

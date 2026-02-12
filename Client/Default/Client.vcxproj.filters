@@ -74,6 +74,7 @@
       <Filter>97.Data</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\CLient_Helper.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -89,9 +90,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Client.cpp">
-      <Filter>98.Default</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\MainApp.cpp">
       <Filter>00.MainApp</Filter>
     </ClCompile>
@@ -121,6 +119,9 @@
       <Filter>97.Data</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="Client.cpp">
+      <Filter>98.Default</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">
@@ -141,5 +142,8 @@
     <None Include="Dialogue.json">
       <Filter>97.Data\00.JSON</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />
   </ItemGroup>
 </Project>

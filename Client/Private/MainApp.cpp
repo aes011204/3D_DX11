@@ -1,18 +1,24 @@
 #include "MainApp.h"
 
 #include "GameInstance.h"
-#include "ImguiManager.h"
+#include "Client_Define.h"
+
 #include "Data_Manager.h"
 #include "DialogueDB.h"
 #include "Level_Loading.h"
-
 #include "Inventory.h"
 
+#include "EditorInstance.h"
 
 CMainApp::CMainApp()
-    : m_pGameInstance{ CGameInstance::GetInstance() }
+    : m_pGameInstance{ CGameInstance::GetInstance() },
+    m_pEditorInstance{ CEditorInstance::GetInstance()}
 {
-    Safe_AddRef(m_pGameInstance);
+}
+
+CMainApp::~CMainApp()
+{
+    Free();
 }
 
 HRESULT CMainApp::Initialize()
@@ -34,8 +40,18 @@ HRESULT CMainApp::Initialize()
     EngineDesc.iViewportHeight = g_iWinSizeY;
     EngineDesc.iViewportWidth = g_iWinSizeX;
 
-    if(FAILED(m_pGameInstance->Initialize_Engine(EngineDesc, &m_pDevice, &m_pContext)))
+    if(FAILED(m_pGameInstance.lock()->Initialize_Engine(EngineDesc, m_pDevice, m_pContext)))
         return E_FAIL;
+
+    if (FAILED(m_pEditorInstance.lock()->Initialize_Editor(EngineDesc, m_pDevice, m_pContext)))
+        return E_FAIL;
+
+    ImGuiContext* imgContext =  m_pEditorInstance.lock()->GetContext();
+
+    ImGui::SetCurrentContext(imgContext);
+
+
+    m_pGameInstance.lock()->SetImguiContext(imgContext);
 
     /* 게임의 시작을 위해 시작이 되는 레벨 할당과 동작을 시킨다 */
     if (FAILED((Ready_StartLevel(LEVEL::LOGO))))
@@ -43,6 +59,8 @@ HRESULT CMainApp::Initialize()
 
 
     //test
+
+
    // CInventory::Create();
 
     ////Imgui- 젤 마지막에
@@ -50,7 +68,7 @@ HRESULT CMainApp::Initialize()
     //    CImguiManager::GetInstance()->Initialize(g_hWnd, m_pDevice, m_pContext);
     //}
 
-    ImGui::SetCurrentContext(m_pGameInstance->GetContext());
+
 
     return S_OK;
 }
@@ -58,9 +76,11 @@ HRESULT CMainApp::Initialize()
 int CMainApp::Update(_float fTimeDelta)
 {
 
-    m_pGameInstance->Update_Engine(fTimeDelta);
+    m_pGameInstance.lock()->Update_Engine(fTimeDelta);
 
 
+
+    m_pEditorInstance.lock()->Update_Editor(fTimeDelta);
     ////Imgui
     //{
     //    CImguiManager::GetInstance()->Update();
@@ -71,35 +91,28 @@ int CMainApp::Update(_float fTimeDelta)
     return 0;
 }
 
-
-
-void CMainApp::LateUpdate()
-{
-
-
-}
-
 HRESULT CMainApp::Render()
 {
 
-    if (FAILED(m_pGameInstance->Bind_BackBufferRenderTarget(g_hWnd))) // 이거 Clear_Buffers() 내부로 넣을수 있지만 일단 이렇게
+    if (FAILED(m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd))) // 이거 Clear_Buffers() 내부로 넣을수 있지만 일단 이렇게
         return E_FAIL;
 
     _float4 vClearColor = { 0.f,0.f, 1.f,1.f };
-    if (FAILED(m_pGameInstance->Clear_Buffers(&vClearColor)))
+    if (FAILED(m_pGameInstance.lock()->Clear_Buffers(&vClearColor)))
         return E_FAIL;
 
 
-    m_pGameInstance->Draw();
+    m_pGameInstance.lock()->Draw();
 
 
-        
+    m_pEditorInstance.lock()->Render_Editor();
+
     ////Imgui
     //{
     //    CImguiManager::GetInstance()->Render();
     //}
 
-    m_pGameInstance->Present();
+    m_pGameInstance.lock()->Present();
 
     return S_OK;
 }
@@ -108,20 +121,19 @@ HRESULT CMainApp::Ready_StartLevel(LEVEL eStartLevelID)
 {
     if (eStartLevelID == LEVEL::LOADING)
         return E_FAIL;
-    if (FAILED((m_pGameInstance->Change_Level(static_cast<_uint>(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID)))))
+    if (FAILED((m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID)))))
         return E_FAIL;
 
     return S_OK;
 }
 
-CMainApp* CMainApp::Create()
+unique_ptr<CMainApp> CMainApp::Create()
 {
-    CMainApp* pInstance = new CMainApp();
+    unique_ptr<CMainApp> pInstance ( new CMainApp());
 
     if (FAILED(pInstance->Initialize()))
     {
         MSG_BOX("Failed to Created : CMainApp");
-        Safe_Release(pInstance);
     }
     return pInstance;
 }
@@ -130,11 +142,9 @@ void CMainApp::Free()
 {
     __super::Free();
 
-    Safe_Release(m_pDevice);
-    Safe_Release(m_pContext);
 
-    m_pGameInstance->Release_Engine();
-    Safe_Release(m_pGameInstance);
+    m_pGameInstance.lock()->DestroyInstance();
+    m_pEditorInstance.lock()->DestroyInstance();
 
    // CData_Manager::GetInstance()->DestroyInstance();
     

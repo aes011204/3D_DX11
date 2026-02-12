@@ -4,6 +4,8 @@
 #include "framework.h"
 #include "Client.h"
 
+#include "Client_Define.h"
+#include "EditorInstance.h"
 #include "MainApp.h"
 #include "GameInstance.h"
 
@@ -34,7 +36,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(275); // <- 여기!
+
 #endif
 
 	UNREFERENCED_PARAMETER(hPrevInstance);
@@ -61,18 +63,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MSG msg;
 
 
-	CMainApp* pMainApp = CMainApp::Create();
+	unique_ptr<CMainApp> pMainApp = CMainApp::Create();
 	if (nullptr == pMainApp)
 		return FALSE;
 
-	CGameInstance* GameInstance = CGameInstance::GetInstance();
-	if (nullptr == GameInstance)
+	weak_ptr<CGameInstance> GameInstance = CGameInstance::GetInstance();
+	if (nullptr == GameInstance.lock())
 		return FALSE;
-	Safe_AddRef(GameInstance);
 
-	if (FAILED(GameInstance->Add_Timer(TEXT("Timer_Default"))))
+	weak_ptr<CEditorInstance> EditorInstance = CEditorInstance::GetInstance();
+	if (nullptr == EditorInstance.lock())
 		return FALSE;
-	if (FAILED(GameInstance->Add_Timer(TEXT("Timer_60"))))
+
+	if (FAILED(GameInstance.lock()->Add_Timer(TEXT("Timer_Default"))))
+		return FALSE;
+	if (FAILED(GameInstance.lock()->Add_Timer(TEXT("Timer_60"))))
 		return FALSE;
 
 	_float fTimerAcc = {};
@@ -105,8 +110,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			if (g_RsizeWidth != 0 && g_RsizeHeight != 0)
 			{
-				GameInstance->Resize(g_RsizeWidth, g_RsizeHeight);
-
+				GameInstance.lock()->Resize(g_RsizeWidth, g_RsizeHeight);
+		
 				// ImGui의 디스플레이 사이즈를 강제로 맞춰줌
 				if (ImGui::GetCurrentContext()) {
 					ImGuiIO& io = ImGui::GetIO();
@@ -114,29 +119,24 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 			}
 			g_bPendingResize = false;
-
+		
 		}
 
 
 		//deltaTime
 
-		fTimerAcc += GameInstance->Compute_TimeDelta(TEXT("Timer_Default"));
+		fTimerAcc += GameInstance.lock()->Compute_TimeDelta(TEXT("Timer_Default"));
 
 		if (fTimerAcc >= 1.f / 60.f)
 		{
-			pMainApp->Update(GameInstance->Compute_TimeDelta(TEXT("Timer_60")));
-			pMainApp->LateUpdate();
+			pMainApp->Update(GameInstance.lock()->Compute_TimeDelta(TEXT("Timer_60")));
+			//pMainApp->LateUpdate();
 			pMainApp->Render();
 
 
 			fTimerAcc = 0.f;
 		}
 	}
-
-	Safe_Release(GameInstance);
-
-	if (0 != Safe_Release(pMainApp))
-		return FALSE;
 
 	return (int)msg.wParam;
 }

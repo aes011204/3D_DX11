@@ -16,7 +16,8 @@ class CLoader :
     public CBase
 {
 private:
-    CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+    CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+public:
     virtual ~CLoader() = default;
 
 public:
@@ -31,11 +32,11 @@ public:
 #endif
 
 private:
-    ID3D11Device* m_pDevice = { nullptr };
-    ID3D11DeviceContext* m_pContext = { nullptr };
+    ComPtr<ID3D11Device> m_pDevice = { nullptr };
+    ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
 	// 이거 쓰레드에서 쓰는게 아니라 생성할 객체에 전달하는 용도 // 쓰레드에서 쓰면 큰일남
 
-    CGameInstance* m_pGameInstance = { nullptr };
+    weak_ptr<CGameInstance> m_pGameInstance = {};
 
     HANDLE m_hThread = {};
     CRITICAL_SECTION m_CriticalSection = {};
@@ -48,7 +49,7 @@ private:
     HRESULT Loading_For_GamePlayLevel();
 
 public:
-    static CLoader* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eNextLevelID);
+    static shared_ptr<CLoader> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, LEVEL eNextLevelID);
     void Free() override;
 
 };

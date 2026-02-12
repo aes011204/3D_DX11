@@ -1,5 +1,5 @@
 #pragma once
-#include "Base.h"
+#include "Texture.h"
 
 // 생성한 원형 객체를 보관한다
 // 요청에 따라 보관하고 있던 원형 객체를 복제하여 리턴한다
@@ -15,22 +15,23 @@ class CPrototype_Manager :
 {
 private:
     CPrototype_Manager();
-    virtual ~CPrototype_Manager() = default;
+public:
+    virtual ~CPrototype_Manager();
 public:
     HRESULT Initialize(_uint iNumLevels);
-    HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, CBase* pPrototype);
-    CBase* Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+    HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
+    shared_ptr<CBase> Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
     HRESULT Clear_Prototype(_uint iLevelIndex);
 
 private:
-    map<const _wstring, CBase*>* m_pPrototypes = { nullptr }; //
-    typedef map<const _wstring, CBase*> PROTOTYPES;
+    map<const _wstring, shared_ptr<CBase>>* m_pPrototypes = { nullptr }; //
+    typedef map<const _wstring, shared_ptr<CBase>> PROTOTYPES;
 
     _uint m_iNumLevel = {}; // 레벨의 총 갯수
 private:
-    CBase* Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);
+    shared_ptr<CBase> Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);
 public:
-    static CPrototype_Manager* Create(_uint iNumLevel);
+    static unique_ptr<CPrototype_Manager> Create(_uint iNumLevel);
     virtual void Free() override;
 };
 

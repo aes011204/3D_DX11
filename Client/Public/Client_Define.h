@@ -7,7 +7,6 @@ extern HWND g_hWnd;
 extern HINSTANCE g_hInst;
 
 
-
 // 테스트용
 extern WNDCLASSEXW wcex;
 
@@ -21,3 +20,6 @@ namespace Client
 
 
 using namespace Client;
+
+//#include "Engine_Define.h"
+

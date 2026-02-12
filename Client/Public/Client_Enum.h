@@ -165,3 +165,13 @@ namespace Client
     };
 
 }
+namespace Client
+{
+    //ui
+
+    enum class EUI
+    {
+        Test,
+        Test1,
+    };
+}

@@ -2,25 +2,30 @@
 #include "Base.h"
 
 NS_BEGIN(Engine)
-class CLayer :
+class ENGINE_DLL CLayer :
     public CBase
 {
 private:
 	CLayer();
+public:
 	virtual ~CLayer() = default;
 public:
-	HRESULT Add_GameObject(class CGameObject* pGameObject);
+	HRESULT Add_GameObject(shared_ptr<class CGameObject> pGameObject);
 	void Priority_Update(_float fTimeDelta);
 	void Update(_float fTimeDelta);
 	void Late_Update(_float fTimeDelta);
 
 	void Update_Gui();
 
+
+/// <IMGUI>
+	list <shared_ptr<class CGameObject>> Get_GameObject();
+/// </summary>
 private:
-	list <class CGameObject*> m_pGameObject = {};
+	list <shared_ptr<class CGameObject>> m_pGameObject = {};
 
 public:
-	static CLayer* Create();
+	static shared_ptr<CLayer> Create();
 	virtual void Free() override;
 
 };

@@ -302,14 +302,13 @@ void CInventory::Upgrade_Boat(vector<_char> upgrade)
 
 }
 
-CInventory* CInventory::Create()
+shared_ptr<CInventory> CInventory::Create()
 {
-    CInventory* pInstance = new CInventory();
+    shared_ptr<CInventory> pInstance ( new CInventory());
 
     if (FAILED(pInstance->Initialize()))
     {
         MSG_BOX("Failed to Created : CInventory");
-        Safe_Release(pInstance);
     }
     return pInstance;
 }

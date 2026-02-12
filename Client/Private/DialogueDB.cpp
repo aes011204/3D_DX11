@@ -123,6 +123,6 @@ wstring CDialogueDB::Utf8ToWstring(const string& str)
 
 void CDialogueDB::Free()
 {
-
+    __super::Free();
 }
 

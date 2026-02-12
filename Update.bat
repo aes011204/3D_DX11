@@ -3,7 +3,7 @@
 xcopy			/y			.\Engine\Bin\Engine.dll				.\Client\Bin\
 xcopy			/y			.\Engine\Bin\Engine.lib				.\EngineSDK\lib\
 
-xcopy			/y			.\Engine\Public\*.*					.\EngineSDK\inc\
+xcopy			/y/s			.\Engine\Public\*.*					.\EngineSDK\inc\
 
 
 xcopy 		/y 			.\EditorTool\Bin\EditorTool.lib 			.\EngineSDK\lib\

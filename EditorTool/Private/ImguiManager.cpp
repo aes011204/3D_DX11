@@ -1,7 +1,13 @@
-#include "ImguiManager.h"
+//#include "pch.h"
 
 
-//CImguiManager* CImguiManager::m_pInstance = nullptr;
+#include "ImguiManager.h" // 3순위 (내꺼)
+#include "GameInstance.h"  // 4순위 (엔진) - 여
+#include "GameObject.h"
+#include "Layer.h"
+#include "Engine_Define.h"
+
+#include <cstdio>
 
 CImguiManager::CImguiManager()
 {
@@ -9,39 +15,76 @@ CImguiManager::CImguiManager()
 
 CImguiManager::~CImguiManager()
 {
-    
+    Free();
 }
 void CImguiManager::ApplyEditorDarkStyle()
 {
     ImGuiStyle& style = ImGui::GetStyle();
-    style.WindowRounding = 6.0f;
-    style.FrameRounding = 4.0f;
-    style.ScrollbarRounding = 6.0f;
-    style.WindowPadding = ImVec2(10, 10);
-    style.FramePadding = ImVec2(8, 5);
-    style.ItemSpacing = ImVec2(8, 6);
+
+    // ---- 라운딩 및 간격 (엔진 툴 특유의 조밀한 느낌) ----
+    style.WindowRounding = 0.0f; // 엔진 툴은 보통 창 모서리가 직각형입니다.
+    style.FrameRounding = 2.0f;
+    style.GrabRounding = 2.0f;
+    style.ScrollbarRounding = 12.0f;
+    style.WindowBorderSize = 1.0f;
+    style.FrameBorderSize = 1.0f; // 프레임 경계선을 살려야 고급스럽습니다.
+
+    style.WindowPadding = ImVec2(8, 8);
+    style.FramePadding = ImVec2(5, 3); // 글자 크기가 작아 보이기 위해 패딩을 줄임
+    style.ItemSpacing = ImVec2(4, 4); // 아이템 간격을 좁혀 정보 밀도를 높임
+    style.IndentSpacing = 20.0f;
 
     ImVec4* c = style.Colors;
-    c[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.11f, 0.13f, 1.00f);
-    c[ImGuiCol_ChildBg] = ImVec4(0.08f, 0.09f, 0.11f, 1.00f);
-    c[ImGuiCol_FrameBg] = ImVec4(0.16f, 0.17f, 0.20f, 1.00f);
-    c[ImGuiCol_FrameBgHovered] = ImVec4(0.22f, 0.23f, 0.27f, 1.00f);
-    c[ImGuiCol_FrameBgActive] = ImVec4(0.26f, 0.27f, 0.32f, 1.00f);
-    c[ImGuiCol_Header] = ImVec4(0.20f, 0.21f, 0.25f, 1.00f);
-    c[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.27f, 0.33f, 1.00f);
-    c[ImGuiCol_HeaderActive] = ImVec4(0.30f, 0.32f, 0.40f, 1.00f);
-    c[ImGuiCol_Button] = ImVec4(0.18f, 0.19f, 0.22f, 1.00f);
-    c[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.25f, 0.30f, 1.00f);
-    c[ImGuiCol_ButtonActive] = ImVec4(0.28f, 0.30f, 0.38f, 1.00f);
-    c[ImGuiCol_TitleBg] = ImVec4(0.08f, 0.09f, 0.11f, 1.00f);
-    c[ImGuiCol_TitleBgActive] = ImVec4(0.10f, 0.11f, 0.13f, 1.00f);
+
+    // 메인 배경 (언리얼/유니티 다크 그레이)
+    c[ImGuiCol_WindowBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    c[ImGuiCol_ChildBg] = ImVec4(0.14f, 0.14f, 0.14f, 1.00f);
+    c[ImGuiCol_PopupBg] = ImVec4(0.18f, 0.18f, 0.18f, 0.96f);
+
+    // 테두리
+    c[ImGuiCol_Border] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+    c[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+
+    // 프레임 (입력창, 체크박스 등)
+    c[ImGuiCol_FrameBg] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+    c[ImGuiCol_FrameBgHovered] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+    c[ImGuiCol_FrameBgActive] = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
+
+    // 타이틀 바 (유니티 스타일의 짙은 배경)
+    c[ImGuiCol_TitleBg] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+    c[ImGuiCol_TitleBgActive] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+    c[ImGuiCol_TitleBgCollapsed] = ImVec4(0.08f, 0.08f, 0.08f, 1.00f);
+
+    // 헤더 (Tree, CollapsingHeader) -> 선택된 느낌을 줌
+    c[ImGuiCol_Header] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+    c[ImGuiCol_HeaderHovered] = ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
+    c[ImGuiCol_HeaderActive] = ImVec4(0.40f, 0.40f, 0.40f, 1.00f);
+
+    // 버튼 (약간 밝은 그레이)
+    c[ImGuiCol_Button] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+    c[ImGuiCol_ButtonHovered] = ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
+    c[ImGuiCol_ButtonActive] = ImVec4(0.45f, 0.45f, 0.45f, 1.00f);
+
+    // 텍스트 (완전 흰색보다는 약간 회색빛이 도는 게 고급스러움)
+    c[ImGuiCol_Text] = ImVec4(0.85f, 0.85f, 0.85f, 1.00f);
+    c[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
+
+    // 탭 (언리얼 스타일 하이라이트)
+    c[ImGuiCol_Tab] = ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
+    c[ImGuiCol_TabHovered] = ImVec4(0.35f, 0.35f, 0.35f, 1.00f);
+    c[ImGuiCol_TabActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+    c[ImGuiCol_TabUnfocused] = ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
+    c[ImGuiCol_TabUnfocusedActive] = ImVec4(0.25f, 0.25f, 0.25f, 1.00f);
+
+
+
 }
 
 
-void CImguiManager::Initialize(HWND _hWnd, ID3D11Device* _Device, ID3D11DeviceContext* _Context)
+void CImguiManager::Initialize(HWND _hWnd, ComPtr<ID3D11Device>_Device, ComPtr<ID3D11DeviceContext> _Context)
 {
     //imgui 초기화
-    {
+    
 
         // Make process DPI aware and obtain main monitor scale
         ImGui_ImplWin32_EnableDpiAwareness();
@@ -80,8 +123,14 @@ void CImguiManager::Initialize(HWND _hWnd, ID3D11Device* _Device, ID3D11DeviceCo
 
         // Setup Platform/Renderer backends
         ImGui_ImplWin32_Init(_hWnd);
-        ImGui_ImplDX11_Init(_Device, _Context);
-    }
+        ImGui_ImplDX11_Init(_Device.Get(), _Context.Get());
+    
+
+    //// 기본 폰트 크기를 13.0f 정도로 설정 (보통 18.0f나 16.0f로 설정되어 있어서 크게 느껴짐)
+    //io.Fonts->AddFontFromFileTTF("YourFontPath.ttf", 13.0f);
+
+    //// 혹은 기본 폰트를 쓰신다면 폰트 배율만 조절 (약간 흐려질 수 있음)
+    io.FontGlobalScale = 0.85f; // 1.0f가 기본, 0.8~0.9 정도로 줄이면 작아짐
     ApplyEditorDarkStyle();
 }
 void CImguiManager::Begin()
@@ -90,6 +139,9 @@ void CImguiManager::Begin()
     ImGui_ImplDX11_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+
+    //메인 뷰포트 전체를 도킹 가능한 공간으로 만듭니다.
+	ImGui::DockSpaceOverViewport(ImGui::GetMainViewport()->ID);
 }
 
 void CImguiManager::Example()
@@ -105,7 +157,7 @@ void CImguiManager::Example()
 
         ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 
-        ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+        ImGui::Text("This is some useful text.");               // Display some text (you can use a format _strings too)
         ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
         ImGui::Checkbox("Another Window", &show_another_window);
 
@@ -159,7 +211,7 @@ void CImguiManager::Example()
 //
 //                ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
 //
-//                ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+//                ImGui::Text("This is some useful text.");               // Display some text (you can use a format _strings too)
 //                ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 //                ImGui::Checkbox("Another Window", &show_another_window);
 //
@@ -221,13 +273,15 @@ void CImguiManager::Render()
 
 
     }
-
+ 
 
 }
 
-CImguiManager* CImguiManager::Create()
+
+unique_ptr<CImguiManager> CImguiManager::Create()
 {
-    return new CImguiManager;
+    unique_ptr<CImguiManager> pInstance(new CImguiManager());
+    return pInstance;
 }
 
 void CImguiManager::Free()
@@ -237,6 +291,5 @@ void CImguiManager::Free()
     ImGui_ImplWin32_Shutdown();
     ImGui::DestroyContext();
 
-    delete this;
 
 }

@@ -1,16 +1,14 @@
 #include "Loader.h"
 
-#include <GameInstance.h>
+#include "GameInstance.h"
 
 #include "BackGround.h"
 
-CLoader::CLoader(ID3D11Device* pDevice, ID3D11DeviceContext* pContext)
+CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: m_pDevice(pDevice), m_pContext(pContext),
 	m_pGameInstance(CGameInstance::GetInstance())
 {
-	Safe_AddRef(m_pDevice);
-	Safe_AddRef(m_pContext);
-	Safe_AddRef(m_pGameInstance);
+
 }
 
 unsigned int APIENTRY ThreadMain(void* pArg)
@@ -50,6 +48,8 @@ HRESULT CLoader::Loading()
 	// 다른 쓰레드가 공유하는 메모리영역(임계영역) 접근시 막아주는(대기로 바꿔주는) 함수 (락)
 	EnterCriticalSection(&m_CriticalSection);
 
+	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
 	HRESULT hr = {};
 
 	switch (m_eNextLevelID)
@@ -64,6 +64,8 @@ HRESULT CLoader::Loading()
 		hr = E_FAIL;
 	}
 
+	CoUninitialize();
+
 	LeaveCriticalSection(&m_CriticalSection);// 언락 - 이제 다른쓰레드도 접근가능
 
 	return hr;
@@ -73,7 +75,13 @@ HRESULT CLoader::Loading_For_LogoLevel()
 {
 
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩 중 입니다."));
-	
+	/* Prototype_Component_Texture_BackGround */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::LOGO), TEXT("Prototype_Component_Texture_BackGround"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
 	
 	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
@@ -82,7 +90,7 @@ HRESULT CLoader::Loading_For_LogoLevel()
 	
 	lstrcpy(m_szLoadingText, TEXT("객체원형를 로딩 중 입니다."));
 	/* Prototype_GameObject_BackGround */
-	if(FAILED(m_pGameInstance->Add_Prototype(ETOI(LEVEL::LOGO), TEXT("Prototype_GameObject_BackGround"),
+	if(FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::LOGO), TEXT("Prototype_GameObject_BackGround"),
 		CBackGround::Create(m_pDevice, m_pContext))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CBackGround");
@@ -128,14 +136,13 @@ void CLoader::Print_LoadText()
 }
 #endif
 
-CLoader* CLoader::Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext, LEVEL eNextLevelID)
+shared_ptr<CLoader> CLoader::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, LEVEL eNextLevelID)
 {
-	CLoader* pInstance = new CLoader(pDevice, pContext);
+	shared_ptr<CLoader> pInstance ( new CLoader(pDevice, pContext));
 
 	if (FAILED(pInstance->Initialize(eNextLevelID)))
 	{
 		MSG_BOX("Failed to Created : CLoader");
-		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
@@ -145,12 +152,8 @@ void CLoader::Free()
 	__super::Free();
 
 	//쓰레드 사용하고 있음 갑자기 끝나면 무한루프로 쓰레드 끝날떄까지 기다리고 다 끝나면 지운다
-	WaitForSingleObject(m_hThread, INFINITE); 
+	WaitForSingleObject(m_hThread, INFINITE);
 	CloseHandle(m_hThread);
 
 	DeleteCriticalSection(&m_CriticalSection);
-
-	Safe_Release(m_pDevice);
-	Safe_Release(m_pContext);
-	Safe_Release(m_pGameInstance);
 }

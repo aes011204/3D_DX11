@@ -15,6 +15,7 @@ class CData_Manager :
 
 private:
     CData_Manager();
+public:
     virtual ~CData_Manager() = default;
 
 public:
@@ -37,7 +38,7 @@ private:
     vector<Item_Def>               m_vec_ItemDefs;
     unordered_map<_uint, _uint> m_map_ItemID;
 public:
-    CData_Manager* Create();
+    //shared_ptr<CData_Manager> Create();
     void Free() override;
 };
 

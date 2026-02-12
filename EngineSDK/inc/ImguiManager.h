@@ -1,21 +1,24 @@
 #pragma once
 
-#include <d3d11.h> 
-//// ImGui
-#include "imgui.h"
-#include "imgui_impl_dx11.h"
-#include "imgui_impl_win32.h"
+#include <memory>
+#include <wrl.h>
+
+using namespace Microsoft::WRL;
+using namespace std;
+
 
 class CImguiManager
 {
 private:
 	explicit CImguiManager();
+
+public:
 	~CImguiManager();
 	void ApplyEditorDarkStyle();
 
 
 public:
-	void Initialize(HWND _hWnd, ID3D11Device* _Device, ID3D11DeviceContext* _Context);
+	void Initialize(HWND _hWnd, ComPtr<ID3D11Device>_Device, ComPtr<ID3D11DeviceContext> _Context);
 	void Begin();
 	void Example();
 
@@ -23,9 +26,12 @@ public:
 
 	ImGuiContext* GetContext() { return ImGui::GetCurrentContext(); }
 
+
+	void Show_Hierarchy();
+
 public:
 
-	static CImguiManager* Create();
+	static unique_ptr<CImguiManager> Create();
 
 	void Free();
 private:
@@ -33,8 +39,6 @@ private:
 	bool show_demo_window = true;
 	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-
 
 };
 

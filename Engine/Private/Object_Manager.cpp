@@ -7,8 +7,13 @@
 CObject_Manager::CObject_Manager()
 	: m_pGameInstance(CGameInstance::GetInstance())
 {
-	Safe_AddRef(m_pGameInstance);
 
+
+}
+
+CObject_Manager::~CObject_Manager()
+{
+	Free();
 }
 
 HRESULT CObject_Manager::Initialize(_uint iNumLevels)
@@ -21,14 +26,14 @@ HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 HRESULT CObject_Manager::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
 	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
 {
-	CGameObject* pGameObject = { nullptr };
-	CLayer* pLayer = { nullptr };
+	shared_ptr<CGameObject> pGameObject = { nullptr };
+	shared_ptr<CLayer> pLayer = { nullptr };
 
 	if (nullptr == m_pLayers ||
 		iLayerLevelIndex >= m_iNumLevel)
 		goto except;
 
-	pGameObject = dynamic_cast<CGameObject*>(m_pGameInstance->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
+	pGameObject = dynamic_pointer_cast<CGameObject>(m_pGameInstance.lock()->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
 	if (nullptr == pGameObject)
 		goto except;
 
@@ -95,10 +100,10 @@ HRESULT CObject_Manager::Clear_Layers(_uint iLevelIndex)
 	if (m_iNumLevel <= iLevelIndex)
 		return E_FAIL;
 
-	for(auto& pair :m_pLayers[iLevelIndex])
-	{
-		Safe_Release(pair.second);
-	}
+	//for(auto& pair :m_pLayers[iLevelIndex])
+	//{
+	//	Safe_Release(pair.second);
+	//}
 	m_pLayers[iLevelIndex].clear();
 
 	return S_OK;
@@ -116,7 +121,13 @@ void CObject_Manager::Update_Gui()
 	}
 }
 
-CLayer* CObject_Manager::Find_Layer(_uint iLevelIndex, const _wstring& strLayerTag)
+map<const _wstring, shared_ptr<CLayer>> CObject_Manager::Get_GameObjects(_uint levelIndex)
+{
+	return m_pLayers[levelIndex];
+
+}
+
+shared_ptr<CLayer> CObject_Manager::Find_Layer(_uint iLevelIndex, const _wstring& strLayerTag)
 {
 	if (m_iNumLevel <= iLevelIndex)
 		return nullptr;
@@ -130,32 +141,31 @@ CLayer* CObject_Manager::Find_Layer(_uint iLevelIndex, const _wstring& strLayerT
 
 }
 
-CObject_Manager* CObject_Manager::Create(_uint iNumLevels)
+unique_ptr<CObject_Manager> CObject_Manager::Create(_uint iNumLevels)
 {
-	CObject_Manager* pInstance = new CObject_Manager();
+	unique_ptr<CObject_Manager> pInstance(new CObject_Manager());
 
 	if (FAILED(pInstance->Initialize(iNumLevels)))
 	{
 		MSG_BOX("Failed to Created : CObject_Manager");
-		Safe_Release(pInstance);
 	}
 	return pInstance;
 }
 
 void CObject_Manager::Free()
 {
-	CBase::Free();
+	__super::Free();
 
 	for (int i = 0; i < m_iNumLevel;i++)
 	{
-		for (auto& pair : m_pLayers[i])
-		{
-			Safe_Release(pair.second);
-		}
+		//for (auto& pair : m_pLayers[i])
+		//{
+		//	Safe_Release(pair.second);
+		//}
 		m_pLayers[i].clear();
 	}
 	Safe_Delete_Array(m_pLayers); // 배열지우는 매크로 
 
-	Safe_Release(m_pGameInstance);
+
 
 }

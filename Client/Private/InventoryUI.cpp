@@ -19,14 +19,13 @@ bool CInventoryUI::MousePosToSlot(_uint& returnSlotX, _uint& returnSlotY)
 	return true;
 }
 
-CInventoryUI* CInventoryUI::Create()
+shared_ptr<CInventoryUI> CInventoryUI::Create()
 {
-	CInventoryUI* pInstance = new CInventoryUI();
+	shared_ptr<CInventoryUI> pInstance ( new CInventoryUI());
 
 	if (FAILED(pInstance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CInventoryUI");
-		Safe_Release(pInstance);
 	}
 	return pInstance;
 }

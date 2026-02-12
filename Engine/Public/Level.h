@@ -11,7 +11,8 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CLevel abstract : public CBase
 {
 protected:
-	CLevel(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
+	CLevel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+public:
 	virtual ~CLevel() = default;
 
 public:
@@ -20,10 +21,10 @@ public:
 	virtual HRESULT Render();
 
 protected:
-	ID3D11Device* m_pDevice = { nullptr };
-	ID3D11DeviceContext* m_pContext = { nullptr };
+	ComPtr<ID3D11Device> m_pDevice = { nullptr };
+	ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
 
-	class CGameInstance* m_pGameInstance = { nullptr };
+	weak_ptr<class CGameInstance> m_pGameInstance = {  };
 
 public:
 	virtual void Free() override;

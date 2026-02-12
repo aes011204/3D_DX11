@@ -5,10 +5,16 @@ NS_BEGIN(Client)
 class CBackGround final:
     public CGameObject
 {
+public:
+    struct BACKGROUND_DESC final:  public CGameObject::GAMEOBJECT_DESC
+    {
+	    
+    };
 private:
-    CBackGround(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-    CBackGround(const CBackGround&  rhs);
-    virtual ~CBackGround() = default;
+    CBackGround(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CBackGround(const CBackGround&  prototype);
+public:
+	virtual ~CBackGround() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
@@ -23,8 +29,8 @@ public:
 private:
 
 public:
-    static CBackGround* Create(ID3D11Device* pDevice, ID3D11DeviceContext* pContext);
-	CBackGround* Clone(void* pArg) override;
+    static shared_ptr<CBackGround> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    shared_ptr<CGameObject> Clone(void* pArg) override;
     void Free() override;
 
 };

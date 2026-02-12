@@ -5,18 +5,18 @@
 CLevel_Manager::CLevel_Manager()
 	: m_pGameInstance(CGameInstance::GetInstance())
 {
-	Safe_AddRef(m_pGameInstance);
+
 }
 
-HRESULT CLevel_Manager::Change_Level(_uint iNewLevelIndex, CLevel* pNewLevel)
+HRESULT CLevel_Manager::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pNewLevel)
 {
 	if (m_pCurLevel != nullptr)
-		m_pGameInstance->Clear_Resources(m_iCurLevelIdx);
+		m_pGameInstance.lock()->Clear_Resources(m_iCurLevelIdx);
 
-	if(0 != Safe_Release(m_pCurLevel))
-	{
-		return E_FAIL;
-	}
+	//if (0 != Safe_Release(m_pCurLevel))
+	//{
+	//	return E_FAIL;
+	//}
 
 	m_pCurLevel = pNewLevel;
 
@@ -39,16 +39,14 @@ HRESULT CLevel_Manager::Render()
 	return S_OK;
 }
 
-CLevel_Manager* CLevel_Manager::Create()
+unique_ptr<CLevel_Manager> CLevel_Manager::Create()
 {
-	return new CLevel_Manager(); // 이니셜라이즈 필요 없음
+	unique_ptr<CLevel_Manager> pInstance(new CLevel_Manager());
+	return pInstance; // 이니셜라이즈 필요 없음
 }
 
 void CLevel_Manager::Free()
 {
 	__super::Free();
-	Safe_Release(m_pCurLevel);
-	Safe_Release(m_pGameInstance);
-
 
 }

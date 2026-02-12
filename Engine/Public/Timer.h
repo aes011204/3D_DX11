@@ -8,6 +8,7 @@ class CTimer : public CBase
 {
 private:
 	CTimer();
+public:
 	~CTimer() = default;
 
 public:
@@ -23,7 +24,7 @@ private:
 	_float m_fTimeDelta = {};
 
 public:
-	static CTimer* Create();
+	static shared_ptr<CTimer> Create();
 
 public:
 	void Free() override;

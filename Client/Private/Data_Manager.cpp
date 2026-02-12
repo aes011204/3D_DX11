@@ -376,18 +376,17 @@ _uint CData_Manager::GetIndexByID(_uint id)
 	return it->second;
 }
 
-CData_Manager* CData_Manager::Create()
-{
-	CData_Manager* pInstance = new CData_Manager();
-	if (FAILED(pInstance->Initialize()))
-	{
-		Safe_Release(pInstance);
-		MSG_BOX("FAILED CREATE DATA_MANAGER");
-	}
-
-	return pInstance;
-
-}
+//shared_ptr<CData_Manager> CData_Manager::Create()
+//{
+//	shared_ptr<CData_Manager> pInstance ( new CData_Manager());
+//	if (FAILED(pInstance->Initialize()))
+//	{
+//		MSG_BOX("FAILED CREATE DATA_MANAGER");
+//	}
+//
+//	return pInstance;
+//
+//}
 
 void CData_Manager::Free()
 {

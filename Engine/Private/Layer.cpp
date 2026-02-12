@@ -6,7 +6,7 @@ CLayer::CLayer()
 {
 }
 
-HRESULT CLayer::Add_GameObject(CGameObject* pGameObject)
+HRESULT CLayer::Add_GameObject(shared_ptr<CGameObject> pGameObject)
 {
 	if (nullptr == pGameObject)
 	{
@@ -55,18 +55,24 @@ void CLayer::Update_Gui()
 	}
 }
 
-CLayer* CLayer::Create()
+list <shared_ptr<class CGameObject>> CLayer::Get_GameObject()
 {
-	return new CLayer;
+	return m_pGameObject;
+}
+
+shared_ptr<CLayer> CLayer::Create()
+{
+	shared_ptr<CLayer> pInstance(new CLayer());
+	return pInstance;
 }
 
 void CLayer::Free()
 {
 	__super::Free();
 
-	for (auto& pGameObject : m_pGameObject)
-	{
-		Safe_Release(pGameObject);
-	}
+	//for (auto& pGameObject : m_pGameObject)
+	//{
+	//	Safe_Release(pGameObject);
+	//}
 	m_pGameObject.clear();
 }

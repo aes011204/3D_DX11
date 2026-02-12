@@ -1,66 +1,90 @@
 #pragma once
-#include "Base.h"
+#include "Prototype_Manager.h"
 
 
 NS_BEGIN(Engine)
-	class ENGINE_DLL CGameInstance final : public CBase
+
+class CLayer;
+class CUI;
+class CObject_Manager;
+
+class ENGINE_DLL CGameInstance final : public CBase
 {
-    DECLARE_SINGLETON(CGameInstance)
+	DECLARE_SINGLETON(CGameInstance)
 
 private:
-    CGameInstance();
-    virtual ~CGameInstance() = default;
+	CGameInstance();
+public:
+	virtual ~CGameInstance();
 
 public:
-    HRESULT Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppContext);
-    ImGuiContext* GetContext();
-    void Update_Engine(float fTimeDelta);
-    void Draw();
+	HRESULT Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppContext);
+	void Update_Engine(float fTimeDelta);
+	void Draw();
 
-    void Clear_Resources(_uint iLevelIndex);
+	void Clear_Resources(_uint iLevelIndex);
 
-   
+
+	void SetImguiContext(ImGuiContext* imgContext);
+
 public:  /* For.Graphic_Device */
-    HRESULT Clear_Buffers(const _float4* pClearColor);
-    HRESULT Bind_BackBufferRenderTarget(HWND hwnd);
-    HRESULT Present();
+	HRESULT Clear_Buffers(const _float4* pClearColor);
+	HRESULT Bind_BackBufferRenderTarget(HWND hwnd);
+	HRESULT Present();
 
 public: /* For.IMGUI*/
-    HRESULT Resize(_uint g_RsizeWidth, _uint g_RsizeHeight);;
+	HRESULT Resize(_uint g_RsizeWidth, _uint g_RsizeHeight);
 
 public: /* For.TimerManager*/
-    HRESULT Add_Timer(const _wstring& strTimeTag);
-    _float Compute_TimeDelta(const _wstring& strTimeTag);
+	HRESULT Add_Timer(const _wstring& strTimeTag);
+	_float Compute_TimeDelta(const _wstring& strTimeTag);
 
 public:/* For.levelManager*/
-    HRESULT Change_Level(_uint iNewLevelIndex, class CLevel* pNewLevel);
+	HRESULT Change_Level(_uint iNewLevelIndex, shared_ptr<class CLevel> pNewLevel);
 
 public: /* For.PrototypeManager*/
-    HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, CBase* pPrototype);
-    CBase* Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);;
+	HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
+	shared_ptr<CBase> Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);;
 
 
 public: /*For.GameObject_Manager*/
-    HRESULT Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr);
+	HRESULT Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr);
 
 
 public: /*For.Renderer*/
-    void Add_RenderGroup(RENDERGROUP eRenderGroup, class CGameObject* pGameObject);
+	void Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<class CEntity> pNTT);
 
 
+public: /*For.Editor*/
+	map<const _wstring, shared_ptr<CLayer>> Get_GameObjects(_uint levelIndex);
+	_uint Get_Current_LevelIdx();
+	//const vector<shared_ptr<CUI>>& GetUIList(UI_LAYER layer);
+	//const unordered_map<wstring, shared_ptr<CUI>>& GetUIPool();
+	class CUI_Manager* Get_UI_Manager() const;
+	class CGraphic_Device* Get_GraphicDevice() const;
+	const map<_wstring,CBase*>& Get_ManagerClass()const;
+	void Push_ManagerClass(_wstring strKey, CBase* ManagerClass);
+
+public:/*For.UI_Manager*/
+	void UI_Push(UI_LAYER layer, wstring name, void* pArg);
+	void UI_Pop(UI_LAYER layer, wstring type); // 레이어에서 넣얶다 뻇다하는건 안씀 
+	void UI_Detach_All(); // 씬 전환 할떄 레이어에 있는거 객체를 지우니까 그전에 
+	void UI_InsertToPool(wstring UIType, shared_ptr<CUI> UI);
+	Rect UI_Get_m_UICanvasRect();
 private:
-    class CGraphic_Device* m_pGraphic_Device = { nullptr };
-    class CTimer_Manager* m_pTimer_Manager = { nullptr };
-    class CLevel_Manager* m_pLevel_Manager = { nullptr };
-    class CPrototype_Manager* m_pProto_Manager = { nullptr };
-    class CObject_Manager* m_pObject_Manager = { nullptr };
-    class CRenderer* m_Renderer = { nullptr };
+	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
+	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
+	unique_ptr<class CLevel_Manager> m_pLevel_Manager = { nullptr };
+	unique_ptr<class CPrototype_Manager> m_pProto_Manager = { nullptr };
+	unique_ptr<class CObject_Manager> m_pObject_Manager = { nullptr };
+	unique_ptr<class CRenderer> m_Renderer = { nullptr };
+	unique_ptr<class CUI_Manager> m_UI_Manager = { nullptr };
 
-    class CImguiManager* m_pImgui_Manager = { nullptr };
+//	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 
+	map<_wstring,CBase*> m_ManagerForImgui = {}; // rawPointer 참조용
 public:
-    void Release_Engine();
-    virtual void Free() override;
+	virtual void Free() override;
 };
 
 

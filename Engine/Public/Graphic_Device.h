@@ -19,12 +19,13 @@ class CGraphic_Device final : public CBase
 {		
 private:
 	CGraphic_Device();
+public:
 	virtual ~CGraphic_Device() = default;
 public:
 	/* 그래픽 디바이스의 초기화. */
 	/* 장치객체를 생성한다. */
 	HRESULT Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY,
-		_Inout_ ID3D11Device** ppDevice, _Inout_ ID3D11DeviceContext** ppContext);
+		_Inout_ ComPtr<ID3D11Device>& ppDevice, _Inout_ ComPtr<ID3D11DeviceContext>& ppContext);
 	
 	/* 백버퍼를 지운다. */
 	HRESULT Clear_BackBuffer_View(const _float4* pClearColor);
@@ -42,7 +43,11 @@ public:
 	HRESULT Resize(_uint g_RsizeWeight, _uint g_RsizeHeight);
 
 
+/// <IMGUI>
+public:
+	ID3D11RenderTargetView* GetBackBufferRTV() const { return m_pBackBufferRTV.Get(); }
 
+/// </summary>
 private:	
 	// IDirect3DDevice9* == LPDIRECT3DDEVICE9 == ID3D11Device + ID3D11DeviceContext 	
 
@@ -58,7 +63,7 @@ private:
 
 	/* 메모리 할당. (정점버퍼, 인덱스버퍼, 텍스쳐로드, 쉐이더객체를 생성한다. ) 컴객체의 생성과 관련된 역할 */
 	/* 추가적으로 생성된 모든 스레드에서 사용하는데 전혀 문제가 없다. */
-	ID3D11Device*				m_pDevice = { nullptr };
+	ComPtr<ID3D11Device>				m_pDevice = { nullptr };
 		
 	/* 기능실행.(바인딩작업, 정점버퍼를 SetVertexBuffers(), SetIndexBuffer(), Apply() */
 	/* 그린다. DrawIndexed() */
@@ -66,10 +71,10 @@ private:
 	/* 고정기능렌더링파이프라인 : 월드, 뷰, 투영행렬을 바인딩 + 텍스쳐 정보를 바인딩. */
 
 	/* 생성된 스레드로 그리면 안돼?(X) */
-	ID3D11DeviceContext*		m_pDeviceContext = { nullptr };
+	ComPtr<ID3D11DeviceContext>		m_pDeviceContext = { nullptr };
 
 	/* 후면버퍼와 전면버퍼를 교체해가면서 화면에 보여주는 역할 */
-	IDXGISwapChain*				m_pSwapChain = { nullptr };
+	ComPtr<IDXGISwapChain>				m_pSwapChain = { nullptr };
 
 
 	/* IDirect3DTexture9* == LPDIRECT3DTEXTURE9 */
@@ -82,9 +87,10 @@ private:
 	/* ID3D11ShaderResourceView : 셰이더에 전달될 수 있는 텍스처 타입. */	
 	/* ID3D11RenderTargetView : 렌더타겟용으로 사용될 수 있는 텍스처 타입. */
 	/* ID3D11DepthStencilView : 깊이스텐실 버퍼로서 사용될 수 있는 타입.  */
-	ID3D11RenderTargetView*		m_pBackBufferRTV = { nullptr };	
-	ID3D11DepthStencilView*		m_pDepthStencilView = { nullptr };
+	ComPtr<ID3D11RenderTargetView>		m_pBackBufferRTV = { nullptr };	
+	ComPtr<ID3D11DepthStencilView>		m_pDepthStencilView = { nullptr };
 
+	// 역기서 나중에 더 늘어날 ㅇ예정임
 
 	bool m_SwapChainOccluded = { false };
 private:
@@ -95,7 +101,7 @@ private:
 	HRESULT Ready_DepthStencilView(_uint iWinCX, _uint iWinCY);
 
 public:
-	static CGraphic_Device* Create(_In_ HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ID3D11Device** ppDevice, _Out_ ID3D11DeviceContext** ppDeviceContextOut);
+	static unique_ptr<CGraphic_Device> Create(_In_ HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppDeviceContextOut);
 	virtual void Free() override;
 };
 

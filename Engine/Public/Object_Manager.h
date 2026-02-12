@@ -8,12 +8,16 @@
 
 NS_BEGIN(Engine)
 
+class CLayer;
+class CGameObject;
+
 class CObject_Manager final :
 	public CBase
 {
 private:
 	CObject_Manager();
-	virtual ~CObject_Manager() = default;
+public:
+	virtual ~CObject_Manager() ;
 
 public:
 	HRESULT Initialize(_uint iNumLevels);
@@ -26,22 +30,24 @@ public:
 
 	/// IMGUI
 	virtual void Update_Gui();
+
+	map<const _wstring, shared_ptr<CLayer>> Get_GameObjects(_uint levelIndex);
 	///
 private:
 	_uint m_iNumLevel = {};
-	// map<_wstring, list<class CGameObject*>>* m_pLayers = { nullptr };
-	map<const _wstring, class CLayer*>* m_pLayers = { nullptr };
-	typedef map<const _wstring, class CLayer*> LAYERS;
+	// map<_wstring, list<shared_ptr<class CGameObject>>>* m_pLayers = { nullptr };
+	map<const _wstring, shared_ptr<CLayer>>* m_pLayers = { nullptr };
+	typedef map<const _wstring, shared_ptr<CLayer>> LAYERS;
 
-	// 또 동적 배열로 레벨별로 분리해서 보관, 그 안에 const _wstring, class CLayer* 이걸로 레이어로 분리
+	// 또 동적 배열로 레벨별로 분리해서 보관, 그 안에 const _wstring, class shared_ptr<CLayer> 이걸로 레이어로 분리
 
-	class CGameInstance* m_pGameInstance = { nullptr };
-
-public:
-	class CLayer* Find_Layer(_uint iLevelIndex, const _wstring& strLayerTag);
+	weak_ptr<class CGameInstance> m_pGameInstance = {};
 
 public:
-	static CObject_Manager* Create(_uint iNumLevels);
+	class shared_ptr<CLayer> Find_Layer(_uint iLevelIndex, const _wstring& strLayerTag);
+
+public:
+	static unique_ptr<CObject_Manager> Create(_uint iNumLevels);
 	void Free()override;
 
 };

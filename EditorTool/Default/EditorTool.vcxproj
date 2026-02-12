@@ -109,7 +109,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../Public/;../../Engine/Public/;../Default/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -120,8 +123,8 @@
       <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
-      <Command>xcopy /Y /I "$(SolutionDir)EditorTool\Bin\EditorTool.lib" "$(SolutionDir)EngineSDK\lib\"
-xcopy /Y /I "$(SolutionDir)EditorTool\Public\ImGuiManager.h" "$(SolutionDir)EngineSDK\inc\"</Command>
+      <Command>
+xcopy /Y /I "$(SolutionDir)EditorTool\Bin\EditorTool.lib" "$(SolutionDir)Engine\ThirdPartyLib\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,6 +145,13 @@ xcopy /Y /I "$(SolutionDir)EditorTool\Public\ImGuiManager.h" "$(SolutionDir)Engi
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Public\ConsoleWin.h" />
+    <ClInclude Include="..\Public\Editor_Helper.h" />
+    <ClInclude Include="..\Public\EditorInstance.h" />
+    <ClInclude Include="..\Public\Editor_Define.h" />
+    <ClInclude Include="..\Public\Editor_Win.h" />
+    <ClInclude Include="..\Public\GameView.h" />
+    <ClInclude Include="..\Public\HierarchyWin.h" />
     <ClInclude Include="..\Public\ImguiManager.h" />
     <ClInclude Include="..\Public\imconfig.h" />
     <ClInclude Include="..\Public\imgui.h" />
@@ -151,18 +161,56 @@ xcopy /Y /I "$(SolutionDir)EditorTool\Public\ImGuiManager.h" "$(SolutionDir)Engi
     <ClInclude Include="..\Public\imstb_rectpack.h" />
     <ClInclude Include="..\Public\imstb_textedit.h" />
     <ClInclude Include="..\Public\imstb_truetype.h" />
+    <ClInclude Include="..\Public\InspectorWin.h" />
+    <ClInclude Include="..\Public\ManagerWin.h" />
+    <ClInclude Include="..\Public\Selection.h" />
+    <ClInclude Include="..\Public\Win_Mananger.h" />
+    <ClInclude Include="Event_Struct.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Private\ConsoleWin.cpp" />
+    <ClCompile Include="..\Private\EditorInstance.cpp" />
+    <ClCompile Include="..\Private\Editor_Define.cpp" />
+    <ClCompile Include="..\Private\Editor_Win.cpp" />
+    <ClCompile Include="..\Private\HierarchyWin.cpp" />
     <ClCompile Include="..\Private\ImguiManager.cpp" />
-    <ClCompile Include="..\Private\imgui.cpp" />
-    <ClCompile Include="..\Private\imgui_demo.cpp" />
-    <ClCompile Include="..\Private\imgui_draw.cpp" />
-    <ClCompile Include="..\Private\imgui_impl_dx11.cpp" />
-    <ClCompile Include="..\Private\imgui_impl_win32.cpp" />
-    <ClCompile Include="..\Private\imgui_tables.cpp" />
-    <ClCompile Include="..\Private\imgui_widgets.cpp" />
+    <ClCompile Include="..\Private\imgui.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_demo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_draw.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_impl_dx11.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_impl_win32.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_tables.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Private\imgui_widgets.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Private\InspectorWin.cpp" />
+    <ClCompile Include="..\Private\ManagerWin.cpp" />
+    <ClCompile Include="..\Private\Selection.cpp" />
+    <ClCompile Include="..\Private\Win_Mananger.cpp" />
     <ClCompile Include="EditorTool.cpp" />
+    <ClCompile Include="GameView.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Engine\Default\Engine.vcxproj">
+      <Project>{19a62025-55b6-4350-9a4c-91d5fa50a3f0}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
