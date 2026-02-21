@@ -7,10 +7,11 @@ NS_BEGIN(Engine)
 /// @brief DirectInput 기반의 키보드 및 마우스 입력을 관리하는 싱글톤 매니저 클래스
 class ENGINE_DLL CDInput_Manager : public CBase
 {
-    DECLARE_SINGLETON(CDInput_Manager)
+ //   DECLARE_SINGLETON(CDInput_Manager)
 
 private:
-    explicit CDInput_Manager();
+     CDInput_Manager();
+public:
     ~CDInput_Manager() override;
 
 public:
@@ -28,7 +29,7 @@ public:
         return m_MouseState.rgbButtons[mouseInputState];
     }
 
-    _float2 GetMousePos()
+    _float2 GetDInputMousePos()
     {
         assert(m_hWnd != nullptr);
 
@@ -81,9 +82,13 @@ public:
     HWND Get_HWND() { return m_hWnd; }
 
 public:
-    HRESULT Ready_InputDev(HINSTANCE hInst, HWND hWnd);
+    HRESULT Initialize(HINSTANCE hInst, HWND hWnd);
     void    Update_InputDev();
 
+    void Set_MousePos(float x, float y) { m_fMousePos = { x,y }; }
+    _float2 Get_MousePos() { return m_fMousePos; }
+
+    void OnGui()override;
 private:
     ComPtr<IDirectInput8>       m_InputSDK;
     ComPtr<IDirectInputDevice8> m_KeyBoardDev;
@@ -97,7 +102,9 @@ private:
 
     HWND m_hWnd;
 
+    _float2 m_fMousePos = {};
 public:
+    static unique_ptr<CDInput_Manager> Create(HINSTANCE hInst, HWND hWnd);
     void Free() override;
 };
 

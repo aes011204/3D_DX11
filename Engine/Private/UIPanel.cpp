@@ -70,8 +70,9 @@ void CUIPanel::AddChild()
 }
 
 
-void CUIPanel::OnInit()
+HRESULT CUIPanel::OnInit(void* pArg)
 {
+    return S_OK;
 }
 
 void CUIPanel::OnActive()
@@ -94,8 +95,10 @@ void CUIPanel::OnLateUpdate()
 {
 }
 
-void CUIPanel::OnRender()
+HRESULT CUIPanel::OnRender()
 {
+    return S_OK;
+
 }
 
 void CUIPanel::OnClear()

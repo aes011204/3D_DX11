@@ -9,9 +9,10 @@ CUISlot::CUISlot(const CUISlot& prototype) : CUIButton(prototype)
 {
 }
 
-void CUISlot::OnInit()
+HRESULT CUISlot::OnInit(void* pArg)
 {
-	CUIButton::OnInit();
+	CUIButton::OnInit( pArg);
+	return S_OK;
 }
 
 void CUISlot::OnActive()
@@ -39,9 +40,10 @@ void CUISlot::OnLateUpdate()
 	CUIButton::OnLateUpdate();
 }
 
-void CUISlot::OnRender()
+HRESULT CUISlot::OnRender()
 {
 	CUIButton::OnRender();
+	return S_OK;
 }
 
 void CUISlot::OnClear()

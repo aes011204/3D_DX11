@@ -52,13 +52,14 @@ using namespace Microsoft::WRL;
 // 내가 추가한 헤더
 #include <stack>
 #include <assert.h>
-#include <fstream>
 #include <iostream>
 #include  <variant>
 #include  <queue>
 #include <mutex>
 #include <cstdarg> 
 //
+#include <fstream>
+#include <iomanip>
 
 #include "DirectXTK/SimpleMath.h"
 using namespace DirectX::SimpleMath;

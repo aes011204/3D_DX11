@@ -111,6 +111,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)../Public/;$(SolutionDir)EditorTool/Public/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,9 +121,10 @@
       <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.dll" "$(SolutionDir)Client\Bin\"
-xcopy /Y /I "$(SolutionDir)Engine\Bin\Engine.lib" "$(SolutionDir)EngineSDK\lib\"
-xcopy /Y/S /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</Command>
+      <Command>robocopy "$(SolutionDir)Engine\Bin" "$(SolutionDir)Client\Bin" "Engine.dll" /XO /NJH /NJS
+robocopy "$(SolutionDir)Engine\Bin" "$(SolutionDir)Client\Bin" "Engine.dll" /XO /NJH /NJS
+robocopy "$(SolutionDir)Engine\Public" "$(SolutionDir)EngineSDK\inc" *.* /S /XO /NJH /NJS
+if %ERRORLEVEL% LEQ 4 exit 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,13 +147,16 @@ xcopy /Y/S /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h" />
+    <ClInclude Include="..\Public\Data_Manager.h" />
     <ClInclude Include="..\Public\DInput_Manager.h" />
     <ClInclude Include="..\Public\Component.h" />
     <ClInclude Include="..\Public\Engine_Helper.h" />
     <ClInclude Include="..\Public\Entity.h" />
     <ClInclude Include="..\public\EventBus.h" />
+    <ClInclude Include="..\Public\Event_Struct.h" />
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\GameObject.h" />
+    <ClInclude Include="..\Public\IModifier.h" />
     <ClInclude Include="..\Public\Layer.h" />
     <ClInclude Include="..\Public\Level.h" />
     <ClInclude Include="..\Public\Level_Manager.h" />
@@ -184,15 +189,18 @@ xcopy /Y/S /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</
     <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="..\Public\VIBuffer.h" />
     <ClInclude Include="..\Public\VIBuffer_Rect.h" />
+    <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp" />
+    <ClCompile Include="..\Private\Data_Manager.cpp" />
     <ClCompile Include="..\Private\DInput_Manager.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
     <ClCompile Include="..\Private\Entity.cpp" />
     <ClCompile Include="..\Private\EventBus.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
+    <ClCompile Include="..\Private\IModifier.cpp" />
     <ClCompile Include="..\Private\Layer.cpp" />
     <ClCompile Include="..\Private\Level.cpp" />
     <ClCompile Include="..\Private\Level_Manager.cpp" />
@@ -219,6 +227,7 @@ xcopy /Y/S /I "$(SolutionDir)Engine\Public\*.*" "$(SolutionDir)EngineSDK\inc\"</
     <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="..\Private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

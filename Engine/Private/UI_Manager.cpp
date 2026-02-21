@@ -10,9 +10,11 @@ CUI_Manager::~CUI_Manager()
 {
 	Free();
 }
+
 HRESULT CUI_Manager::Initialize(_uint width, _uint height)
 {
-	m_UICanvas = CUICanvas::Create(width, height);
+	m_Winsize = { 0, 0, static_cast<_float>(width) , static_cast<_float>(height) };
+
 
 	return S_OK;
 }
@@ -40,16 +42,20 @@ void CUI_Manager::Update(float m_fDeltaTime)
 	//순서(OVERRIDE -> WINDOW -> STACK -> HUD)
 	for (int i = 0; i < ETOI(UI_LAYER::END); i++)
 	{
-		for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
+		vector<shared_ptr<CUI>> vecCopy = m_UI[i];
+		//for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
+		//{
+		//	(*it)->Update(m_fDeltaTime, bMouseHold);
+		//}
+		for (auto it = vecCopy.rbegin(); it != vecCopy.rend(); ++it)
 		{
 			(*it)->Update(m_fDeltaTime, bMouseHold);
 		}
-
 	}
 
 }
 
-void CUI_Manager::LateUpdate(float m_fDeltaTime)
+void CUI_Manager::Late_Update(float m_fDeltaTime)
 {
 	//순서(OVERRIDE -> WINDOW -> STACK -> HUD)
 	for (int i = 0; i < ETOI(UI_LAYER::END); i++)
@@ -64,6 +70,15 @@ void CUI_Manager::LateUpdate(float m_fDeltaTime)
 
 void CUI_Manager::Render()
 {
+	//순서(OVERRIDE -> WINDOW -> STACK -> HUD)
+	for (int i = 0; i < ETOI(UI_LAYER::END); i++)
+	{
+		for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
+		{
+			(*it)->Render();
+		}
+
+	}
 }
 
 void CUI_Manager::OnFail()
@@ -145,11 +160,10 @@ void CUI_Manager::InsertToPool(wstring UIType, shared_ptr<CUI> UI)
 	
 }
 
-Rect CUI_Manager::Get_m_UICanvasRect()
+Rect CUI_Manager::Get_WinSize()
 {
-	{ return m_UICanvas->Get_CanvasSize(); }
+	return m_Winsize; 
 }
-
 
 void CUI_Manager::ProcessUIQ()
 {
@@ -175,8 +189,8 @@ void CUI_Manager::ProcessUIQ()
 			m_UI[ETOI(UIQ.Layer)].erase(it);
 		}
 
-		addUI->Initialize(UIQ.pArg); // 넣었다 뺏다 할떄 계속 불릴 위험있음 CBase 안에서 bool로 처리
-		addUI->UI_Active();
+		//addUI->Initialize(UIQ.pArg); // 넣었다 뺏다 할떄 계속 불릴 위험있음 CBase 안에서 bool로 처리
+		//addUI->UI_Active();
 
 		//// 이건 ui 매니져에 있는 활성화된 ui 모아두는 곳에 있음
 		m_UI[ETOI(UIQ.Layer)].push_back(addUI);
@@ -210,8 +224,13 @@ void CUI_Manager::Free()
 	//	Safe_Release(pair.second);
 	//}
 	m_UIPool.clear();
+	for (auto& it : m_UI)
+	{
+		it.clear();
+	}
+	//while(m_RequestUIQueue.empty() == true)
 
-	m_UICanvas.reset();
+
 }
 
 
@@ -226,7 +245,7 @@ void CUI_Manager::OnGui()
 		else {
 			for (auto& pair : pool)
 			{
-				_string strKey = ConvertW2A(pair.first);
+				_string strKey = W2S(pair.first);
 				auto& root = pair.second;
 				if (!root) continue;
 
@@ -274,7 +293,7 @@ void CUI_Manager::DrawUITree(const shared_ptr<Engine::CUI>& ui)
 {
 	if (!ui) return;
 
-	_string label = ConvertW2A(ui->Get_Name());
+	_string label = W2S(ui->Get_Name());
 	if (label.empty()) label = "UI_Child";
 
 	_string imguiLabel = label + "##UI" + std::to_string((uint64_t)ui.get());

@@ -23,7 +23,7 @@ HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 	return S_OK;
 }
 
-HRESULT CObject_Manager::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
+shared_ptr<CGameObject> CObject_Manager::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
 	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
 {
 	shared_ptr<CGameObject> pGameObject = { nullptr };
@@ -49,12 +49,45 @@ HRESULT CObject_Manager::Add_GameObject(_uint iPrototypeLevelIndex, const _wstri
 		pLayer->Add_GameObject(pGameObject);
 
 
-	return S_OK;
+	return pGameObject;
 
 except:
 	MSG_BOX("Failed To Added : CloneGameObject");
-	return E_FAIL;
+	return nullptr;
 }
+
+//HRESULT CObject_Manager::Add_GameObject(shared_ptr<CBase> pClonedInst,
+//	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
+//{
+//	shared_ptr<CGameObject> pGameObject = { nullptr };
+//	shared_ptr<CLayer> pLayer = { nullptr };
+//
+//	if (nullptr == m_pLayers ||
+//		iLayerLevelIndex >= m_iNumLevel|| pClonedInst == nullptr)
+//		goto except;
+//
+//	pGameObject = dynamic_pointer_cast<CGameObject>(CGameInstance::GetInstance()->Clone_Prototype(pClonedInst, pArg));
+//	if (nullptr == pGameObject)
+//		goto except;
+//
+//	pLayer = Find_Layer(iLayerLevelIndex, strLayerTag);
+//
+//	if (nullptr == pLayer)
+//	{
+//		pLayer = CLayer::Create();
+//		pLayer->Add_GameObject(pGameObject);
+//		m_pLayers[iLayerLevelIndex].emplace(strLayerTag, pLayer);
+//	}
+//	else
+//		pLayer->Add_GameObject(pGameObject);
+//
+//
+//	return S_OK;
+//
+//except:
+//	MSG_BOX("Failed To Added : CloneGameObject");
+//	return E_FAIL;
+//}
 
 void CObject_Manager::Priority_Update(_float fTimeDelta)
 {
@@ -158,14 +191,9 @@ void CObject_Manager::Free()
 
 	for (int i = 0; i < m_iNumLevel;i++)
 	{
-		//for (auto& pair : m_pLayers[i])
-		//{
-		//	Safe_Release(pair.second);
-		//}
 		m_pLayers[i].clear();
 	}
 	Safe_Delete_Array(m_pLayers); // 배열지우는 매크로 
-
 
 
 }

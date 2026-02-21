@@ -1,71 +1,133 @@
 #include "BackGround.h"
 
 #include "GameInstance.h"
+#include "Transform.h"
+#include "Entity.h"
 
-Client::CBackGround::CBackGround(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+//#include "CVIBuffer_Rect.h"
+//#include "CShader.h"
+//#include "CTexture.h"
+
+CBackGround::CBackGround(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CGameObject(pDevice, pContext)
 {
 }
 
-Client::CBackGround::CBackGround(const CBackGround& prototype)
-	:CGameObject(prototype)
+CBackGround::CBackGround(const CBackGround& prototype)
+	:CGameObject(prototype),
+	m_pShaderCom(prototype.m_pShaderCom),
+	m_pVIBufferCom(prototype.m_pVIBufferCom),
+	m_pTextureCom(prototype.m_pTextureCom)
 {
 
 }
 
 HRESULT Client::CBackGround::Initialize_Prototype()
 {
+
+
 	return S_OK;
 }
 
-HRESULT Client::CBackGround::Initialize(void* pArg)
+HRESULT CBackGround::Initialize(void* pArg)
 {
-	BACKGROUND_DESC Desc{};
-	Desc.fSpeedPerSec = 1.f;
-	Desc.fSpeedPerSec = 1.f;
+
 
 	/* 백그라운드의 멤버를 채워넣어야한다면 여기서 채운다. */
+	BACKGROUND_DESC			Desc{};
+
+	Desc.fDegreePerSec = 90.f;
+	Desc.fSpeedPerSec = 1.f;
+	Desc.fX = 100.f;
+	Desc.fY = 100.f;
+	Desc.fSizeX = 200.f;
+	Desc.fSizeY = 200.f;
 
 	if(FAILED(__super::Initialize(&Desc)))
-	{
 		return E_FAIL;
-	}
+	
+	if (FAILED(Ready_Components()))
+		return E_FAIL;
 
 	return S_OK;
 }
 
-void Client::CBackGround::Priority_Update(_float fTimeDelta)
+void CBackGround::Priority_Update(_float fTimeDelta)
 {
 	int a = 1;
 }
 
-void Client::CBackGround::Update(_float fTimeDelta)
+void CBackGround::Update(_float fTimeDelta)
 {
 
+	//m_fX += 10.f * fTimeDelta;
+	//__super::Update_Transform();
 	int a = 1;
 
 }
 
-void Client::CBackGround::Late_Update(_float fTimeDelta)
+void CBackGround::Late_Update(_float fTimeDelta)
 {
 	int a = 1;
 	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
-HRESULT Client::CBackGround::Render()
+HRESULT CBackGround::Render()
 {
+	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+		return E_FAIL;
+
+		if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ViewMatrix", D3DTS::VIEW)))
+			return E_FAIL;
+
+			if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ProjMatrix", D3DTS::PROJ)))
+				return E_FAIL;
+
+	//_float4x4		IdentityMatrix = {};
+	//XMStoreFloat4x4(&IdentityMatrix, XMMatrixIdentity());
+
+	//m_pShaderCom->Bind_Matrix("g_WorldMatrix", &IdentityMatrix);
+	//m_pShaderCom->Bind_Matrix("g_ViewMatrix", &IdentityMatrix);
+	//m_pShaderCom->Bind_Matrix("g_ProjMatrix", &IdentityMatrix);
+
+	//m_pShaderCom->Bind_SRV(, )
+	// 택스쳐는 택스쳐 컴포넌트가 가지고 있으니까 얘가 쉐이더를 호출해서 바인딩
+	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom,"g_Texture",0)))
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom->Begin(0)))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBufferCom->Bind_Resources()))
+		return E_FAIL;
+
+	if (FAILED(m_pVIBufferCom->Render()))
+		return E_FAIL;
+
 	return S_OK;
 }
 
-void Client::CBackGround::OnGui()
+void CBackGround::OnGui()
 {
 
 }
 
-shared_ptr<Client::CBackGround> Client::CBackGround::Create(ComPtr<ID3D11Device> pDevice,
+HRESULT CBackGround::Ready_Components()
+{
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"),m_pVIBufferCom, nullptr)))
+		return E_FAIL;
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), m_pShaderCom, nullptr)))
+		return E_FAIL;
+	if (FAILED(Add_Component(ETOI(LEVEL::LOGO), TEXT("Prototype_Component_Texture_BackGround"), TEXT("Com_Texture"), m_pTextureCom, nullptr)))
+		return E_FAIL;
+
+	return S_OK;
+}
+
+shared_ptr<CBackGround> CBackGround::Create(ComPtr<ID3D11Device> pDevice,
 	ComPtr<ID3D11DeviceContext> pContext)
 {
-	shared_ptr<CBackGround> pInstance(new CBackGround(pDevice, pContext));
+	shared_ptr<CBackGround> pInstance(new CBackGround(pDevice, pContext), [](CBackGround* p) {p->Free(); delete p;});
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
@@ -75,9 +137,9 @@ shared_ptr<Client::CBackGround> Client::CBackGround::Create(ComPtr<ID3D11Device>
 }
 
 
-shared_ptr<CGameObject> Client::CBackGround::Clone(void* pArg)
+shared_ptr<CGameObject> CBackGround::Clone(void* pArg)
 {
-	shared_ptr<CBackGround> pInstance(new CBackGround(*this));
+	shared_ptr<CBackGround> pInstance(new CBackGround(*this), [](CBackGround* p) {p->Free(); delete p;});
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
@@ -86,7 +148,7 @@ shared_ptr<CGameObject> Client::CBackGround::Clone(void* pArg)
 	return pInstance;
 }
 
-void Client::CBackGround::Free()
+void CBackGround::Free()
 {
 	__super::Free();
 }

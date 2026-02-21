@@ -8,10 +8,10 @@ NS_BEGIN(Engine)
 class CEventBus 
 {
 public:
-	CEventBus() {};
-	CEventBus(const CEventBus&) = delete;
-	CEventBus& operator=(const CEventBus&) = delete;
-	virtual ~CEventBus() {};
+	CEventBus();
+	//CEventBus(const CEventBus&) = delete;
+	//CEventBus& operator=(const CEventBus&) = delete;
+	virtual ~CEventBus();
 
 	using anyHandler = function<void(const void*)>;
 
@@ -77,6 +77,10 @@ private:
 	unordered_map<type_index, vector<anyHandler>> m_handlers; // 이밴트들을 저장하는 저장소
 
 	queue<QueuedEvent> m_EventQueue = {};
+
+public:
+	static unique_ptr<CEventBus> Create();
+	void Free();
 };
 
 

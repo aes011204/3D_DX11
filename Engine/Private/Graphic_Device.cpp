@@ -7,6 +7,11 @@ CGraphic_Device::CGraphic_Device()
 
 }
 
+CGraphic_Device::~CGraphic_Device()
+{
+	Free();
+}
+
 HRESULT CGraphic_Device::Initialize(HWND hWnd, WINMODE isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppContext)
 {
 	_uint		iFlag = 0;
@@ -283,7 +288,7 @@ HRESULT CGraphic_Device::Ready_DepthStencilView(_uint iWinCX, _uint iWinCY)
 	if (FAILED(m_pDevice->CreateDepthStencilView(pDepthStencilTexture.Get(), nullptr, &m_pDepthStencilView)))
 		return E_FAIL;
 
-	//Safe_Release(pDepthStencilTexture);
+	pDepthStencilTexture.Reset();
 
 	return S_OK;
 }

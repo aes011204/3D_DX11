@@ -1,6 +1,8 @@
 #include "Level_Logo.h"
 
-#include <GameInstance.h>
+#include "GameInstance.h"
+#include "Client_Enum.h"
+#include "Engine_Helper.h"
 
 #include "Level_Loading.h"
 
@@ -12,6 +14,11 @@ CLevel_Logo::CLevel_Logo(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContex
 HRESULT CLevel_Logo::Initialize()
 {
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))));
+
+	auto name_view = magic_enum::enum_name(EUI::Test);
+	_wstring Wname = S2W(string(name_view));
+
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MainMenu", nullptr);
 
 	return S_OK;
 }

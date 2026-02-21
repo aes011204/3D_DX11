@@ -1,16 +1,16 @@
 
-#include "Data_Manager.h"
+#include "ItemDB.h"
 
 
 
 
-IMPLEMENT_SINGLETON(CData_Manager)
+IMPLEMENT_SINGLETON(CItemDB)
 
-CData_Manager::CData_Manager()
+CItemDB::CItemDB()
 {
 }
 
-HRESULT CData_Manager::Initialize()
+HRESULT CItemDB::Initialize()
 {
 	if (FAILED(Load_ItemDate("Item_Fish.json")))
 		return E_FAIL;
@@ -21,12 +21,12 @@ HRESULT CData_Manager::Initialize()
 	return S_OK;
 }
 
-const Item_Def& CData_Manager::GetItemByID(_uint ItemID)
+const Item_Def& CItemDB::GetItemByID(_uint ItemID)
 {
 	return m_vec_ItemDefs[GetIndexByID(ItemID)];
 }
 
-HRESULT CData_Manager::Load_ItemDate(const string& fileName)
+HRESULT CItemDB::Load_ItemDate(const string& fileName)
 {
 	ifstream file(fileName, ios_base::in);
 
@@ -169,7 +169,7 @@ HRESULT CData_Manager::Load_ItemDate(const string& fileName)
 
 }
 
-void CData_Manager::Parse_Fish_Def(Fish_Def& fish_def, const nlohmann::json& node)
+void CItemDB::Parse_Fish_Def(Fish_Def& fish_def, const nlohmann::json& node)
 {
 
 		fish_def.Cost = node.value("Cost", 0);
@@ -213,7 +213,7 @@ void CData_Manager::Parse_Fish_Def(Fish_Def& fish_def, const nlohmann::json& nod
 		fish_def.IsTrawl = node.value("IsTrawl", false);
 		fish_def.IsPot = node.value("IsPot", false);
 }
-void CData_Manager::Parse_Equip_Def(Equip_Def& equip_def, const nlohmann::json& node)
+void CItemDB::Parse_Equip_Def(Equip_Def& equip_def, const nlohmann::json& node)
 {
 
 	equip_def.Cost = node.value("Cost", 0);
@@ -286,7 +286,7 @@ void CData_Manager::Parse_Equip_Def(Equip_Def& equip_def, const nlohmann::json& 
 	}
 }
 
-SEA_MASK CData_Manager::BitFlag_SeaType(const nlohmann::json& node,const string str)
+SEA_MASK CItemDB::BitFlag_SeaType(const nlohmann::json& node,const string str)
 {
 	SEA_MASK mask = 0;
 	if (!node.contains(str) || !node.at(str).is_array())
@@ -309,7 +309,7 @@ SEA_MASK CData_Manager::BitFlag_SeaType(const nlohmann::json& node,const string 
 	return mask;
 }
 
-void CData_Manager::Compute_Occ(Shape& shape, _uint w, _uint h)
+void CItemDB::Compute_Occ(Shape& shape, _uint w, _uint h)
 {
 
 	_uint _w = {w};
@@ -352,7 +352,7 @@ void CData_Manager::Compute_Occ(Shape& shape, _uint w, _uint h)
 }
 
 
-wstring CData_Manager::Utf8ToWstring(const string& str)
+wstring CItemDB::Utf8ToWstring(const string& str)
 {
 	if (str.empty())
 		return wstring();
@@ -369,7 +369,7 @@ wstring CData_Manager::Utf8ToWstring(const string& str)
 	return result;
 }
 
-_uint CData_Manager::GetIndexByID(_uint id)
+_uint CItemDB::GetIndexByID(_uint id)
 {
 	auto it = m_map_ItemID.find(id);
 	assert(it != m_map_ItemID.end());
@@ -388,7 +388,7 @@ _uint CData_Manager::GetIndexByID(_uint id)
 //
 //}
 
-void CData_Manager::Free()
+void CItemDB::Free()
 {
 	__super::Free();
 }

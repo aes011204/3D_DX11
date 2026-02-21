@@ -10,6 +10,12 @@ public:
     struct GAMEOBJECT_DESC : public CTransform::TRANSFOM_DESC
     {
         _uint iFlag = {};
+
+        _float fX = {};
+        _float fY = {};
+        _float fSizeX = {};
+        _float fSizeY = {};
+
     };
 protected:
     CGameObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -24,9 +30,22 @@ public:
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
 
-protected:
+    void Set_ProtoTag(_wstring str) { m_strProtoTag = str; }
+    void Set_ProtoLevel(_uint Level) { m_strProtoLevel = Level; }
+    _wstring Get_ProtoTag() { return m_strProtoTag; }
+    _uint Get_ProtoLevel() { return m_strProtoLevel; }
 
+    HRESULT Bind_ShaderResource(shared_ptr<class CShader> pShader, const _char* pConstantName, D3DTS eTransformState);
+
+    void Update_Transform();
+
+protected:
+    _wstring m_strProtoTag = {};
+    _uint m_strProtoLevel = {};
     class shared_ptr<CTransform> m_pTransformCom = { nullptr };
+    _float						m_fViewportWidth{}, m_fViewportHeight{};
+    _float						m_fX{}, m_fY{}, m_fSizeX{}, m_fSizeY{};
+    _float4x4					m_TransformationMatrices[ETOI(D3DTS::END)];
 
 protected:
 public:

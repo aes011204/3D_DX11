@@ -113,6 +113,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -165,7 +166,6 @@ xcopy /Y /I "$(SolutionDir)EditorTool\Bin\EditorTool.lib" "$(SolutionDir)Engine\
     <ClInclude Include="..\Public\ManagerWin.h" />
     <ClInclude Include="..\Public\Selection.h" />
     <ClInclude Include="..\Public\Win_Mananger.h" />
-    <ClInclude Include="Event_Struct.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

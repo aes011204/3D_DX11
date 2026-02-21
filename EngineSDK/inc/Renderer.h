@@ -25,6 +25,8 @@ private:
     ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
     weak_ptr<CGameInstance> m_pGameInstance = { };
 
+    ComPtr <ID3D11DepthStencilState> m_pDepthDisableState = { nullptr };
+
     list<shared_ptr<CEntity>> m_RenderObject[ETOI(RENDERGROUP::END)];
 
 private:

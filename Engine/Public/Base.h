@@ -9,6 +9,7 @@ class ENGINE_DLL CBase abstract: public enable_shared_from_this<CBase>
 protected:
 	CBase();
 public:
+	CBase(const CBase& rhs); // ~CBase() {} ¶û °°À½
 	virtual ~CBase() = default; // ~CBase() {} ¶û °°À½
 
 //public:
@@ -23,7 +24,10 @@ public:
 	/// IMGUI
 	virtual void OnGui() {}
 
-	void Set_Name(const wstring& name) { m_Name = name; }
+	virtual void Save_ToJson(nlohmann::json& j) {};
+	virtual void Load_FromJson(nlohmann::json& j) {};
+	void Set_Name(const wstring& name) { m_Name = name; 
+	}
 	const wstring& Get_Name() const { return m_Name; }
 
 	_wstring MakeDefaultNameFromTypeName(const char* rttiName);

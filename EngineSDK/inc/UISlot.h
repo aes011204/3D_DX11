@@ -11,13 +11,13 @@ public:
 
 public:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
-    void OnInit()override;
+    HRESULT OnInit(void* pArg)override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
     void OnUpdate(const _float& timeDelta)override;
     void OnLateUpdate()override;
-    void OnRender()override;
+    HRESULT OnRender()override;
     void OnClear()override;
 
     void SetGridIndex(_float2 _GridIndex) { m_GridIndex = _GridIndex; }

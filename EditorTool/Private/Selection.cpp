@@ -3,6 +3,7 @@
 #include "EventBus.h"
 #include "EditorInstance.h"
 #include "Event_Struct.h"
+#include "GameInstance.h"
 
 
 
@@ -17,18 +18,19 @@ CSelection::~CSelection()
 }
 HRESULT CSelection::Initialize()
 {
-    if (CEditorInstance::GetInstance()->GetEventBus() == nullptr)
+    if (CGameInstance::GetInstance()->Get_EventBus() == nullptr)
         return E_FAIL;
     // 여기서 본인이 직접 구독합니다.
-    CEditorInstance::GetInstance()->GetEventBus()->Subscribe<Editor::EvtSelectEntity>([this](const Editor::EvtSelectEntity& e)
+    CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtSelectEntity>([this](const EvtSelectEntity& e)
         {
             this->SetEntity(e.Entity);
         });
 
-    CEditorInstance::GetInstance()->GetEventBus()->Subscribe<Editor::EvtClearSelection>([this](const Editor::EvtClearSelection& e)
+    CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtClearSelection>([this](const EvtClearSelection& e)
         {
             this->Clear();
         });
+    return S_OK;
 }
 shared_ptr<CSelection> CSelection::Create()
 {

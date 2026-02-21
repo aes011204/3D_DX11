@@ -23,7 +23,7 @@ public:
 public:
     HRESULT Initialize(_uint width, _uint height);
     void Update(float m_fDeltaTime); //  request 요청 처리기 (ui 업뎃 돌리지 않음)
-    void LateUpdate(float m_fDeltaTime);
+    void Late_Update(float m_fDeltaTime);
     void Render(); // 안쓸듯 이거는 렌더러에서 하니까
 
     void Push(UI_LAYER layer, wstring name, void* pArg);
@@ -33,7 +33,7 @@ public:
 
     void InsertToPool(wstring UIType, shared_ptr<CUI> UI);
 
-    Rect Get_m_UICanvasRect();
+    Rect Get_WinSize();
 
     ///IMGUI///
     const vector<shared_ptr<CUI>>& GetUIList(UI_LAYER layer)
@@ -63,7 +63,7 @@ private:
 
 private:
     shared_ptr<CUI> FindUIOnPool(wstring type); // 해당 UI가 있는지 확인 있으면 해단 ui 반환
-    void OnComplete(UI_LAYER layer, shared_ptr<CUI> addUI, void* pArg); // 할거 하고   push 
+    //void OnComplete(UI_LAYER layer, shared_ptr<CUI> addUI, void* pArg); // 할거 하고   push 
     void ProcessUIQ();
     void OnFail();
 
@@ -77,7 +77,9 @@ private:
 	queue<RequestUI> m_RequestUIQueue = {}; // UI 전환 요청 큐 (씬 매니져의 요청 하는거랑 같음)
     shared_ptr<CUI> m_ActiveUI = nullptr; // 보통 m_UIBases.top()과 동일
 
-    unique_ptr<CUICanvas> m_UICanvas = { nullptr };
+    Rect m_Winsize = {};
+
+   // unique_ptr<CUICanvas> m_UICanvas = { nullptr };
 public:
     static unique_ptr<CUI_Manager> Create(_uint width, _uint height);
     void Free() override;

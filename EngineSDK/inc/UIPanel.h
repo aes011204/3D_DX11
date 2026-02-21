@@ -6,7 +6,13 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CUIPanel :
     public CUI
 {
-
+public:
+    struct UIBUTTON_DESC : public CUI::UI_DESC
+    {
+        _uint TextureComLevel;
+        _wstring TextureProtoName;
+        
+    };
 protected:
     CUIPanel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	CUIPanel(const CUIPanel& prototype);
@@ -19,13 +25,13 @@ public:
     //void    LateUpdate_GameObject(const _float& timeDelta) override;
     //void    Render_GameObject() override;
 
-    void OnInit()override;
+    HRESULT OnInit(void* pArg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
     void OnUpdate(const _float& timeDelta)override;
     void OnLateUpdate()override;
-    void OnRender()override;
+    HRESULT OnRender()override;
     void OnClear()override;
 
 

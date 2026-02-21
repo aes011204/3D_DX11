@@ -5,8 +5,11 @@
 #include "Level_Manager.h"
 #include "Object_Manager.h"
 #include "Prototype_Manager.h"
+#include "GameObject.h"
 #include "Renderer.h"
+#include "EventBus.h"
 #include "UI_Manager.h"
+#include "DInput_Manager.h"
 
 //#include "../../EditorTool/Public/ImguiManager.h"
 
@@ -38,7 +41,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	m_pProto_Manager = CPrototype_Manager::Create(EngineDesc.iMaxLevelNum);
 	if (nullptr == m_pProto_Manager)
 		return E_FAIL;
-
+	Push_ManagerClass(L"Proto_Manager", m_pProto_Manager.get());
 
 	// 오브젝트 매니져를 생성해 둔다
 	m_pObject_Manager = CObject_Manager::Create(EngineDesc.iMaxLevelNum);
@@ -54,6 +57,18 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	if (nullptr == m_UI_Manager)
 		return E_FAIL;
 	Push_ManagerClass(L"UI_Manager", m_UI_Manager.get());
+	
+	// dInputManager 생성해 둔다
+	m_pDInput_Manager = CDInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
+	if (nullptr == m_pDInput_Manager)
+		return E_FAIL;
+	Push_ManagerClass(L"DInput_Manager", m_pDInput_Manager.get());
+
+	// CEventBus 생성해 둔다
+	m_pEventBus = CEventBus::Create();
+	if (nullptr == m_pEventBus)
+		return E_FAIL;
+
 
 //	//Imgui- 젤 마지막에
 //	{
@@ -81,10 +96,12 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
 	m_pObject_Manager->Update(fTimeDelta);
+	m_UI_Manager->Update(fTimeDelta);
 
 	m_pObject_Manager->Late_Update(fTimeDelta);
+	m_UI_Manager->Late_Update(fTimeDelta);
 
-
+	m_pDInput_Manager->Update_InputDev();
 	m_pLevel_Manager->Update(fTimeDelta);
 
 //	//Imgui
@@ -104,7 +121,7 @@ void CGameInstance::Draw()
 
 	m_pLevel_Manager->Render();
 
-
+	m_UI_Manager->Render();
 //	//Imgui
 //	{
 //	    m_pImgui_Manager->Render();
@@ -165,16 +182,37 @@ shared_ptr<CBase> CGameInstance::Clone_Prototype(PROTOTYPE ePrototy, _uint iLeve
 {
 
 	shared_ptr<CBase> tmp = m_pProto_Manager->Clone_Prototype(ePrototy, iLevelIndex, strPrototypeTag, pArg);
+	if (tmp == nullptr)
+		return nullptr;
 	tmp->SetDefaultNameFromThisType();
 	return  tmp;
 }
 
-HRESULT CGameInstance::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
+//shared_ptr<CBase> CGameInstance::Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg)
+//{
+//	shared_ptr<CBase> tmp = m_pProto_Manager->Clone_Prototype(pPrototype,pArg);
+//	if (tmp == nullptr)
+//		return nullptr;
+//	tmp->SetDefaultNameFromThisType();
+//	return  tmp;
+//
+//}
+
+shared_ptr<CGameObject> CGameInstance::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
 	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
 {
 	return m_pObject_Manager->Add_GameObject(iPrototypeLevelIndex, strPrototypeTag, iLayerLevelIndex, strLayerTag, pArg);
 }
 
+//HRESULT CGameInstance::Add_GameObject(shared_ptr<CBase> pClonedInst,
+//	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
+//{
+//
+//	//shared_ptr<CGameObject>pGameObject = dynamic_pointer_cast<CGameObject>(Clone_Prototype(pClonedInst, pArg));
+//	//if (nullptr == pGameObject)
+//	//	return E_FAIL;
+//	return m_pObject_Manager->Add_GameObject(pClonedInst, iLayerLevelIndex, strLayerTag, pArg);
+//}
 void CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<CEntity> pNTT)
 {
 	m_Renderer->Add_RenderGroup(eRenderGroup, pNTT);
@@ -245,9 +283,13 @@ void CGameInstance::UI_InsertToPool(wstring UIType, shared_ptr<CUI> UI)
 {
 	m_UI_Manager->InsertToPool(UIType, UI);
 }
-Rect CGameInstance::UI_Get_m_UICanvasRect()
+Rect CGameInstance::Get_WinSize()
 {
-	return m_UI_Manager->Get_m_UICanvasRect();
+	return m_UI_Manager->Get_WinSize();
+}
+CEventBus* CGameInstance::Get_EventBus()
+{
+	return m_pEventBus.get(); ;
 }
 //const vector<shared_ptr<CUI>>& CGameInstance::GetUIList(UI_LAYER layer)
 //{
@@ -260,7 +302,10 @@ Rect CGameInstance::UI_Get_m_UICanvasRect()
 
 //}
 
-
+void CGameInstance::Set_MousePos(float x, float y)
+{
+	m_pDInput_Manager->Set_MousePos(x, y);
+}
 
 
 
@@ -274,8 +319,13 @@ void CGameInstance::Free()
 	m_pProto_Manager.reset();
 	m_pLevel_Manager.reset();
 	m_pTimer_Manager.reset();
-	m_pGraphic_Device.reset();
+	m_pEventBus.reset();
 	m_Renderer.reset();
+
+
+	m_pGraphic_Device.reset();
+	
+
 
 //	m_pImgui_Manager.reset();
 

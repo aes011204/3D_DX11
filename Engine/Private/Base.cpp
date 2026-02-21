@@ -9,6 +9,10 @@ CBase::CBase()
 	m_Name = L"GameObject";
 }
 
+CBase::CBase(const CBase& rhs)
+{
+}
+
 _wstring CBase::MakeDefaultNameFromTypeName(const char* rttiName)
 {
     _string n = (rttiName ? rttiName : "");

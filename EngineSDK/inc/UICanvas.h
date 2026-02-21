@@ -4,23 +4,30 @@
 
 NS_BEGIN(Engine)
 
-class CUICanvas :
-    public CBase
+class ENGINE_DLL CUICanvas :
+    public CUI
 {
+public:
+    struct UICANVAS_DESC : public CUI::UI_DESC
+    {
+        // canvas는 무조건 투명
+        bool EatClick = {true};
+    };
 private:
-    CUICanvas();
+    CUICanvas(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 public:
     virtual ~CUICanvas();
-
-    HRESULT Initialize(_uint width, _uint height);
+    HRESULT Initialize(void* pArg);
     
-    void ResizeCanvasSize(_uint width, _uint height);
-    Rect Get_CanvasSize() { return m_CanvasSize; }
+    virtual void OnUpdate(const _float& timeDelta);
+
+    //void ResizeCanvasSize(_uint width, _uint height);
+    //Rect Get_CanvasSize() { return m_CanvasSize; }
 private:
 
     Rect m_CanvasSize = {};
 public:
-    static unique_ptr<CUICanvas> Create(_uint width, _uint height);
+    static shared_ptr<CUICanvas> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;
 };
 

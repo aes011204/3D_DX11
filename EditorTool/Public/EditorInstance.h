@@ -33,7 +33,9 @@ public:
 	ImGuiContext* GetContext();
 	class CGameView* GetGameView() const { return m_pGameView.get(); }
 
-	Engine::CEventBus* GetEventBus() { return &m_EditorBus; }
+	shared_ptr<CEntity> GetCurSelect() const;
+
+	//Engine::CEventBus* GetEventBus() { return &m_EditorBus; }
 
 private:
 	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
@@ -43,7 +45,7 @@ private:
 
 	shared_ptr<class CSelection> m_pSelection;
 
-	Engine::CEventBus m_EditorBus;
+	//Engine::CEventBus m_EditorBus;
 public:
 	virtual void Free();
 

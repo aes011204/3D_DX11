@@ -1,5 +1,6 @@
 
 #include"GameView.h"
+#include"GameInstance.h"
 
 CGameView::CGameView()
     : CEditor_Win("Game View")
@@ -189,13 +190,15 @@ void CGameView::Update(float fTimeDelta)
         float fLocalX = vMousePos.x - m_vContentPos.x;
         float fLocalY = vMousePos.y - m_vContentPos.y;
 
-        // 0.0 ~ 1.0 비율 계산 후 800x600으로 매핑
+        // 0.0 ~ 1.0 비율 계산 ,매핑
         float fCalibratedX = (fLocalX / m_vRenderSize.x) * m_Width;
         float fCalibratedY = (fLocalY / m_vRenderSize.y) * m_Height;
 
-        // 엔진 Input Manager에 좌표 배달
-        //CInput_Manager::GetInstance()->Set_MousePos({ fCalibratedX, fCalibratedY });
+       
+        CGameInstance::GetInstance()->Set_MousePos(fCalibratedX, fCalibratedY);
     }
+    else
+        CGameInstance::GetInstance()->Set_MousePos(-10.f, -10.f);
 }
 
 unique_ptr<CGameView>  CGameView::Create(const ENGINE_DESC& EngineDesc,

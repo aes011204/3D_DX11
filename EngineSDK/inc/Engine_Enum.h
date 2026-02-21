@@ -13,6 +13,10 @@ namespace Engine
 
 	enum class STATE { RIGHT, UP, LOOK, POSITION, END };
 
+	enum class D3DTS {VIEW,PROJ, END };
+
+
+
 	//// 임시 
 	// DirectInput 마우스 버튼 상태 인덱스
 	enum MOUSEKEYSTATE { DIM_LB, DIM_RB, DIM_MB, DIM_END };

@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "Shader.h"
 
 CTexture::CTexture(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CComponent(pDevice, pContext)
@@ -8,9 +9,9 @@ CTexture::CTexture(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pCo
 CTexture::CTexture(const CTexture& Prototype)
 	:CComponent(Prototype)
 	, m_iNumSRVs{ Prototype.m_iNumSRVs }
-	, m_SRVs{ Prototype.m_SRVs }
+	//, m_SRVs{ Prototype.m_SRVs }
 {
-
+	m_SRVs = Prototype.m_SRVs;
 }
 
 HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNumSRVs)
@@ -18,7 +19,7 @@ HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNu
 	m_iNumSRVs = iNumSRVs;
 	for (int i = 0; i < iNumSRVs;i++)
 	{
-		ID3D11ShaderResourceView* pSRV = { nullptr };
+		ComPtr<ID3D11ShaderResourceView> pSRV = { nullptr };
 
 
 		_tchar szTextureFilePath[MAX_PATH] = {};
@@ -32,8 +33,9 @@ HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNu
 		HRESULT hr = {};
 		if(false == lstrcmp( szEXT, TEXT(".dds")))
 			hr = CreateDDSTextureFromFile(m_pDevice.Get(), szTextureFilePath, nullptr, &pSRV);
-
-		if (false == lstrcmp(szEXT, TEXT(".dds")))
+		else if (false == lstrcmp(szEXT, TEXT(".tga")))
+			hr = E_FAIL;
+		else 
 			hr = CreateWICTextureFromFile(m_pDevice.Get(), szTextureFilePath, nullptr, &pSRV);
 
 		if (FAILED(hr))
@@ -51,10 +53,36 @@ HRESULT CTexture::Initialize(void* pArg)
 
 }
 
+HRESULT CTexture::Bind_ShaderResourceView(shared_ptr<CShader> pShaderCom, const char* pConstantName, _uint iIndex)
+{
+	return pShaderCom->Bind_SRV(pConstantName, m_SRVs[iIndex]);
+}
+
+_float2 CTexture::Get_SizeFromSRV(_uint index)
+{
+	if (m_SRVs[index] == nullptr&&index >=m_iNumSRVs)
+	{
+		MSG_BOX("m_SRV[index] is nullptr");
+		return { 0,0 };
+	}
+	//
+	ComPtr<ID3D11Resource> resource;
+	m_SRVs[index]->GetResource(resource.GetAddressOf());
+
+	ComPtr<ID3D11Texture2D> tex2d;
+	resource.As(&tex2d);
+
+	D3D11_TEXTURE2D_DESC desc;
+	tex2d->GetDesc(&desc);
+
+
+	return {static_cast<_float>(desc.Width), static_cast<_float>(desc.Height)};
+}
+
 shared_ptr<CTexture> CTexture::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pTextureFilePath,
 	_uint iNumSRVs)
 {
-	shared_ptr<CTexture> pInstance (new CTexture(pDevice, pContext));
+	shared_ptr<CTexture> pInstance(new CTexture(pDevice, pContext), [](CTexture* p) {p->Free();delete p;});
 
 	if (FAILED(pInstance->Initialize_Prototype(pTextureFilePath, iNumSRVs)))
 	{
@@ -65,7 +93,7 @@ shared_ptr<CTexture> CTexture::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D1
 
 shared_ptr<CComponent> CTexture::Clone(void* pArg)
 {
-	shared_ptr<CTexture> pInstance (new CTexture(*this));
+	shared_ptr<CTexture> pInstance (new CTexture(*this)/*,  [](CTexture* p) {p->Free();delete p;}*/);
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
@@ -78,8 +106,9 @@ void CTexture::Free()
 {
 	__super::Free();
 
-	//for (auto& pSRV : m_SRVs)
-	//	Safe_Release(pSRV);
+	for (auto& pSRV : m_SRVs)
+		pSRV.Reset();
+
 	m_SRVs.clear();
 
 }

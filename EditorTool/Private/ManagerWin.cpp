@@ -37,7 +37,7 @@ void CManagerWin::Render()
     {
         for (auto& pair : Manager)
         {
-            _string strLayerTag = ConvertW2A(pair.first);
+            _string strLayerTag = W2S(pair.first);
 
             if (!pair.second)
                 continue;

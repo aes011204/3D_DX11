@@ -8,15 +8,15 @@
 
 NS_BEGIN(Client)
 
-class CData_Manager :
+class CItemDB :
     public CBase
 {
-    DECLARE_SINGLETON(CData_Manager)
+    DECLARE_SINGLETON(CItemDB)
 
 private:
-    CData_Manager();
+    CItemDB();
 public:
-    virtual ~CData_Manager() = default;
+    virtual ~CItemDB() = default;
 
 public:
     HRESULT Initialize(); // 생성 할떄 호출

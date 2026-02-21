@@ -103,6 +103,15 @@ ImGuiContext* CEditorInstance::GetContext()
 	return m_pImgui_Manager->GetContext();
 }
 
+shared_ptr<CEntity> CEditorInstance::GetCurSelect() const
+{
+	return m_pSelection->GetEntity();
+}
+
 void CEditorInstance::Free()
 {
+	m_pSelection.reset();
+	m_pWin_Manager.reset();
+	m_pGameView.reset();
+	m_pImgui_Manager.reset();
 }

@@ -1,5 +1,8 @@
 #pragma once
 #include "Texture.h"
+#include "Shader.h"
+#include "VIBuffer_Rect.h"
+
 
 // 생성한 원형 객체를 보관한다
 // 요청에 따라 보관하고 있던 원형 객체를 복제하여 리턴한다
@@ -21,14 +24,18 @@ public:
     HRESULT Initialize(_uint iNumLevels);
     HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
     shared_ptr<CBase> Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+    //shared_ptr<CBase> Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg);
     HRESULT Clear_Prototype(_uint iLevelIndex);
 
+    void OnGui()override;
 private:
     map<const _wstring, shared_ptr<CBase>>* m_pPrototypes = { nullptr }; //
     typedef map<const _wstring, shared_ptr<CBase>> PROTOTYPES;
 
     _uint m_iNumLevel = {}; // 레벨의 총 갯수
 private:
+    _wstring m_strSelectedTag = {};
+    _uint m_iSelectedLevel = {};
     shared_ptr<CBase> Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);
 public:
     static unique_ptr<CPrototype_Manager> Create(_uint iNumLevel);

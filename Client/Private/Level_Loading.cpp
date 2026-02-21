@@ -5,6 +5,7 @@
 #include "Loader.h"
 #include "Level_Logo.h"
 #include "Level_GamePlay.h"
+#include "Level_Editor.h"
 
 //
 #include "UIPanel.h"
@@ -55,7 +56,9 @@ void CLevel_Loading::Update(_float fTimeDelta)
 		case LEVEL::GMAEPLAYE:
 			pNextLevel = CLevel_GamePlay::Create(m_pDevice, m_pContext);
 			break;
-
+		case LEVEL::EDITOR:
+			pNextLevel = CLevel_Editor::Create(m_pDevice, m_pContext);
+			break;
 		default:
 			break;
 		}
@@ -93,19 +96,19 @@ HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar* pLayerTag)
 
 HRESULT CLevel_Loading::Ready_Layer_UI(const _tchar* LayerTag)
 {
-	CUITransform::UITRANSFORM_DESC desc ;
-	// 임시로 UI매니져에 ui 등록
+	//CUITransform::UITRANSFORM_DESC desc ;
+	//// 임시로 UI매니져에 ui 등록
 
-	shared_ptr pInstance = CUIPanel::Create(m_pDevice, m_pContext);
-	pInstance->Initialize(&desc);
-	shared_ptr panel = CUIPanel::Create(m_pDevice, m_pContext);
-	panel->Initialize(&desc);
-	shared_ptr button = CUIButton::Create(m_pDevice, m_pContext);
-	button->Initialize(&desc);
+	//shared_ptr pInstance = CUIPanel::Create(m_pDevice, m_pContext);
+	//pInstance->Initialize(&desc);
+	//shared_ptr panel = CUIPanel::Create(m_pDevice, m_pContext);
+	//panel->Initialize(&desc);
+	//shared_ptr button = CUIButton::Create(m_pDevice, m_pContext);
+	//button->Initialize(&desc);
 
-	pInstance->Add_Child(panel, false);
-	pInstance->Add_Child(button, false);
-	m_pGameInstance.lock()->UI_InsertToPool(EnumToWString(EUI::Test), pInstance);
+	//pInstance->Add_Child(panel, false);
+	//pInstance->Add_Child(button, false);
+	//m_pGameInstance.lock()->UI_InsertToPool(EnumToWString(EUI::Test), pInstance);
 
 	return S_OK;
 }

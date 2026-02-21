@@ -1,5 +1,5 @@
 #include "Inventory.h"
-#include "Data_Manager.h"
+#include "ItemDB.h"
 
 CInventory::CInventory()
 {
@@ -74,7 +74,7 @@ Item_Inst CInventory::AddItem(Item_Inst itemInst, _int BaseX, _int BaseY)
 _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_COLOR& color)
 {
     // 해당 아이템의 모양 + BaseX,Y
-    const Item_Def& def = CData_Manager::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
+    const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
 
     int absenceNum = {};
     _uint ID_First = {};
@@ -165,7 +165,7 @@ void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)
     m_Inventory.push_back(itemInst);
 
         // 인밴슬롯에 넣기
-    const Item_Def& def = CData_Manager::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
+    const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
 
     for (int i = 0;i < def.ItemShape.Occ[itemInst.Rotation].size(); i++)
     {

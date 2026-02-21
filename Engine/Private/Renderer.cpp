@@ -10,11 +10,25 @@ CRenderer::CRenderer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m
 
 }
 
-CRenderer::~CRenderer(){};
+CRenderer::~CRenderer() { Free(); };
 
 
 HRESULT CRenderer::Initialize()
 {
+	D3D11_DEPTH_STENCIL_DESC dsDesc;
+	ZeroMemory(&dsDesc, sizeof(dsDesc));
+
+	// 1. 깊이 테스트 기능을 끕니다.
+	dsDesc.DepthEnable = FALSE;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // 깊이 기록 안 함
+	dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;         // 항상 통과
+
+	// 2. 스텐실(Stencil) 기능도 끕니다.
+	dsDesc.StencilEnable = FALSE;
+
+	// 3. 디바이스를 통해 상태 객체 생성
+	m_pDevice->CreateDepthStencilState(&dsDesc, m_pDepthDisableState.GetAddressOf());
+
 	return S_OK;
 }
 
@@ -75,12 +89,13 @@ void CRenderer::Render_Blend()
 
 void CRenderer::Render_UI()
 {
+	m_pContext->OMSetDepthStencilState(m_pDepthDisableState.Get(), 0);
 	for (auto& pRenderObject : m_RenderObject[ETOI(RENDERGROUP::UI)])
 	{
 		if(pRenderObject != nullptr)
 			pRenderObject->Render();
 	}
-
+	m_pContext->OMSetDepthStencilState(nullptr, 0);
 	m_RenderObject[ETOI(RENDERGROUP::UI)].clear();
 }
 

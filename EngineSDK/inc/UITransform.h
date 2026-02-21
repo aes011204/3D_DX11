@@ -6,7 +6,7 @@
 NS_BEGIN(Engine)
 
 
-class CUITransform final:
+class ENGINE_DLL CUITransform final:
     public CComponent
 {
 public:
@@ -43,27 +43,35 @@ public:
     void SetSizeDelta(Vector2 _SizeDelta) { m_SizeDelta = _SizeDelta; MarkDirtyRecursive(); }
     void SetAnchoredPos(Vector2 _AnchoredPos) { m_AnchoredPos = _AnchoredPos; MarkDirtyRecursive(); }
     void SetLocalScale(Vector2 _localScale) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
+    void SetRotation(_float _fDegree) { m_RotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
+   // void SetTurn(_float fTimeDelta) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
 
     Rect GetWorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }
-
-
+    XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_WorldMatrix); }
+ 
 
     void UpdateLayoutIfDirty();
 
     void OnGui()override;
 
+    HRESULT Bind_ShaderResource(shared_ptr<class CShader> pShaderCom, const _char* pConstantName);
 private:
 
     void MarkDirtyRecursive(); // dirty 처리
     Rect GetParent_WorldRect();
+    XMMATRIX GetParent_Mat();
     void Computing_WorldRect(); // 핵심 계산 함수
 
     Vector2 Hadamard(const Vector2& a, const Vector2& b); // _vec2 요소별 곱
+
 
 private:
     // 상속 구조용
     weak_ptr<CUITransform> m_Parent = {};
     vector<shared_ptr<CUITransform>> m_Children;
+
+    // 행렬 회전용
+    _float4x4				m_WorldMatrix = {};
 
     //루트 용 캔버스
     class UICanvas* m_Canvas = {};
@@ -72,16 +80,18 @@ private:
     //_vec2 m_AnchorMin;
     //_vec2 m_AnchorMax;
 
-    Vector2 m_AnchorPoint;
-    Vector2 m_Pivot;
+    Vector2 m_AnchorPoint = {};
+    Vector2 m_Pivot = {};
 
-    Vector2 m_SizeDelta; // 실제 사이즈 픽셀 기준
-    Vector2 m_AnchoredPos; // 레이아웃용 오프셋 (Anchor(부모 기준점)에서 얼마나 떨어질지)
+    Vector2 m_SizeDelta = {}; // 실제 사이즈 픽셀 기준
+    Vector2 m_AnchoredPos = {}; // 레이아웃용 오프셋 (Anchor(부모 기준점)에서 얼마나 떨어질지)
 
-    Vector2 m_LocalScale; // pivot 기준으로 UI를 배율로 키우거나 줄이는 연출용 배율 // 일단 안쓸듯
+    Vector2 m_LocalScale = {}; // pivot 기준으로 UI를 배율로 키우거나 줄이는 연출용 배율 // 일단 안쓸듯
+
+    float m_RotationRadian = {0.f};
 
     // 결과
-    Rect m_WorldRect;
+    Rect m_WorldRect = {};
     bool m_Dirty = true;
 public:
     static shared_ptr<CUITransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

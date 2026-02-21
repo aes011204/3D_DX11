@@ -52,7 +52,7 @@ void CHierarchyWin::Render()
     {
         for (auto& pair : pGameObjects)
         {
-            _string strLayerTag = ConvertW2A(pair.first);
+            _string strLayerTag = W2S(pair.first);
 
             if (ImGui::TreeNodeEx(strLayerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
             {
@@ -75,59 +75,122 @@ void CHierarchyWin::Render()
     }
 
 
-///////UI///
+/////////UI///
+//    ImGui::Separator();
+//
+//    // 2. UI Pool (프로토타입 대기소)
+//    if (ImGui::TreeNodeEx("UI Pool", ImGuiTreeNodeFlags_DefaultOpen))
+//    {
+//        const auto& pool = CGameInstance::GetInstance()->Get_UI_Manager()->GetUIPool(); // map<wstring, shared_ptr<CUI>>
+//        if (pool.empty()) {
+//            ImGui::TextDisabled("(Pool Empty)");
+//        }
+//        else {
+//            for (auto& pair : pool)
+//            {
+//                _string strKey = ConvertW2A(pair.first);
+//                auto& root = pair.second;
+//                if (!root) continue;
+//
+//                const auto& children = root->GetChildren();
+//
+//                _string imguiLabel = strKey + " [Prototype]##Pool" + std::to_string((uint64_t)root.get());
+//
+//                ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+//
+//                if (m_pSelectedObject == root) flags |= ImGuiTreeNodeFlags_Selected;
+//
+//                //  Leaf면 push 안 하게
+//                if (children.empty())
+//                    flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+//
+//                bool opened = ImGui::TreeNodeEx(imguiLabel.c_str(), flags);
+//
+//                if (ImGui::IsItemClicked())
+//                {
+//                    m_pSelectedObject = root;
+//
+//                    EvtSelectEntity ev{};
+//                    ev.Entity = std::static_pointer_cast<Engine::CEntity>(root);
+//
+//                    CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
+//
+//                }
+//
+//                //  자식이 있을 때만, opened면 TreePop 필수
+//                if (!children.empty() && opened)
+//                {
+//                    for (auto& child : children)
+//                        DrawUITree(child);
+//
+//                    ImGui::TreePop();
+//                }
+//            }
+//        }
+//        ImGui::TreePop();
+//    }
+//     /////////////////////////////
+// 
     ImGui::Separator();
 
-    // 2. UI Pool (프로토타입 대기소)
-    if (ImGui::TreeNodeEx("UI Pool", ImGuiTreeNodeFlags_DefaultOpen))
+    // 1. Active UI Layers (현재 화면에 배치된 UI)
+    if (ImGui::TreeNodeEx("Active UI Layers", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        const auto& pool = CGameInstance::GetInstance()->Get_UI_Manager()->GetUIPool(); // map<wstring, shared_ptr<CUI>>
-        if (pool.empty()) {
-            ImGui::TextDisabled("(Pool Empty)");
-        }
-        else {
-            for (auto& pair : pool)
+        auto pUIManager = CGameInstance::GetInstance()->Get_UI_Manager();
+
+        // UI_LAYER::END 만큼 반복하며 각 레이어 검사
+        for (int i = 0; i < (int)UI_LAYER::END; ++i)
+        {
+            // 레이어 이름 (예: BACKGROUND, DEFAULT, POPUP 등)
+            string layerName =(string) magic_enum::enum_name<UI_LAYER>((UI_LAYER)i);
+            // TIP: UI_LAYER 이름을 문자열로 반환하는 함수가 있다면 그걸 사용하세요.
+
+            if (ImGui::TreeNode(layerName.c_str()))
             {
-                _string strKey = ConvertW2A(pair.first);
-                auto& root = pair.second;
-                if (!root) continue;
+                const auto& uiList = pUIManager->GetUIList((UI_LAYER)i); // 해당 레이어의 vector<shared_ptr<CUI>>
 
-                const auto& children = root->GetChildren();
-
-                _string imguiLabel = strKey + " [Prototype]##Pool" + std::to_string((uint64_t)root.get());
-
-                ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-
-                if (m_pSelectedObject == root) flags |= ImGuiTreeNodeFlags_Selected;
-
-                //  Leaf면 push 안 하게
-                if (children.empty())
-                    flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-
-                bool opened = ImGui::TreeNodeEx(imguiLabel.c_str(), flags);
-
-                if (ImGui::IsItemClicked())
-                {
-                    m_pSelectedObject = root;
-
-                    Editor::EvtSelectEntity ev{};
-                    ev.Entity = std::static_pointer_cast<Engine::CEntity>(root);
-
-                    CEditorInstance::GetInstance()->GetEventBus()->Publish(ev);
-
+                if (uiList.empty()) {
+                    ImGui::TextDisabled("(Empty)");
                 }
+                else {
+                    for (auto& pUI : uiList)
+                    {
+                        if (!pUI) continue;
 
-                //  자식이 있을 때만, opened면 TreePop 필수
-                if (!children.empty() && opened)
-                {
-                    for (auto& child : children)
-                        DrawUITree(child);
+                        // ImGui ID 충돌 방지를 위해 고유 주소 사용
+                        string label = W2S(pUI->Get_Name()) + "##" + std::to_string((uint64_t)pUI.get());
 
-                    ImGui::TreePop();
+                        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+                        if (m_pSelectedObject == pUI) flags |= ImGuiTreeNodeFlags_Selected;
+
+                        const auto& children = pUI->GetChildren();
+                        if (children.empty()) flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+                        bool opened = ImGui::TreeNodeEx(label.c_str(), flags);
+
+                        // 클릭 시 선택 이벤트 발생
+                        if (ImGui::IsItemClicked())
+                        {
+                            m_pSelectedObject = pUI;
+                            EvtSelectEntity ev{};
+                            ev.Entity = static_pointer_cast<Engine::CEntity>(pUI);
+                            CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
+                        }
+
+                        // 자식 UI가 있다면 재귀적으로 출력
+                        if (!children.empty() && opened)
+                        {
+                            for (auto& child : children)
+                                DrawUITree(child); // 기존에 정의하신 재귀 함수 호출
+
+                            ImGui::TreePop();
+                        }
+                    }
                 }
+                ImGui::TreePop(); // Layer Node Pop
             }
         }
-        ImGui::TreePop();
+        ImGui::TreePop(); // Active UI Layers Pop
     }
 //  빈 공간 클릭 시 선택 해제
 if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) &&
@@ -135,7 +198,7 @@ if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) &&
     !ImGui::IsAnyItemHovered())
 {
     m_pSelectedObject.reset();
-    CEditorInstance::GetInstance()->GetEventBus()->Publish(Editor::EvtClearSelection{});
+    CGameInstance::GetInstance()->Get_EventBus()->Publish(EvtClearSelection{});
 }
     ImGui::End();
 }
@@ -144,7 +207,7 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui)
 {
     if (!ui) return;
 
-    _string label = ConvertW2A(ui->Get_Name());
+    _string label = W2S(ui->Get_Name());
     if (label.empty()) label = "UI_Child";
 
     _string imguiLabel = label + "##UI" + std::to_string((uint64_t)ui.get());
@@ -164,11 +227,11 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui)
     if (ImGui::IsItemClicked())
     {
         m_pSelectedObject = ui;
-
-        Editor::EvtSelectEntity ev{};
+        EvtSelectEntity ev{};
         ev.Entity = std::static_pointer_cast<Engine::CEntity>(ui);
 
-        CEditorInstance::GetInstance()->GetEventBus()->Publish(ev);
+        CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
+    
  
     }
 
@@ -200,7 +263,7 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
     const uint64_t id = PtrID(pObj);
 
     // 이름
-    _string label = ConvertW2A(pObj->Get_Name());
+    _string label = W2S(pObj->Get_Name());
 
     //  Filter 처리(여기서 하는 버전 - PassFilter const 문제 회피)
     if (m_FilterBuf[0] != '\0')
@@ -271,10 +334,13 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
         if (ImGui::Selectable(imguiLabel.c_str(), is_selected))
         {
             m_pSelectedObject = pObj; // Hierarchy 하이라이트 유지용(유지해도 됨)
+            
 
-            Editor::EvtSelectEntity ev{};
+            EvtSelectEntity ev{};
             ev.Entity = std::static_pointer_cast<Engine::CEntity>(pObj);
-            CEditorInstance::GetInstance()->GetEventBus()->Publish(ev);
+
+            CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
+
         }
 
         // 더블클릭 → rename
@@ -304,21 +370,7 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
             m_RenameBuf[0] = '\0';
         }
 
-        if (ImGui::MenuItem("Duplicate"))
-        {
-            if (ImGui::MenuItem("Duplicate"))
-            {
-                auto dup = Engine_DuplicateObject(pObj);
-                if (dup)
-                {
-                    m_pSelectedObject = dup;
-
-                    Editor::EvtSelectEntity ev{};
-                    ev.Entity = std::static_pointer_cast<Engine::CEntity>(dup);
-                    CEditorInstance::GetInstance()->GetEventBus()->Publish(ev);
-                }
-            }
-        }
+      
 
         if (ImGui::MenuItem("Delete"))
         {
@@ -328,7 +380,7 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
                     m_pSelectedObject.reset();
 
                 //  Inspector 선택도 해제
-                CEditorInstance::GetInstance()->GetEventBus()->Publish(Editor::EvtClearSelection{});
+                CGameInstance::GetInstance()->Get_EventBus()->Publish(EvtClearSelection{});
 
                 Engine_DeleteObject(pObj);
 
@@ -362,7 +414,7 @@ void CHierarchyWin::CommitRename(const shared_ptr<Engine::CGameObject>& pObj, co
         return;
 
     // utf8 -> wstring
-    wstring w = ConvertA2W(_string(newNameUtf8));
+    wstring w = S2W(_string(newNameUtf8));
 
     // 여기서 유니크 처리하고 싶으면:
     // w = CBase::MakeUniqueName(w);  // (네가 static으로 만들었으면 가능)
@@ -394,38 +446,7 @@ void CHierarchyWin::Engine_DeleteObject(const shared_ptr<Engine::CGameObject>& p
     // CGameInstance::GetInstance()->Destroy_GameObject(pObj);
 }
 
-shared_ptr<Engine::CGameObject> CHierarchyWin::Engine_DuplicateObject(const shared_ptr<Engine::CGameObject>& pObj)
-{
 
-    // ===== 너 엔진에 맞게 연결 =====
-    // 가장 쉬운 임시: 프로토타입 기반 Clone이 있다면 그걸 쓰고
-    // 없으면 Copy/Clone 함수 만들기
-    //
-    // 예시(가짜):
-    // return CGameInstance::GetInstance()->Duplicate_GameObject(pObj);
-
-    return nullptr;
-}
-
-//_string CHierarchyWin::ConvertW2A(const wstring& wstr)
-//{
-//    if (wstr.empty()) return "";
-//    int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
-//    _string str(size, 0);
-//    WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], size, nullptr, nullptr);
-//    if (!str.empty() && str.back() == '\0') str.pop_back();
-//    return str;
-//}
-//
-//wstring CHierarchyWin::ConvertA2W(const _string& str)
-//{
-//    if (str.empty()) return L"";
-//    int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
-//    wstring w(size, 0);
-//    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &w[0], size);
-//    if (!w.empty() && w.back() == L'\0') w.pop_back();
-//    return w;
-//}
 
 shared_ptr<CHierarchyWin> CHierarchyWin::Create()
 {

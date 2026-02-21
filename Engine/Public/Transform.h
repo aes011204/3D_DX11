@@ -14,6 +14,7 @@ class ENGINE_DLL CTransform final:
 public:
     struct TRANSFOM_DESC
     {
+        _float4x4				WorldMatrix = {};
         _float					fSpeedPerSec = {};
         _float					fDegreePerSec = {};
     };
@@ -45,6 +46,7 @@ public:
 public:
     virtual HRESULT Initialize_Prototype() override;
     virtual HRESULT Initialize(void* pArg) override;
+    virtual HRESULT Bind_ShaderResource(shared_ptr<class CShader>pShaderCom, const _char* pConstantName );
 
 public:
     void SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ);//기존의 있는 크기에 배수가 아니라 스케일정보 바꿔줌
@@ -61,10 +63,14 @@ public:
     void LookAt(_fvector vAt);
 
     void OnGui() override;
+    virtual void Save_ToJson(nlohmann::json& j) override;
+    virtual void Load_FromJson(nlohmann::json& j) override;
 private:
     _float4x4				m_WorldMatrix = {};
     _float					m_fSpeedPerSec = {};
     _float					m_fRadianPerSec = {};
+
+    //_float3 m_vScale = {};
 public:
     static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     virtual shared_ptr<CComponent> Clone(void* pArg)override;

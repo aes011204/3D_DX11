@@ -36,7 +36,9 @@ public:
 
 private:
 	HRESULT Ready_StartLevel(LEVEL eStartLevelID);
+	HRESULT Ready_Prototype_For_Static_Level();
 
+	HRESULT Ready_UI();
 
 private:
 	weak_ptr<CGameInstance> m_pGameInstance = {};

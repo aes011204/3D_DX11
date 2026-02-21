@@ -56,9 +56,22 @@ HRESULT CLoader::Loading()
 	{
 	case LEVEL::LOGO:
 		hr = Loading_For_LogoLevel();
+		m_bFinished = true;
 		break;
 	case LEVEL::GMAEPLAYE:
 		hr = Loading_For_GamePlayLevel();
+		m_bFinished = true;
+		break;
+	case LEVEL::EDITOR:
+		// 에디터는 스태틱 제외 모든 레벨을 로딩을 돌리고 들어가야함
+		//hr = Loading_For_EditorLevel();
+		if (Loading_For_GamePlayLevel() == S_OK && Loading_For_LogoLevel() == S_OK)
+		{
+			hr = S_OK;
+			m_bFinished = true;
+		}
+		else
+			hr = E_FAIL;
 		break;
 	default:
 		hr = E_FAIL;
@@ -82,6 +95,7 @@ HRESULT CLoader::Loading_For_LogoLevel()
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
+
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
 	
 	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
@@ -99,7 +113,7 @@ HRESULT CLoader::Loading_For_LogoLevel()
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
-	m_bFinished = true;
+	//m_bFinished = true;
 	
 	return S_OK;
 }
@@ -123,10 +137,18 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 
-	m_bFinished = true;
+	//m_bFinished = true;
 
 	return S_OK;
 
+}
+HRESULT CLoader::Loading_For_EditorLevel()
+{
+	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	//m_bFinished = true;
+
+	return S_OK;
 }
 
 #ifdef _DEBUG

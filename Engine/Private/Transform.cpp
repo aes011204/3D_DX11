@@ -1,4 +1,5 @@
 #include "Transform.h"
+#include "Shader.h"
 
 CTransform::CTransform(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CComponent(pDevice, pContext)
@@ -13,6 +14,7 @@ CTransform::CTransform(const CTransform& prototype)
 HRESULT CTransform::Initialize_Prototype()
 {
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
+	//m_vScale = {1.f,1.f,1.f};
 
 	return S_OK;
 
@@ -22,12 +24,20 @@ HRESULT CTransform::Initialize_Prototype()
 
 HRESULT CTransform::Initialize(void* pArg)
 {
+	if (nullptr == pArg)
+		return S_OK;
+
 	TRANSFOM_DESC* pDesc = static_cast<TRANSFOM_DESC*>(pArg);
 	m_fSpeedPerSec = pDesc->fSpeedPerSec;
 	m_fRadianPerSec = XMConvertToRadians(pDesc->fDegreePerSec);
 
 
 	return S_OK;
+}
+
+HRESULT CTransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const _char* pConstantName)
+{
+	return 	pShaderCom->Bind_Matrix(pConstantName, &m_WorldMatrix);;
 }
 
 void CTransform::SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ)
@@ -136,47 +146,94 @@ void CTransform::LookAt(_fvector vAt)
 
 void CTransform::OnGui()
 {
-	// 1. 행렬에서 현재 데이터 추출 (위치, 회전, 스케일)
-	_float3 vPosition, vRotation, vScale;
-
-	// 위치 추출 (4행)
+	_float3 vPosition;
 	vPosition = _float3(m_WorldMatrix._41, m_WorldMatrix._42, m_WorldMatrix._43);
 
-	// 스케일 추출 (각 축 벡터의 길이)
-	vScale = Get_Scaled();
 
-	// 회전 추출 (임시로 0,0,0으로 두거나, 별도의 m_vRotation 멤버가 있다면 그것을 사용)
-	// 행렬에서 순수 회전각을 추출하는 것은 분해(Decompose) 과정이 필요합니다.
-	// 여기서는 간단하게 조절값만 보여주는 예시입니다.
-	static _float3 vEditRotation = { 0.f, 0.f, 0.f };
+
+	static _float3 vEditRotation = { 1.f, 1.f, 0.f };
 
 	// ---- ImGui UI 그리기 ----
 
 	// Position
 	if (ImGui::DragFloat3("Position", (float*)&vPosition, 0.1f))
 	{
-		Set_State(STATE::POSITION, XMLoadFloat3(&vPosition));
-	}
 
+		_vector vNextPos = XMLoadFloat3(&vPosition);
+		vNextPos = XMVectorSetW(vNextPos, 1.f);
+		Set_State(STATE::POSITION, vNextPos);
+	}
 	// Rotation (각도 단위)
 	if (ImGui::DragFloat3("Rotation", (float*)&vEditRotation, 0.5f))
 	{
-		// 1. 기존 스케일 유지하며 회전 적용하려면 복잡하므로 
-		// 2. 간단하게 구현하려면 Rotation 함수들을 활용하세요.
-		// Rotation(XMVectorSet(1,0,0,0), XMConvertToRadians(vEditRotation.x));
-		// ... (나머지 축)
+
 	}
 
-	// Scale
-	if (ImGui::DragFloat3("Scale", (float*)&vScale, 0.1f))
+
+	_float3 vScale = Get_Scaled();
+
+	if (ImGui::DragFloat3("Scale", (float*)&vScale, 0.1f, 0.01f, 100.f))
 	{
+
 		SetUp_Scale(vScale.x, vScale.y, vScale.z);
 	}
-
+	
 	// 기타 정보 (속도 등)
 	ImGui::Separator();
 	ImGui::SliderFloat("Move Speed", &m_fSpeedPerSec, 0.f, 100.f);
 	ImGui::SliderFloat("Turn Speed", &m_fRadianPerSec, 0.f, XM_PI);
+
+
+	ImGui::Text("Full World Matrix (Raw Data)");
+
+	// 행렬의 내용을 4x4 표 형태로 출력
+	if (ImGui::BeginTable("MatrixTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			ImGui::TableNextRow();
+			for (int j = 0; j < 4; ++j)
+			{
+				ImGui::TableSetColumnIndex(j);
+				// m_WorldMatrix.m[행][열] 데이터 출력
+				float val = m_WorldMatrix.m[i][j];
+
+				// 값이 너무 작거나 nan이면 빨간색으로 표시 (디버깅 꿀팁)
+				if (isnan(val))
+					ImGui::TextColored(ImVec4(1, 0, 0, 1), "nan");
+				else
+					ImGui::Text("%.3f", val);
+			}
+		}
+		ImGui::EndTable();
+	}
+
+}
+
+void CTransform::Save_ToJson(nlohmann::json& j)
+{
+	j["Type"] = "Transform";
+	j["Position"] = { m_WorldMatrix._41,m_WorldMatrix._42, m_WorldMatrix._43, m_WorldMatrix._44 };
+	j["Scale"] = { Get_Scaled().x,Get_Scaled().y, Get_Scaled().z};
+	j["Rotation"] = {0.f,0.f,0.f,1.f};
+
+	j["Move Speed"] = m_fSpeedPerSec;
+	j["Turn Speed"] = m_fRadianPerSec;
+
+
+}
+
+void CTransform::Load_FromJson(nlohmann::json& j)
+{
+
+	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
+	_float4 f4 = { j["Position"][0], j["Position"][1] ,j["Position"][2] ,j["Position"][3] };
+	Set_State(STATE::POSITION,XMLoadFloat4(&f4));
+	_float3 f3 = { j["Scale"][0], j["Scale"][1] ,j["Scale"][2] };
+	SetUp_Scale(f3.x, f3.y, f3.z);
+		//Rotation()
+	m_fSpeedPerSec = j["Move Speed"];
+	m_fRadianPerSec = j["Turn Speed"];
 }
 
 

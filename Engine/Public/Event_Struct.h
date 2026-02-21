@@ -3,7 +3,7 @@
 
 namespace Engine { class CEntity; }
 
-namespace Editor
+namespace Engine
 {
     struct EvtSelectEntity
     {
@@ -11,4 +11,12 @@ namespace Editor
     };
 
     struct EvtClearSelection {};
+
+
+    struct EvtCloneProto
+    {
+        //shared_ptr<Engine::CBase> Cloned;
+        _wstring Tag = {};
+        _uint iLevel = {};
+    };
 }

@@ -132,6 +132,29 @@ void CUITransform::OnGui()
             MarkDirtyRecursive();
         }
     
+
+        // 행렬의 내용을 4x4 표 형태로 출력
+        if (ImGui::BeginTable("MatrixTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                ImGui::TableNextRow();
+                for (int j = 0; j < 4; ++j)
+                {
+                    ImGui::TableSetColumnIndex(j);
+                    // m_WorldMatrix.m[행][열] 데이터 출력
+                    float val = m_WorldMatrix.m[i][j];
+
+                    // 값이 너무 작거나 nan이면 빨간색으로 표시 (디버깅 꿀팁)
+                    if (isnan(val))
+                        ImGui::TextColored(ImVec4(1, 0, 0, 1), "nan");
+                    else
+                        ImGui::Text("%.3f", val);
+                }
+            }
+            ImGui::EndTable();
+        }
+
 }
 
 void CUITransform::MarkDirtyRecursive()
@@ -164,12 +187,25 @@ Rect CUITransform::GetParent_WorldRect()
 
     // 부모가 없을경우 캔버스 기준
     else
-        return m_pGameInstance.lock()->UI_Get_m_UICanvasRect();
+        return m_pGameInstance.lock()->Get_WinSize();
 
     //return Rect{ 0.f, 0.f, 1280.f, 720.f };
 
     //assert("errer CUITrnasform NO CANVAS");
     //return Rect{};
+}
+
+XMMATRIX CUITransform::GetParent_Mat()
+{
+    if (m_Parent.lock())
+    {
+        m_Parent.lock()->UpdateLayoutIfDirty();
+        return m_Parent.lock()->Get_Mat();
+    }
+    else
+    {
+        return XMMatrixIdentity();
+    }
 }
 
 void CUITransform::Computing_WorldRect()
@@ -187,15 +223,55 @@ void CUITransform::Computing_WorldRect()
     //내 UI의 피벗점이 위치할곳 엥커에 오프셋(m_AnchoredPos) 더한거
     Vector2 pivotWorld = anchorPoint + m_AnchoredPos;
 
-    // 피벗점이 위치할곳에서 내 크기의 피벗 비율만큼" 왼쪽 위로 이동 
-    Vector2 topLeft = pivotWorld - Hadamard(m_Pivot, size);
+   // // 피벗점이 위치할곳에서 내 크기의 피벗 비율만큼 왼쪽 위로 이동 
+   // Vector2 topLeft = pivotWorld - Hadamard(m_Pivot, size);
 
-    m_WorldRect = { topLeft.x, topLeft.y ,topLeft.x+size.x, topLeft.y+size.y };
+   // m_WorldRect = { topLeft.x, topLeft.y ,topLeft.x+size.x, topLeft.y+size.y };
+
+   // //행렬로 회전이 포함된 상태 저장
+
+   // XMVECTOR rotationMat = XMVectorSet( Hadamard(m_Pivot, size).x, Hadamard(m_Pivot, size).y, 0,0);
+
+
+   //XMStoreFloat4x4(&m_WorldMatrix,XMMatrixTransformation2D(rotationMat, 0.f, XMVectorSet(1, 1, 1, 1), rotationMat, m_RotationRadian, XMVectorSet(topLeft.x, topLeft.y, 0, 0)));
+
+    // 디버그용 Rect
+    Vector2 topLeft = pivotWorld - Hadamard(m_Pivot, size);
+    m_WorldRect = { topLeft.x, topLeft.y, topLeft.x + size.x, topLeft.y + size.y };
+
+    float renderY = m_pGameInstance.lock()->Get_WinSize().h - pivotWorld.y;
+
+    // VIBuffer_Rect가 (-0.5 ~ 0.5) 중심 기준이라는 전제
+    // pivot 보정
+    Vector2 pivotOffset = {
+        (0.5f - m_Pivot.x) * size.x,
+        (m_Pivot.y - 0.5f ) * size.y
+    };
+
+    XMMATRIX S = XMMatrixScaling(size.x, size.y, 1.f);
+    XMMATRIX R = XMMatrixRotationZ(m_RotationRadian);
+    XMMATRIX T = XMMatrixTranslation(
+        pivotWorld.x + pivotOffset.x,
+        renderY + pivotOffset.y,
+        0.f
+    );
+
+    //XMMATRIX Par = GetParent_Mat();
+
+    //  핵심
+    XMStoreFloat4x4(&m_WorldMatrix, S * R * T );
+
+    
 }
 
 Vector2 CUITransform::Hadamard(const Vector2& a, const Vector2& b)
 {
     return Vector2{ a.x * b.x, a.y * b.y };
+}
+
+HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const _char* pConstantName)
+{
+    return 	pShaderCom->Bind_Matrix(pConstantName, &m_WorldMatrix);;
 }
 
 shared_ptr<CUITransform> CUITransform::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

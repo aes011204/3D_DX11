@@ -1,5 +1,13 @@
 #pragma once
+
 #include "GameObject.h"
+#include "Client_Define.h"
+
+NS_BEGIN(Engine)
+class CShader;
+class CVIBuffer_Rect;
+class CTexture;
+NS_END
 
 NS_BEGIN(Client)
 class CBackGround final:
@@ -26,7 +34,12 @@ public:
 
     virtual void OnGui() override;
 
+protected:
+    HRESULT Ready_Components();
 private:
+    shared_ptr<CShader> m_pShaderCom = { nullptr };
+    shared_ptr<CVIBuffer_Rect> m_pVIBufferCom = { nullptr };
+    shared_ptr<CTexture> m_pTextureCom = { nullptr };
 
 public:
     static shared_ptr<CBackGround> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

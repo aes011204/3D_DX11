@@ -2,7 +2,7 @@
 #include "VIBuffer.h"
 
 NS_BEGIN(Engine)
-class CVIBuffer_Rect :
+class ENGINE_DLL CVIBuffer_Rect :
     public CVIBuffer
 {
 protected:

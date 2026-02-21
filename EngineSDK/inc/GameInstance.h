@@ -7,6 +7,9 @@ NS_BEGIN(Engine)
 class CLayer;
 class CUI;
 class CObject_Manager;
+class CEventBus;
+class CGameObject;
+
 
 class ENGINE_DLL CGameInstance final : public CBase
 {
@@ -45,13 +48,15 @@ public:/* For.levelManager*/
 public: /* For.PrototypeManager*/
 	HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
 	shared_ptr<CBase> Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);;
-
+	//shared_ptr<CBase> Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg);
 
 public: /*For.GameObject_Manager*/
-	HRESULT Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr);
+	shared_ptr<CGameObject> Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr);
+	//HRESULT Add_GameObject(shared_ptr<CBase> pClonedInst, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg);
 
 
-public: /*For.Renderer*/
+public:
+	/*For.Renderer*/
 	void Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<class CEntity> pNTT);
 
 
@@ -70,7 +75,14 @@ public:/*For.UI_Manager*/
 	void UI_Pop(UI_LAYER layer, wstring type); // 레이어에서 넣얶다 뻇다하는건 안씀 
 	void UI_Detach_All(); // 씬 전환 할떄 레이어에 있는거 객체를 지우니까 그전에 
 	void UI_InsertToPool(wstring UIType, shared_ptr<CUI> UI);
-	Rect UI_Get_m_UICanvasRect();
+	Rect Get_WinSize();
+
+public:/*For.EventBus*/
+	CEventBus* Get_EventBus();
+
+public:/*For.DInput_Manager*/
+	class CDInput_Manager* Get_DInput_Manger() { return m_pDInput_Manager.get(); }
+	void Set_MousePos(float x, float y);
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
@@ -79,10 +91,13 @@ private:
 	unique_ptr<class CObject_Manager> m_pObject_Manager = { nullptr };
 	unique_ptr<class CRenderer> m_Renderer = { nullptr };
 	unique_ptr<class CUI_Manager> m_UI_Manager = { nullptr };
+	unique_ptr<class CDInput_Manager> m_pDInput_Manager = { nullptr };
 
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 
 	map<_wstring,CBase*> m_ManagerForImgui = {}; // rawPointer 참조용
+
+	unique_ptr<CEventBus> m_pEventBus;
 public:
 	virtual void Free() override;
 };

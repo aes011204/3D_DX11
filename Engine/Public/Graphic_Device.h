@@ -20,7 +20,7 @@ class CGraphic_Device final : public CBase
 private:
 	CGraphic_Device();
 public:
-	virtual ~CGraphic_Device() = default;
+	virtual ~CGraphic_Device();
 public:
 	/* 그래픽 디바이스의 초기화. */
 	/* 장치객체를 생성한다. */

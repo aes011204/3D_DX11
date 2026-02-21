@@ -1,6 +1,6 @@
 ﻿#include "DInput_Manager.h"
 
-IMPLEMENT_SINGLETON(CDInput_Manager)
+//IMPLEMENT_SINGLETON(CDInput_Manager)
 
 CDInput_Manager::CDInput_Manager()
     : m_InputSDK(nullptr),
@@ -18,7 +18,7 @@ CDInput_Manager::~CDInput_Manager()
     CDInput_Manager::Free();
 }
 
-HRESULT CDInput_Manager::Ready_InputDev(HINSTANCE hInst, HWND hWnd)
+HRESULT CDInput_Manager::Initialize(HINSTANCE hInst, HWND hWnd)
 {
     if (FAILED(DirectInput8Create(hInst,
         DIRECTINPUT_VERSION,
@@ -75,6 +75,27 @@ void CDInput_Manager::Update_InputDev()
         m_MouseDev->Acquire();
         m_MouseDev->GetDeviceState(sizeof(m_MouseState), &m_MouseState);
     }
+}
+
+void CDInput_Manager::OnGui()
+{
+    _float2 mousePos = GetDInputMousePos();
+
+    ImGui::Text("ImGui Mouse X: %.2f", mousePos.x);
+    ImGui::Text("ImGui Mouse Y: %.2f", mousePos.y);
+
+    // 특정 버튼 클릭 여부 확인 (0:좌, 1:우, 2:휠)
+    ImGui::Text("Left Click: %s", ImGui::IsMouseDown(0) ? "Down" : "Up");
+}
+
+unique_ptr<CDInput_Manager> CDInput_Manager::Create(HINSTANCE hInst, HWND hWnd)
+{
+    unique_ptr<CDInput_Manager> pInstance(new CDInput_Manager());
+    if (FAILED(pInstance->Initialize(hInst, hWnd)))
+    {
+        MSG_BOX("failed prototype: CUITransform");
+    }
+    return pInstance;
 }
 
 void CDInput_Manager::Free()

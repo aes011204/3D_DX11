@@ -17,9 +17,15 @@ public:
 	virtual HRESULT Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNumSRVs);
 	virtual HRESULT Initialize(void* pArg) override;
 
+	HRESULT Bind_ShaderResourceView(shared_ptr<class CShader> pShaderCom, const char* pConstantName, _uint iIndex);
+
+	_float2 Get_SizeFromSRV(_uint index);
+private:
+
 private:
 	_uint m_iNumSRVs = {};
-	vector<ComPtr<ID3D11ShaderResourceView>> m_SRVs;
+	vector<ComPtr<ID3D11ShaderResourceView>> m_SRVs = {};
+
 
 public:
 	static shared_ptr<CTexture> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pTextureFilePath, _uint iNumSRVs);

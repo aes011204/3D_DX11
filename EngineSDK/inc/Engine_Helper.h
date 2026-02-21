@@ -1,8 +1,8 @@
-#pragma once
+ #pragma once
 #include "Engine_Define.h"
 
 NS_BEGIN(Engine)
-inline _string ConvertW2A(const wstring& wstr)
+inline _string W2S(const wstring& wstr)
 {
     if (wstr.empty()) return "";
     int size = WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
@@ -12,7 +12,7 @@ inline _string ConvertW2A(const wstring& wstr)
     return str;
 }
 
-inline wstring ConvertA2W(const _string& str)
+inline wstring S2W(const _string& str)
 {
     if (str.empty()) return L"";
     int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
@@ -21,4 +21,11 @@ inline wstring ConvertA2W(const _string& str)
     if (!w.empty() && w.back() == L'\0') w.pop_back();
     return w;
 }
+
+
+template <typename T>
+_wstring ToWStr(T eValue) {
+    return _wstring(magic_enum::enum_name<T, wchar_t>(eValue));
+}
+
 NS_END

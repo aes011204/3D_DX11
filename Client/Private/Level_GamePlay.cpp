@@ -1,6 +1,8 @@
 #include "Level_GamePlay.h"
 #include "GameInstance.h"
 #include "Log_Manager.h"
+#include "GameInstance.h"
+#include "Level_Loading.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -10,7 +12,7 @@ CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11Devi
 
 HRESULT CLevel_GamePlay::Initialize()
 {
-	
+
 	CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "senechangedII");
 	CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::WARNING, "senechangedWW");
 	CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::ERR, "senechangedEE");
@@ -20,6 +22,11 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
+	if (GetKeyState(VK_SPACE) & 0x8000)
+	{
+		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EDITOR))))
+			return ;
+	}
 	int a = 10;
 }
 

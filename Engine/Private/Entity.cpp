@@ -26,36 +26,37 @@ shared_ptr<CComponent> CEntity::Get_Component(const _wstring& strComponentTag)
 	return it->second;
 }
 
-template <typename T>
-HRESULT CEntity::Add_Component(_uint iProtoLevelIndex, const _wstring& strProtoTag, const _wstring& strComponentTag,
-	T** ppOut, void* pArg)
+//void CEntity::Change_Component(const _wstring& strComponentTag)
+//{
+//	// 지우고 
+//	Remove_Component(strComponentTag);
+//		//같은 태그에  추가하기
+//	Add_Component();;
+
+//}
+
+HRESULT CEntity::Remove_Component(const _wstring& strComponentTag)
+{
+	auto com = m_Components.find(strComponentTag);
+	if (com != m_Components.end()) // 찾았을 때만 지우기
+	{
+		m_Components.erase(com);
+		return S_OK;
+	}
+
+	m_bIsDirtyCom = true;
+
+	return E_FAIL;
+}
+
+void CEntity::Load_FromJson(nlohmann::json& j)
 {
 
-		shared_ptr<CComponent> tmpComp = Get_Component(strComponentTag);
-		if (tmpComp != nullptr)
-		{
-			MSG_BOX("Failed Add Component : Same Key exist");
-			return E_FAIL;
-		}
 
-		shared_ptr<CComponent> CloneComp = dynamic_cast<shared_ptr<CComponent>>(
-			m_pGameInstance.lock()->Clone_Prototype(PROTOTYPE::COMPONENT, iProtoLevelIndex, strProtoTag, pArg));
-		if (CloneComp == nullptr)
-			return E_FAIL;
 
-		T* pCastComp = dynamic_cast<T*>(CloneComp);
-		if (pCastComp == nullptr)
-		{
-			MSG_BOX("Failed Add Component : Wrong Type(it's should Component's Child)");
-			return E_FAIL;
-		}
-		*ppOut = pCastComp;
-
-		m_Components.emplace(strComponentTag, pCastComp);
-
-		return S_OK;
-	
 }
+
+
 
 void CEntity::Free()
 {
@@ -65,4 +66,6 @@ void CEntity::Free()
 	//	Safe_Release(Pair.second);
 	m_Components.clear();
 
+	//m_pDevice.Reset();
+	//m_pContext.Reset();
 }

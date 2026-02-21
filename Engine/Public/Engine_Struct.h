@@ -8,7 +8,8 @@ namespace Engine
 	typedef struct tagEngineDesc
 	{
 		HWND hWnd;
-		WINMODE eWinMode;
+        HINSTANCE hInst;
+        WINMODE eWinMode;
 		unsigned int iMaxLevelNum;
 		unsigned int iViewportWidth;
 		unsigned int iViewportHeight;
@@ -18,9 +19,31 @@ namespace Engine
 	{
 		XMFLOAT3			vPosition;
 		XMFLOAT2			vTexcoord;
+
+        static const _uint iNumElements = { 2 };
+
+        static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+        {
+            {"POSITION", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0  }
+        };
 	}VTXTEX;
 
+    typedef struct tagVertexPositionNormalTexcoord
+    {
+        XMFLOAT3			vPosition;
+        XMFLOAT3			vNormal;
+        XMFLOAT2			vTexcoord;
 
+        static const _uint iNumElements = { 3 };
+
+        static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+        {
+            {"POSITION", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"NORMAL", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0  }
+        };
+    }VTXNORTEX;
 
     struct Rect
     {
@@ -31,11 +54,11 @@ namespace Engine
 
         float Left() const { return x; };
         float Top()  const { return y; };
-        float Right()  const { return x + w; };
-        float Bottom()  const { return y + h; };
+        float Right()  const { return  w; };
+        float Bottom()  const { return h; };
 
         Vector2 Pos() const { return { x,y }; };
-        Vector2 Size() const { return { w,h }; };
+        Vector2 Size() const { return { w - x, h - y }; };
 
         // 히트 박스 테스트용
         bool Contains(float _x, float _y)

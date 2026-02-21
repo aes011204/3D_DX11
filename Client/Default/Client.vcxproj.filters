@@ -66,7 +66,7 @@
     <ClInclude Include="..\Public\Inventory_Controller.h">
       <Filter>96.Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Data_Manager.h">
+    <ClInclude Include="..\Public\ItemDB.h">
       <Filter>97.Data</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\InventoryUI.h" />
@@ -74,7 +74,14 @@
       <Filter>97.Data</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BackGround.h" />
-    <ClInclude Include="..\Public\CLient_Helper.h" />
+    <ClInclude Include="..\Public\Level_Editor.h">
+      <Filter>01.Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="CScaleModifier.h" />
+    <ClInclude Include="..\Public\CLient_Helper.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="EmptyGameObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -105,7 +112,7 @@
     <ClCompile Include="..\Private\Level_Loading.cpp">
       <Filter>01.Levels\00,Loading</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Data_Manager.cpp">
+    <ClCompile Include="..\Private\ItemDB.cpp">
       <Filter>97.Data</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Inventory.cpp">
@@ -122,6 +129,11 @@
     <ClCompile Include="Client.cpp">
       <Filter>98.Default</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Level_Editor.cpp">
+      <Filter>01.Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="CScaleModifier.cpp" />
+    <ClCompile Include="EmptyGameObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

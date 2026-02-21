@@ -1,5 +1,11 @@
 #include "UIButton.h"
+#include "GameInstance.h"
 #include "DInput_Manager.h"
+#include "UITransform.h"
+#include "Texture.h"
+#include "Shader.h"
+#include "IModifier.h"
+#include "Log_Manager.h"
 
 CUIButton::CUIButton(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CUI(pDevice, pContext)
@@ -11,8 +17,28 @@ CUIButton::CUIButton(const CUIButton& prototype)
 {
 }
 
-void CUIButton::OnInit()
+HRESULT CUIButton::OnInit(void* pArg)
 {
+
+    UIBUTTON_DESC* pDesc = static_cast<UIBUTTON_DESC*>(pArg);
+    m_ClickEvent = pDesc->ClickEvent;
+    m_OverlapStartEvent = pDesc->OverlapStartEvent;
+    m_OverlapEndEvent = pDesc->OverlapEndEvent;
+   // m_TextureComLevel = pDesc->TextureComLevel;
+
+
+    if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
+        return E_FAIL;
+
+    if (m_pTextureCom)
+    {
+        Vector2 vTexSize = m_pTextureCom->Get_SizeFromSRV(0);
+        m_pUITransformCom->SetSizeDelta(vTexSize);
+    }
+
+
+    return S_OK;
+
 }
 
 void CUIButton::OnActive()
@@ -50,10 +76,63 @@ void CUIButton::OnUpdate(const _float& timeDelta)
 
 void CUIButton::OnLateUpdate()
 {
+
+
 }
 
-void CUIButton::OnRender()
+HRESULT CUIButton::OnRender()
 {
+    if (FAILED(m_pUITransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+        return E_FAIL;
+    
+    _float4x4 Wm;
+    XMStoreFloat4x4(&Wm,
+        XMMatrixScaling(200.f, 200.f, 1.f) *  // 200x200 픽셀
+        XMMatrixTranslation(200.f, 200.f, 0.f)  // (200,200) 위치
+    );
+
+
+    _float4x4		IdentityMatrix = {};
+    XMStoreFloat4x4(&IdentityMatrix, XMMatrixIdentity());
+
+    auto win = m_pGameInstance.lock()->Get_WinSize();
+    float W = win.w - win.x;
+    float H = win.h - win.y;
+
+    _float4x4 P;
+    XMStoreFloat4x4(&P, XMMatrixOrthographicOffCenterLH(
+        0.f, W,
+        H, 0.f,
+        0.f, 1.f
+    ));
+
+
+   // m_pShaderCom->Bind_Matrix("g_WorldMatrix", &Wm);
+    //m_pShaderCom->Bind_Matrix("g_ViewMatrix", &IdentityMatrix);
+    //
+    //m_pShaderCom->Bind_Matrix("g_ProjMatrix", &P);
+
+
+    if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ViewMatrix", D3DTS::VIEW)))
+        return E_FAIL;
+  
+    if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ProjMatrix", D3DTS::PROJ)))
+        return E_FAIL;
+
+    
+    if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Begin(0)))
+        return E_FAIL;
+
+    if (FAILED(m_pVIBufferCom->Bind_Resources()))
+        return E_FAIL;
+
+    if (FAILED(m_pVIBufferCom->Render()))
+        return E_FAIL;
+
+    return S_OK;
 }
 
 void CUIButton::OnClear()
@@ -62,13 +141,19 @@ void CUIButton::OnClear()
 
 void CUIButton::ProcessInput()
 {
-    // 부모가 마우스 충돌+가로채기 검사를 끝
+   /* m_bHovered = false;
 
-    bool mouseDown = CDInput_Manager::GetInstance()->MouseDown(MOUSEKEYSTATE::DIM_LB);
-    bool mouseUp = CDInput_Manager::GetInstance()->MouseUp(MOUSEKEYSTATE::DIM_LB);
+    Vector2 mousePos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+    if (true == m_pUITransformCom->GetWorldRect().Contains(mousePos.x, mousePos.y))
+    {
+        m_bHovered = true;
+    }*/
+
+    bool mouseDown = m_pGameInstance.lock()->Get_DInput_Manger()->MouseDown(MOUSEKEYSTATE::DIM_LB);
+    bool mouseUp = m_pGameInstance.lock()->Get_DInput_Manger()->MouseUp(MOUSEKEYSTATE::DIM_LB);
 
     
-        if (m_UIState != BUTTON_STATE::DISABLE)
+        if (m_UIState == BUTTON_STATE::DISABLE)
         {
             return;
         }
@@ -77,40 +162,70 @@ void CUIButton::ProcessInput()
 
     if (m_bHovered)
     {
-        if (mouseDown) // 방금 클릭
+        if (mouseDown&& m_UIState != BUTTON_STATE::CLICK) // 방금 클릭
         {
             m_ClickInside = true;
             m_UIState = BUTTON_STATE::CLICK;
         }
-        else if (mouseUp && m_ClickInside) // 안에서 클릭한 상태에서 안에서 뗏는지
+        else if (mouseUp && m_ClickInside&& m_UIState == BUTTON_STATE::CLICK) // 안에서 클릭한 상태에서 안에서 뗏는지
         {
             m_ClickInside = false;
             m_UIState = BUTTON_STATE::HOVER;
 
             if (m_ClickEvent) // 콜백 실행
             {
-                m_ClickEvent();
+                m_ClickEvent(this);
             }
         }
-        else if (!mouseDown && m_UIState != BUTTON_STATE::CLICK) // 호버링 중인가
+        else if (!mouseDown && m_UIState != BUTTON_STATE::HOVER) // 호버링 중인가
         {
             m_UIState = BUTTON_STATE::HOVER;
+
+
+            if (m_OverlapStartEvent) // 콜백 실행
+            {
+                m_OverlapStartEvent(this);
+            }
         }
     }
     else
     {
-        if (mouseUp)
-            m_ClickInside = false;
+            if (mouseUp)
+                m_ClickInside = false;
 
-        m_UIState = BUTTON_STATE::NONE;
+        if (m_UIState != BUTTON_STATE::NONE)
+        {
+
+            m_UIState = BUTTON_STATE::NONE;
+
+            if (m_OverlapEndEvent) // 콜백 실행
+            {
+                m_OverlapEndEvent(this);
+            }
+
+        }
     }
 
+   // CLog_Manager::GetInstance()->Add_Log_F(CLog_Manager::LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
 
 }
 
 void CUIButton::ChangeState(BUTTON_STATE next)
 {
 }
+
+HRESULT CUIButton::Ready_Components(_uint Level, _wstring protoName)
+{
+    if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), m_pVIBufferCom, nullptr)))
+        return E_FAIL;
+    if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), m_pShaderCom, nullptr)))
+        return E_FAIL;
+    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), m_pTextureCom, nullptr)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
 
 shared_ptr<CUIButton> CUIButton::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
