@@ -128,15 +128,33 @@ HRESULT CShader::Bind_Matrix(const _char* pConstantName, const _float4x4* pMatri
 	
 }
 
+HRESULT CShader::Bind_RawValue(const _char* pConstantName, const void* pData, _uint iLength)
+{
+	//매트릭스이름이 있는지 확인
+	ComPtr<ID3DX11EffectVariable> pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+	{
+		MSG_BOX("Failed to throw value to shader");
+		return E_FAIL;
+	}
+	// 그 이름을 가진 변수가 매트릭스인지 확인
+
+	return pVariable->SetRawValue(pData, 0,iLength);
+
+}
+
 void CShader::Save_ToJson(nlohmann::json& j)
 {
+
+
 }
 
 void CShader::Load_FromJson(nlohmann::json& j)
 {
+
 }
 
-shared_ptr<CShader> CShader::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pTextureFilePath, const D3D11_INPUT_ELEMENT_DESC* pElement, _uint iNumElement)
+shared_ptr<CShader> CShader::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElement, _uint iNumElement)
 {
 	shared_ptr<CShader> pInstance(new CShader(pDevice, pContext), [](CShader* p) {                                  
 		if (nullptr == p)
@@ -145,7 +163,7 @@ shared_ptr<CShader> CShader::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11D
 		delete p;
 		});
 
-	if (FAILED(pInstance->Initialize_Prototype(pTextureFilePath, pElement, iNumElement)))
+	if (FAILED(pInstance->Initialize_Prototype(pShaderFilePath, pElement, iNumElement)))
 	{
 		MSG_BOX("Failed to Cloned : CShader");
 	}

@@ -83,6 +83,23 @@ public:/*For.EventBus*/
 public:/*For.DInput_Manager*/
 	class CDInput_Manager* Get_DInput_Manger() { return m_pDInput_Manager.get(); }
 	void Set_MousePos(float x, float y);
+
+public:/*For.Data_Manager*/
+	class CData_Manager* Get_Data_Manager() { return m_pData_Manager.get(); }
+	bool ClearMap(SAVETYPE eDATATYPE);
+	bool Load(SAVETYPE eDATATYPE, const string& fileName);
+	bool Save(SAVETYPE eDATATYPE, const string& fileName);
+
+public:/*For.PipeLine*/
+	const _float4x4* Get_Transfrom(D3DTS eTransformState) const;
+	const _float4* Get_CamPositon() const;
+	void Set_Transform(D3DTS eTransformState, _fmatrix TransformStateMatrix);
+	HRESULT Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName);
+	HRESULT Bind_TransformMatrix(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
+	HRESULT Bind_TransformMatrix_Inverse(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
+
+
+
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
@@ -92,6 +109,8 @@ private:
 	unique_ptr<class CRenderer> m_Renderer = { nullptr };
 	unique_ptr<class CUI_Manager> m_UI_Manager = { nullptr };
 	unique_ptr<class CDInput_Manager> m_pDInput_Manager = { nullptr };
+	unique_ptr<class CData_Manager> m_pData_Manager = { nullptr };
+	unique_ptr<class CPipeLine> m_pPipeLine = { nullptr };
 
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 

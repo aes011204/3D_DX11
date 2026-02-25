@@ -4,6 +4,8 @@
 
 #include "Entity.h"
 #include "Component.h"
+#include "Event_Struct.h"
+#include "Engine_Helper.h"
 
 
 
@@ -144,31 +146,81 @@ void CInspectorWin::RenderEntity(const std::shared_ptr<Engine::CEntity>& obj)
     ImGui::Separator();
     ImGui::TextDisabled("Components");
 
-    const auto& comps = obj->Get_ComponentMap();
+    const auto comps = obj->Get_ComponentMap();
     if (comps.empty())
     {
         ImGui::TextDisabled("(No Components)");
         return;
     }
-
-    for (auto& kv : comps)
-    {
-        auto comp = kv.second;  // shared_ptr 복사(안전)
-        if (!comp) continue;
-
-        _string compName = ConvertW2A(comp->Get_Name());
-        if (compName.empty()) compName = "Component";
-
-        char labelBuf[256];
-        sprintf_s(labelBuf, "%s##%p", compName.c_str(), comp.get());
-
-        if (ImGui::CollapsingHeader(labelBuf, ImGuiTreeNodeFlags_DefaultOpen))
+   
+        for (auto &kv : comps)
         {
+            auto comp = kv.second;
+            if (!comp) continue;
+
             ImGui::PushID((void*)comp.get());
-            comp->OnGui();
-            ImGui::PopID();
+
+            // 1. 태그 출력 (비어있을 경우 대비)
+            string strTag = W2S(kv.first);
+            if (strTag.empty()) strTag = "Unknown_Tag";
+            ImGui::Text(W2S(kv.first).c_str());
+            //string strCompName = W2S(kv.second->Get_ProtoTag());
+
+            //ImGui::Button(strCompName.c_str(), ImVec2(-1, 30)); // 이 버튼이 '박스' 역할
+            string strProtoTag = W2S(comp->Get_ProtoTag());
+            char btnIdBuf[256];
+            sprintf_s(btnIdBuf, "%s##Btn_%p", strProtoTag.c_str(), comp.get());
+
+            if (ImGui::Button(btnIdBuf, ImVec2(-1, 30))) { /* 클릭 로직 */ }
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("COMP_DRAG_DATA"))
+                {
+                    shared_ptr <CComponent> nothing = {};
+                    // 택배 박스 열기 (새로운 프로토타입 태그 이름 꺼내기)
+                    DragDropProto* pData = (DragDropProto*)payload->Data;
+                    obj->Add_Component<CComponent>(pData->iLevel, pData->szTag, kv.first, nullptr, nullptr);
+             
+                    ImGui::EndDragDropTarget();
+                    ImGui::PopID();
+                    break; // 여기서
+                }
+
+                
+                ImGui::EndDragDropTarget();
+            }
+       
+              
+                //if (ImGui::BeginDragDropTarget())
+                //{
+                //    // 1. ImGui가 제공하는 드롭 체크 (페이로드 타입은 임의로 지정)
+                //    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PROTOTYPE_COMPONENT"))
+                //    {
+                //        // 2. 페이로드에서 데이터 추출 (예: 프로토타입 태그 문자열)
+                //        const char* pPrototypeTag = (const char*)payload->Data;
+
+                //        // 3. [핵심] 이벤트 버스로 알림 발송
+                //        // "현재 선택된 객체의 컴포넌트를 pPrototypeTag 기반으로 바꿔줘!"
+                //        m_pEventBus->Publish(new ComponentSwapEvent(m_pSelectedObject, pPrototypeTag));
+                //    }
+                //    ImGui::EndDragDropTarget();
+                //}
+            
+     
+            _string compName = ConvertW2A(comp->Get_Name());
+            if (compName.empty()) compName = "Component";
+
+            char labelBuf[256];
+            sprintf_s(labelBuf, "%s##%p", compName.c_str(), comp.get());
+
+            if (ImGui::CollapsingHeader(labelBuf, ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                ImGui::PushID((void*)comp.get());
+                comp->OnGui();
+                ImGui::PopID();
+            }
+        ImGui::PopID();
         }
-    }
 }
 
 

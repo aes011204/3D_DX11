@@ -34,4 +34,5 @@ void CScaleModifier::OnAppear(float fDeltaTime, CUI* pOwner)
 
 void CScaleModifier::OnDisappear(float fDeltaTime, CUI* pOwner)
 {
+
 }

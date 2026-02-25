@@ -84,6 +84,9 @@
     <ClInclude Include="..\Public\ConsoleWin.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="..\public\MapTool.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EditorTool.cpp">
@@ -144,6 +147,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\ConsoleWin.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\private\MapTool.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

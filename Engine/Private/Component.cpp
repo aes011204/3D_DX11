@@ -12,7 +12,10 @@ CComponent::CComponent(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext>
 CComponent::CComponent(const CComponent& rhs)
 	: CBase(rhs),
 	m_pDevice{ rhs.m_pDevice }, m_pContext{ rhs.m_pContext },
-	m_pGameInstance{ CGameInstance::GetInstance() }
+	m_pGameInstance{ CGameInstance::GetInstance() }/*,
+	m_strProtoLevel{rhs.m_strProtoLevel},
+	m_strProtoTag{rhs.m_strProtoTag}*/
+
 {
 
 }

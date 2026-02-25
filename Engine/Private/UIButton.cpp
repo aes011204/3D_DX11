@@ -149,8 +149,8 @@ void CUIButton::ProcessInput()
         m_bHovered = true;
     }*/
 
-    bool mouseDown = m_pGameInstance.lock()->Get_DInput_Manger()->MouseDown(MOUSEKEYSTATE::DIM_LB);
-    bool mouseUp = m_pGameInstance.lock()->Get_DInput_Manger()->MouseUp(MOUSEKEYSTATE::DIM_LB);
+    bool mouseDown = m_pGameInstance.lock()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON);
+    bool mouseUp = m_pGameInstance.lock()->Get_DInput_Manger()->MouseUp(DIMB::LBUTTON);
 
     
         if (m_UIState == BUTTON_STATE::DISABLE)
@@ -216,11 +216,11 @@ void CUIButton::ChangeState(BUTTON_STATE next)
 
 HRESULT CUIButton::Ready_Components(_uint Level, _wstring protoName)
 {
-    if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), m_pVIBufferCom, nullptr)))
+    if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
         return E_FAIL;
-    if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), m_pShaderCom, nullptr)))
+    if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
         return E_FAIL;
-    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), m_pTextureCom, nullptr)))
+    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"),&m_pTextureCom, nullptr)))
         return E_FAIL;
 
     return S_OK;
@@ -229,7 +229,7 @@ HRESULT CUIButton::Ready_Components(_uint Level, _wstring protoName)
 
 shared_ptr<CUIButton> CUIButton::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
-    shared_ptr<CUIButton> pInstance (new CUIButton(pDevice, pContext));
+    shared_ptr<CUIButton> pInstance (new CUIButton(pDevice, pContext), [](CUIButton* p) {p->Free();delete(p);});
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {

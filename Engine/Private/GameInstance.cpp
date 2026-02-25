@@ -10,6 +10,8 @@
 #include "EventBus.h"
 #include "UI_Manager.h"
 #include "DInput_Manager.h"
+#include "Data_Manager.h"
+#include "PipeLine.h"
 
 //#include "../../EditorTool/Public/ImguiManager.h"
 
@@ -69,13 +71,17 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	if (nullptr == m_pEventBus)
 		return E_FAIL;
 
+	// CData_Manager »ý¼ºÇØ µÐ´Ù
+	m_pData_Manager = CData_Manager::Create(EngineDesc.iEditorLevel);
+	if (nullptr == m_pEventBus)
+		return E_FAIL;
 
-//	//Imgui- Á© ¸¶Áö¸·¿¡
-//	{
-//		m_pImgui_Manager = CImguiManager::Create();
-//		m_pImgui_Manager->Initialize(EngineDesc.hWnd,ppDevice, ppContext);
-//
-//	}
+	// CData_Manager »ý¼ºÇØ µÐ´Ù
+	m_pPipeLine = CPipeLine::Create();
+	if (nullptr == m_pPipeLine)
+		return E_FAIL;
+
+
 
 	return S_OK;
 }
@@ -91,9 +97,11 @@ void CGameInstance::SetImguiContext(ImGuiContext* imgContext)
 //}
 void CGameInstance::Update_Engine(float fTimeDelta)
 {
-
+	m_pDInput_Manager->Update_InputDev();
 
 	m_pObject_Manager->Priority_Update(fTimeDelta);
+
+	m_pPipeLine->Update();
 
 	m_pObject_Manager->Update(fTimeDelta);
 	m_UI_Manager->Update(fTimeDelta);
@@ -101,18 +109,9 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 	m_pObject_Manager->Late_Update(fTimeDelta);
 	m_UI_Manager->Late_Update(fTimeDelta);
 
-	m_pDInput_Manager->Update_InputDev();
 	m_pLevel_Manager->Update(fTimeDelta);
 
-//	//Imgui
-//	{
-//		m_pImgui_Manager->Begin();
-//	}
-//	m_pImgui_Manager->Example();
-//	float fps = 1.f / fTimeDelta;
-//	ImGui::Text("TimDelta = %.5f | FPS = %.1f ", fTimeDelta, fps);
-//
-//	m_pObject_Manager->Update_Gui();
+
 }
 
 void CGameInstance::Draw()
@@ -122,10 +121,7 @@ void CGameInstance::Draw()
 	m_pLevel_Manager->Render();
 
 	m_UI_Manager->Render();
-//	//Imgui
-//	{
-//	    m_pImgui_Manager->Render();
-//	}
+
 }
 
 void CGameInstance::Clear_Resources(_uint iLevelIndex)
@@ -141,6 +137,9 @@ void CGameInstance::Clear_Resources(_uint iLevelIndex)
 		MSG_BOX("failed to Clear Resourse");
 		return;
 	}
+
+	m_UI_Manager->Detach_All();
+
 	return;
 }
 
@@ -203,6 +202,7 @@ shared_ptr<CGameObject> CGameInstance::Add_GameObject(_uint iPrototypeLevelIndex
 {
 	return m_pObject_Manager->Add_GameObject(iPrototypeLevelIndex, strPrototypeTag, iLayerLevelIndex, strLayerTag, pArg);
 }
+
 
 //HRESULT CGameInstance::Add_GameObject(shared_ptr<CBase> pClonedInst,
 //	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
@@ -307,6 +307,52 @@ void CGameInstance::Set_MousePos(float x, float y)
 	m_pDInput_Manager->Set_MousePos(x, y);
 }
 
+bool CGameInstance::ClearMap(SAVETYPE eDATATYPE)
+{
+	return m_pData_Manager->ClearMap(eDATATYPE);
+}
+
+bool CGameInstance::Load(SAVETYPE eDATATYPE, const string& fileName)
+{
+	return m_pData_Manager->Load(eDATATYPE, fileName);
+}
+
+bool CGameInstance::Save(SAVETYPE eDATATYPE, const string& fileName)
+{
+	return m_pData_Manager->Save(eDATATYPE, fileName);
+
+}
+
+const _float4x4* CGameInstance::Get_Transfrom(D3DTS eTransformState) const
+{
+	return m_pPipeLine->Get_Transfrom(eTransformState);
+}
+
+const _float4* CGameInstance::Get_CamPositon() const
+{
+	return m_pPipeLine->Get_CamPosition();
+}
+
+void CGameInstance::Set_Transform(D3DTS eTransformState, _fmatrix TransformStateMatrix)
+{
+	return m_pPipeLine->Set_Transform(eTransformState, TransformStateMatrix);
+}
+
+HRESULT CGameInstance::Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName)
+{
+	return m_pPipeLine->Bind_CamPosition(pShader, pConstantName);
+}
+
+HRESULT CGameInstance::Bind_TransformMatrix(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
+{
+	return m_pPipeLine->Bind_TransformMatrix(eTransformState, pShader, pConstantName);
+}
+
+HRESULT CGameInstance::Bind_TransformMatrix_Inverse(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
+{
+	return m_pPipeLine->Bind_TransformMatrix_Inverse(eTransformState, pShader, pConstantName);
+}
+
 
 
 void CGameInstance::Free()
@@ -314,6 +360,7 @@ void CGameInstance::Free()
 	__super::Free();
 
 	m_ManagerForImgui.clear();
+	
 
 	m_pObject_Manager.reset();
 	m_pProto_Manager.reset();
@@ -321,6 +368,9 @@ void CGameInstance::Free()
 	m_pTimer_Manager.reset();
 	m_pEventBus.reset();
 	m_Renderer.reset();
+	m_UI_Manager.reset();
+	m_pData_Manager.reset();
+	m_pPipeLine.reset();
 
 
 	m_pGraphic_Device.reset();

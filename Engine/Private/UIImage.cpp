@@ -91,11 +91,11 @@ void CUIImage::OnClear()
 
 HRESULT CUIImage::Ready_Components(_uint Level, _wstring protoName)
 {
-    if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), m_pVIBufferCom, nullptr)))
+    if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"),& m_pVIBufferCom, nullptr)))
         return E_FAIL;
-    if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), m_pShaderCom, nullptr)))
+    if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"),& m_pShaderCom, nullptr)))
         return E_FAIL;
-    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), m_pTextureCom, nullptr)))
+    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"),& m_pTextureCom, nullptr)))
         return E_FAIL;
 
     return S_OK;

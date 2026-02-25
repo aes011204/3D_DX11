@@ -13,10 +13,6 @@ HRESULT CLevel_Manager::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pN
 	if (m_pCurLevel != nullptr)
 		m_pGameInstance.lock()->Clear_Resources(m_iCurLevelIdx);
 
-	//if (0 != Safe_Release(m_pCurLevel))
-	//{
-	//	return E_FAIL;
-	//}
 
 	m_pCurLevel = pNewLevel;
 

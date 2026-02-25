@@ -10,7 +10,8 @@ namespace Engine
 		HWND hWnd;
         HINSTANCE hInst;
         WINMODE eWinMode;
-		unsigned int iMaxLevelNum;
+        unsigned int iMaxLevelNum;
+        unsigned int iEditorLevel;
 		unsigned int iViewportWidth;
 		unsigned int iViewportHeight;
 	}ENGINE_DESC;

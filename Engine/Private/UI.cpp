@@ -221,8 +221,11 @@ void CUI::UI_Clear() // 이건 삭제
 	if (m_pUITransformCom)
 	{
 		m_Parent.reset();
-		m_pUITransformCom->SetParent(shared_ptr<CUITransform>(nullptr), false);
-	}
+		//
+		// m_pUITransformCom->SetParent(shared_ptr<CUITransform>(nullptr), false); //이거 왜한거임??
+	}// 아 혹시 free 용이 아닌가?? 일단 패스
+
+	m_behavior.clear();
 
 	OnClear();
 
@@ -273,6 +276,7 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _bool KeepWorldRect)
 void CUI::Free()
 {
 	UI_Clear(); // 자식 먼저 처리 (자식들이 부모의 컴포넌트나 정보를 참조가능성)
+
 	__super::Free();
 
 

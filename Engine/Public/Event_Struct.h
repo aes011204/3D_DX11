@@ -19,4 +19,10 @@ namespace Engine
         _wstring Tag = {};
         _uint iLevel = {};
     };
+    struct DragDropProto
+    {
+        //shared_ptr<Engine::CBase> Cloned;
+        wchar_t szTag[256] = {};
+        _uint iLevel = {};
+    };
 }

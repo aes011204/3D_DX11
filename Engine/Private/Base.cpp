@@ -10,6 +10,10 @@ CBase::CBase()
 }
 
 CBase::CBase(const CBase& rhs)
+    :
+    m_strProtoLevel{ rhs.m_strProtoLevel },
+    m_strProtoTag{ rhs.m_strProtoTag }
+
 {
 }
 

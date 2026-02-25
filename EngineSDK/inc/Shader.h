@@ -19,6 +19,8 @@ public:
 	HRESULT Begin(_uint iPassIndex);
 	HRESULT Bind_SRV(const _char* pConstantName, ComPtr<ID3D11ShaderResourceView> pSRV);
 	HRESULT Bind_Matrix(const _char* pConstantName, const _float4x4* pMatrix);
+	HRESULT Bind_RawValue(const _char* pConstantName, const void* pMatrix, _uint iLength);
+
 
 	virtual void Save_ToJson(nlohmann::json& j) override;
 	virtual void Load_FromJson(nlohmann::json& j) override;
@@ -29,10 +31,8 @@ private:
 
 	vector<ComPtr<ID3D11InputLayout>> m_pInputLayouts = {};
 
-
-
 public:
-	static shared_ptr<CShader> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pTextureFilePath, const D3D11_INPUT_ELEMENT_DESC* pElement, _uint iNumElement);
+	static shared_ptr<CShader> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElement, _uint iNumElement);
 	virtual shared_ptr<CComponent> Clone(void* pArg) override;
 	virtual void Free() override;
 

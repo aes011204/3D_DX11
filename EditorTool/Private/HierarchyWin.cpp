@@ -75,62 +75,6 @@ void CHierarchyWin::Render()
     }
 
 
-/////////UI///
-//    ImGui::Separator();
-//
-//    // 2. UI Pool (프로토타입 대기소)
-//    if (ImGui::TreeNodeEx("UI Pool", ImGuiTreeNodeFlags_DefaultOpen))
-//    {
-//        const auto& pool = CGameInstance::GetInstance()->Get_UI_Manager()->GetUIPool(); // map<wstring, shared_ptr<CUI>>
-//        if (pool.empty()) {
-//            ImGui::TextDisabled("(Pool Empty)");
-//        }
-//        else {
-//            for (auto& pair : pool)
-//            {
-//                _string strKey = ConvertW2A(pair.first);
-//                auto& root = pair.second;
-//                if (!root) continue;
-//
-//                const auto& children = root->GetChildren();
-//
-//                _string imguiLabel = strKey + " [Prototype]##Pool" + std::to_string((uint64_t)root.get());
-//
-//                ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-//
-//                if (m_pSelectedObject == root) flags |= ImGuiTreeNodeFlags_Selected;
-//
-//                //  Leaf면 push 안 하게
-//                if (children.empty())
-//                    flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-//
-//                bool opened = ImGui::TreeNodeEx(imguiLabel.c_str(), flags);
-//
-//                if (ImGui::IsItemClicked())
-//                {
-//                    m_pSelectedObject = root;
-//
-//                    EvtSelectEntity ev{};
-//                    ev.Entity = std::static_pointer_cast<Engine::CEntity>(root);
-//
-//                    CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
-//
-//                }
-//
-//                //  자식이 있을 때만, opened면 TreePop 필수
-//                if (!children.empty() && opened)
-//                {
-//                    for (auto& child : children)
-//                        DrawUITree(child);
-//
-//                    ImGui::TreePop();
-//                }
-//            }
-//        }
-//        ImGui::TreePop();
-//    }
-//     /////////////////////////////
-// 
     ImGui::Separator();
 
     // 1. Active UI Layers (현재 화면에 배치된 UI)

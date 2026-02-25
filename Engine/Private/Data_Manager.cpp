@@ -6,18 +6,120 @@
 #include "Entity.h"
 #include "Engine_Helper.h"
 
+
 CData_Manager::CData_Manager(): m_pGameInstance(CGameInstance::GetInstance())
 {
 }
-
-HRESULT CData_Manager::Initialize()
+CData_Manager::~CData_Manager() 
 {
+	Free();
+}
+HRESULT CData_Manager::Initialize(_uint  EditorLevel)
+{
+	m_EditorLevel = EditorLevel;
     return S_OK;
 }
 
-HRESULT CData_Manager::Load_ObjData(const string& fileName, _uint  EditorLevel)
+bool CData_Manager::Reload(const _tchar* Path)
 {
-	ifstream file(fileName, ios_base::in);
+	//if (CurLoadedMapPath == nullptr)
+	//{
+	//	Load_ObjData()
+	//}
+	//else
+	//{
+
+	//if (CurLoadedMapPath == Path)
+	//	return true;
+
+	//ClearMap();
+	//Load_ObjData();
+
+	//}
+
+	// 이건그냥 임구이에서 하면 될듯
+
+
+	return true;
+}
+
+bool CData_Manager::ClearMap(SAVETYPE eDATATYPE)
+{
+
+	if (eDATATYPE == SAVETYPE::END)
+		return false;
+
+	_uint iCurLevel = m_pGameInstance.lock()->Get_Current_LevelIdx();
+	if (eDATATYPE == SAVETYPE::GAMEOBJECT)
+	{
+		const auto& layer = m_pGameInstance.lock()->Get_GameObjects(iCurLevel);
+
+		nlohmann::json jObjArray = nlohmann::json::array();
+
+		for (auto& pair : layer)
+		{
+			_wstring strLayerName = pair.first;
+
+			for (auto& pObj : pair.second->Get_GameObject())
+			{
+				if (pObj->Get_SaveType() == SAVETYPE::GAMEOBJECT)
+				{
+					pObj->Mark_Destroy();
+				}
+			}
+		}
+	}
+	else// ui
+	{
+
+	}
+
+	return false;
+}
+
+bool CData_Manager::Load(SAVETYPE eDATATYPE, const string& fileName)
+{
+
+	if (eDATATYPE == SAVETYPE::END)
+		return false;
+
+	if (eDATATYPE == SAVETYPE::GAMEOBJECT)
+	{
+		Load_ObjData(fileName);
+	}
+	else// ui
+	{
+		Load_UIData(fileName);
+	}
+
+	return false;
+}
+
+bool CData_Manager::Save(SAVETYPE eDATATYPE, const string& fileName)
+{
+	if (eDATATYPE == SAVETYPE::END)
+		return false;
+
+	if (eDATATYPE == SAVETYPE::GAMEOBJECT)
+	{
+		Save_ObjData(fileName);
+	}
+	else// ui
+	{
+		Save_UIData(fileName);
+	}
+
+	return false;
+}
+
+
+HRESULT CData_Manager::Load_ObjData(const string& fileName)
+{
+	const string folderPath = "../../Client/Bin/Resources/Data/MapData/";
+	const string fullPath = folderPath + fileName;
+
+	ifstream file(fullPath, ios_base::in);
+
 
 	if (!file.is_open())
 	{
@@ -38,7 +140,7 @@ HRESULT CData_Manager::Load_ObjData(const string& fileName, _uint  EditorLevel)
 		return E_FAIL;
 	}
 	
-	if (j["Level"] != EditorLevel)
+	if (j["Level"] != m_EditorLevel)
 	{
 		MSG_BOX("This File is not Saved IN Editor");
 		return E_FAIL;
@@ -66,6 +168,8 @@ HRESULT CData_Manager::Load_ObjData(const string& fileName, _uint  EditorLevel)
 
 			//	(obj->Get_ComponentMap().find(S2W(jCom["ComponentTag"])))->second->Load_FromJson(jCom);
 			//}
+			obj->Set_SaveType(SAVETYPE::GAMEOBJECT);
+
 		}
 	}
 
@@ -85,19 +189,22 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 
 	nlohmann::json jObjArray = nlohmann::json::array();
 
-	for (auto pair : layer)
+	for (auto& pair : layer)
 	{
 		_wstring strLayerName = pair.first;
 		
 
-		for (auto& pObj : pair.second.get()->Get_GameObject())
+		for (auto& pObj : pair.second->Get_GameObject())
 		{
+			if (pObj->IsSavableClass() != true)
+				continue;
+
 			nlohmann::json jObj;
 
 			jObj["LayerName"] = W2S(strLayerName);
 			
 
-			jObj["ProtoSavedTag"] = W2S(pObj->Get_ProtoTag()); // "Prototype_Cube" 등
+			jObj["ProtoSavedTag"] = W2S(pObj->Get_ProtoTag()); // "ProtoDATATYPE_Cube" 등
 			jObj["ProtoSavedLevel"] = pObj->Get_ProtoLevel(); // 
 			jObj["ObjName"] = W2S(pObj->Get_Name());   // "Player", "Enemy1" 등
 
@@ -109,7 +216,7 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 					nlohmann::json jCom;
 					// 컴포넌트에 공통적으로 들어가는거
 
-					jCom["ComProtoTag"] = pair.second->Get_ProtoTag();
+					jCom["ComProtoTag"] = W2S(pair.second->Get_ProtoTag());
 					jCom["ComProtoLevel"] = pair.second->Get_ProtoLevel();
 
 
@@ -131,7 +238,7 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 	string folderPath = "../../Client/Bin/Resources/Data/MapData/";
 
 	// 폴더가 없으면 생성
-	if (filesystem::exists(folderPath)) {
+	if (!filesystem::exists(folderPath)) {
 		filesystem::create_directories(folderPath);
 	}
 	
@@ -173,7 +280,7 @@ HRESULT CData_Manager::Load_UIData(const string& fileName)
 
 
 	//			if (FAILED(
-	//				m_pGameInstance.lock()->Add_GameObject(PROTOTYPE::GAMEOBJECT, jObj["Level"], jObj["ProtoSavedLevel"],
+	//				m_pGameInstance.lock()->Add_GameObject(PROTODATATYPE::GAMEOBJECT, jObj["Level"], jObj["ProtoSavedLevel"],
 	//					LevelIndex, CurLayer, nullptr )))
 	//			{
 	//				return E_FAIL;
@@ -185,7 +292,7 @@ HRESULT CData_Manager::Load_UIData(const string& fileName)
 	//		}
 	//	}
 
-
+	//obj->Set_SaveType(SAVETYPE::UI);
 	//}
 	return S_OK;
 }
@@ -205,13 +312,24 @@ HRESULT CData_Manager::Save_UIData(const string& fileName)
 
 	//	for (auto& it : uiVec)
 	//	{
-	//		jObj["ProtoTag"] = obj->Get_ProtoTag(); // "Prototype_Cube" 등
+	//		jObj["ProtoTag"] = obj->Get_ProtoTag(); // "ProtoDATATYPE_Cube" 등
 	//		jObj["UITag"] = obj->Get_ObjTag();   // "Player", "Enemy1" 등
 	//		obj->Save_ToJson(j);
 	//	}
 
 	//}
 	return S_OK;
+}
+
+unique_ptr<CData_Manager> CData_Manager::Create(_uint  EditorLevel)
+{
+	unique_ptr<CData_Manager> pInstance(new CData_Manager());
+
+	if (FAILED(pInstance->Initialize(EditorLevel)))
+	{
+		MSG_BOX("Failed to Cloned : BackGround");
+	}
+	return pInstance;
 }
 
 void CData_Manager::Free()

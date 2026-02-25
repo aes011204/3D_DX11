@@ -53,7 +53,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			pNextLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
 			break;
 
-		case LEVEL::GMAEPLAYE:
+		case LEVEL::GAMEPLAY:
 			pNextLevel = CLevel_GamePlay::Create(m_pDevice, m_pContext);
 			break;
 		case LEVEL::EDITOR:

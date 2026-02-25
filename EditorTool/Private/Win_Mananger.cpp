@@ -6,6 +6,7 @@
 #include "InspectorWin.h" 
 #include "ManagerWin.h" 
 #include "ConsoleWin.h" 
+#include "MapTool.h" 
 
 CWin_Mananger::CWin_Mananger()
 {
@@ -17,6 +18,7 @@ HRESULT CWin_Mananger::Initialize() {
     Add_Window(CInspectorWin::Create()); 
     Add_Window(CManagerWin::Create());
     Add_Window(CConsoleWin::Create());
+    Add_Window(CMapTool::Create());
 
 
 

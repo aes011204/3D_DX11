@@ -34,12 +34,19 @@ public:
 	_wstring MakeUniqueName(const _wstring& baseName);
 	void SetDefaultNameFromThisType();
 
+	void Set_ProtoTag(_wstring str) { m_strProtoTag = str; }
+	void Set_ProtoLevel(_uint Level) { m_strProtoLevel = Level; }
+	_wstring Get_ProtoTag() { return m_strProtoTag; }
+	_uint Get_ProtoLevel() { return m_strProtoLevel; }
+protected:
 
-private:
 
 private:
 	wstring m_Name;
 	///
+
+	   _wstring m_strProtoTag = {};
+	_uint m_strProtoLevel = {};
 
 //protected:
 //	unsigned int m_iRefCnt = {};// 유니폼 초기화, 이제 long XXX

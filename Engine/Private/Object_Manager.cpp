@@ -33,7 +33,7 @@ shared_ptr<CGameObject> CObject_Manager::Add_GameObject(_uint iPrototypeLevelInd
 		iLayerLevelIndex >= m_iNumLevel)
 		goto except;
 
-	pGameObject = dynamic_pointer_cast<CGameObject>(m_pGameInstance.lock()->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
+ 	pGameObject = dynamic_pointer_cast<CGameObject>(m_pGameInstance.lock()->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
 	if (nullptr == pGameObject)
 		goto except;
 
@@ -124,6 +124,7 @@ void CObject_Manager::Late_Update(_float fTimeDelta)
 		{
 			if (pair.second != nullptr)
 				pair.second->Late_Update(fTimeDelta);
+
 		}
 	}
 }

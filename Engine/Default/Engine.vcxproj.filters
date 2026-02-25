@@ -144,6 +144,11 @@
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
       <Filter>99.Defines\01.Utility\04.Components</Filter>
     </ClCompile>
+    <ClCompile Include="CCamera.cpp" />
+    <ClCompile Include="..\Private\UIObject.cpp" />
+    <ClCompile Include="..\Private\PipeLine.cpp" />
+    <ClCompile Include="..\Public\Camera.cpp" />
+    <ClCompile Include="..\Private\Camera_Free.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -262,5 +267,9 @@
     <ClInclude Include="..\Public\VIBuffer_Terrain.h">
       <Filter>99.Defines\01.Utility\04.Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Camera.h" />
+    <ClInclude Include="..\Public\UIObject.h" />
+    <ClInclude Include="..\Public\PipeLine.h" />
+    <ClInclude Include="..\Public\Camera_Free.h" />
   </ItemGroup>
 </Project>

@@ -36,6 +36,7 @@ private:
 private:
     _wstring m_strSelectedTag = {};
     _uint m_iSelectedLevel = {};
+    weak_ptr<CGameInstance> m_pGameInstance = {};
     shared_ptr<CBase> Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);
 public:
     static unique_ptr<CPrototype_Manager> Create(_uint iNumLevel);

@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "Component.h"
 #include "GameInstance.h"
+#include "Engine_Helper.h"
 
 CEntity::CEntity(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: m_pDevice{ pDevice }, m_pContext{ pContext },
@@ -11,7 +12,8 @@ CEntity::CEntity(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pCont
 
 CEntity::CEntity(const CEntity& prototype)
 	: m_pDevice{ prototype.m_pDevice }, m_pContext{ prototype.m_pContext },
-	m_pGameInstance{ CGameInstance::GetInstance() }
+	m_pGameInstance{ CGameInstance::GetInstance() },
+	m_bIsSavableClass{ m_bIsSavableClass }
 {
 
 	//  레퍼런스 관리를 위해 디폴트 복사생성자가 아니라 만드거임
@@ -51,8 +53,23 @@ HRESULT CEntity::Remove_Component(const _wstring& strComponentTag)
 
 void CEntity::Load_FromJson(nlohmann::json& j)
 {
+	shared_ptr<CComponent> nothing = {};
+	for (auto& jCom : j["Components"])
+	{
+		if (jCom["ComponentTag"] == "Com_Transform")
+		{
+			//Add_Component<CComponent>((_uint)jCom["ComProtoLevel"], S2W(jCom["ComProtoTag"]), S2W(jCom["ComponentTag"]), nullptr, nullptr);
 
+			m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
 
+		}
+		else
+		{
+		Add_Component<CComponent>((_uint)jCom["ComProtoLevel"], S2W(jCom["ComProtoTag"]), S2W(jCom["ComponentTag"]), nullptr, nullptr);
+		m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
+
+		}
+	}
 
 }
 
@@ -62,10 +79,6 @@ void CEntity::Free()
 {
 	__super::Free();
 
-	//for (auto& Pair : m_Components)
-	//	Safe_Release(Pair.second);
 	m_Components.clear();
 
-	//m_pDevice.Reset();
-	//m_pContext.Reset();
 }

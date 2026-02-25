@@ -276,7 +276,7 @@ HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const 
 
 shared_ptr<CUITransform> CUITransform::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
-    shared_ptr<CUITransform> pInstance(new CUITransform(pDevice, pContext));
+    shared_ptr<CUITransform> pInstance(new CUITransform(pDevice, pContext), [](CUITransform* p) {p->Free();delete(p);});
     if (FAILED(pInstance->Initialize_Prototype()))
     {
         MSG_BOX("failed prototype: CUITransform");
@@ -287,7 +287,7 @@ shared_ptr<CUITransform> CUITransform::Create(ComPtr<ID3D11Device> pDevice, ComP
 
 shared_ptr<CComponent> CUITransform::Clone(void* pArg)
 {
-    shared_ptr<CUITransform> pInstance ( new CUITransform(*this));
+    shared_ptr<CUITransform> pInstance(new CUITransform(*this), [](CUITransform* p) {p->Free();delete(p);});
     if (FAILED(pInstance->Initialize(pArg)))
     {
         MSG_BOX("failed clone: CUITransform");

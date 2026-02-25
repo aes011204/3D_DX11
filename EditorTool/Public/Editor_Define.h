@@ -24,6 +24,13 @@ namespace Editor
         ETC,
         NONE
     };
+
+    struct DragProtoTypeDesc
+    {
+        _wstring strProtoTag = {};
+        _uint strProtoLevel = {};
+    };
+
 }
 
 using namespace Editor;

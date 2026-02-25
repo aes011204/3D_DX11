@@ -25,6 +25,9 @@
     <Filter Include="97.Data\00.JSON">
       <UniqueIdentifier>{4bcf03e8-7397-4ce2-a45a-8ea9267e2ce7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject">
+      <UniqueIdentifier>{6b36b92d-3b68-4ca7-81b5-82692c29b66f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -73,7 +76,6 @@
     <ClInclude Include="..\Public\DialogueDB.h">
       <Filter>97.Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\Level_Editor.h">
       <Filter>01.Levels</Filter>
     </ClInclude>
@@ -81,7 +83,18 @@
     <ClInclude Include="..\Public\CLient_Helper.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
-    <ClInclude Include="EmptyGameObject.h" />
+    <ClInclude Include="..\Public\BackGround.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Terrain.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="EmptyGameObject.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Play.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -125,7 +138,6 @@
     <ClCompile Include="..\Private\DialogueDB.cpp">
       <Filter>97.Data</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="Client.cpp">
       <Filter>98.Default</Filter>
     </ClCompile>
@@ -133,7 +145,18 @@
       <Filter>01.Levels</Filter>
     </ClCompile>
     <ClCompile Include="CScaleModifier.cpp" />
-    <ClCompile Include="EmptyGameObject.cpp" />
+    <ClCompile Include="..\Private\BackGround.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Terrain.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="EmptyGameObject.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Play.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">
@@ -157,5 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex_9Slice.hlsl" />
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@
 
 NS_BEGIN(Engine)
 
-class CVIBuffer abstract:
+class ENGINE_DLL CVIBuffer abstract:
     public CComponent
 {
 protected:

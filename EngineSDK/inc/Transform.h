@@ -39,6 +39,10 @@ public:
         );
     }
 
+    const _float4x4* Get_WorldMatrix() const {
+        return &m_WorldMatrix;
+    }
+
     void Set_State(STATE eState, _fvector vState)//
     {
         XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]), vState);
@@ -56,6 +60,10 @@ public:
     void Go_Backward(_float fTimeDelta);
     void Go_Right(_float fTimeDelta);
     void Go_Left(_float fTimeDelta);
+
+    void Go_Up(_float fTimeDelta);
+
+    void Go_Down(_float fTimeDelta);
 
     void Rotation(_fvector vAxis, _float fDegree);//속도X 정해논 각도로 따라 항등상태에서 회전 하는거임
     void Turn(_fvector vAxis, _float fTimeDelta);//나한테 저장된 회전 속도 만큼 서서히 회전

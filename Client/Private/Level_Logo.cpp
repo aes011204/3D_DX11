@@ -27,7 +27,7 @@ void CLevel_Logo::Update(_float fTimeDelta)
 {
 	if(GetKeyState(VK_SPACE) & 0x8000)
 	{
-		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GMAEPLAYE))))
+		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
 			return;
 	}
 }
@@ -43,9 +43,9 @@ HRESULT CLevel_Logo::Render()
 
 HRESULT CLevel_Logo::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	if(FAILED(
+	if(nullptr==
 	m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::LOGO), TEXT("Prototype_GameObject_BackGround"),
-		ETOI(LEVEL::LOGO), strLayerTag)))
+		ETOI(LEVEL::LOGO), strLayerTag))
 	{
 		return E_FAIL;
 	}
@@ -68,5 +68,6 @@ shared_ptr<CLevel_Logo> CLevel_Logo::Create(ComPtr<ID3D11Device> pDevice, ComPtr
 
 void CLevel_Logo::Free()
 {
+	m_pGameInstance.lock()->UI_Detach_All();
 	__super::Free();
 }

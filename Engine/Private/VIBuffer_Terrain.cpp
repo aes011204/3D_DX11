@@ -13,7 +13,9 @@ CVIBuffer_Terrain::CVIBuffer_Terrain(const CVIBuffer_Terrain& Prototype)
 }
 
 HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath)
-{
+
+
+ {
 	_ulong dwByte = {};
 	HANDLE hFile = CreateFile(pHeightMapFilePath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
@@ -32,7 +34,7 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 
 	// 해당 비트맵 파일이 rgba 8 비트씩 32비트 픽셀하나당 이므로 _uint
 	_uint* pPixels = new _uint[m_iNumVertices];
-	ReadFile(hFile, pPixels, sizeof(_uint) * m_iNumIndices, &dwByte, nullptr);
+	ReadFile(hFile, pPixels, sizeof(_uint) * m_iNumVertices, &dwByte, nullptr);
 
 //----------하이트맵 읽기 끝
 
@@ -62,10 +64,11 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 		{
 			size_t iIndex = i * m_iNumVerticesX + j;
 
+			float t = pPixels[iIndex] & 0x000000ff;
 			//정점 사이의 인터벌은 무조건 1
-			pVertices[iIndex].vPosition = _float3(j, pPixels[iIndex] &0x000000ff, i);
+			pVertices[iIndex].vPosition = _float3(j, (pPixels[iIndex] & 0x000000ff )/10.f, i);
 			pVertices[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
-			pVertices[iIndex].vTexcoord = _float2(j / (m_iNumVerticesX - 1), i / (m_iNumVerticesZ - 1.f));
+			pVertices[iIndex].vTexcoord = _float2(j / (m_iNumVerticesX - 1.f), i / (m_iNumVerticesZ - 1.f));
 		}
 
 	}
@@ -119,6 +122,11 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 			pIndices[iNumIndices++] = iIndices[2];
 			pIndices[iNumIndices++] = iIndices[3];
 
+			vSour = XMLoadFloat3(&pVertices[iIndices[2]].vPosition) - XMLoadFloat3(&pVertices[iIndices[0]].vPosition);
+			vDest = XMLoadFloat3(&pVertices[iIndices[3]].vPosition) - XMLoadFloat3(&pVertices[iIndices[2]].vPosition);
+			vNormal = XMVector3Normalize(XMVector3Cross(vSour, vDest));
+
+
 			XMStoreFloat3(&pVertices[iIndices[0]].vNormal,
 				XMLoadFloat3(&pVertices[iIndices[0]].vNormal) + vNormal);
 			XMStoreFloat3(&pVertices[iIndices[2]].vNormal,
@@ -147,8 +155,11 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 		return E_FAIL;
 
 
+	Safe_Delete_Array(pPixels);
 	Safe_Delete_Array(pVertices);
 	Safe_Delete_Array(pIndices);
+
+	CloseHandle(hFile);
 
 
 	return S_OK;
@@ -185,5 +196,6 @@ shared_ptr<CComponent> CVIBuffer_Terrain::Clone(void* pArg)
 
 void CVIBuffer_Terrain::Free()
 {
+
 	__super::Free();
 }

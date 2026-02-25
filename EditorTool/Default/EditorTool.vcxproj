@@ -164,6 +164,7 @@ xcopy /Y /I "$(SolutionDir)EditorTool\Bin\EditorTool.lib" "$(SolutionDir)Engine\
     <ClInclude Include="..\Public\imstb_truetype.h" />
     <ClInclude Include="..\Public\InspectorWin.h" />
     <ClInclude Include="..\Public\ManagerWin.h" />
+    <ClInclude Include="..\public\MapTool.h" />
     <ClInclude Include="..\Public\Selection.h" />
     <ClInclude Include="..\Public\Win_Mananger.h" />
     <ClInclude Include="framework.h" />
@@ -199,6 +200,7 @@ xcopy /Y /I "$(SolutionDir)EditorTool\Bin\EditorTool.lib" "$(SolutionDir)Engine\
     </ClCompile>
     <ClCompile Include="..\Private\InspectorWin.cpp" />
     <ClCompile Include="..\Private\ManagerWin.cpp" />
+    <ClCompile Include="..\private\MapTool.cpp" />
     <ClCompile Include="..\Private\Selection.cpp" />
     <ClCompile Include="..\Private\Win_Mananger.cpp" />
     <ClCompile Include="EditorTool.cpp" />

@@ -39,10 +39,18 @@ void CLayer::Update(_float fTimeDelta)
 
 void CLayer::Late_Update(_float fTimeDelta)
 {
-	for (auto& pGameObject : m_pGameObject)
+	for (auto it = m_pGameObject.begin(); it != m_pGameObject.end(); )
 	{
-		if(nullptr != pGameObject)
-			pGameObject->Late_Update(fTimeDelta);
+		if(nullptr != *it)
+			(*it)->Late_Update(fTimeDelta);
+
+		if ((*it)->Is_PendingDestroy()==true)
+		{
+			it = m_pGameObject.erase(it);
+		}
+		else
+			it++;
+
 	}
 }
 

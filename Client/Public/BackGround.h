@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameObject.h"
+#include "UIObject.h"
 #include "Client_Define.h"
 
 NS_BEGIN(Engine)
@@ -11,10 +11,10 @@ NS_END
 
 NS_BEGIN(Client)
 class CBackGround final:
-    public CGameObject
+    public CUIObject
 {
 public:
-    struct BACKGROUND_DESC final:  public CGameObject::GAMEOBJECT_DESC
+    struct BACKGROUND_DESC final:  public CUIObject::UIObject_Desc
     {
 	    
     };

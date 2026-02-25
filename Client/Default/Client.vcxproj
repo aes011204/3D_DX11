@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\Camera_Play.h" />
     <ClInclude Include="..\Public\CLient_Helper.h" />
     <ClInclude Include="..\Public\DialogueDB.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="..\Public\Level_Logo.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="EmptyGameObject.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="CScaleModifier.h" />
@@ -165,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\Camera_Play.cpp" />
     <ClCompile Include="..\Private\DialogueDB.cpp" />
     <ClCompile Include="..\Private\ItemDB.cpp" />
     <ClCompile Include="..\Private\Inventory.cpp" />
@@ -176,6 +179,7 @@
     <ClCompile Include="..\Private\Level_Logo.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="EmptyGameObject.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CScaleModifier.cpp" />
@@ -204,7 +208,9 @@
     <None Include="Itme_Trinket.json" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex_9Slice.hlsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
