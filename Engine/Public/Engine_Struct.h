@@ -68,10 +68,26 @@ namespace Engine
         }
     };
 
-    //struct UICanvas
-    //{
-    //    Rect rect = { 0,0,1280,720 };
-    //};
+    struct LIGHT_DESC
+    {
+        LIGHT eType;
+
+        XMFLOAT4 vDirection;
+        XMFLOAT4 vPosition;
+        float fRange;
+
+        XMFLOAT4 vDiffuse;
+        XMFLOAT4 vAmbition;
+        XMFLOAT4 vSpecular;
+     
+    };
+    struct NINESLICE_DESC
+    {
+        _float2 TexSize = {};
+        _float2 UISize = {};
+        _float4 PxSliceLRTB = {};
+
+    };
 }
 
 

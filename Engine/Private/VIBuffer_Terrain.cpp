@@ -19,7 +19,7 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 	_ulong dwByte = {};
 	HANDLE hFile = CreateFile(pHeightMapFilePath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
-	if (hFile == 0)
+	if (hFile == INVALID_HANDLE_VALUE)
 		return E_FAIL;
 
 	BITMAPFILEHEADER fh = {};

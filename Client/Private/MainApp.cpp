@@ -231,7 +231,7 @@ HRESULT CMainApp::Ready_UI()
 	{
 		if (!it) continue;
 		it->UI_Active();
-		it->m_behavior.push_back((make_shared<CScaleModifier>(0.1f, 10.f, 0.f, 1.0f)));
+		it->m_behavior.push_back((make_shared<CScaleModifier>(0.03f, 4.f, 0.f, 1.8f)));
 	}
 		};
 	pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
@@ -247,13 +247,13 @@ HRESULT CMainApp::Ready_UI()
 	//pChild->Set_Zorder(2);
 	pInstance->Add_Child(pChild, false);
 
-	CUIImage::UIIMAGE_DESC image_desc1{};
-	image_desc1.TextureComLevel = ETOI(LEVEL::STATIC);
-	image_desc1.TextureProtoName = L"Prototype_Component_Texture_Select";
-	shared_ptr<CUIImage> pChild3 = CUIImage::Create(m_pDevice, m_pContext);
-	pChild3->Initialize(&image_desc1);
-	pChild3->UI_InActive();
-	pChild->Add_Child(pChild3, false);
+	CUIImage::UIIMAGE_DESC selectImage{};
+	selectImage.TextureComLevel = ETOI(LEVEL::STATIC);
+	selectImage.TextureProtoName = L"Prototype_Component_Texture_Select";
+	shared_ptr<CUIImage> Select = CUIImage::Create(m_pDevice, m_pContext);
+	Select->Initialize(&selectImage);
+	Select->UI_InActive();
+	pChild->Add_Child(Select, false);
 
 	CUIImage::UIIMAGE_DESC image_desc{};
 	image_desc.TextureComLevel = ETOI(LEVEL::STATIC);

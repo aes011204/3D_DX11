@@ -12,6 +12,7 @@
 #include "DInput_Manager.h"
 #include "Data_Manager.h"
 #include "PipeLine.h"
+#include "Light_Manager.h"
 
 //#include "../../EditorTool/Public/ImguiManager.h"
 
@@ -76,12 +77,15 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	if (nullptr == m_pEventBus)
 		return E_FAIL;
 
-	// CData_Manager 积己秦 敌促
+	// m_pPipeLine 积己秦 敌促
 	m_pPipeLine = CPipeLine::Create();
 	if (nullptr == m_pPipeLine)
 		return E_FAIL;
 
-
+	// m_Light_Manager 积己秦 敌促
+	m_pLight_Manager = CLight_Manager::Create();
+	if (nullptr == m_pLight_Manager)
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -353,6 +357,16 @@ HRESULT CGameInstance::Bind_TransformMatrix_Inverse(D3DTS eTransformState, share
 	return m_pPipeLine->Bind_TransformMatrix_Inverse(eTransformState, pShader, pConstantName);
 }
 
+const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iIndex)
+{
+	return m_pLight_Manager->Get_LightDesc(iIndex);
+}
+
+HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
+{
+	return m_pLight_Manager->Add_Light(LightDesc);
+}
+
 
 
 void CGameInstance::Free()
@@ -371,6 +385,7 @@ void CGameInstance::Free()
 	m_UI_Manager.reset();
 	m_pData_Manager.reset();
 	m_pPipeLine.reset();
+	m_pLight_Manager.reset();
 
 
 	m_pGraphic_Device.reset();

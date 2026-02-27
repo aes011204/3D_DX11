@@ -9,7 +9,7 @@ CUIImage::CUIImage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pCo
 }
 
 CUIImage::CUIImage(const CUIImage& prototype)
-    :CUI{prototype}
+    :CUI{ prototype }, m_PassIndex(0)
 {
 }
 
@@ -29,6 +29,12 @@ HRESULT CUIImage::OnInit(void* pArg)
         // 텍스처 해상도를 스케일에 대입
         m_pUITransformCom->SetSizeDelta(m_pTextureCom->Get_SizeFromSRV(0));
     }
+
+    // 일단 초기화
+    _float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
+    m_SliceDesc.TexSize = orignSize;
+    m_SliceDesc.UISize = _float2(1.f, 1.f);
+    m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
 
     return S_OK;
 }
@@ -51,29 +57,21 @@ void CUIImage::OnDisabled()
 void CUIImage::OnUpdate(const _float& timeDelta)
 {
   //  m_bInteractable = false;
+    m_SliceDesc.UISize = m_pUITransformCom->Get_Size();
 }
 
 void CUIImage::OnLateUpdate()
 {
+
 }
 
 HRESULT CUIImage::OnRender()
 {
 
-    if (FAILED(m_pUITransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+    if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
 
-    if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ViewMatrix", D3DTS::VIEW)))
-        return E_FAIL;
-
-    if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ProjMatrix", D3DTS::PROJ)))
-        return E_FAIL;
-
-
-    if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
-        return E_FAIL;
-
-    if (FAILED(m_pShaderCom->Begin(0)))
+     if (FAILED(m_pShaderCom->Begin(m_PassIndex)))
         return E_FAIL;
 
     if (FAILED(m_pVIBufferCom->Bind_Resources()))
@@ -99,6 +97,56 @@ HRESULT CUIImage::Ready_Components(_uint Level, _wstring protoName)
         return E_FAIL;
 
     return S_OK;
+}
+
+HRESULT CUIImage::Bind_ShaderResources()
+{
+    if (FAILED(m_pUITransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+        return E_FAIL;
+
+    if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ViewMatrix", D3DTS::VIEW)))
+        return E_FAIL;
+
+    if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ProjMatrix", D3DTS::PROJ)))
+        return E_FAIL;
+
+    if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
+        return E_FAIL;
+
+    if (m_PassIndex == 1)
+    {
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_TexSize", &m_SliceDesc.TexSize, sizeof(_float2))))
+            return E_FAIL;
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_UISize", &m_SliceDesc.UISize, sizeof(_float2))))
+            return E_FAIL;
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_PxSliceLRTB", &m_SliceDesc.PxSliceLRTB, sizeof(_float4))))
+            return E_FAIL;
+    }
+
+    return S_OK;
+}
+
+void CUIImage::OnGui()
+{
+    ImGui::Checkbox("Use NineSlice", &bUseNineSlice);
+
+    if (bUseNineSlice == true)
+    {
+        m_PassIndex = 1;
+    }
+    else
+    {
+        m_PassIndex = 0;
+    }
+
+    _float4& slice = m_SliceDesc.PxSliceLRTB;
+
+    ImGui::Text("Nine Slice (px)");
+
+    ImGui::DragFloat("Left", &slice.x, 1.0f, 0.0f, 1000.0f);
+    ImGui::DragFloat("Right", &slice.y, 1.0f, 0.0f, 1000.0f);
+    ImGui::DragFloat("Top", &slice.z, 1.0f, 0.0f, 1000.0f);
+    ImGui::DragFloat("Bottom", &slice.w, 1.0f, 0.0f, 1000.0f);
 }
 
 shared_ptr<CUIImage> CUIImage::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

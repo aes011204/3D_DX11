@@ -31,11 +31,21 @@ protected:
     void OnClear()override;
 
     HRESULT Ready_Components(_uint Level, _wstring protoName);
+    HRESULT Bind_ShaderResources();
+
+/// <IMGUI>
+    virtual void OnGui() override;
+
+    bool bUseNineSlice = false;
+/// </summary>
 
 private:
-
+    _uint m_PassIndex = {0};
     //vector<IUIButtonBehavior*> m_behavior; // 인터페이스 클래스
+
+    NINESLICE_DESC m_SliceDesc = {};
 protected:
+
     shared_ptr<class CShader> m_pShaderCom = { nullptr };
     shared_ptr<class CVIBuffer_Rect> m_pVIBufferCom = { nullptr };
     shared_ptr<class CTexture> m_pTextureCom = { nullptr };

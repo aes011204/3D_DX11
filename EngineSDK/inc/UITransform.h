@@ -48,7 +48,7 @@ public:
 
     Rect GetWorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }
     XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_WorldMatrix); }
- 
+    _float2 Get_Size() { return _float2(m_SizeDelta * m_LocalScale); }
 
     void UpdateLayoutIfDirty();
 

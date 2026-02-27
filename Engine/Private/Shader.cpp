@@ -90,7 +90,7 @@ HRESULT CShader::Bind_SRV(const _char* pConstantName, ComPtr<ID3D11ShaderResourc
 {
 	//해당 이름을 가진 변수가 있는지 확인
 	ComPtr<ID3DX11EffectVariable> pVariable = m_pEffect->GetVariableByName(pConstantName);
-	if (nullptr == pVariable.Get())
+	if (!pVariable->IsValid())
 	{
 		MSG_BOX("Failed to throw value to shader");
 		return E_FAIL;

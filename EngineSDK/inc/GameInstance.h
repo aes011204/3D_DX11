@@ -97,8 +97,9 @@ public:/*For.PipeLine*/
 	HRESULT Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName);
 	HRESULT Bind_TransformMatrix(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
 	HRESULT Bind_TransformMatrix_Inverse(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
-
-
+public:/*For.Light_Manager*/
+	const LIGHT_DESC* Get_LightDesc(_uint iIndex);
+	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
 
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
@@ -111,6 +112,7 @@ private:
 	unique_ptr<class CDInput_Manager> m_pDInput_Manager = { nullptr };
 	unique_ptr<class CData_Manager> m_pData_Manager = { nullptr };
 	unique_ptr<class CPipeLine> m_pPipeLine = { nullptr };
+	unique_ptr<class CLight_Manager> m_pLight_Manager = { nullptr };
 
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 

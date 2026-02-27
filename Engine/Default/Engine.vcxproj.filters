@@ -46,6 +46,9 @@
     <Filter Include="99.Defines\01.Utility\05.UI">
       <UniqueIdentifier>{977e0374-b7ed-438c-8802-fb47d1768389}</UniqueIdentifier>
     </Filter>
+    <Filter Include="99.Defines\01.Utility\06.Lights">
+      <UniqueIdentifier>{5207b0dc-e6c3-4a95-9445-d19c4dc63241}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -134,7 +137,6 @@
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp">
       <Filter>99.Defines\01.Utility\04.Components\VIIBufer</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Shader.cpp" />
     <ClCompile Include="..\Private\Log_Manager.cpp" />
     <ClCompile Include="..\Private\Data_Manager.cpp" />
     <ClCompile Include="..\Private\UICanvas.cpp">
@@ -147,8 +149,19 @@
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="..\Private\UIObject.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
-    <ClCompile Include="..\Public\Camera.cpp" />
     <ClCompile Include="..\Private\Camera_Free.cpp" />
+    <ClCompile Include="..\Public\Camera.cpp">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Light.cpp">
+      <Filter>99.Defines\01.Utility\06.Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Light_Manager.cpp">
+      <Filter>99.Defines\01.Utility\06.Lights</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Shader.cpp">
+      <Filter>99.Defines\01.Utility\04.Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -256,7 +269,6 @@
       <Filter>99.Defines\01.Utility\04.Components\VIIBufer</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Engine_Helper.h" />
-    <ClInclude Include="..\Public\Shader.h" />
     <ClInclude Include="..\Public\Log_Manager.h" />
     <ClInclude Include="..\Public\Data_Manager.h" />
     <ClInclude Include="..\Public\Event_Struct.h" />
@@ -267,9 +279,20 @@
     <ClInclude Include="..\Public\VIBuffer_Terrain.h">
       <Filter>99.Defines\01.Utility\04.Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera.h" />
     <ClInclude Include="..\Public\UIObject.h" />
     <ClInclude Include="..\Public\PipeLine.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
+    <ClInclude Include="..\Public\Camera.h">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Light.h">
+      <Filter>99.Defines\01.Utility\06.Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Light_Manager.h">
+      <Filter>99.Defines\01.Utility\06.Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Shader.h">
+      <Filter>99.Defines\01.Utility\04.Components</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

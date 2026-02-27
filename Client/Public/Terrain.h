@@ -34,6 +34,7 @@ public:
 
 protected:
     HRESULT Ready_Components();
+    HRESULT Bind_ShaderResources();
 private:
     shared_ptr<CShader> m_pShaderCom = { nullptr };
     shared_ptr<CVIBuffer> m_pVIBufferCom = { nullptr };

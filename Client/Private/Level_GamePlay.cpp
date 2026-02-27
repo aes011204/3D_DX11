@@ -7,6 +7,7 @@
 #include "Camera_Free.h"
 
 
+
 CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CLevel{ pDevice, pContext }
 {
@@ -18,7 +19,8 @@ HRESULT CLevel_GamePlay::Initialize()
 	//CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "senechangedII");
 	//CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::WARNING, "senechangedWW");
 	//CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::ERR, "senechangedEE");
-
+	if (FAILED(Ready_Lights()))
+		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
@@ -46,6 +48,24 @@ HRESULT CLevel_GamePlay::Render()
 #endif
 	return S_OK;
 
+}
+
+HRESULT CLevel_GamePlay::Ready_Lights()
+{
+
+	LIGHT_DESC LightDesc{};
+
+	LightDesc.eType = LIGHT::DIRECTIONAL;
+
+	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbition = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
+		return E_FAIL;
+
+	return S_OK;
 }
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _wstring& strLayerTag)
