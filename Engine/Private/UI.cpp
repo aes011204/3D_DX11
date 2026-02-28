@@ -304,7 +304,7 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 
 	// 맵에 넣기 (검색용)
 	auto ui = Find_Children(UITag).lock();
-	if (ui==nullptr)
+	if (ui!=nullptr)
 		return E_FAIL;
 	m_mapChildren.emplace(UITag, child);
 

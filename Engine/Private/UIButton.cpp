@@ -159,7 +159,7 @@ void CUIButton::ProcessInput()
         }
 
 
-    CLog_Manager::GetInstance()->Add_Log_F(CLog_Manager::LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
+    //CLog_Manager::GetInstance()->Add_Log_F(CLog_Manager::LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
 
     if (m_bHovered)
     {
