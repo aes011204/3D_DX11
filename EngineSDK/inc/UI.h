@@ -3,7 +3,7 @@
 #include "UITransform.h"
 // ui 그 자체로도 생성 X
 //클라에서 생성할용도의 버튼 이미지 등은 이 클래스를 상속 받아 엔진에 만들예정
-// 특별한 경우만 프로토 타임을 이용 할것임
+// 특별한 경우만 프로토 타입을 이용 할것임- 보통은 안쓰고 클라패널에서 데이터를 이용해 셋팅
 // 클라에서 상속 받을 일 업음 클라는 조립만 / 패널을 이용한 상속은 O
 
 NS_BEGIN(Engine)
@@ -16,7 +16,7 @@ class ENGINE_DLL CUI abstract :
 public:
         struct UI_DESC : public CUITransform::UITRANSFORM_DESC
     {
-
+            bool flag = 0;
     };
 protected:
     CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

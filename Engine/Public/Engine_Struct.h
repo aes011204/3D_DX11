@@ -81,12 +81,22 @@ namespace Engine
         XMFLOAT4 vSpecular;
      
     };
+
     struct NINESLICE_DESC
     {
         _float2 TexSize = {};
         _float2 UISize = {};
         _float4 PxSliceLRTB = {};
 
+    };
+
+    struct LAYOUT_DESC
+    {
+        int m_Raw = { 0 };
+        int m_Col = { 0 };
+        float m_SlotSize = { 0 };
+        _float2 m_Spacing = { };
+        _float2 m_Padding = { };
     };
 }
 

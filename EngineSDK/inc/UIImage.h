@@ -11,7 +11,9 @@ public:
     {
         _uint TextureComLevel = {};
         _wstring TextureProtoName =L"";
-
+        _float4 PxSliceLRTB = {};
+        bool bUseNineSlice = false;
+        
     };
 protected:
     CUIImage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -36,10 +38,10 @@ protected:
 /// <IMGUI>
     virtual void OnGui() override;
 
-    bool bUseNineSlice = false;
 /// </summary>
 
 private:
+    bool m_bUseNineSlice = false;
     _uint m_PassIndex = {0};
     //vector<IUIButtonBehavior*> m_behavior; // 인터페이스 클래스
 

@@ -37,7 +37,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	if (nullptr == m_pTimer_Manager)
 		return E_FAIL;
 	// 레벨 매니져를 생성해 둔다
-	m_pLevel_Manager = CLevel_Manager::Create();
+	m_pLevel_Manager = CLevel_Manager::Create(EngineDesc.iEditorLevel, EngineDesc.iMaxLevelNum);
 	if (nullptr == m_pLevel_Manager)
 		return E_FAIL;
 	// 프로토 타입매니져를 생성해 둔다

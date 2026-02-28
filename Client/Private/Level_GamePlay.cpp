@@ -33,12 +33,17 @@ HRESULT CLevel_GamePlay::Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
-	if (GetKeyState(VK_SPACE) & 0x8000)
+	/*if (GetKeyState(VK_SPACE) & 0x8000)
 	{
 		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EDITOR))))
 			return ;
 	}
-	int a = 10;
+	int a = 10;*/
+	if (GetKeyState(VK_NUMPAD1) & 0x8000)
+	{
+		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::LOGO))))
+			return;
+	}
 }
 
 HRESULT CLevel_GamePlay::Render()

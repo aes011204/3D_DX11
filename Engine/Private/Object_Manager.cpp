@@ -131,13 +131,11 @@ void CObject_Manager::Late_Update(_float fTimeDelta)
 
 HRESULT CObject_Manager::Clear_Layers(_uint iLevelIndex)
 {
+	
+	
 	if (m_iNumLevel <= iLevelIndex)
 		return E_FAIL;
 
-	//for(auto& pair :m_pLayers[iLevelIndex])
-	//{
-	//	Safe_Release(pair.second);
-	//}
 	m_pLayers[iLevelIndex].clear();
 
 	return S_OK;

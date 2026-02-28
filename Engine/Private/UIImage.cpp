@@ -33,8 +33,17 @@ HRESULT CUIImage::OnInit(void* pArg)
     // 일단 초기화
     _float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
     m_SliceDesc.TexSize = orignSize;
-    m_SliceDesc.UISize = _float2(1.f, 1.f);
+    m_SliceDesc.UISize = _float2(1.f, 1.f);// 어짜피 트렌스폼이 정함 최종 ui 사이즈
     m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
+
+  
+    if (pDesc->PxSliceLRTB.x != 0.f && pDesc->PxSliceLRTB.y != 0.f 
+        && pDesc->PxSliceLRTB.z != 0.f && pDesc->PxSliceLRTB.w != 0.f)
+    {
+        m_SliceDesc.PxSliceLRTB = (pDesc->PxSliceLRTB);
+    }
+
+    m_bUseNineSlice = pDesc->bUseNineSlice;
 
     return S_OK;
 }
@@ -63,6 +72,14 @@ void CUIImage::OnUpdate(const _float& timeDelta)
 void CUIImage::OnLateUpdate()
 {
 
+    if (m_bUseNineSlice == true)
+    {
+        m_PassIndex = 1;
+    }
+    else
+    {
+        m_PassIndex = 0;
+    }
 }
 
 HRESULT CUIImage::OnRender()
@@ -128,16 +145,8 @@ HRESULT CUIImage::Bind_ShaderResources()
 
 void CUIImage::OnGui()
 {
-    ImGui::Checkbox("Use NineSlice", &bUseNineSlice);
+    ImGui::Checkbox("Use NineSlice", &m_bUseNineSlice);
 
-    if (bUseNineSlice == true)
-    {
-        m_PassIndex = 1;
-    }
-    else
-    {
-        m_PassIndex = 0;
-    }
 
     _float4& slice = m_SliceDesc.PxSliceLRTB;
 

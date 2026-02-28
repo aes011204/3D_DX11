@@ -1,0 +1,149 @@
+{
+    "Level": 4,
+    "WorldGameObject": [
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Texture_BackGround_1",
+                    "ComponentTag": "Com_Texture"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 1.401298464324817e-45,
+                    "Position": [
+                        44.0,
+                        34.29999923706055,
+                        0.0,
+                        1.0
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        33.79999923706055,
+                        28.700000762939453,
+                        1.0
+                    ],
+                    "Turn Speed": 8.015427215937954e-43,
+                    "Type": "Transform"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                    "ComponentTag": "Com_VIBuffer"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGameObject",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_EmptyGameObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Texture_Button",
+                    "ComponentTag": "Com_Texture"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 1.401298464324817e-45,
+                    "Position": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        30.100000381469727,
+                        41.0,
+                        1.0
+                    ],
+                    "Turn Speed": 8.015427215937954e-43,
+                    "Type": "Transform"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                    "ComponentTag": "Com_VIBuffer"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGameObject (1)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_EmptyGameObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Texture_Dredge",
+                    "ComponentTag": "Com_Texture"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 1.401298464324817e-45,
+                    "Position": [
+                        141.8000030517578,
+                        32.5,
+                        9.5,
+                        1.0
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        89.0,
+                        34.20000076293945,
+                        1.0
+                    ],
+                    "Turn Speed": 8.015427215937954e-43,
+                    "Type": "Transform"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                    "ComponentTag": "Com_VIBuffer"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGameObject (2)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_EmptyGameObject"
+        }
+    ]
+}

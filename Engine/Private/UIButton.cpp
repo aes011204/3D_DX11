@@ -159,6 +159,7 @@ void CUIButton::ProcessInput()
         }
 
 
+    CLog_Manager::GetInstance()->Add_Log_F(CLog_Manager::LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
 
     if (m_bHovered)
     {
@@ -166,8 +167,9 @@ void CUIButton::ProcessInput()
         {
             m_ClickInside = true;
             m_UIState = BUTTON_STATE::CLICK;
+            return;
         }
-        else if (mouseUp && m_ClickInside&& m_UIState == BUTTON_STATE::CLICK) // 안에서 클릭한 상태에서 안에서 뗏는지
+        if (mouseUp && m_ClickInside/*&& m_UIState == BUTTON_STATE::CLICK*/) // 안에서 클릭한 상태에서 안에서 뗏는지
         {
             m_ClickInside = false;
             m_UIState = BUTTON_STATE::HOVER;
@@ -176,25 +178,27 @@ void CUIButton::ProcessInput()
             {
                 m_ClickEvent(this);
             }
+            return;
         }
-        else if (!mouseDown && m_UIState != BUTTON_STATE::HOVER) // 호버링 중인가
+        if (!mouseDown && !mouseUp&& m_UIState != BUTTON_STATE::HOVER) // 호버링 중인가
         {
             m_UIState = BUTTON_STATE::HOVER;
 
-
+         CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "Exited at");
             if (m_OverlapStartEvent) // 콜백 실행
             {
                 m_OverlapStartEvent(this);
             }
+            return;
         }
     }
     else
     {
-            if (mouseUp)
-                m_ClickInside = false;
 
         if (m_UIState != BUTTON_STATE::NONE)
         {
+            if (mouseUp)
+                m_ClickInside = false;
 
             m_UIState = BUTTON_STATE::NONE;
 
@@ -206,7 +210,6 @@ void CUIButton::ProcessInput()
         }
     }
 
-   // CLog_Manager::GetInstance()->Add_Log_F(CLog_Manager::LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
 
 }
 

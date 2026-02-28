@@ -158,6 +158,7 @@
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\UI_MainMenu.h" />
     <ClInclude Include="EmptyGameObject.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="CScaleModifier.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\UI_MainMenu.cpp" />
     <ClCompile Include="EmptyGameObject.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CScaleModifier.cpp" />

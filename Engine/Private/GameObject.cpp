@@ -52,24 +52,6 @@ HRESULT CGameObject::Initialize(void* pArg)
 		GAMEOBJECT_DESC* pDesc = static_cast<GAMEOBJECT_DESC*> (pArg);
 	}
 
-
-	//// юс╫ц // ui ©К//
-	//
-	//D3D11_VIEWPORT ViewPortDesc{};
-	//_uint iNumViewPort = { 1 };
-	//m_pContext->RSGetViewports(&iNumViewPort, &ViewPortDesc);
-	//
-	//m_fViewportWidth = ViewPortDesc.Width;
-	//m_fViewportHeight = ViewPortDesc.Height;
-	//
-	//m_pTransformCom->SetUp_Scale(m_fSizeX, m_fSizeY, 1.f);
-	//m_pTransformCom->Set_State(STATE::POSITION,
-	//	XMVectorSet(m_fX - m_fViewportWidth * 0.5f, -m_fY + m_fViewportHeight * 0.5f, 0.f, 1.f));
-	//
-	//
-	//XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::VIEW)], XMMatrixIdentity());
-	//XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::PROJ)], XMMatrixOrthographicLH(m_fViewportWidth, m_fViewportHeight, -100.f, 100.f));
-	//
 	return S_OK;
 }
 
@@ -90,17 +72,7 @@ HRESULT CGameObject::Render()
 	return S_OK;
 }
 
-//HRESULT CGameObject::Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, D3DTS eTransformState)
-//{
-//	return pShader->Bind_Matrix(pConstantName, &m_TransformationMatrices[ETOI(eTransformState)]);
-//}
-//
-//void CGameObject::Update_Transform()
-//{
-//	m_pTransformCom->SetUp_Scale(m_fSizeX, m_fSizeY, 1.f);
-//	m_pTransformCom->Set_State(STATE::POSITION,
-//		XMVectorSet(m_fX - m_fViewportWidth * 0.5f, -m_fY + m_fViewportHeight * 0.5f, 0.f, 1.f));
-//}
+
 
 void CGameObject::Free()
 {

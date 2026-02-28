@@ -95,6 +95,7 @@
     <ClInclude Include="..\Public\Camera_Play.h">
       <Filter>02.GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_MainMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -157,6 +158,7 @@
     <ClCompile Include="..\Private\Camera_Play.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\UI_MainMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

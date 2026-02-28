@@ -3,6 +3,7 @@
 #include "Level_Editor.h"
 #include "GameInstance.h"
 #include "EventBus.h"
+#include "Level_Loading.h"
 #include "Event_Struct.h"
 
 CLevel_Editor::CLevel_Editor(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -12,6 +13,9 @@ CLevel_Editor::CLevel_Editor(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceCo
 
 HRESULT CLevel_Editor::Initialize()
 {
+
+
+
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtCloneProto>([this](const EvtCloneProto& e)
 		{
 			if (CGameInstance::GetInstance()->Get_Current_LevelIdx() == ETOI(LEVEL::EDITOR)) 
@@ -26,6 +30,17 @@ HRESULT CLevel_Editor::Initialize()
 
 void CLevel_Editor::Update(_float fTimeDelta)
 {
+	if (GetKeyState(VK_NUMPAD1) & 0x8000)
+	{
+		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::LOGO))))
+			return;
+	}
+	int a = 10;
+	//if (FAILED(m_pInstance.lock()->Change_Level(ETOI(eLevel), CLevel_Loading::Create(m_pDevice, m_pContext, eLevel))
+	//{
+	//	MSG_BOX("Failed to Change : NextLevel");
+	//	return;
+	//}
 }
 
 HRESULT CLevel_Editor::Render()

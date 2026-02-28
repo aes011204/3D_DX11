@@ -22,11 +22,11 @@ void CUIPanel::Layout()
         if (child->IsLayoutTarget() != true)
             return;
 
-        int Raw = index % m_Col;
-        int Col = index / m_Col;
+        int Raw = index % m_LayoutDesc.m_Col;
+        int Col = index / m_LayoutDesc.m_Col;
 
-        float posX = m_Padding.x + (m_SlotSize + m_Spacing.x) * Raw;
-        float posY = m_Padding.y + (m_SlotSize + m_Spacing.y) * Col;
+        float posX = m_LayoutDesc.m_Padding.x + (m_LayoutDesc.m_SlotSize + m_LayoutDesc.m_Spacing.x) * Raw;
+        float posY = m_LayoutDesc.m_Padding.y + (m_LayoutDesc.m_SlotSize + m_LayoutDesc.m_Spacing.y) * Col;
 
         child->GetUITransform()->SetAnchoredPos({ posX, posY });
 
@@ -39,10 +39,10 @@ void CUIPanel::Layout()
 
     // 중점  ///////////////////////////////////////////////////////////////
 
-    float totalWidth = (m_Raw * m_SlotSize) + ((m_Raw - 1) * m_Spacing.x);
-    float totalHeight = (m_Raw * m_SlotSize) + ((m_Col - 1) * m_Spacing.y);
+    float totalWidth = (m_LayoutDesc.m_Raw * m_LayoutDesc.m_SlotSize) + ((m_LayoutDesc.m_Raw - 1) * m_LayoutDesc.m_Spacing.x);
+    float totalHeight = (m_LayoutDesc.m_Raw * m_LayoutDesc.m_SlotSize) + ((m_LayoutDesc.m_Col - 1) * m_LayoutDesc.m_Spacing.y);
 
-    _float2 startPos = { -(totalWidth / 2) - (m_SlotSize / 2), (totalHeight / 2) + (m_SlotSize / 2) };
+    _float2 startPos = { -(totalWidth / 2) - (m_LayoutDesc.m_SlotSize / 2), (totalHeight / 2) + (m_LayoutDesc.m_SlotSize / 2) };
 
 
 
@@ -51,11 +51,11 @@ void CUIPanel::Layout()
         if (child->IsLayoutTarget() != true)
             return;
 
-        int Raw = index % m_Col;
-        int Col = index / m_Col;
+        int Raw = index % m_LayoutDesc.m_Col;
+        int Col = index / m_LayoutDesc.m_Col;
 
-        float posX = startPos.x + (m_SlotSize + m_Spacing.x) * Raw;
-        float posY = startPos.y + (m_SlotSize + m_Spacing.y) * Col;
+        float posX = startPos.x + (m_LayoutDesc.m_SlotSize + m_LayoutDesc.m_Spacing.x) * Raw;
+        float posY = startPos.y + (m_LayoutDesc.m_SlotSize + m_LayoutDesc.m_Spacing.y) * Col;
 
         dynamic_pointer_cast<CUISlot>(child)->SetGridIndex({ (float)Raw, (float)Col });
 
@@ -72,6 +72,13 @@ void CUIPanel::AddChild()
 
 HRESULT CUIPanel::OnInit(void* pArg)
 {
+    UIPANEL_DESC* pDesc = static_cast<UIPANEL_DESC*>(pArg);
+
+    m_LayoutDesc = pDesc->LayoutDesc;
+
+    // 이건 부모가 CUI라서 할필요 없는데 그냥 ㄱㄱ
+    __super::OnInit(pDesc);
+
     return S_OK;
 }
 
@@ -103,18 +110,6 @@ HRESULT CUIPanel::OnRender()
 
 void CUIPanel::OnClear()
 {
-}
-
-shared_ptr<CUIPanel> CUIPanel::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-{
-    shared_ptr<CUIPanel> pInstance ( new CUIPanel(pDevice, pContext));
-
-    if (FAILED(pInstance->Initialize_Prototype()))
-    {
-        MSG_BOX("Failed to Created : CUIPanel");
-
-    }
-    return pInstance;
 }
 
 void CUIPanel::Free()

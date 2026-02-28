@@ -21,6 +21,7 @@ HRESULT CUI::Initialize_Prototype()
 
 }
 
+// UI는 프로토 타입으로 아니셜라이 프로토타입으로 호출하고 직접Initalize 하니까 
 HRESULT CUI::Initialize(void* pArg)
 {
 
@@ -47,13 +48,15 @@ HRESULT CUI::Initialize(void* pArg)
 
 
 	OnInit(pArg);
-
-
+	// 최하위fianl 자식의 OnInit 호출 -> 
+	// 자신의 부모가 UI이면 __super::OnInit 안해도됨 (해도 됨 막아놈)
+	// 아닌경우는 해줘야함 
 
 	//for (auto& it : m_Children)
 	//{
 	//	it->Initialize(pArg); // 이거 ㄱㅊ?? 이미 자식을 밖에서 만들어서 이니셜라이즈 다하고 여기 붙히는거 아닌가?
 	//}// 마즘 지금 2번돔 근데 이니셜라이즈 안에서 방어 해놧음
+
 
 	//// 행렬
 	D3D11_VIEWPORT ViewPortDesc{};
@@ -63,13 +66,7 @@ HRESULT CUI::Initialize(void* pArg)
 	float ViewportWidth = ViewPortDesc.Width;
 	float ViewportHeight = ViewPortDesc.Height;
 
-	//m_pTransformCom->SetUp_Scale(m_fSizeX, m_fSizeY, 1.f);
-	//m_pTransformCom->Set_State(STATE::POSITION,
-	//	XMVectorSet(m_fX - m_fViewportWidth * 0.5f, -m_fY + m_fViewportHeight * 0.5f, 0.f, 1.f));
-
-	Rect r = m_pGameInstance.lock()->Get_WinSize();
 	XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::VIEW)], XMMatrixIdentity());
-	//XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::PROJ)], XMMatrixOrthographicLH(ViewportWidth, ViewportHeight, -100.f, 100.f));
 	XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::PROJ)], XMMatrixOrthographicOffCenterLH(0.f, ViewportWidth,
 		0.f, ViewportHeight,
 		0.f, 1.f));
