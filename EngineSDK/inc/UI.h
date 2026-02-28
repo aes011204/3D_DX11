@@ -39,12 +39,16 @@ public:
 
     void UI_Clear();
 
-    HRESULT Add_Child(shared_ptr<CUI> child, _bool KeepWorldRect);
+    HRESULT Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect);
 
     HRESULT Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, D3DTS eTransformState);
 
     void Set_Zorder(_uint Z) { m_ZOrder = Z; m_Parent.lock()->m_bIsDirty_Zorder = true; }
 
+    weak_ptr<CUI> Find_Children(_wstring strTag);
+    const map<_wstring, weak_ptr<CUI>>& Get_mapChildren() const { return m_mapChildren; }
+
+    void Save_ToJson(nlohmann::json& j)override;
 
 /// <IMGUI>
     const vector<shared_ptr<CUI>>& GetChildren() const { return m_Children; }
@@ -74,8 +78,12 @@ protected:
     _float4x4					m_TransformationMatrices[ETOI(D3DTS::END)];
     bool m_bIsDirty_Zorder = { false };
 
+    // 검색용
+    map<_wstring, weak_ptr<CUI>> m_mapChildren = {};
+
 private:
     int m_ZOrder = { 1 };
+
     bool m_bEnabled = { true }; // “위에 다른 팝업이 떠서 아래 UI가 조금 보이긴 하지만 update는 안하는 상태”
     bool m_bVisible = { true }; // 렌더 여부
 

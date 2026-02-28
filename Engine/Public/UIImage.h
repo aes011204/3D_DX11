@@ -11,6 +11,7 @@ public:
     {
         _uint TextureComLevel = {};
         _wstring TextureProtoName =L"";
+
         _float4 PxSliceLRTB = {};
         bool bUseNineSlice = false;
         
@@ -34,6 +35,9 @@ protected:
 
     HRESULT Ready_Components(_uint Level, _wstring protoName);
     HRESULT Bind_ShaderResources();
+
+    void Save_ToJson(nlohmann::json& j)override;
+    void Load_FromJson(nlohmann::json& j)override;
 
 /// <IMGUI>
     virtual void OnGui() override;

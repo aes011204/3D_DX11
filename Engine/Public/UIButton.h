@@ -39,6 +39,9 @@ protected:
 
     HRESULT Ready_Components(_uint Level,_wstring protoName);
 
+    void Save_ToJson(nlohmann::json& j)override;
+    void Load_FromJson(nlohmann::json& j)override;
+
 private:
     bool  m_ClickInside = { false };
     BUTTON_STATE m_UIState = BUTTON_STATE::NONE;

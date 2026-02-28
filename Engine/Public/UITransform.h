@@ -48,7 +48,7 @@ public:
 
     Rect GetWorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }
     XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_WorldMatrix); }
-    _float2 Get_Size() { return _float2(m_SizeDelta * m_LocalScale); }
+    _float2 Get_FinalSize() { return _float2(m_SizeDelta * m_LocalScale); }
 
     void UpdateLayoutIfDirty();
 
@@ -64,7 +64,8 @@ private:
 
     Vector2 Hadamard(const Vector2& a, const Vector2& b); // _vec2 요소별 곱
 
-
+    void Save_ToJson(nlohmann::json& j)override;
+    void Load_FromJson(nlohmann::json& j)override;
 private:
     // 상속 구조용
     weak_ptr<CUITransform> m_Parent = {};

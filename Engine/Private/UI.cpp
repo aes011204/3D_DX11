@@ -4,6 +4,7 @@
 #include "GameInstance.h"
 #include "UITransform.h" 
 #include "IModifier.h"
+#include "Engine_Helper.h"
 
 CUI::CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CEntity(pDevice, pContext)
@@ -49,7 +50,7 @@ HRESULT CUI::Initialize(void* pArg)
 
 	OnInit(pArg);
 	// 최하위fianl 자식의 OnInit 호출 -> 
-	// 자신의 부모가 UI이면 __super::OnInit 안해도됨 (해도 됨 막아놈)
+	// 자신의 부모가 UI이면 __super::OnInit 안해도됨 (해도 됨 {}이거임)
 	// 아닌경우는 해줘야함 
 
 	//for (auto& it : m_Children)
@@ -58,7 +59,22 @@ HRESULT CUI::Initialize(void* pArg)
 	//}// 마즘 지금 2번돔 근데 이니셜라이즈 안에서 방어 해놧음
 
 
-	//// 행렬
+	//// 일단 초기화 -> CUi로 올림 
+	//_float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
+	//m_SliceDesc.TexSize = orignSize;
+	//m_SliceDesc.UISize = _float2(1.f, 1.f);// 어짜피 트렌스폼이 정함 최종 ui 사이즈
+	//m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
+
+
+	//if (pDesc->PxSliceLRTB.x != 0.f && pDesc->PxSliceLRTB.y != 0.f
+	//	&& pDesc->PxSliceLRTB.z != 0.f && pDesc->PxSliceLRTB.w != 0.f)
+	//{
+	//	m_SliceDesc.PxSliceLRTB = (pDesc->PxSliceLRTB);
+	//}
+
+	//m_bUseNineSlice = pDesc->bUseNineSlice;
+
+	//// 행렬  //////////////////////////////////////
 	D3D11_VIEWPORT ViewPortDesc{};
 	_uint iNumViewPort = { 1 };
 	m_pContext->RSGetViewports(&iNumViewPort, &ViewPortDesc);
@@ -80,6 +96,56 @@ HRESULT CUI::Initialize(void* pArg)
 HRESULT CUI::Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, D3DTS eTransformState)
 {
 	return pShader->Bind_Matrix(pConstantName, &m_TransformationMatrices[ETOI(eTransformState)]);
+}
+
+weak_ptr<CUI> CUI::Find_Children(_wstring strTag)
+{
+	auto it = m_mapChildren.find(strTag);
+	if (it == m_mapChildren.end())
+		return weak_ptr<CUI>(); // 빈 weak_ptr -> 널체크는 lock() 하면 주인 shared ptr 없으면 널 됨
+
+	return it->second;
+
+}
+
+void CUI::Save_ToJson(nlohmann::json& j)
+{
+
+	//CUI 데이터
+	if(m_ZOrder!=1)
+		j["ZOrder"] = m_ZOrder;
+
+	// Componet데이터 저장 
+	nlohmann::json jComponentArray = nlohmann::json::array();
+	for (auto& pair : Get_ComponentMap())
+	{
+		nlohmann::json jCom;
+		// 컴포넌트에 공통적으로 들어가는거
+		jCom["ComProtoTag"] = W2S(pair.second->Get_ProtoTag());
+		jCom["ComProtoLevel"] = pair.second->Get_ProtoLevel();
+		jCom["ComponentTag"] = W2S(pair.first);
+		// 각 컴포넌트 안의 세부내용
+		pair.second->Save_ToJson(jCom);
+		jComponentArray.push_back(jCom);
+	}
+	j["Components"] = jComponentArray;
+
+
+	// 자식 재귀 시작
+	nlohmann::json jChildrenArray = nlohmann::json::array();
+	for (auto& pair : m_mapChildren)
+	{
+		auto pChild = pair.second.lock();
+		if (nullptr == pChild) continue;
+
+		nlohmann::json jChild;
+
+		jChild["UIChildrenTag"] = W2S(pair.first);
+		pair.second.lock()->Save_ToJson(jChild);
+
+		jChildrenArray.push_back(jChild);
+	}
+	j["Children"] = jChildrenArray;
 }
 
 void CUI::Update(_float fTimeDelta, bool& bMouseHold)
@@ -228,13 +294,19 @@ void CUI::UI_Clear() // 이건 삭제
 
 }
 
-HRESULT CUI::Add_Child(shared_ptr<CUI> child, _bool KeepWorldRect)
+HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect)
 {
 	if (child == nullptr)
 		return E_FAIL;
-
+	// 백터에 넣기 (본체)
 	m_Children.push_back(child);
 	child->m_Parent = static_pointer_cast<CUI>(shared_from_this());
+
+	// 맵에 넣기 (검색용)
+	auto ui = Find_Children(UITag).lock();
+	if (ui==nullptr)
+		return E_FAIL;
+	m_mapChildren.emplace(UITag, child);
 
 	// 트렌스폼 연결 (안에서 부모 자식 연결 다함)
 	if (m_pUITransformCom && child->GetUITransform())

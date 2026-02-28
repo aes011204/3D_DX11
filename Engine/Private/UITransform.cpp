@@ -269,6 +269,21 @@ Vector2 CUITransform::Hadamard(const Vector2& a, const Vector2& b)
     return Vector2{ a.x * b.x, a.y * b.y };
 }
 
+void CUITransform::Save_ToJson(nlohmann::json& j)
+{
+
+    j["AnchorPoint"] = { m_AnchorPoint.x , m_AnchorPoint.y };
+    j["Pivot"] = { m_Pivot.x , m_Pivot.y };
+    j["SizeDelta"] = { m_SizeDelta.x , m_SizeDelta.y };
+    j["AnchoredPos"] = { m_AnchoredPos.x , m_AnchoredPos.y };
+    j["m_LocalScale"] = { m_LocalScale.x , m_LocalScale.y};
+
+}
+
+void CUITransform::Load_FromJson(nlohmann::json& j)
+{
+}
+
 HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const _char* pConstantName)
 {
     return 	pShaderCom->Bind_Matrix(pConstantName, &m_WorldMatrix);;

@@ -1,5 +1,6 @@
 #include "Texture.h"
 #include "Shader.h"
+#include "UITransform.h"
 
 CTexture::CTexture(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CComponent(pDevice, pContext)
@@ -17,7 +18,7 @@ CTexture::CTexture(const CTexture& Prototype)
 HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNumSRVs)
 {
 	m_iNumSRVs = iNumSRVs;
-	for (int i = 0; i < iNumSRVs;i++)
+	for (_uint i = 0; i < iNumSRVs;i++)
 	{
 		ComPtr<ID3D11ShaderResourceView> pSRV = { nullptr };
 
@@ -48,8 +49,14 @@ HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNu
 
 HRESULT CTexture::Initialize(void* pArg)
 {
-	return CComponent::Initialize(pArg);
-	return S_OK;
+	HRESULT hr = E_FAIL;
+
+
+	hr = CComponent::Initialize(pArg);
+
+
+
+	return hr;
 
 }
 
@@ -93,7 +100,7 @@ shared_ptr<CTexture> CTexture::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D1
 
 shared_ptr<CComponent> CTexture::Clone(void* pArg)
 {
-	shared_ptr<CTexture> pInstance (new CTexture(*this)/*,  [](CTexture* p) {p->Free();delete p;}*/);
+	shared_ptr<CTexture> pInstance (new CTexture(*this),  [](CTexture* p) {p->Free();delete p;});
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
@@ -104,11 +111,11 @@ shared_ptr<CComponent> CTexture::Clone(void* pArg)
 
 void CTexture::Free()
 {
-	__super::Free();
 
 	for (auto& pSRV : m_SRVs)
 		pSRV.Reset();
 
 	m_SRVs.clear();
 
+	__super::Free();
 }

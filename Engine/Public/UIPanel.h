@@ -9,9 +9,12 @@ class ENGINE_DLL CUIPanel :
 public:
     struct UIPANEL_DESC : public CUI::UI_DESC
     {
-        //_bool IsTrnasparent = {};
-        //_bool IsFullScreen = {};
-        //_bool IsUseLayout = {};
+        _uint TextureComLevel = {};
+        _wstring TextureProtoName = L"";
+
+        _bool IsTrnasparent = { false };
+        _bool IsFullScreen = { false };
+        _bool IsUseLayout = { false };
 
         LAYOUT_DESC LayoutDesc;
     };
@@ -19,13 +22,9 @@ protected:
     CUIPanel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	CUIPanel(const CUIPanel& prototype);
 public:
-    ~CUIPanel()= default;
+    ~CUIPanel() = default;
 
 public:
-    //HRESULT Ready_GameObject() override;
-    //_int    Update_GameObject(const _float& timeDelta) override;
-    //void    LateUpdate_GameObject(const _float& timeDelta) override;
-    //void    Render_GameObject() override;
 
     HRESULT OnInit(void* pArg) override;
     void OnActive()override;
@@ -36,28 +35,31 @@ public:
     HRESULT OnRender()override;
     void OnClear()override;
 
+    HRESULT Ready_Components(_uint Level, _wstring protoName);
+    HRESULT Bind_ShaderResources();
 
+    /// <IMGUI>
+    virtual void OnGui() override;
+
+    /// </summary>
 public:
     void Layout();
-    void AddChild();
+    void Add_Layout_Child();
 private:
     // 내부 계산 용
     int index = 0;
 
-    //// 나중에 구조체
-    //int m_Raw = {0};
-    //int m_Col = { 0 };
-    //float m_SlotSize = { 0 };
-    //_float2 m_Spacing = { };
-    //_float2 m_Padding = { };
-    ////
     LAYOUT_DESC m_LayoutDesc ;
 
 
-    _bool m_IsTrnasparent = {};
+    _bool m_IsTransparent = {};
     _bool m_IsFullScreen = {};
     _bool m_IsUseLayout = {};
 
+protected:
+    shared_ptr<class CShader> m_pShaderCom = { nullptr };
+    shared_ptr<class CVIBuffer_Rect> m_pVIBufferCom = { nullptr };
+    shared_ptr<class CTexture> m_pTextureCom = { nullptr };
 public:
       //static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 

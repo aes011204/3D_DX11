@@ -92,7 +92,7 @@ except:
 void CObject_Manager::Priority_Update(_float fTimeDelta)
 {
 	// 동적배열로 선언한건 범위기반 for 불가능
-	for(int i=0; i<m_iNumLevel;i++)
+	for(_uint i=0; i<m_iNumLevel;i++)
 	{
 		for(auto& pair : m_pLayers[i])
 		{
@@ -105,7 +105,7 @@ void CObject_Manager::Priority_Update(_float fTimeDelta)
 void CObject_Manager::Update(_float fTimeDelta)
 {
 	// 동적배열로 선언한건 범위기반 for 불가능
-	for (int i = 0; i < m_iNumLevel;i++)
+	for (_uint i = 0; i < m_iNumLevel;i++)
 	{
 		for (auto& pair : m_pLayers[i])
 		{
@@ -118,7 +118,7 @@ void CObject_Manager::Update(_float fTimeDelta)
 void CObject_Manager::Late_Update(_float fTimeDelta)
 {
 	// 동적배열로 선언한건 범위기반 for 불가능
-	for (int i = 0; i < m_iNumLevel;i++)
+	for (_uint i = 0; i < m_iNumLevel;i++)
 	{
 		for (auto& pair : m_pLayers[i])
 		{
@@ -143,7 +143,7 @@ HRESULT CObject_Manager::Clear_Layers(_uint iLevelIndex)
 
 void CObject_Manager::Update_Gui()
 {
-	for (int i = 0; i < m_iNumLevel;i++)
+	for (_uint i = 0; i < m_iNumLevel;i++)
 	{
 		for (auto& pair : m_pLayers[i])
 		{
@@ -188,7 +188,7 @@ void CObject_Manager::Free()
 {
 	__super::Free();
 
-	for (int i = 0; i < m_iNumLevel;i++)
+	for (_uint i = 0; i < m_iNumLevel;i++)
 	{
 		m_pLayers[i].clear();
 	}

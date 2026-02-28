@@ -1,6 +1,10 @@
 #include "UIPanel.h"
 #include "UISlot.h"
 #include "UITransform.h"
+#include "UICanvas.h"
+#include "GameInstance.h"
+#include "Texture.h"
+#include "Shader.h"
 
 CUIPanel::CUIPanel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
     : CUI(pDevice, pContext)
@@ -12,6 +16,143 @@ CUIPanel::CUIPanel(const CUIPanel& prototype)
     : CUI(prototype)
 {
 }
+
+HRESULT CUIPanel::OnInit(void* pArg)
+{
+    // 밖에서 Root Canvas 연결해주기
+    UIPANEL_DESC* pDesc = static_cast<UIPANEL_DESC*>(pArg);
+
+    m_LayoutDesc = pDesc->LayoutDesc;
+    m_IsTransparent = pDesc->IsTrnasparent;
+    m_IsFullScreen = pDesc->IsFullScreen;
+
+    if (m_IsTransparent==false)
+    {
+    if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
+        return E_FAIL;
+
+    }
+
+   // m_IsUseLayout = pDesc->IsUseLayout;
+
+
+    if (pDesc->IsFullScreen == true)
+    {
+        Rect m_CanvasSize = m_pGameInstance.lock()->Get_WinSize();
+
+        //pDesc->vAnchorPoint = { 0.5f, 0.5f }; // 중앙 기준
+        //pDesc->vPivot = { 0.5f, 0.5f }; // 중앙 기준
+        //pDesc->vSizeDelta = { m_CanvasSize.w, m_CanvasSize.h };
+        //pDesc->vAnchoredPos = { 0.f, 0.f };
+        //pDesc->vScale = { 1.f, 1.f };
+        
+        m_pUITransformCom->SetAnchorPoint(Vector2(0.5f, 0.5f));
+        m_pUITransformCom->SetPivot(Vector2(0.5f, 0.5f));
+        m_pUITransformCom->SetSizeDelta(Vector2(m_CanvasSize.w, m_CanvasSize.h));
+        m_pUITransformCom->SetAnchoredPos(Vector2(0.f, 0.f));
+        m_pUITransformCom->SetLocalScale(Vector2(1.f,1.f));
+    }
+
+    // 이건 부모가 CUI라서 할필요 없는데 그냥 ㄱㄱ
+    __super::OnInit(pDesc);
+
+    return S_OK;
+}
+
+void CUIPanel::OnActive()
+{
+}
+
+void CUIPanel::OnInActive()
+{
+}
+
+void CUIPanel::OnDisabled()
+{
+}
+
+void CUIPanel::OnUpdate(const _float& timeDelta)
+{
+
+}
+
+void CUIPanel::OnLateUpdate()
+{
+}
+
+HRESULT CUIPanel::OnRender()
+{
+    if (m_IsTransparent == true)
+        return S_OK;
+
+    if (FAILED(Bind_ShaderResources()))
+        return E_FAIL;
+
+    if (FAILED(m_pShaderCom->Begin(0)))
+        return E_FAIL;
+
+    if (FAILED(m_pVIBufferCom->Bind_Resources()))
+        return E_FAIL;
+
+    if (FAILED(m_pVIBufferCom->Render()))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+void CUIPanel::OnClear()
+{
+}
+
+HRESULT CUIPanel::Ready_Components(_uint Level, _wstring protoName)
+{
+    if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+        return E_FAIL;
+    if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+        return E_FAIL;
+    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+        return E_FAIL;
+
+    return S_OK;
+}
+
+HRESULT CUIPanel::Bind_ShaderResources()
+{
+    if (FAILED(m_pUITransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+        return E_FAIL;
+
+    if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ViewMatrix", D3DTS::VIEW)))
+        return E_FAIL;
+
+    if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ProjMatrix", D3DTS::PROJ)))
+        return E_FAIL;
+
+    if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
+        return E_FAIL;
+
+  /*  if (m_PassIndex == 1)
+    {
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_TexSize", &m_SliceDesc.TexSize, sizeof(_float2))))
+            return E_FAIL;
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_UISize", &m_SliceDesc.UISize, sizeof(_float2))))
+            return E_FAIL;
+        if (FAILED(m_pShaderCom->Bind_RawValue("g_PxSliceLRTB", &m_SliceDesc.PxSliceLRTB, sizeof(_float4))))
+            return E_FAIL;
+    }*/
+
+    return S_OK;
+}
+
+void CUIPanel::OnGui()
+{
+}
+
+void CUIPanel::Free()
+{
+
+    __super::Free();
+}
+
 
 void CUIPanel::Layout()
 {
@@ -65,55 +206,7 @@ void CUIPanel::Layout()
 
 }
 
-void CUIPanel::AddChild()
+void CUIPanel::Add_Layout_Child()
 {
 }
 
-
-HRESULT CUIPanel::OnInit(void* pArg)
-{
-    UIPANEL_DESC* pDesc = static_cast<UIPANEL_DESC*>(pArg);
-
-    m_LayoutDesc = pDesc->LayoutDesc;
-
-    // 이건 부모가 CUI라서 할필요 없는데 그냥 ㄱㄱ
-    __super::OnInit(pDesc);
-
-    return S_OK;
-}
-
-void CUIPanel::OnActive()
-{
-}
-
-void CUIPanel::OnInActive()
-{
-}
-
-void CUIPanel::OnDisabled()
-{
-}
-
-void CUIPanel::OnUpdate(const _float& timeDelta)
-{
-}
-
-void CUIPanel::OnLateUpdate()
-{
-}
-
-HRESULT CUIPanel::OnRender()
-{
-    return S_OK;
-
-}
-
-void CUIPanel::OnClear()
-{
-}
-
-void CUIPanel::Free()
-{
-
-    __super::Free();
-}

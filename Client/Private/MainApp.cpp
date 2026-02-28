@@ -21,6 +21,7 @@
 #include "Camera_Free.h"
 #include "Engine_Struct.h"
 #include "Loader.h"
+#include "UI_MainMenu.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() },
@@ -218,89 +219,96 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 }
 
 HRESULT CMainApp::Ready_UI()
-{
-	////////////////////UI객체원본(프로토 타입X)//////////////////////
-
-	shared_ptr<CUICanvas> pInstance = CUICanvas::Create(m_pDevice, m_pContext);
-	pInstance->Initialize(nullptr);
-	LEVEL eLevel = {};
-	for (_uint i = 0; i < 3;i++)
-	{
-		switch (i)
-		{
-			case 0:
-				eLevel = LEVEL::GAMEPLAY;
-				break;
-			case 2:
-				eLevel = LEVEL::EDITOR;
-				break;
-
-		}
-
-
-		CUIButton::UIBUTTON_DESC pDesc = {};
-		pDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		pDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
-		pDesc.vAnchoredPos = Vector2{ 0.f,16.7f+(98.f*i)};
-		pDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
-		pDesc.vAnchorPoint = Vector2{ 0.254,0.5f };
-		pDesc.vPivot = Vector2{ 0.5f, 0.5f };
-		pDesc.vScale = Vector2{ 1.3f, 1.0f };
-		pDesc.OverlapStartEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-		for (auto& it : ch)
-		{
-			if (!it) continue;
-			it->UI_Active();
-			it->m_behavior.push_back((make_shared<CScaleModifier>(0.03f, 4.f, 1.8f, 1.8f)));
-		}
-			};
-		pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-		for (auto& it : ch)
-		{
-			if (!it) continue;
-			it->UI_InActive();
-			it->m_behavior.clear();
-		}
-			};
-		pDesc.ClickEvent = [this, i, eLevel](CUIButton* pThis) {
-			if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext,eLevel))))
-				return;};
-		shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
-		pChild->Initialize(&pDesc);
-		pInstance->Add_Child(pChild, false);
-		
-		pChild->Set_Zorder(2);
-
-		//
-
-		CUIImage::UIIMAGE_DESC selectImage{};
-		selectImage.TextureComLevel = ETOI(LEVEL::STATIC);
-		selectImage.TextureProtoName = L"Prototype_Component_Texture_Select";
-		selectImage.PxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
-		selectImage.bUseNineSlice = true;
-		shared_ptr<CUIImage> Select = CUIImage::Create(m_pDevice, m_pContext);
-		Select->Initialize(&selectImage);
-		Select->UI_InActive();
-		pChild->Add_Child(Select, false);
-		//
-	}
-	
-	CUIImage::UIIMAGE_DESC image_desc{};
-	image_desc.TextureComLevel = ETOI(LEVEL::STATIC);
-	image_desc.TextureProtoName = L"Prototype_Component_Texture_Dredge";
-	image_desc.vAnchoredPos = Vector2{ 67.0f,0.f };
-	image_desc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
-	image_desc.vAnchorPoint = Vector2{ 0.f,0.319f };
-	image_desc.vPivot = Vector2{ 0.f, 0.5f };
-	image_desc.vScale = Vector2{ 0.5f, 0.5f };
-	shared_ptr<CUIImage> pChild2 = CUIImage::Create(m_pDevice, m_pContext);
-	pChild2->Initialize(&image_desc);
-	pInstance->Add_Child(pChild2, false);
-	
-	pChild2->Set_Zorder(1);
+{	//
+	//////////////////////UI객체원본(프로토 타입X)//////////////////////
 	//
-	
+	//shared_ptr<CUICanvas> pInstance = CUICanvas::Create(m_pDevice, m_pContext);
+	//pInstance->Initialize(nullptr);
+	//LEVEL eLevel = {};
+	//for (_uint i = 0; i < 3;i++)
+	//{
+	//	switch (i)
+	//	{
+	//		case 0:
+	//			eLevel = LEVEL::GAMEPLAY;
+	//			break;
+	//		case 2:
+	//			eLevel = LEVEL::EDITOR;
+	//			break;
+	//
+	//	}
+	//
+	//
+	//	CUIButton::UIBUTTON_DESC pDesc = {};
+	//	pDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+	//	pDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
+	//	pDesc.vAnchoredPos = Vector2{ 0.f,16.7f+(98.f*i)};
+	//	pDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
+	//	pDesc.vAnchorPoint = Vector2{ 0.254,0.5f };
+	//	pDesc.vPivot = Vector2{ 0.5f, 0.5f };
+	//	pDesc.vScale = Vector2{ 1.3f, 1.0f };
+	//	pDesc.OverlapStartEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+	//	for (auto& it : ch)
+	//	{
+	//		if (!it) continue;
+	//		it->UI_Active();
+	//		it->m_behavior.push_back((make_shared<CScaleModifier>(0.03f, 4.f, 1.8f, 1.8f)));
+	//	}
+	//		};
+	//	pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+	//	for (auto& it : ch)
+	//	{
+	//		if (!it) continue;
+	//		it->UI_InActive();
+	//		it->m_behavior.clear();
+	//	}
+	//		};
+	//	pDesc.ClickEvent = [this, i, eLevel](CUIButton* pThis) {
+	//		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext,eLevel))))
+	//			return;};
+	//	shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
+	//	pChild->Initialize(&pDesc);
+	//	pInstance->Add_Child(pChild, false);
+	//	
+	//	pChild->Set_Zorder(2);
+	//
+	//	//
+	//
+	//	CUIImage::UIIMAGE_DESC selectImage{};
+	//	selectImage.TextureComLevel = ETOI(LEVEL::STATIC);
+	//	selectImage.TextureProtoName = L"Prototype_Component_Texture_Select";
+	//	selectImage.PxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
+	//	selectImage.bUseNineSlice = true;
+	//	shared_ptr<CUIImage> Select = CUIImage::Create(m_pDevice, m_pContext);
+	//	Select->Initialize(&selectImage);
+	//	Select->UI_InActive();
+	//	pChild->Add_Child(Select, false);
+	//	//
+	//}
+	//
+	//CUIImage::UIIMAGE_DESC image_desc{};
+	//image_desc.TextureComLevel = ETOI(LEVEL::STATIC);
+	//image_desc.TextureProtoName = L"Prototype_Component_Texture_Dredge";
+	//image_desc.vAnchoredPos = Vector2{ 67.0f,0.f };
+	//image_desc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
+	//image_desc.vAnchorPoint = Vector2{ 0.f,0.319f };
+	//image_desc.vPivot = Vector2{ 0.f, 0.5f };
+	//image_desc.vScale = Vector2{ 0.5f, 0.5f };
+	//shared_ptr<CUIImage> pChild2 = CUIImage::Create(m_pDevice, m_pContext);
+	//pChild2->Initialize(&image_desc);
+	//pInstance->Add_Child(pChild2, false);
+	//
+	//pChild2->Set_Zorder(1);
+	////
+	//
+	//
+	CUI_MainMenu::MAINMENU_DESC pDescPanel;
+	pDescPanel.IsFullScreen = true;
+	pDescPanel.IsTrnasparent = true;
 
+
+	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_pDevice, m_pContext);
+	pInstance->Initialize(&pDescPanel);
 	m_pGameInstance.lock()->UI_InsertToPool(L"MainMenu", pInstance);
 	////////
 

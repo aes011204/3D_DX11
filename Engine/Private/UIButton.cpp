@@ -184,7 +184,7 @@ void CUIButton::ProcessInput()
         {
             m_UIState = BUTTON_STATE::HOVER;
 
-         CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "Exited at");
+        // CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "Exited at");
             if (m_OverlapStartEvent) // 콜백 실행
             {
                 m_OverlapStartEvent(this);
@@ -227,6 +227,18 @@ HRESULT CUIButton::Ready_Components(_uint Level, _wstring protoName)
         return E_FAIL;
 
     return S_OK;
+}
+
+void CUIButton::Save_ToJson(nlohmann::json& j)
+{
+
+
+    __super::Save_ToJson(j);
+
+}
+
+void CUIButton::Load_FromJson(nlohmann::json& j)
+{
 }
 
 

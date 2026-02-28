@@ -288,7 +288,7 @@ void CPrototype_Manager::Free()
 {
 	__super::Free();
 
-	for (int i = 0; i < m_iNumLevel;i++)
+	for (_uint i = 0; i < m_iNumLevel;i++)
 	{
 		//for(auto& pair : m_pPrototypes[i])
 		//{

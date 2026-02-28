@@ -81,6 +81,11 @@ namespace Engine
 
 using namespace Engine;
 
+
+#pragma warning(disable: 4275) // DLL 인터페이스 경고 무시
+#pragma warning(disable: 4251) // STL 컨테이너 DLL 수출 경고 무시
+
+
 #pragma warning(disable : 4251)
 
 #ifdef _DEBUG

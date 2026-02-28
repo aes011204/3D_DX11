@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Layer.h"
 #include "UI_Manager.h"
+#include "UI.h"
 #include "Entity.h"
 #include "Engine_Helper.h"
 
@@ -156,18 +157,6 @@ HRESULT CData_Manager::Load_ObjData(const string& fileName)
 			// 컴포넌트는 Load_FromJson, Save_ToJson 각각 선언 / object 는 Entity에서 Load_FromJson 만
 			obj->Load_FromJson(jObj);// 컴포넌트 초기화 + 컴포넌트 추가 전부 이 안에서 해결
 
-			/*for (auto& pair : obj->Get_ComponentMap())
-			{*/
-			//pair.first == jObj["Components"]["ComponentTag"]
-			//pair.second->Load_FromJson(jObj["Components"]);
-		//}
-			//for (auto& jCom : j["Components"])
-			//{
-
-			//	//obj->Add_Component(jCom["ComProtoLevel"], S2W(jCom["ComProtoTag"]), S2W(jCom["ComponentTag"]),, nullptr);
-
-			//	(obj->Get_ComponentMap().find(S2W(jCom["ComponentTag"])))->second->Load_FromJson(jCom);
-			//}
 			obj->Set_SaveType(SAVETYPE::GAMEOBJECT);
 
 		}
@@ -263,11 +252,30 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 
 HRESULT CData_Manager::Load_UIData(const string& fileName)
 {
-	//ifstream fin(fileName);
-	//if (!fin.is_open()) return;
+	const string folderPath = "../../Client/Bin/Resources/Data/UIData/";
+	const string fullPath = folderPath + fileName;
 
-	//nlohmann::json j;
-	//fin >> j;
+	ifstream file(fullPath, ios_base::in);
+
+
+	if (!file.is_open())
+	{
+		MSG_BOX("DataJson Load Failed");
+		return E_FAIL;
+	}
+
+	nlohmann::json j;
+
+	// 파일 읽기
+	try
+	{
+		file >> j;  // 여기서 문법 이상하면 바로 예외 발생
+	}
+	catch (const nlohmann::json::parse_error& e)
+	{
+		MessageBoxA(nullptr, e.what(), "JSON Parse Error", MB_OK);
+		return E_FAIL;
+	}
 
 	//_uint LevelIndex = j["CurLevel"];
 
@@ -299,25 +307,65 @@ HRESULT CData_Manager::Load_UIData(const string& fileName)
 
 HRESULT CData_Manager::Save_UIData(const string& fileName)
 {
-	//nlohmann::json j;
+	nlohmann::json j;
 
 
-	////ui
-	//const auto& uiMgr = m_pGameInstance.lock()->Get_UI_Manager();
+	//ui
+	const auto& uiMgr = m_pGameInstance.lock()->Get_UI_Manager();
 
-	//for (int i = 0; i < ETOI(UI_LAYER::END);i++)
-	//{
-	//	auto& uiVec = uiMgr->GetUIList(static_cast<UI_LAYER>(i));
-	//	j["LayerName"] = magic_enum::enum_name(static_cast<UI_LAYER>(i));
+		auto& uiPool = uiMgr->GetUIPool();
 
-	//	for (auto& it : uiVec)
-	//	{
-	//		jObj["ProtoTag"] = obj->Get_ProtoTag(); // "ProtoDATATYPE_Cube" 등
-	//		jObj["UITag"] = obj->Get_ObjTag();   // "Player", "Enemy1" 등
-	//		obj->Save_ToJson(j);
-	//	}
+	for (auto& pair :uiPool)
+	{
 
-	//}
+		j["RootMapTag"] = W2S(pair.first);
+
+
+		pair.second->Save_ToJson(j);
+
+		//nlohmann::json jComponentArray = nlohmann::json::array();
+		//for (auto& pair : pair.second->Get_ComponentMap())
+		//{
+		//	nlohmann::json jCom;
+		//	// 컴포넌트에 공통적으로 들어가는거
+		//	jCom["ComProtoTag"] = W2S(pair.second->Get_ProtoTag());
+		//	jCom["ComProtoLevel"] = pair.second->Get_ProtoLevel();
+		//	jCom["ComponentTag"] = W2S(pair.first);
+		//	// 각 컴포넌트 안의 세부내용
+		//	pair.second->Save_ToJson(jCom);
+		//	jComponentArray.push_back(jCom);
+		//}
+
+		//j["Components"] = jComponentArray;
+
+		//nlohmann::json UIArray = nlohmann::json::array();
+		//for (auto& pair : pair.second->Get_mapChildren())
+		//{
+		//	nlohmann::json jUI;
+
+		//	jUI["UIChildrenTag"] = W2S(pair.first);
+		//	pair.second.lock()->Save_ToJson(jUI);
+
+
+		//	nlohmann::json jComponentArray = nlohmann::json::array();
+		//	for (auto& pair : pair.second.lock()->Get_ComponentMap())
+		//	{
+		//		nlohmann::json jCom;
+		//		// 컴포넌트에 공통적으로 들어가는거
+		//		jCom["ComProtoTag"] = W2S(pair.second->Get_ProtoTag());
+		//		jCom["ComProtoLevel"] = pair.second->Get_ProtoLevel();
+		//		jCom["ComponentTag"] = W2S(pair.first);
+		//		// 각 컴포넌트 안의 세부내용
+		//		pair.second->Save_ToJson(jCom);
+		//		jComponentArray.push_back(jCom);
+		//	}
+
+		//	jUI["Components"] = jComponentArray;
+
+		//	UIArray.push_back(jUI);
+		//}
+
+	}
 	return S_OK;
 }
 

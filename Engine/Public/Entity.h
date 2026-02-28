@@ -75,6 +75,8 @@ public:
 			m_pGameInstance.lock()->Clone_Prototype(PROTOTYPE::COMPONENT, iProtoLevelIndex, strProtoTag, pArg));
 		if (CloneComp == nullptr)
 			return E_FAIL;
+		// 부모설정
+		CloneComp->Set_Owner(static_pointer_cast<Engine::CEntity>(shared_from_this()));
 
 		shared_ptr<T> pCastComp = dynamic_pointer_cast<T>(CloneComp);
 		if (pCastComp == nullptr)
@@ -84,7 +86,7 @@ public:
 		}
 		if (pOut != nullptr)
 		{
-		*pOut = pCastComp;
+			*pOut = pCastComp;
 
 		}
 		m_Components.emplace(strComponentTag, pCastComp);
