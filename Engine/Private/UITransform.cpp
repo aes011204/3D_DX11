@@ -282,6 +282,43 @@ void CUITransform::Save_ToJson(nlohmann::json& j)
 
 void CUITransform::Load_FromJson(nlohmann::json& j)
 {
+    // 1. AnchorPoint 로드 (x, y)
+    if (j.contains("AnchorPoint") && j["AnchorPoint"].is_array())
+    {
+        m_AnchorPoint.x = j["AnchorPoint"][0];
+        m_AnchorPoint.y = j["AnchorPoint"][1];
+    }
+
+    // 2. Pivot 로드 (x, y)
+    if (j.contains("Pivot") && j["Pivot"].is_array())
+    {
+        m_Pivot.x = j["Pivot"][0];
+        m_Pivot.y = j["Pivot"][1];
+    }
+
+    // 3. SizeDelta 로드 (너비, 높이)
+    if (j.contains("SizeDelta") && j["SizeDelta"].is_array())
+    {
+        m_SizeDelta.x = j["SizeDelta"][0];
+        m_SizeDelta.y = j["SizeDelta"][1];
+    }
+
+    // 4. AnchoredPos 로드 (위치)
+    if (j.contains("AnchoredPos") && j["AnchoredPos"].is_array())
+    {
+        m_AnchoredPos.x = j["AnchoredPos"][0];
+        m_AnchoredPos.y = j["AnchoredPos"][1];
+    }
+
+    // 5. LocalScale 로드 (배율)
+    if (j.contains("m_LocalScale") && j["m_LocalScale"].is_array())
+    {
+        m_LocalScale.x = j["m_LocalScale"][0];
+        m_LocalScale.y = j["m_LocalScale"][1];
+    }
+
+    
+    this->Computing_WorldRect();
 }
 
 HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const _char* pConstantName)

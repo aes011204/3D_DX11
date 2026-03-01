@@ -25,6 +25,7 @@ HRESULT CUIPanel::OnInit(void* pArg)
     m_LayoutDesc = pDesc->LayoutDesc;
     m_IsTransparent = pDesc->IsTrnasparent;
     m_IsFullScreen = pDesc->IsFullScreen;
+    m_IsUseLayout = pDesc->IsUseLayout;
 
     if (m_IsTransparent==false)
     {
@@ -73,7 +74,10 @@ void CUIPanel::OnDisabled()
 
 void CUIPanel::OnUpdate(const _float& timeDelta)
 {
-
+    if (m_bIsDirtyCom) {
+        RebindCom();      // "바뀐 것"만 한 번 갱신
+        m_bIsDirtyCom = false;
+    }
 }
 
 void CUIPanel::OnLateUpdate()
@@ -141,6 +145,75 @@ HRESULT CUIPanel::Bind_ShaderResources()
     }*/
 
     return S_OK;
+}
+
+void CUIPanel::RebindCom()
+{
+    // 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
+    m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+    m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
+    m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+}
+
+void CUIPanel::Save_ToJson(nlohmann::json& j)
+{
+    j["IsTransparent"] = m_IsTransparent;
+    j["IsFullScreen"] = m_IsFullScreen;
+    j["IsUseLayout"] = m_IsUseLayout;
+    if (m_IsUseLayout == true)
+    {
+        if (m_IsUseLayout)
+        {
+            nlohmann::json jLayout;
+            jLayout["Col"] = m_LayoutDesc.m_Col;
+            jLayout["Raw"] = m_LayoutDesc.m_Raw;
+            jLayout["SlotSize"] = { m_LayoutDesc.m_SlotSize};
+            jLayout["Padding"] = { m_LayoutDesc.m_Padding.x,m_LayoutDesc.m_Padding.y };
+            jLayout["Spacing"] = { m_LayoutDesc.m_Spacing.x, m_LayoutDesc.m_Spacing.y };
+
+            j["LayoutDesc"] = jLayout;
+        }
+    }
+    __super::Save_ToJson(j);
+}
+
+void CUIPanel::Load_FromJson(nlohmann::json& j)
+{
+    if (j.contains("IsTransparent"))
+    {
+        m_IsTransparent = j["IsTransparent"];
+    }
+    if (j.contains("IsFullScreen"))
+    {
+        m_IsFullScreen = j["IsFullScreen"];
+    }
+    if (j.contains("IsUseLayout"))
+    {
+        m_IsUseLayout = j["IsUseLayout"];
+    }
+    if (j.contains("LayoutDesc"))
+    {
+        auto& jLayout = j["LayoutDesc"];
+        m_LayoutDesc.m_Col = jLayout["Col"];
+        m_LayoutDesc.m_Raw = jLayout["Raw"];
+        m_LayoutDesc.m_SlotSize = jLayout["SlotSize"];
+
+        if (jLayout.contains("Padding"))
+        {
+            m_LayoutDesc.m_Padding.x = jLayout["Padding"][0];
+            m_LayoutDesc.m_Padding.y = jLayout["Padding"][1];
+        }
+        if (jLayout.contains("Spacing"))
+        {
+            m_LayoutDesc.m_Spacing.x = jLayout["PadSpacingSpacingding"][0];
+            m_LayoutDesc.m_Spacing.y = jLayout["Spacing"][1];
+        }
+    }
+
+    __super::Load_FromJson(j);
+
+
+
 }
 
 void CUIPanel::OnGui()

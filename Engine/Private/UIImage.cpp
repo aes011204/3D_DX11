@@ -3,6 +3,7 @@
 #include "GameInstance.h"
 #include "Shader.h"
 
+
 CUIImage::CUIImage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
     : CUI{pDevice, pContext}
 {
@@ -66,6 +67,12 @@ void CUIImage::OnDisabled()
 
 void CUIImage::OnUpdate(const _float& timeDelta)
 {
+    if (m_bIsDirtyCom) {
+        RebindCom();      // "바뀐 것"만 한 번 갱신
+        m_bIsDirtyCom = false;
+    }
+
+
   //  m_bInteractable = false;
     m_SliceDesc.UISize = m_pUITransformCom->Get_FinalSize();
 }
@@ -148,9 +155,17 @@ HRESULT CUIImage::Bind_ShaderResources()
     return S_OK;
 }
 
+void CUIImage::RebindCom()
+{
+    // 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
+    m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+    m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
+    m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+}
+
 void CUIImage::Save_ToJson(nlohmann::json& j)
 {
-    j["PxSliceLRTB"] = { m_SliceDesc.PxSliceLRTB.x,  };
+    j["PxSliceLRTB"] = { m_SliceDesc.PxSliceLRTB.x,  m_SliceDesc.PxSliceLRTB.y, m_SliceDesc.PxSliceLRTB.z, m_SliceDesc.PxSliceLRTB.w};
     j["UseNineSlice"] = m_bUseNineSlice;
 
     __super::Save_ToJson(j);
@@ -158,7 +173,19 @@ void CUIImage::Save_ToJson(nlohmann::json& j)
 
 void CUIImage::Load_FromJson(nlohmann::json& j)
 {
+    if (j.contains("PxSliceLRTB")) 
+    {
+        m_SliceDesc.PxSliceLRTB.x = j["PxSliceLRTB"][0];
+        m_SliceDesc.PxSliceLRTB.y = j["PxSliceLRTB"][1];
+        m_SliceDesc.PxSliceLRTB.z = j["PxSliceLRTB"][2];
+        m_SliceDesc.PxSliceLRTB.w = j["PxSliceLRTB"][3];
+    }
+    if (j.contains("UseNineSlice"))
+    {
+        m_bUseNineSlice = j["UseNineSlice"];
+    }
 
+    __super::Load_FromJson(j);
 }
 
 void CUIImage::OnGui()

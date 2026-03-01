@@ -49,6 +49,7 @@ public:
     const map<_wstring, weak_ptr<CUI>>& Get_mapChildren() const { return m_mapChildren; }
 
     void Save_ToJson(nlohmann::json& j)override;
+    void Load_FromJson(nlohmann::json& j)override;
 
 /// <IMGUI>
     const vector<shared_ptr<CUI>>& GetChildren() const { return m_Children; }

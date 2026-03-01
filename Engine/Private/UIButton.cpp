@@ -58,6 +58,11 @@ void CUIButton::OnDisabled()
 
 void CUIButton::OnUpdate(const _float& timeDelta)
 {
+    if (m_bIsDirtyCom) {
+        RebindCom();      // "바뀐 것"만 한 번 갱신
+        m_bIsDirtyCom = false;
+    }
+
     ProcessInput();
 
     switch (m_UIState)
@@ -229,6 +234,15 @@ HRESULT CUIButton::Ready_Components(_uint Level, _wstring protoName)
     return S_OK;
 }
 
+void CUIButton::RebindCom()
+{
+    // 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
+    m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+    m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
+    m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+}
+
+
 void CUIButton::Save_ToJson(nlohmann::json& j)
 {
 
@@ -239,6 +253,7 @@ void CUIButton::Save_ToJson(nlohmann::json& j)
 
 void CUIButton::Load_FromJson(nlohmann::json& j)
 {
+    __super::Load_FromJson(j);
 }
 
 

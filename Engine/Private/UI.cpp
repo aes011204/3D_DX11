@@ -148,6 +148,42 @@ void CUI::Save_ToJson(nlohmann::json& j)
 	j["Children"] = jChildrenArray;
 }
 
+void CUI::Load_FromJson(nlohmann::json& j)
+{
+	if (j.contains("ZOrder")) {
+		m_ZOrder = j["ZOrder"];
+	}
+	
+	if (j.contains("Components")&& j["Components"].is_array())
+	{
+		//Components배열 컨테이너가 있으면 엔티티에서 다 돌리면서 추가나(replace)해줌
+		CEntity::Load_FromJson(j);
+	}
+
+	if (j.contains("Children") && j["Children"].is_array())
+	{
+		for (auto& jChild : j["Children"])
+		{
+			if (!jChild.contains("UIChildrenTag")) continue;
+
+			string childTagStr = jChild["UIChildrenTag"];
+			_wstring childTagW = S2W(childTagStr);
+
+			// 내 자식 맵(m_mapChildren)에서 태그로 찾음
+			auto it = m_mapChildren.find(childTagW);
+			if (it != m_mapChildren.end())
+			{
+				auto pChild = it->second.lock();
+				if (pChild)
+				{
+					// 자식도 똑같이 이 함수를 타게 함 (재귀)
+					pChild->Load_FromJson(jChild);
+				}
+			}
+		}
+	}
+}
+
 void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 {
 

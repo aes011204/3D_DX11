@@ -43,10 +43,10 @@ HRESULT CEntity::Remove_Component(const _wstring& strComponentTag)
 	if (com != m_Components.end()) // 찾았을 때만 지우기
 	{
 		m_Components.erase(com);
+	m_bIsDirtyCom = true;
 		return S_OK;
 	}
 
-	m_bIsDirtyCom = true;
 
 	return E_FAIL;
 }
@@ -63,11 +63,34 @@ void CEntity::Load_FromJson(nlohmann::json& j)
 			m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
 
 		}
+		else if(jCom["ComponentTag"] == "Com_UITransform")
+		{
+			m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
+
+		}
 		else
 		{
-		Add_Component<CComponent>((_uint)jCom["ComProtoLevel"], S2W(jCom["ComProtoTag"]), S2W(jCom["ComponentTag"]), nullptr, nullptr);
+			if (FAILED(Add_Component<CComponent>((_uint)jCom["ComProtoLevel"], S2W(jCom["ComProtoTag"]), S2W(jCom["ComponentTag"]), nullptr, nullptr)))
+			{
+				MSG_BOX("fail to add Component while data load");
+			}
 		m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
+			shared_ptr<CComponent> pNewComp = nullptr;
 
+			//// Add_Component가 내부적으로 Remove 후 새 객체를 emplace 함
+			//if (SUCCEEDED(Add_Component<CComponent>(
+			//	(_uint)jCom["ComProtoLevel"],
+			//	S2W(jCom["ComProtoTag"]),
+			//	S2W(jCom["ComponentTag"]),
+			//	&pNewComp, // ★ 중요: 여기서 방금 생성된 새 객체 주소를 직접 받음!
+			//	nullptr)))
+			//{
+			//	// 3. 맵에서 find 하지 말고, 방금 만든 pNewComp를 즉시 사용
+			//	if (pNewComp != nullptr)
+			//	{
+			//		pNewComp->Load_FromJson(jCom);
+			//	}
+			//}
 		}
 	}
 

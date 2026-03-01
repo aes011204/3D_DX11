@@ -129,12 +129,18 @@ void  CMapTool::Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath)
 
 		if (ImGui::Button("Load Selected"))
 		{
-			if (!canLoad && eType == SAVETYPE::GAMEOBJECT)
+			if (canLoad)
 			{
+				// 2. 기존 맵/UI 데이터 청소
 				CGameInstance::GetInstance()->ClearMap(eType);
-			CGameInstance::GetInstance()->Load(eType, selectedFile);
-			};
 
+				// 3. 데이터 로드 (이제 Load 함수로 진입합니다!)
+				CGameInstance::GetInstance()->Load(eType, selectedFile);
+			}
+			else
+			{
+				MSG_BOX("select file");
+			}
 
 		}
 	}

@@ -36,6 +36,8 @@ protected:
     HRESULT Ready_Components(_uint Level, _wstring protoName);
     HRESULT Bind_ShaderResources();
 
+    virtual void RebindCom();
+
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 
@@ -53,7 +55,7 @@ private:
 protected:
 
     shared_ptr<class CShader> m_pShaderCom = { nullptr };
-    shared_ptr<class CVIBuffer_Rect> m_pVIBufferCom = { nullptr };
+    shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
     shared_ptr<class CTexture> m_pTextureCom = { nullptr };
 
 

@@ -89,8 +89,13 @@ public:
 			*pOut = pCastComp;
 
 		}
-		m_Components.emplace(strComponentTag, pCastComp);
+		auto result = m_Components.emplace(strComponentTag, pCastComp);
 
+		// result.second가 false면 삽입 실패 (이미 같은 Tag가 존재함)
+		if (result.second == false)
+		{
+			return E_FAIL;
+		}
 		m_bIsDirtyCom = true;
 		return S_OK;
 	};

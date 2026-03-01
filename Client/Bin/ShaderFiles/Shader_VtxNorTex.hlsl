@@ -16,6 +16,13 @@ vector g_vLightDiffuse;
 vector g_vLightAmbient;
 vector g_vLightSpecular;
 
+DepthStencilState Depth_Enable
+{
+    DepthEnable = TRUE;
+    DepthWriteMask = ALL;
+    DepthFunc = LESS_EQUAL;
+};
+
 sampler DefaultSampler = sampler_state
 {
     Filter = MIN_MAG_MIP_LINEAR;
@@ -80,7 +87,7 @@ PS_OUT PS_MAIN(PS_IN In)
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     //빛의 크기
-    vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, In.vNormal), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
+    vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, normalize(In.vNormal)), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
     //dot(nomalize한 빛의 방향의 반대방향, 노멀라이즈 한 노멀) = 세타각 을 알수 있음 // 사인그래프를 그린다 왜냐 그게 더 자연스럽거든
     // -1*빛의 방향과 노멀의 각의 차이가 +-90이상 이면 0으로 : 왜냐 안보이니까 빛은 0 (없다, 안보인다),0~+-90 까지는 0 젤 밝음 ~점점 어두워짐 
     // 근데 빛을 직접적으로 안받는다고 0 이면 검은색 이 어색함 -> + g_vLightAmbient(엠비언트 강도) * g_vMtrlAmbient(엠비언트 색) 을 통해 보정
@@ -104,6 +111,7 @@ technique11 DefaultTechnique
 {
     pass DefaultTechnique
     {
+        SetDepthStencilState(Depth_Enable, 0);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
