@@ -46,6 +46,26 @@ namespace Engine
         };
     }VTXNORTEX;
 
+    typedef struct tagVertexMesh
+    {
+        XMFLOAT3			vPosition;
+        XMFLOAT3			vNormal;
+        XMFLOAT3			vTangent;
+        XMFLOAT2			vTexcoord;
+
+        static const _uint iNumElements = { 4 };
+
+        static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+        {
+            {"POSITION", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"NORMAL", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"TANGENT", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0  }
+        };
+    }VTXMESH;
+
+
+
     struct Rect
     {
         float x = 0.f;
@@ -77,7 +97,7 @@ namespace Engine
         float fRange;
 
         XMFLOAT4 vDiffuse;
-        XMFLOAT4 vAmbition;
+        XMFLOAT4 vAmbient;
         XMFLOAT4 vSpecular;
      
     };

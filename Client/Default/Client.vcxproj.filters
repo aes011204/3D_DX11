@@ -28,6 +28,9 @@
     <Filter Include="02.GameObject">
       <UniqueIdentifier>{6b36b92d-3b68-4ca7-81b5-82692c29b66f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NewFilter1">
+      <UniqueIdentifier>{be9a5c72-e373-465f-b58b-780088cd71e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -96,6 +99,7 @@
       <Filter>02.GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_MainMenu.h" />
+    <ClInclude Include="..\Public\Monster.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -159,6 +163,7 @@
       <Filter>02.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_MainMenu.cpp" />
+    <ClCompile Include="..\Private\Monster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">
@@ -183,5 +188,6 @@
   <ItemGroup>
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxMesh.hlsl" />
   </ItemGroup>
 </Project>

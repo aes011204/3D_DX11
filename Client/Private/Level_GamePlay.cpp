@@ -28,6 +28,9 @@ HRESULT CLevel_GamePlay::Initialize()
 	if(FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Moster"))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -64,7 +67,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbition = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
@@ -114,6 +117,15 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 		ETOI(LEVEL::GAMEPLAY), strLayerTag, &pCamDesc)))
 		return E_FAIL;
 
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
+{
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		return E_FAIL;
 
 	return S_OK;
 }

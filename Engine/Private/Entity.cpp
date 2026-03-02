@@ -77,20 +77,7 @@ void CEntity::Load_FromJson(nlohmann::json& j)
 		m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
 			shared_ptr<CComponent> pNewComp = nullptr;
 
-			//// Add_Component가 내부적으로 Remove 후 새 객체를 emplace 함
-			//if (SUCCEEDED(Add_Component<CComponent>(
-			//	(_uint)jCom["ComProtoLevel"],
-			//	S2W(jCom["ComProtoTag"]),
-			//	S2W(jCom["ComponentTag"]),
-			//	&pNewComp, // ★ 중요: 여기서 방금 생성된 새 객체 주소를 직접 받음!
-			//	nullptr)))
-			//{
-			//	// 3. 맵에서 find 하지 말고, 방금 만든 pNewComp를 즉시 사용
-			//	if (pNewComp != nullptr)
-			//	{
-			//		pNewComp->Load_FromJson(jCom);
-			//	}
-			//}
+
 		}
 	}
 

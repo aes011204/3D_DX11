@@ -157,6 +157,7 @@
     <ClInclude Include="..\Public\Level_Logo.h" />
     <ClInclude Include="..\Public\Loader.h" />
     <ClInclude Include="..\Public\MainApp.h" />
+    <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\UI_MainMenu.h" />
     <ClInclude Include="EmptyGameObject.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="..\Private\Level_Logo.cpp" />
     <ClCompile Include="..\Private\Loader.cpp" />
     <ClCompile Include="..\Private\MainApp.cpp" />
+    <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\UI_MainMenu.cpp" />
     <ClCompile Include="EmptyGameObject.cpp" />
@@ -210,6 +212,7 @@
     <None Include="Itme_Trinket.json" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxTex.hlsl" />
   </ItemGroup>

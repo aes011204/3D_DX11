@@ -20,6 +20,8 @@ public:
 	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 
+	HRESULT Ready_Layer_Monster(const _wstring& strLayerTag);
+
 public:
 	static shared_ptr<CLevel_GamePlay> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	virtual void Free() override;
