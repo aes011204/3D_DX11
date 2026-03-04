@@ -119,6 +119,18 @@ void CUITransform::OnGui()
         // Local Scale 
         if (ImGui::DragFloat2("Scale", (float*)&m_LocalScale, 0.01f, 0.0f, 10.0f))
             bChanged = true;
+        ImGui::Separator();
+        if (ImGui::DragFloat("Rotation (Rad)", &m_RotationRadian, 0.01f, -6.28f, 6.28f))
+        {
+            bChanged = true;
+        }
+
+        if (ImGui::DragFloat("Rotation (Deg)", &m_RotationDegreeView, 1.0f, -360.0f, 360.0f))
+        {
+            // 사용자가 입력한 디그리 값을 즉시 라디안으로 변환해서 저장
+            m_RotationRadian = XMConvertToRadians(m_RotationDegreeView);
+            bChanged = true;
+        }
 
         // 결과값 확인 (Read Only) - 현재 계산된 최종 월드 좌표를 보여줌
         ImGui::TextDisabled("World Rect Info");
@@ -276,7 +288,8 @@ void CUITransform::Save_ToJson(nlohmann::json& j)
     j["Pivot"] = { m_Pivot.x , m_Pivot.y };
     j["SizeDelta"] = { m_SizeDelta.x , m_SizeDelta.y };
     j["AnchoredPos"] = { m_AnchoredPos.x , m_AnchoredPos.y };
-    j["m_LocalScale"] = { m_LocalScale.x , m_LocalScale.y};
+    j["LocalScale"] = { m_LocalScale.x , m_LocalScale.y};
+    j["RotationRadian"] = m_RotationRadian;
 
 }
 
@@ -311,12 +324,16 @@ void CUITransform::Load_FromJson(nlohmann::json& j)
     }
 
     // 5. LocalScale 로드 (배율)
-    if (j.contains("m_LocalScale") && j["m_LocalScale"].is_array())
+    if (j.contains("LocalScale") && j["LocalScale"].is_array())
     {
-        m_LocalScale.x = j["m_LocalScale"][0];
-        m_LocalScale.y = j["m_LocalScale"][1];
+        m_LocalScale.x = j["LocalScale"][0];
+        m_LocalScale.y = j["LocalScale"][1];
     }
-
+    if (j.contains("RotationRadian"))
+    {
+        m_RotationRadian= j["RotationRadian"];
+       
+    }
     
     this->Computing_WorldRect();
 }

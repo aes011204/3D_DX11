@@ -27,17 +27,18 @@
                             "ComProtoLevel": 0,
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.772194743156433,
+                                1.772194743156433
+                            ],
                             "Pivot": [
                                 0.5,
                                 0.5
                             ],
+                            "RotationRadian": 0.0,
                             "SizeDelta": [
                                 128.0,
                                 44.0
-                            ],
-                            "m_LocalScale": [
-                                1.772194743156433,
-                                1.772194743156433
                             ]
                         },
                         {
@@ -79,17 +80,18 @@
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
                     "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        2.2200000286102295,
+                        1.440000057220459
+                    ],
                     "Pivot": [
                         0.5,
                         0.5
                     ],
+                    "RotationRadian": 0.0,
                     "SizeDelta": [
                         192.0,
                         72.19999694824219
-                    ],
-                    "m_LocalScale": [
-                        2.2200000286102295,
-                        1.440000057220459
                     ]
                 },
                 {
@@ -128,17 +130,18 @@
                             "ComProtoLevel": 0,
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.8127086162567139,
+                                1.8127086162567139
+                            ],
                             "Pivot": [
                                 0.5,
                                 0.5
                             ],
+                            "RotationRadian": 0.0,
                             "SizeDelta": [
                                 128.0,
                                 44.0
-                            ],
-                            "m_LocalScale": [
-                                1.8127086162567139,
-                                1.8127086162567139
                             ]
                         },
                         {
@@ -180,17 +183,18 @@
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
                     "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        1.2999999523162842,
+                        1.0
+                    ],
                     "Pivot": [
                         0.5,
                         0.5
                     ],
+                    "RotationRadian": 0.0,
                     "SizeDelta": [
                         192.0,
                         64.0
-                    ],
-                    "m_LocalScale": [
-                        1.2999999523162842,
-                        1.0
                     ]
                 },
                 {
@@ -229,17 +233,18 @@
                             "ComProtoLevel": 0,
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.7781546115875244,
+                                1.7781546115875244
+                            ],
                             "Pivot": [
                                 0.5,
                                 0.5
                             ],
+                            "RotationRadian": 0.0,
                             "SizeDelta": [
                                 128.0,
                                 44.0
-                            ],
-                            "m_LocalScale": [
-                                1.7781546115875244,
-                                1.7781546115875244
                             ]
                         },
                         {
@@ -281,17 +286,18 @@
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
                     "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        2.5899999141693115,
+                        1.0
+                    ],
                     "Pivot": [
                         0.5,
                         0.5
                     ],
+                    "RotationRadian": 0.0,
                     "SizeDelta": [
                         192.0,
                         69.5999984741211
-                    ],
-                    "m_LocalScale": [
-                        2.5899999141693115,
-                        1.0
                     ]
                 },
                 {
@@ -328,17 +334,18 @@
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
                     "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        0.7699999809265137,
+                        0.5
+                    ],
                     "Pivot": [
                         0.0,
                         0.5
                     ],
+                    "RotationRadian": 0.0,
                     "SizeDelta": [
                         1024.0,
                         338.0
-                    ],
-                    "m_LocalScale": [
-                        0.7699999809265137,
-                        0.5
                     ]
                 },
                 {
@@ -370,17 +377,18 @@
             "ComProtoLevel": 0,
             "ComProtoTag": "",
             "ComponentTag": "Com_UITransform",
+            "LocalScale": [
+                1.0,
+                1.0
+            ],
             "Pivot": [
                 0.5,
                 0.5
             ],
+            "RotationRadian": 0.0,
             "SizeDelta": [
                 1280.0,
                 720.0
-            ],
-            "m_LocalScale": [
-                1.0,
-                1.0
             ]
         }
     ],

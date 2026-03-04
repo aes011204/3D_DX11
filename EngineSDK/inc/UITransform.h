@@ -89,7 +89,10 @@ private:
 
     Vector2 m_LocalScale = {}; // pivot 기준으로 UI를 배율로 키우거나 줄이는 연출용 배율 // 일단 안쓸듯
 
-    float m_RotationRadian = {0.f};
+    float m_RotationRadian = { 0.f };// 내부 계산용
+    float m_RotationDegreeView = {0.f}; // 수치 조절욜
+
+
 
     // 결과
     Rect m_WorldRect = {};

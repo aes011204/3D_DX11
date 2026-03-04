@@ -1,0 +1,399 @@
+{
+    "Children": [
+        {
+            "Children": [
+                {
+                    "Children": [],
+                    "Components": [
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                            "ComponentTag": "Com_Shader"
+                        },
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_Texture_Select",
+                            "ComponentTag": "Com_Texture"
+                        },
+                        {
+                            "AnchorPoint": [
+                                0.5,
+                                0.5
+                            ],
+                            "AnchoredPos": [
+                                0.0,
+                                0.0
+                            ],
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "",
+                            "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.0,
+                                1.0
+                            ],
+                            "Pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "RotationRadian": 0.0,
+                            "SizeDelta": [
+                                128.0,
+                                44.0
+                            ]
+                        },
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                            "ComponentTag": "Com_VIBuffer"
+                        }
+                    ],
+                    "PxSliceLRTB": [
+                        46.0,
+                        46.0,
+                        22.0,
+                        22.0
+                    ],
+                    "UIChildrenTag": "IMGAE_SELECTEDITOR",
+                    "UseNineSlice": true
+                }
+            ],
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Texture_Button",
+                    "ComponentTag": "Com_Texture"
+                },
+                {
+                    "AnchorPoint": [
+                        0.2540000081062317,
+                        0.5
+                    ],
+                    "AnchoredPos": [
+                        0.0,
+                        212.6999969482422
+                    ],
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        1.2999999523162842,
+                        1.0
+                    ],
+                    "Pivot": [
+                        0.5,
+                        0.5
+                    ],
+                    "RotationRadian": 0.0,
+                    "SizeDelta": [
+                        192.0,
+                        64.0
+                    ]
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                    "ComponentTag": "Com_VIBuffer"
+                }
+            ],
+            "UIChildrenTag": "BUTTON_EDITOR",
+            "ZOrder": 2
+        },
+        {
+            "Children": [
+                {
+                    "Children": [],
+                    "Components": [
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                            "ComponentTag": "Com_Shader"
+                        },
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_Texture_Select",
+                            "ComponentTag": "Com_Texture"
+                        },
+                        {
+                            "AnchorPoint": [
+                                0.5,
+                                0.5
+                            ],
+                            "AnchoredPos": [
+                                0.0,
+                                0.0
+                            ],
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "",
+                            "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.0,
+                                1.0
+                            ],
+                            "Pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "RotationRadian": 0.0,
+                            "SizeDelta": [
+                                128.0,
+                                44.0
+                            ]
+                        },
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                            "ComponentTag": "Com_VIBuffer"
+                        }
+                    ],
+                    "PxSliceLRTB": [
+                        46.0,
+                        46.0,
+                        22.0,
+                        22.0
+                    ],
+                    "UIChildrenTag": "IMGAE_SELECTEND",
+                    "UseNineSlice": true
+                }
+            ],
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Texture_Button",
+                    "ComponentTag": "Com_Texture"
+                },
+                {
+                    "AnchorPoint": [
+                        0.2540000081062317,
+                        0.5
+                    ],
+                    "AnchoredPos": [
+                        0.0,
+                        114.69999694824219
+                    ],
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        1.2999999523162842,
+                        1.0
+                    ],
+                    "Pivot": [
+                        0.5,
+                        0.5
+                    ],
+                    "RotationRadian": 0.0,
+                    "SizeDelta": [
+                        192.0,
+                        64.0
+                    ]
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                    "ComponentTag": "Com_VIBuffer"
+                }
+            ],
+            "UIChildrenTag": "BUTTON_END",
+            "ZOrder": 2
+        },
+        {
+            "Children": [
+                {
+                    "Children": [],
+                    "Components": [
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                            "ComponentTag": "Com_Shader"
+                        },
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_Texture_Select",
+                            "ComponentTag": "Com_Texture"
+                        },
+                        {
+                            "AnchorPoint": [
+                                0.5,
+                                0.5
+                            ],
+                            "AnchoredPos": [
+                                0.0,
+                                0.0
+                            ],
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "",
+                            "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.8023747205734253,
+                                1.8023747205734253
+                            ],
+                            "Pivot": [
+                                0.5,
+                                0.5
+                            ],
+                            "RotationRadian": 0.0,
+                            "SizeDelta": [
+                                128.0,
+                                44.0
+                            ]
+                        },
+                        {
+                            "ComProtoLevel": 0,
+                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                            "ComponentTag": "Com_VIBuffer"
+                        }
+                    ],
+                    "PxSliceLRTB": [
+                        46.0,
+                        46.0,
+                        22.0,
+                        22.0
+                    ],
+                    "UIChildrenTag": "IMGAE_SELECTGAMEPLAY",
+                    "UseNineSlice": true
+                }
+            ],
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Texture_Button",
+                    "ComponentTag": "Com_Texture"
+                },
+                {
+                    "AnchorPoint": [
+                        0.2540000081062317,
+                        0.5
+                    ],
+                    "AnchoredPos": [
+                        0.0,
+                        16.700000762939453
+                    ],
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        1.2999999523162842,
+                        1.0
+                    ],
+                    "Pivot": [
+                        0.5,
+                        0.5
+                    ],
+                    "RotationRadian": 0.0,
+                    "SizeDelta": [
+                        192.0,
+                        64.0
+                    ]
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                    "ComponentTag": "Com_VIBuffer"
+                }
+            ],
+            "UIChildrenTag": "BUTTON_GAMEPLAY",
+            "ZOrder": 2
+        },
+        {
+            "Children": [],
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Texture_Dredge",
+                    "ComponentTag": "Com_Texture"
+                },
+                {
+                    "AnchorPoint": [
+                        0.0,
+                        0.3190000057220459
+                    ],
+                    "AnchoredPos": [
+                        67.0,
+                        0.0
+                    ],
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        0.5,
+                        0.5
+                    ],
+                    "Pivot": [
+                        0.0,
+                        0.5
+                    ],
+                    "RotationRadian": 1.5707963705062866,
+                    "SizeDelta": [
+                        1024.0,
+                        338.0
+                    ]
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                    "ComponentTag": "Com_VIBuffer"
+                }
+            ],
+            "PxSliceLRTB": [
+                341.3333435058594,
+                341.3333435058594,
+                112.66666412353516,
+                112.66666412353516
+            ],
+            "UIChildrenTag": "IMAGE_DRADGELOGO",
+            "UseNineSlice": false
+        }
+    ],
+    "Components": [
+        {
+            "AnchorPoint": [
+                0.5,
+                0.5
+            ],
+            "AnchoredPos": [
+                0.0,
+                0.0
+            ],
+            "ComProtoLevel": 0,
+            "ComProtoTag": "",
+            "ComponentTag": "Com_UITransform",
+            "LocalScale": [
+                1.0,
+                1.0
+            ],
+            "Pivot": [
+                0.5,
+                0.5
+            ],
+            "RotationRadian": 0.0,
+            "SizeDelta": [
+                1280.0,
+                720.0
+            ]
+        }
+    ],
+    "IsFullScreen": true,
+    "IsTransparent": true,
+    "IsUseLayout": false,
+    "RootMapTag": "MainMenu"
+}
