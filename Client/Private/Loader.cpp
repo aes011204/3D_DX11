@@ -132,6 +132,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	}
 
 
+
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
 	/* Prototype_Component_Shader_VtxNorTex */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxNorTex"),

@@ -14,7 +14,10 @@ public:
 
 public:
     HRESULT Initialize(_uint EditorIndex, _uint iNumLevel);
+	
     HRESULT Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pNewLevel);
+
+	
     void Update(_float fTimeDelta);
     HRESULT Render();
 

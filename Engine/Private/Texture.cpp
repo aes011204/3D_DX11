@@ -10,9 +10,10 @@ CTexture::CTexture(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pCo
 CTexture::CTexture(const CTexture& Prototype)
 	:CComponent(Prototype)
 	, m_iNumSRVs{ Prototype.m_iNumSRVs }
-	//, m_SRVs{ Prototype.m_SRVs }
+	, m_SRVs{ Prototype.m_SRVs }
 {
-	m_SRVs = Prototype.m_SRVs;
+	
+
 }
 
 HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNumSRVs)
@@ -94,17 +95,19 @@ shared_ptr<CTexture> CTexture::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D1
 	if (FAILED(pInstance->Initialize_Prototype(pTextureFilePath, iNumSRVs)))
 	{
 		MSG_BOX("Failed to Cloned : CTexture");
+		return nullptr;
 	}
 	return pInstance;
 }
 
 shared_ptr<CComponent> CTexture::Clone(void* pArg)
 {
-	shared_ptr<CTexture> pInstance (new CTexture(*this),  [](CTexture* p) {p->Free();delete p;});
+	shared_ptr<CTexture> pInstance (new CTexture(*this),[](CTexture* p){p->Free();delete p;});
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
 		MSG_BOX("Failed to Cloned : CTexture");
+		return nullptr;
 	}
 	return pInstance;
 }

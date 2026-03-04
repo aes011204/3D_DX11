@@ -36,9 +36,6 @@ public:
 
 private:
 
-    _bool m_IsTrnasparent = {};
-    _bool m_IsFullScreen = {};
-    _bool m_IsUseLayout = {};
 public:
     static shared_ptr<CUI_MainMenu> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;

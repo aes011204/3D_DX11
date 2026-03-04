@@ -15,7 +15,7 @@ HRESULT CUI_Manager::Initialize(_uint width, _uint height)
 {
 	m_Winsize = { 0, 0, static_cast<_float>(width) , static_cast<_float>(height) };
 
-
+	
 	return S_OK;
 }
 
@@ -35,7 +35,7 @@ shared_ptr<CUI> CUI_Manager::FindUIOnPool(wstring type)
 
 void CUI_Manager::Update(float m_fDeltaTime)
 {
-	ProcessUIQ();
+	//ProcessUIQ();
 
 	bool bMouseHold = {false};
 
@@ -86,11 +86,37 @@ void CUI_Manager::OnFail()
 	m_ActiveUI = nullptr;
 }
 
-void CUI_Manager::Push(UI_LAYER layer, wstring name, void* pArg)
+void CUI_Manager::Push(UI_LAYER layer, wstring name,_bool isOnActive, void* pArg)
 {
-	RequestUI tmp{ name, layer, pArg };
+	//RequestUI tmp{ name, layer, pArg };
 
-	m_RequestUIQueue.push(tmp);
+	//m_RequestUIQueue.push(tmp);
+	
+		shared_ptr<CUI> addUI = FindUIOnPool(name);
+		if(addUI == nullptr)
+		{
+			return;
+		}
+		/*OnComplete(UIQ.Layer, UIQ.UIKey, UIQ.pArg);*/
+
+
+		// 이미 있으면 젤위로 
+		auto it = find(m_UI[ETOI(layer)].begin(), m_UI[ETOI(layer)].end(), addUI);
+		if (it != m_UI[ETOI(layer)].end())
+		{
+			m_UI[ETOI(layer)].erase(it);
+		}
+		if(isOnActive == false)
+		{
+			addUI->UI_InActive();
+		}
+	
+		//addUI->Initialize(UIQ.pArg); // 넣었다 뺏다 할떄 계속 불릴 위험있음 CBase 안에서 bool로 처리
+		//addUI->UI_Active();
+
+		//// 이건 ui 매니져에 있는 활성화된 ui 모아두는 곳에 있음
+		m_UI[ETOI(layer)].push_back(addUI);
+		m_ActiveUI = addUI;
 }
 
 void CUI_Manager::Pop(UI_LAYER layer, wstring type)
@@ -126,6 +152,26 @@ void CUI_Manager::Pop(UI_LAYER layer, wstring type)
 	}
 
 
+}
+
+shared_ptr<CUI> CUI_Manager::Find_UI_InCurLevel(UI_LAYER layer, wstring type)
+{
+	// 넣고 바로 찾으면 널임 담 프레임에 들어감 대기열에 들어가니까 , 근데 지금 내구조에서 여기 대기열 필요 없음 나중에 고치든가 해야겠음
+	auto pUIPair = FindUIOnPool(type);
+
+	if (layer == UI_LAYER::HUD || layer == UI_LAYER::WINDOW)
+	{
+		for (auto& it : m_UI[ETOI(layer)])
+		{
+			if (it == pUIPair)
+			{
+
+				return it;
+			}
+			
+		}
+	}
+				return nullptr;
 }
 
 void CUI_Manager::Detach_All()
@@ -165,40 +211,40 @@ Rect CUI_Manager::Get_WinSize()
 	return m_Winsize; 
 }
 
-void CUI_Manager::ProcessUIQ()
-{
-	if (!m_RequestUIQueue.empty())
-	{
-		RequestUI UIQ = m_RequestUIQueue.front();
-		m_RequestUIQueue.pop();
-
-		shared_ptr<CUI> addUI = FindUIOnPool(UIQ.UIKey);
-		if(addUI == nullptr)
-		{
-			return;
-		}
-		/*OnComplete(UIQ.Layer, UIQ.UIKey, UIQ.pArg);*/
-
-		if (addUI == nullptr)
-			return;
-
-		// 이미 있으면 젤위로 
-		auto it = find(m_UI[ETOI(UIQ.Layer)].begin(), m_UI[ETOI(UIQ.Layer)].end(), addUI);
-		if (it != m_UI[ETOI(UIQ.Layer)].end())
-		{
-			m_UI[ETOI(UIQ.Layer)].erase(it);
-		}
-
-		//addUI->Initialize(UIQ.pArg); // 넣었다 뺏다 할떄 계속 불릴 위험있음 CBase 안에서 bool로 처리
-		//addUI->UI_Active();
-
-		//// 이건 ui 매니져에 있는 활성화된 ui 모아두는 곳에 있음
-		m_UI[ETOI(UIQ.Layer)].push_back(addUI);
-		m_ActiveUI = addUI;
-		
-	}
-
-}
+//void CUI_Manager::ProcessUIQ()
+//{
+//	if (!m_RequestUIQueue.empty())
+//	{
+//		RequestUI UIQ = m_RequestUIQueue.front();
+//		m_RequestUIQueue.pop();
+//
+//		shared_ptr<CUI> addUI = FindUIOnPool(UIQ.UIKey);
+//		if(addUI == nullptr)
+//		{
+//			return;
+//		}
+//		/*OnComplete(UIQ.Layer, UIQ.UIKey, UIQ.pArg);*/
+//
+//		if (addUI == nullptr)
+//			return;
+//
+//		// 이미 있으면 젤위로 
+//		auto it = find(m_UI[ETOI(UIQ.Layer)].begin(), m_UI[ETOI(UIQ.Layer)].end(), addUI);
+//		if (it != m_UI[ETOI(UIQ.Layer)].end())
+//		{
+//			m_UI[ETOI(UIQ.Layer)].erase(it);
+//		}
+//
+//		//addUI->Initialize(UIQ.pArg); // 넣었다 뺏다 할떄 계속 불릴 위험있음 CBase 안에서 bool로 처리
+//		//addUI->UI_Active();
+//
+//		//// 이건 ui 매니져에 있는 활성화된 ui 모아두는 곳에 있음
+//		m_UI[ETOI(UIQ.Layer)].push_back(addUI);
+//		m_ActiveUI = addUI;
+//		
+//	}
+//
+//}
 
 unique_ptr<CUI_Manager> CUI_Manager::Create(_uint width, _uint height)
 {

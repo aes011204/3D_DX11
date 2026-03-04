@@ -1,10 +1,12 @@
 #include "Level_GamePlay.h"
-#include "GameInstance.h"
-#include "Log_Manager.h"
+
+#include <UI.h>
+
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Camera_Play.h"
 #include "Camera_Free.h"
+#include "DInput_Manager.h"
 
 
 
@@ -28,22 +30,42 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
+
+	return S_OK;
+}
+
+HRESULT CLevel_GamePlay::Post_Initialize()
+{
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"TabContainer", false , nullptr);
+	m_TapUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+
 	return S_OK;
 }
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
-	/*if (GetKeyState(VK_SPACE) & 0x8000)
-	{
-		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::EDITOR))))
-			return ;
-	}
-	int a = 10;*/
+
 	if (GetKeyState(VK_NUMPAD1) & 0x8000)
 	{
 		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::LOGO))))
 			return;
 	}
+
+	// 일단 여기 두고 나중에 많아지면 UIHander, UIController 로 이동
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) // 일단 키가 눌렸을 때
+	{
+		if (m_OnTab == false) // 꺼져있었다면 켜기
+		{
+			m_TapUI->UI_Active();
+			m_OnTab = true;
+		}
+		else // 켜져있었다면 끄기
+		{
+			m_TapUI->UI_InActive();
+			m_OnTab = false;
+		}
+	}
+
 }
 
 HRESULT CLevel_GamePlay::Render()

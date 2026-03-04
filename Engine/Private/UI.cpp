@@ -30,6 +30,7 @@ HRESULT CUI::Initialize(void* pArg)
 		return S_OK;
 
 	SetDefaultNameFromThisType();
+
 	{
 		m_pUITransformCom = CUITransform::Create(m_pDevice, m_pContext);
 		if (nullptr == m_pUITransformCom)
@@ -49,6 +50,8 @@ HRESULT CUI::Initialize(void* pArg)
 
 
 	OnInit(pArg);
+
+
 	// 최하위fianl 자식의 OnInit 호출 -> 
 	// 자신의 부모가 UI이면 __super::OnInit 안해도됨 (해도 됨 {}이거임)
 	// 아닌경우는 해줘야함 

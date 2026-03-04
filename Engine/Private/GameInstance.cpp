@@ -190,6 +190,7 @@ _float CGameInstance::Compute_TimeDelta(const _wstring& strTimeTag)
 HRESULT CGameInstance::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pNewLevel)
 {
 
+
 	return m_pLevel_Manager->Change_Level(iNewLevelIndex, pNewLevel);
 
 
@@ -277,9 +278,9 @@ void CGameInstance::Push_ManagerClass(_wstring strKey, CBase* ManagerClass)
 	m_ManagerForImgui.emplace(strKey, ManagerClass);
 }
 
-void CGameInstance::UI_Push(UI_LAYER layer, wstring name, void* pArg)
+void CGameInstance::UI_Push(UI_LAYER layer, wstring name, _bool isOnActive, void* pArg)
 {
-	m_UI_Manager->Push(layer, name, pArg);
+	m_UI_Manager->Push(layer, name, isOnActive, pArg);
 }
 void CGameInstance::UI_Pop(UI_LAYER layer, wstring type)
 {
@@ -298,6 +299,12 @@ Rect CGameInstance::Get_WinSize()
 {
 	return m_UI_Manager->Get_WinSize();
 }
+
+shared_ptr<CUI> CGameInstance::Find_UI_InCurLevel(UI_LAYER layer, wstring type)
+{
+	return m_UI_Manager->Find_UI_InCurLevel(layer, type);
+}
+
 CEventBus* CGameInstance::Get_EventBus()
 {
 	return m_pEventBus.get(); ;

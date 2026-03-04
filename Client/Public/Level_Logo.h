@@ -13,6 +13,7 @@ public:
 
 public:
 	virtual HRESULT Initialize() override;
+	virtual HRESULT Post_Initialize()override;
 	virtual void Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 

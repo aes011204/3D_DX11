@@ -14,6 +14,11 @@ HRESULT CLevel::Initialize()
 	return S_OK;
 }
 
+HRESULT CLevel::Post_Initialize()
+{
+	return S_OK;
+}
+
 void CLevel::Update(_float fTimeDelta)
 {
 

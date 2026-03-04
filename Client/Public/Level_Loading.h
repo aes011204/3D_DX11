@@ -16,6 +16,7 @@ public:
 
 public:
 	virtual HRESULT Initialize(LEVEL eNextLevelID) ;
+	virtual HRESULT Post_Initialize()override;
 	virtual void Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 

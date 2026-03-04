@@ -17,6 +17,7 @@ public:
 
 public:
 	virtual HRESULT Initialize();
+	virtual HRESULT Post_Initialize();
 	virtual void Update(_float fTimeDelta);
 	virtual HRESULT Render();
 

@@ -21,9 +21,11 @@ CUI_MainMenu::CUI_MainMenu(const CUIPanel& prototype)
 
 HRESULT CUI_MainMenu::OnInit(void* pArg)
 {
+	//if(pArg==nullptr)
+		
     MAINMENU_DESC* pDesc = static_cast<MAINMENU_DESC*>(pArg);
-
-    __super::OnInit(pDesc);
+	HRESULT hr = {};
+	hr = __super::OnInit(pDesc);
     
 
 	{
@@ -50,7 +52,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			pDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
 			pDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f * i) };
 			pDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
-			pDesc.vAnchorPoint = Vector2{ 0.254,0.5f };
+			pDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
 			pDesc.vPivot = Vector2{ 0.5f, 0.5f };
 			pDesc.vScale = Vector2{ 1.3f, 1.0f };
 			pDesc.OverlapStartEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
@@ -125,7 +127,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 	}
 
 
-    return S_OK;
+    return hr;
 }
 
 void CUI_MainMenu::OnActive()
@@ -156,8 +158,10 @@ void CUI_MainMenu::OnLateUpdate()
 
 HRESULT CUI_MainMenu::OnRender()
 {
-    __super::OnRender();
-    return S_OK;
+	HRESULT hr = {};
+	hr = __super::OnRender();
+
+	return hr;
 }
 
 void CUI_MainMenu::OnClear()
@@ -168,7 +172,7 @@ void CUI_MainMenu::OnClear()
 
 shared_ptr<CUI_MainMenu> CUI_MainMenu::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
-    shared_ptr<CUI_MainMenu> pInstance(new CUI_MainMenu(pDevice, pContext));
+    shared_ptr<CUI_MainMenu> pInstance(new CUI_MainMenu(pDevice, pContext), [](CUI_MainMenu* p) {p->Free(); delete(p); });
 
     if (FAILED(pInstance->Initialize_Prototype()))
     {

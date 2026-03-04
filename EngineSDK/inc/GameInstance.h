@@ -60,7 +60,7 @@ public:
 
 
 public: /*For.Editor*/
-	const map<const _wstring, shared_ptr<CLayer>>& Get_GameObjects(_uint levelIndex) const ;
+	const map<const _wstring, shared_ptr<CLayer>>& Get_GameObjects(_uint levelIndex) const;
 	_uint Get_Current_LevelIdx();
 	//const vector<shared_ptr<CUI>>& GetUIList(UI_LAYER layer);
 	//const unordered_map<wstring, shared_ptr<CUI>>& GetUIPool();
@@ -70,11 +70,12 @@ public: /*For.Editor*/
 	void Push_ManagerClass(_wstring strKey, CBase* ManagerClass);
 
 public:/*For.UI_Manager*/
-	void UI_Push(UI_LAYER layer, wstring name, void* pArg);
+	void UI_Push(UI_LAYER layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);
 	void UI_Pop(UI_LAYER layer, wstring type); // 레이어에서 넣얶다 뻇다하는건 안씀 
 	void UI_Detach_All(); // 씬 전환 할떄 레이어에 있는거 객체를 지우니까 그전에 
 	void UI_InsertToPool(wstring UIType, shared_ptr<CUI> UI);
 	Rect Get_WinSize();
+	shared_ptr<CUI> Find_UI_InCurLevel(UI_LAYER layer, wstring type);
 
 public:/*For.EventBus*/
 	CEventBus* Get_EventBus();

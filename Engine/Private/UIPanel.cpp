@@ -41,11 +41,11 @@ HRESULT CUIPanel::OnInit(void* pArg)
     {
         Rect m_CanvasSize = m_pGameInstance.lock()->Get_WinSize();
 
-        //pDesc->vAnchorPoint = { 0.5f, 0.5f }; // 중앙 기준
-        //pDesc->vPivot = { 0.5f, 0.5f }; // 중앙 기준
-        //pDesc->vSizeDelta = { m_CanvasSize.w, m_CanvasSize.h };
-        //pDesc->vAnchoredPos = { 0.f, 0.f };
-        //pDesc->vScale = { 1.f, 1.f };
+       // pDesc->vAnchorPoint = Vector2{ 0.5f, 0.5f }; // 중앙 기준
+       // pDesc->vPivot = Vector2{ 0.5f, 0.5f }; // 중앙 기준
+       // pDesc->vSizeDelta = Vector2{ m_CanvasSize.w, m_CanvasSize.h };
+       // pDesc->vAnchoredPos = Vector2{ 0.f, 0.f };
+       // pDesc->vScale = Vector2{ 1.f, 1.f };
         
         m_pUITransformCom->SetAnchorPoint(Vector2(0.5f, 0.5f));
         m_pUITransformCom->SetPivot(Vector2(0.5f, 0.5f));
@@ -55,9 +55,7 @@ HRESULT CUIPanel::OnInit(void* pArg)
     }
 
     // 이건 부모가 CUI라서 할필요 없는데 그냥 ㄱㄱ
-    __super::OnInit(pDesc);
-
-    return S_OK;
+    return __super::OnInit(pDesc);
 }
 
 void CUIPanel::OnActive()
@@ -114,7 +112,9 @@ HRESULT CUIPanel::Ready_Components(_uint Level, _wstring protoName)
         return E_FAIL;
     if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
         return E_FAIL;
-    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+
+
+    if (FAILED(Add_Component(Level, protoName, TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
         return E_FAIL;
 
     return S_OK;
