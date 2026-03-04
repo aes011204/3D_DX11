@@ -46,6 +46,9 @@ public:
 
 	void Mark_Destroy() { m_bPendingDestroy = true; }
 	bool Is_PendingDestroy() { return m_bPendingDestroy; }
+
+	virtual void RebindCom() {};
+
 /// <IMGUI>
 
     map<const _wstring, class shared_ptr<CComponent> >& const Get_ComponentMap() {return m_Components;};

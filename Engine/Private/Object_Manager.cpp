@@ -56,38 +56,18 @@ except:
 	return nullptr;
 }
 
-//HRESULT CObject_Manager::Add_GameObject(shared_ptr<CBase> pClonedInst,
-//	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
-//{
-//	shared_ptr<CGameObject> pGameObject = { nullptr };
-//	shared_ptr<CLayer> pLayer = { nullptr };
-//
-//	if (nullptr == m_pLayers ||
-//		iLayerLevelIndex >= m_iNumLevel|| pClonedInst == nullptr)
-//		goto except;
-//
-//	pGameObject = dynamic_pointer_cast<CGameObject>(CGameInstance::GetInstance()->Clone_Prototype(pClonedInst, pArg));
-//	if (nullptr == pGameObject)
-//		goto except;
-//
-//	pLayer = Find_Layer(iLayerLevelIndex, strLayerTag);
-//
-//	if (nullptr == pLayer)
-//	{
-//		pLayer = CLayer::Create();
-//		pLayer->Add_GameObject(pGameObject);
-//		m_pLayers[iLayerLevelIndex].emplace(strLayerTag, pLayer);
-//	}
-//	else
-//		pLayer->Add_GameObject(pGameObject);
-//
-//
-//	return S_OK;
-//
-//except:
-//	MSG_BOX("Failed To Added : CloneGameObject");
-//	return E_FAIL;
-//}
+shared_ptr<CGameObject> CObject_Manager::Get_GameObject(_uint iLevelIndex,const _wstring& strLayerTag, _uint GObjIndex)
+{
+	shared_ptr<CLayer> layer = Find_Layer(iLevelIndex, strLayerTag);
+	if (layer == nullptr)
+	{
+		return nullptr;
+	}
+
+		return layer->Get_GameObject(GObjIndex);
+}
+
+
 
 void CObject_Manager::Priority_Update(_float fTimeDelta)
 {
@@ -153,7 +133,7 @@ void CObject_Manager::Update_Gui()
 	}
 }
 
-map<const _wstring, shared_ptr<CLayer>> CObject_Manager::Get_GameObjects(_uint levelIndex)
+const map<const _wstring, shared_ptr<CLayer>>& CObject_Manager::Get_GameObjects(_uint levelIndex) const
 {
 	return m_pLayers[levelIndex];
 

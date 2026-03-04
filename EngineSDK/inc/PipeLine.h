@@ -24,6 +24,9 @@ public:
         return reinterpret_cast<const _float4*>(m_TransformInverseStateMatrices[ETOI(D3DTS::VIEW)].m[3]);
     }
 
+    const _float4x4* Get_InverseTransfrom(D3DTS eTransformState) const {
+        return &m_TransformInverseStateMatrices[ETOI(eTransformState)];
+    }
 public:
     void Set_Transform(D3DTS eTransformState, _fmatrix TransformStateMatrix) {
         XMStoreFloat4x4(&m_TransformStateMatrices[ETOI(eTransformState)], TransformStateMatrix);

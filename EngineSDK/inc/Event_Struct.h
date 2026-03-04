@@ -1,6 +1,7 @@
 #pragma once
 #include "Editor_Define.h"
 
+
 namespace Engine { class CEntity; }
 
 namespace Engine
@@ -23,6 +24,14 @@ namespace Engine
     {
         //shared_ptr<Engine::CBase> Cloned;
         wchar_t szTag[256] = {};
+        _uint iLevel = {};
+    };
+
+   
+    struct EvtTerrainPicking
+    {
+        _bool isOnPicking = false;
+        _wstring Tag = {};
         _uint iLevel = {};
     };
 }

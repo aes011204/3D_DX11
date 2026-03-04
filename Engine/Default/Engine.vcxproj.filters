@@ -49,6 +49,12 @@
     <Filter Include="99.Defines\01.Utility\06.Lights">
       <UniqueIdentifier>{5207b0dc-e6c3-4a95-9445-d19c4dc63241}</UniqueIdentifier>
     </Filter>
+    <Filter Include="00.System\02.Input">
+      <UniqueIdentifier>{56e89f5b-3767-42c2-a9d3-cb02f305587a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00.System\03.Picking">
+      <UniqueIdentifier>{8854e13a-64d4-4ae1-bab1-214fc80c1cac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -131,9 +137,6 @@
     <ClCompile Include="..\Private\VIBuffer.cpp">
       <Filter>99.Defines\01.Utility\04.Components\VIIBufer</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\DInput_Manager.cpp">
-      <Filter>00.System</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp">
       <Filter>99.Defines\01.Utility\04.Components\VIIBufer</Filter>
     </ClCompile>
@@ -149,7 +152,6 @@
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="..\Private\UIObject.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
-    <ClCompile Include="..\Private\Camera_Free.cpp" />
     <ClCompile Include="..\Public\Camera.cpp">
       <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
     </ClCompile>
@@ -161,6 +163,18 @@
     </ClCompile>
     <ClCompile Include="..\Private\Shader.cpp">
       <Filter>99.Defines\01.Utility\04.Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Free.cpp">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Manager.cpp">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Picking_Manager.cpp">
+      <Filter>00.System\03.Picking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DInput_Manager.cpp">
+      <Filter>00.System\02.Input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -262,9 +276,6 @@
     <ClInclude Include="..\Public\VIBuffer.h">
       <Filter>99.Defines\01.Utility\04.Components\VIIBufer</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\DInput_Manager.h">
-      <Filter>00.System</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Rect.h">
       <Filter>99.Defines\01.Utility\04.Components\VIIBufer</Filter>
     </ClInclude>
@@ -281,7 +292,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\UIObject.h" />
     <ClInclude Include="..\Public\PipeLine.h" />
-    <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\Public\Camera.h">
       <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
     </ClInclude>
@@ -293,6 +303,18 @@
     </ClInclude>
     <ClInclude Include="..\Public\Shader.h">
       <Filter>99.Defines\01.Utility\04.Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Manager.h">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Free.h">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Picking_Manager.h">
+      <Filter>00.System\03.Picking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DInput_Manager.h">
+      <Filter>00.System\02.Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

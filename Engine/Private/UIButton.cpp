@@ -89,33 +89,6 @@ HRESULT CUIButton::OnRender()
 {
     if (FAILED(m_pUITransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
         return E_FAIL;
-    
-    _float4x4 Wm;
-    XMStoreFloat4x4(&Wm,
-        XMMatrixScaling(200.f, 200.f, 1.f) *  // 200x200 픽셀
-        XMMatrixTranslation(200.f, 200.f, 0.f)  // (200,200) 위치
-    );
-
-
-    _float4x4		IdentityMatrix = {};
-    XMStoreFloat4x4(&IdentityMatrix, XMMatrixIdentity());
-
-    auto win = m_pGameInstance.lock()->Get_WinSize();
-    float W = win.w - win.x;
-    float H = win.h - win.y;
-
-    _float4x4 P;
-    XMStoreFloat4x4(&P, XMMatrixOrthographicOffCenterLH(
-        0.f, W,
-        H, 0.f,
-        0.f, 1.f
-    ));
-
-
-   // m_pShaderCom->Bind_Matrix("g_WorldMatrix", &Wm);
-    //m_pShaderCom->Bind_Matrix("g_ViewMatrix", &IdentityMatrix);
-    //
-    //m_pShaderCom->Bind_Matrix("g_ProjMatrix", &P);
 
 
     if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ViewMatrix", D3DTS::VIEW)))
@@ -164,7 +137,7 @@ void CUIButton::ProcessInput()
         }
 
 
-    //CLog_Manager::GetInstance()->Add_Log_F(CLog_Manager::LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
+    //CLog_Manager::GetInstance()->Add_Log_F(LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
 
     if (m_bHovered)
     {
@@ -189,7 +162,7 @@ void CUIButton::ProcessInput()
         {
             m_UIState = BUTTON_STATE::HOVER;
 
-        // CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "Exited at");
+        // CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "Exited at");
             if (m_OverlapStartEvent) // 콜백 실행
             {
                 m_OverlapStartEvent(this);

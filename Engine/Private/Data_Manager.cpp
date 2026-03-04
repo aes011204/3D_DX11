@@ -164,7 +164,7 @@ HRESULT CData_Manager::Load_ObjData(const string& fileName)
 			obj->Set_SaveType(SAVETYPE::GAMEOBJECT);
 
 		}
-		CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "GObj Data Updated Successfully!\n");
+		CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "GObj Data Updated Successfully!\n");
 
 	}
 
@@ -230,7 +230,7 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 	}
 	j["WorldGameObject"] = jObjArray;
 
-	CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "GObj Data Save Successfully!\n");
+	CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "GObj Data Save Successfully!\n");
 
 
 	string folderPath = "../../Client/Bin/Resources/Data/MapData/";
@@ -302,12 +302,12 @@ HRESULT CData_Manager::Load_UIData(const string& fileName)
 			if (it != uiPool.end())
 			{
 				it->second->Load_FromJson(j); // 여기서 데이터 적용 시작!
-				CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "Single UI Root Loaded!");
+				CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "Single UI Root Loaded!");
 			}
 				else
 				{
 					// 풀에 없는 이름이면 무시하거나 경고
-					CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::WARNING, "Error: Matching UI Tag not found in Pool.\n");
+					CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::WARNING, "Error: Matching UI Tag not found in Pool.\n");
 				}
 			}
 		}
@@ -392,7 +392,7 @@ HRESULT CData_Manager::Save_UIData(const string& fileName)
 		file << setw(4) << j << endl; // JSON을 예쁘게 정렬해서 저장
 		file.close();
 
-		CLog_Manager::GetInstance()->Add_Log(CLog_Manager::LOG_LEVEL::INFO, "UI Data Save Successfully!\n");
+		CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "UI Data Save Successfully!\n");
 
 		return S_OK;
 	}
@@ -406,7 +406,7 @@ unique_ptr<CData_Manager> CData_Manager::Create(_uint  EditorLevel)
 
 	if (FAILED(pInstance->Initialize(EditorLevel)))
 	{
-		MSG_BOX("Failed to Cloned : BackGround");
+		MSG_BOX("Failed to Cloned : CData_Manager");
 	}
 	return pInstance;
 }

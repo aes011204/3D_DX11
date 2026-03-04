@@ -17,6 +17,7 @@ public:
 
 	void Update_Gui();
 
+	shared_ptr<CGameObject> Get_GameObject(_uint GObjIndex);
 
 /// <IMGUI>
 	list <shared_ptr<class CGameObject>> Get_GameObject();

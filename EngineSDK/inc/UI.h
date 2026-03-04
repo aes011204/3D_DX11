@@ -66,6 +66,10 @@ protected:
     virtual HRESULT OnRender() { return S_OK; };
     virtual void OnClear() {}; // 이건 죽을때 실행되는거
 
+    virtual HRESULT Bind_ShaderResources() { return S_OK; };
+
+
+    _bool m_bRenderReady = true;
 public:
     bool IsLayoutTarget() { return m_bLayoutTarget; }
     class shared_ptr<CUITransform> GetUITransform() { return m_pUITransformCom; }
@@ -92,12 +96,13 @@ private:
 
     bool m_bInitialized = { false };
 
+
 protected:
     bool m_bHovered = { false };
     bool m_bInteractable = { true };
 public:
     //static shared_ptr<CUI> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    //virtual shared_ptr<CUI> Clone(void* pArg);
+   // virtual shared_ptr<CUI> Clone(void* pArg);
 	void Free()override;
 };
 

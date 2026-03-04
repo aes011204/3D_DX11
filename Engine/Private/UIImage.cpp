@@ -75,6 +75,8 @@ void CUIImage::OnUpdate(const _float& timeDelta)
 
   //  m_bInteractable = false;
     m_SliceDesc.UISize = m_pUITransformCom->Get_FinalSize();
+
+
 }
 
 void CUIImage::OnLateUpdate()

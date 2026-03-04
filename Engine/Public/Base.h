@@ -2,6 +2,7 @@
 #include "Engine_Define.h"
 
 
+
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CBase abstract: public enable_shared_from_this<CBase>

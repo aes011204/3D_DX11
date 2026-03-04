@@ -6,10 +6,11 @@
 #include "GameObject.h"
 #include "Engine_Helper.h"
 #include "Event_Struct.h"
+#include "DInput_Manager.h"
 
 
-CPrototype_Manager::CPrototype_Manager(): 
-	m_pGameInstance { CGameInstance::GetInstance() }
+CPrototype_Manager::CPrototype_Manager() :
+	m_pGameInstance{ CGameInstance::GetInstance() }
 {
 }
 
@@ -170,7 +171,7 @@ void CPrototype_Manager::OnGui()
 	{
 		string levelName = "Level_" + to_string(i);
 
-		// 1. 레벨 트리 노드 시작
+
 		if (ImGui::TreeNode(levelName.c_str()))
 		{
 			auto CopyProtoType = m_pPrototypes;
@@ -183,35 +184,23 @@ void CPrototype_Manager::OnGui()
 
 				if (pos != string::npos)
 				{
-					// "Prototype_" 이후의 문자열만 취함
+					// "Prototype_" 이후
 					tagStr = tagStr.substr(pos + searchStr.length());
 				}
 
 				// 리스트 아이템 출력
 				bool isSelected = (m_strSelectedTag == pair.first && m_iSelectedLevel == i);
 
-				//bool isSelected = CEditorInstance::GetCurSelect() == pair.second;
-				//if (ImGui::Selectable(tagStr.c_str(), isSelected))
-				//{
-				//    //m_strSelectedTag = pair.first;
-				//    ////choseEntt = dynamic_pointer_cast<CEntity>(pair.second);
-				//    //m_iSelectedLevel = i;
-				//    //
-				//    //EvtSelectEntity ev{};
-				//    //ev.Entity = static_pointer_cast<CEntity>(pair.second);
-				//    //CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
 
 
-				//}
-				// 2. [핵심] 클릭 시 현재 태그와 레벨을 멤버 변수에 저장
 				if (ImGui::Selectable(tagStr.c_str(), isSelected))
 				{
-					m_strSelectedTag = pair.first;   // wstring 저장
-					m_iSelectedLevel = i;            // 현재 레벨 인덱스 저장
+					m_strSelectedTag = pair.first;
+					m_iSelectedLevel = i;
 				}
-				// 드래그 소스 설정
+				// 드래그
 				if (ImGui::BeginDragDropSource()) {
-					// 구조체 전체를 메모리 덩어리로 보냄
+
 					DragDropProto protoClone_Desc = {};
 					//wcscpy_s(payload.szTag, pair.first.c_str());
 					wcscpy_s(protoClone_Desc.szTag, pair.first.c_str());
@@ -223,7 +212,7 @@ void CPrototype_Manager::OnGui()
 				}
 			}
 
-			// [중요] TreeNode가 열렸을 때만 Pop을 한 번 해줘야 합니다.
+
 			ImGui::TreePop();
 		}
 	}
@@ -231,7 +220,7 @@ void CPrototype_Manager::OnGui()
 
 	ImGui::Separator();
 
-	// 2. 추가 버튼 로직 (즉시 생성 및 레이어 추가)
+	// 추가 버튼 로직 
 	if (m_strSelectedTag != L"")
 	{
 		string btnLabel = "Add [" + Engine::W2S(m_strSelectedTag) + "]";
@@ -239,19 +228,16 @@ void CPrototype_Manager::OnGui()
 		// 버튼 클릭 시 즉시 실행
 		if (ImGui::Button(btnLabel.c_str(), ImVec2(-1, 30)))
 		{
+			EvtTerrainPicking tmp = {};
+			tmp.isOnPicking = true;
+			tmp.iLevel =  m_iSelectedLevel;
+			tmp.Tag = m_strSelectedTag;
+			m_pGameInstance.lock()->Get_EventBus()->Publish(tmp);
 
-
-			// [2] 현재 활성화된 레벨의 특정 레이어에 즉시 추가
-			// 레이어 태그는 프로젝트 환경에 맞게 수정하세요 (예: TEXT("Layer_Object"))
-			_uint iCurrentLevel = m_pGameInstance.lock()->Get_Current_LevelIdx();
-			if (nullptr==(m_pGameInstance.lock()->Add_GameObject(m_iSelectedLevel,m_strSelectedTag, iCurrentLevel,L"Static")))
-			{
-				MSG_BOX("Failed to Add GameObject to Layer");
-			}
-
-
-
+		
 		}
+
+		
 	}
 	else
 	{

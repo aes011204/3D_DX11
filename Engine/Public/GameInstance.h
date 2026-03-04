@@ -48,11 +48,10 @@ public:/* For.levelManager*/
 public: /* For.PrototypeManager*/
 	HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
 	shared_ptr<CBase> Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);;
-	//shared_ptr<CBase> Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg);
 
 public: /*For.GameObject_Manager*/
 	shared_ptr<CGameObject> Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr);
-	//HRESULT Add_GameObject(shared_ptr<CBase> pClonedInst, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg);
+	shared_ptr<CGameObject> Get_GameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint GObjIndex);
 
 
 public:
@@ -61,7 +60,7 @@ public:
 
 
 public: /*For.Editor*/
-	map<const _wstring, shared_ptr<CLayer>> Get_GameObjects(_uint levelIndex);
+	const map<const _wstring, shared_ptr<CLayer>>& Get_GameObjects(_uint levelIndex) const ;
 	_uint Get_Current_LevelIdx();
 	//const vector<shared_ptr<CUI>>& GetUIList(UI_LAYER layer);
 	//const unordered_map<wstring, shared_ptr<CUI>>& GetUIPool();
@@ -83,6 +82,7 @@ public:/*For.EventBus*/
 public:/*For.DInput_Manager*/
 	class CDInput_Manager* Get_DInput_Manger() { return m_pDInput_Manager.get(); }
 	void Set_MousePos(float x, float y);
+	_float2 Get_MousePos();
 
 public:/*For.Data_Manager*/
 	class CData_Manager* Get_Data_Manager() { return m_pData_Manager.get(); }
@@ -92,6 +92,7 @@ public:/*For.Data_Manager*/
 
 public:/*For.PipeLine*/
 	const _float4x4* Get_Transfrom(D3DTS eTransformState) const;
+	const _float4x4* Get_InverseTransfrom(D3DTS eTransformState) const;
 	const _float4* Get_CamPositon() const;
 	void Set_Transform(D3DTS eTransformState, _fmatrix TransformStateMatrix);
 	HRESULT Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName);
@@ -101,6 +102,13 @@ public:/*For.Light_Manager*/
 	const LIGHT_DESC* Get_LightDesc(_uint iIndex);
 	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
 
+public:/*For.Picking_Manager*/
+	
+	_bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
+public:/*For.Camera_Manager*/
+	HRESULT Add_Camera(_uint camLevel, _wstring key, shared_ptr<class CCamera> cam);
+	_bool Change_Camera(_wstring key);
+	void CAM_Manger_OnGui();
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
@@ -113,6 +121,8 @@ private:
 	unique_ptr<class CData_Manager> m_pData_Manager = { nullptr };
 	unique_ptr<class CPipeLine> m_pPipeLine = { nullptr };
 	unique_ptr<class CLight_Manager> m_pLight_Manager = { nullptr };
+	unique_ptr<class CCamera_Manager> m_pCamera_Manager = { nullptr };
+	unique_ptr<class CPicking_Manager> m_pPicking_Manager = { nullptr };
 
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 

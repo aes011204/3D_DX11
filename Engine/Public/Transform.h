@@ -46,6 +46,11 @@ public:
     void Set_State(STATE eState, _fvector vState)//
     {
         XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]), vState);
+
+        //if (eState == STATE::POSITION)
+        //{
+        //    m_WorldMatrix._44 = 1.f;
+        //}
     }
 public:
     virtual HRESULT Initialize_Prototype() override;

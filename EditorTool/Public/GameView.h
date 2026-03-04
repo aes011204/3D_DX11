@@ -34,6 +34,7 @@ private:
     ComPtr<ID3D11Texture2D>          m_pTexture; // 캡처 대상 텍스처
     ComPtr<ID3D11ShaderResourceView> m_pSRV;     // ImGui Image용
 
+    void Render_CameraToolbar();
 
     // 마우스 계산용
 private:

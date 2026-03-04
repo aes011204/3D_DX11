@@ -208,8 +208,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	}
 
 
-
-
+	
 
 
 

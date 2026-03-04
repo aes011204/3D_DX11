@@ -39,7 +39,7 @@ protected:
 
     HRESULT Ready_Components(_uint Level,_wstring protoName);
 
-    void RebindCom();
+    void RebindCom() override;
 
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;

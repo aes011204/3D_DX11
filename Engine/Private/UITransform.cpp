@@ -326,6 +326,8 @@ HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const 
     return 	pShaderCom->Bind_Matrix(pConstantName, &m_WorldMatrix);;
 }
 
+
+
 shared_ptr<CUITransform> CUITransform::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
     shared_ptr<CUITransform> pInstance(new CUITransform(pDevice, pContext), [](CUITransform* p) {p->Free();delete(p);});

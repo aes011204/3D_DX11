@@ -24,6 +24,7 @@ HRESULT CTransform::Initialize_Prototype()
 
 HRESULT CTransform::Initialize(void* pArg)
 {
+	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	if (nullptr == pArg)
 		return S_OK;
 

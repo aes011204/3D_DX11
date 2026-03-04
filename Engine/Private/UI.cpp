@@ -187,6 +187,8 @@ void CUI::Load_FromJson(nlohmann::json& j)
 void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 {
 
+	
+
 	if (m_bEnabled)
 	{
 		if (m_pUITransformCom)
@@ -215,10 +217,14 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 
 		OnUpdate(fTimeDelta);
 
+		if (!m_bRenderReady)
+			m_bRenderReady = true;
+
 		for (auto& it : m_behavior)
 		{
 			it->Tick(fTimeDelta, this);
 		}
+
 	}
 
 }
@@ -239,7 +245,7 @@ void CUI::Late_Update(_float fTimeDelta)
 
 HRESULT CUI::Render()
 {
-	if (m_bVisible)
+	if (m_bVisible&& m_bRenderReady==true)
 	{
 		if (m_bIsDirty_Zorder)
 		{
@@ -261,6 +267,7 @@ HRESULT CUI::Render()
 			it->Render();
 		}
 	}
+	//m_bRenderReady = true;
 	return S_OK;
 }
 
@@ -268,6 +275,12 @@ void CUI::UI_Active()
 {
 	m_bEnabled = true;
 	m_bVisible = true;
+
+	m_bRenderReady = false;
+
+	if (m_pUITransformCom)
+		m_pUITransformCom->UpdateLayoutIfDirty();
+
 	//m_bInteractable = true;
 	OnActive();
 
@@ -282,6 +295,7 @@ void CUI::UI_InActive()
 	m_bEnabled = false;
 	m_bVisible = false; //이건 정책에 따라
 	//m_bInteractable = false;
+
 	OnInActive(); // 자신의 행동 호출 가상함수
 
 	for (auto& it : m_Children)
@@ -352,31 +366,6 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 
 	return S_OK;
 }
-
-//shared_ptr<CUI> CUI::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-//{
-//	//shared_ptr<CUI> pInstance = CUI::Create(pDevice, pContext);
-//	//if (FAILED(pInstance->Initialize_Prototype()))
-//	//{
-//	//	MSG_BOX("failed prototype: CUIBase");
-//	//	Safe_Release(pInstance);
-//	//}
-//	//return pInstance;
-//	return nullptr;
-//}
-//
-//shared_ptr<CUI> CUI::Clone(void* pArg)
-//{
-//	//shared_ptr<CUI> pInstance = new CUI(*this);
-//	//if (FAILED(pInstance->Initialize(pArg)))
-//	//{
-//	//	MSG_BOX("failed prototype: CUIBase");
-//	//	Safe_Release(pInstance);
-//	//}
-//	//return pInstance;
-//	return nullptr;
-//
-//}
 
 void CUI::Free()
 {

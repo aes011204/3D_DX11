@@ -4,6 +4,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include <d3dcompiler.h>
+#include <DirectXCollision.h>
 
 #include "DirectXTK/DDSTextureLoader.h"
 #include "DirectXTK/WICTextureLoader.h"
@@ -49,7 +50,6 @@ using namespace DirectX;
 #include <wrl.h>
 using namespace Microsoft::WRL;
 
-// 내가 추가한 헤더
 #include <stack>
 #include <assert.h>
 #include <iostream>
@@ -72,6 +72,8 @@ using namespace std;
 #include "Engine_Typedef.h"
 #include "Engine_Function.h"
 
+//
+#include "Log_Manager.h"
 
 namespace Engine
 {

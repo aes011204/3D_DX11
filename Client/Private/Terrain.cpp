@@ -4,6 +4,8 @@
 #include "Transform.h"
 #include "Entity.h"
 #include "PipeLine.h"
+#include "EventBus.h"
+#include "Event_Struct.h"
 
 
 CTerrain::CTerrain(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -34,6 +36,7 @@ HRESULT CTerrain::Initialize(void* pArg)
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+
 
 	return S_OK;
 }

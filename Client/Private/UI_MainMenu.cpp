@@ -58,7 +58,12 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			{
 				if (!it) continue;
 				it->UI_Active();
-				it->m_behavior.push_back((make_shared<CScaleModifier>(0.03f, 4.f, 1.8f, 1.8f)));
+				auto pTransform = dynamic_cast<CUITransform*>(it->Get_Component(g_strUITransformTag).get());
+				if (pTransform) {
+					pTransform->SetLocalScale({ 1.8f, 1.8f });
+				}
+				//it->m_bIsDirtyCom = true;
+				it->m_behavior.push_back((make_shared<CScaleModifier>(0.03f, 4.f, 0.f, 1.8f)));
 			}
 				};
 			pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
