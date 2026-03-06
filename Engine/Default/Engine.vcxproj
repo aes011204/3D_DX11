@@ -191,6 +191,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClInclude Include="..\Public\UIObject.h" />
     <ClInclude Include="..\Public\UIPanel.h" />
     <ClInclude Include="..\Public\UIProgress.h" />
+    <ClInclude Include="..\public\UIRenderable.h" />
     <ClInclude Include="..\Public\UISlot.h" />
     <ClInclude Include="..\Public\UIText.h" />
     <ClInclude Include="..\Public\UITransform.h" />
@@ -236,6 +237,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClCompile Include="..\Private\UIObject.cpp" />
     <ClCompile Include="..\Private\UIPanel.cpp" />
     <ClCompile Include="..\Private\UIProgress.cpp" />
+    <ClCompile Include="..\Private\UIRenderable.cpp" />
     <ClCompile Include="..\Private\UISlot.cpp" />
     <ClCompile Include="..\Private\UIText.cpp" />
     <ClCompile Include="..\Private\UITransform.cpp" />

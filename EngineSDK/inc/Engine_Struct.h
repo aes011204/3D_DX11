@@ -84,9 +84,11 @@ namespace Engine
 
     struct NINESLICE_DESC
     {
-        _float2 TexSize = {};
+        _float2 TexOriginalSize = {};
+        _float2 TexCustomSize = {};
         _float2 UISize = {};
         _float4 PxSliceLRTB = {};
+        _float TileScale = {1.f};
 
     };
 

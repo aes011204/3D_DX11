@@ -1,19 +1,15 @@
 #include "UIButton.h"
 #include "GameInstance.h"
 #include "DInput_Manager.h"
-#include "UITransform.h"
-#include "Texture.h"
-#include "Shader.h"
-#include "IModifier.h"
-#include "Log_Manager.h"
+
 
 CUIButton::CUIButton(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CUI(pDevice, pContext)
+	: CUIRenderable(pDevice, pContext)
 {
 }
 
 CUIButton::CUIButton(const CUIButton& prototype)
-	: CUI(prototype)
+	: CUIRenderable(prototype)
 {
 }
 
@@ -27,41 +23,45 @@ HRESULT CUIButton::OnInit(void* pArg)
    // m_TextureComLevel = pDesc->TextureComLevel;
 
 
-    if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
+   /* if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
         return E_FAIL;
 
     if (m_pTextureCom)
     {
         Vector2 vTexSize = m_pTextureCom->Get_SizeFromSRV(0);
         m_pUITransformCom->SetSizeDelta(vTexSize);
-    }
+    }*/
 
+    
 
-    return S_OK;
+    return __super::OnInit(pDesc);;
 
 }
 
 void CUIButton::OnActive()
 {
+    __super::OnActive();
+
 }
 
 void CUIButton::OnInActive()
 {
+    __super::OnInActive();
 }
 
 void CUIButton::OnDisabled()
 {
     m_UIState = BUTTON_STATE::DISABLE;
-
+    __super::OnInActive();
 
 }
 
 void CUIButton::OnUpdate(const _float& timeDelta)
 {
-    if (m_bIsDirtyCom) {
-        RebindCom();      // "바뀐 것"만 한 번 갱신
-        m_bIsDirtyCom = false;
-    }
+    //if (m_bIsDirtyCom) {
+    //    RebindCom();      // "바뀐 것"만 한 번 갱신
+    //    m_bIsDirtyCom = false;
+    //}
 
     ProcessInput();
 
@@ -77,17 +77,18 @@ void CUIButton::OnUpdate(const _float& timeDelta)
         break;
 
     }
+    __super::OnUpdate(timeDelta);
 }
 
 void CUIButton::OnLateUpdate()
 {
 
-
+    __super::OnLateUpdate();
 }
 
 HRESULT CUIButton::OnRender()
 {
-    if (FAILED(m_pUITransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+   /* if (FAILED(m_pUITransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
         return E_FAIL;
 
 
@@ -108,13 +109,17 @@ HRESULT CUIButton::OnRender()
         return E_FAIL;
 
     if (FAILED(m_pVIBufferCom->Render()))
-        return E_FAIL;
+        return E_FAIL;*/
 
-    return S_OK;
+   
+    return __super::OnRender();
+
 }
 
 void CUIButton::OnClear()
 {
+    __super::OnClear();
+
 }
 
 void CUIButton::ProcessInput()
@@ -195,25 +200,25 @@ void CUIButton::ChangeState(BUTTON_STATE next)
 {
 }
 
-HRESULT CUIButton::Ready_Components(_uint Level, _wstring protoName)
-{
-    if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
-        return E_FAIL;
-    if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
-        return E_FAIL;
-    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"),&m_pTextureCom, nullptr)))
-        return E_FAIL;
-
-    return S_OK;
-}
-
-void CUIButton::RebindCom()
-{
-    // 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
-    m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-    m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
-    m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
-}
+//HRESULT CUIButton::Ready_Components(_uint Level, _wstring protoName)
+//{
+//    if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+//        return E_FAIL;
+//    if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+//        return E_FAIL;
+//    if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"),&m_pTextureCom, nullptr)))
+//        return E_FAIL;
+//
+//    return S_OK;
+//}
+//
+//void CUIButton::RebindCom()
+//{
+//    // 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
+//    m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+//    m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
+//    m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+//}
 
 
 void CUIButton::Save_ToJson(nlohmann::json& j)

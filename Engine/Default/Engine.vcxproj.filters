@@ -176,6 +176,9 @@
     <ClCompile Include="..\Private\DInput_Manager.cpp">
       <Filter>00.System\02.Input</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\UIRenderable.cpp">
+      <Filter>99.Defines\01.Utility\05.UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -315,6 +318,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\DInput_Manager.h">
       <Filter>00.System\02.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UIRenderable.h">
+      <Filter>99.Defines\01.Utility\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

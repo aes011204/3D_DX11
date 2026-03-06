@@ -16,7 +16,7 @@ class ENGINE_DLL CUI abstract :
 public:
         struct UI_DESC : public CUITransform::UITRANSFORM_DESC
     {
-            bool flag = 0;
+            _uint ZOrder = {1};
     };
 protected:
     CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -33,9 +33,9 @@ public:
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
 
-    void UI_Active(); //  UI 활성활시 호출되는 함수//
+    virtual void UI_Active(); //  UI 활성활시 호출되는 함수//
     void UI_InActive(); // UI 비활성활시 호출되는 함수//
-    void Set_UI_Disabled(bool isChangeEvent); // UI 가보이는데 클릭은 안되는거 
+    void Set_UI_Disabled(bool isChangeEvent); // 클릭은 가능하고 근대 활성환ㄴ 안된상태 // UI 가보이는데 클릭은 안되는거 
 
     void UI_Clear();
 
@@ -43,7 +43,7 @@ public:
 
     HRESULT Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, D3DTS eTransformState);
 
-    void Set_Zorder(_uint Z) { m_ZOrder = Z; m_Parent.lock()->m_bIsDirty_Zorder = true; }
+    void Set_Zorder(_uint Z) { m_ZOrder = Z; if (m_Parent.lock() != nullptr) { m_Parent.lock()->m_bIsDirty_Zorder = true; } }
 
     weak_ptr<CUI> Find_Children(_wstring strTag);
     const map<_wstring, weak_ptr<CUI>>& Get_mapChildren() const { return m_mapChildren; }
@@ -51,6 +51,8 @@ public:
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 
+
+    void Set_ActiveForCustom() { m_bEnabled = true; m_bVisible = true; }; // 특이한 경우만 쓰기 커스텀UI_Active();만들떄만 
 /// <IMGUI>
     const vector<shared_ptr<CUI>>& GetChildren() const { return m_Children; }
 /// </IMGUI>
@@ -60,7 +62,7 @@ protected:
     virtual HRESULT OnInit(void* pArg) { return S_OK; }; // 생성 될떄
     virtual void OnActive() {}; // 불러 올떄마다 해야하는 일 여기서 (정보 새로 셋팅 등) 
     virtual void OnInActive() {}; // 비활 될떄 
-    virtual void OnDisabled() {}; // 보이는데 클릭 안되는거 //돈 없을떄 
+    virtual void OnDisabled() {}; //클릭은 가능하고 근대 활성환ㄴ 안된상태           // 보이는데 클릭 안되는거 //돈 없을떄 //  이거는 슬랏에 넣자
     virtual void OnUpdate(const _float& timeDelta) {};
     virtual void OnLateUpdate() {};
     virtual HRESULT OnRender() { return S_OK; };
@@ -89,15 +91,16 @@ protected:
 private:
     int m_ZOrder = { 1 };
 
-    bool m_bEnabled = { true }; // “위에 다른 팝업이 떠서 아래 UI가 조금 보이긴 하지만 update는 안하는 상태”
-    bool m_bVisible = { true }; // 렌더 여부
 
     bool m_bLayoutTarget = { false };
 
     bool m_bInitialized = { false };
+    bool m_bEnabled = { true }; // “위에 다른 팝업이 떠서 아래 UI가 조금 보이긴 하지만 update는 안하는 상태”
+    bool m_bVisible = { true }; // 렌더 여부
 
 
 protected:
+
     bool m_bHovered = { false };
     bool m_bInteractable = { true };
 public:

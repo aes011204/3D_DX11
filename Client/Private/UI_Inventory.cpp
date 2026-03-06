@@ -1,4 +1,5 @@
 #include "UI_Inventory.h"
+#include "UIImage.h"
 
 CUI_Inventory::CUI_Inventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CUIPanel(pDevice, pContext)
@@ -8,14 +9,35 @@ CUI_Inventory::CUI_Inventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceCo
 CUI_Inventory::CUI_Inventory(const CUIPanel& prototype)
 	: CUIPanel(prototype)
 {
+
 }
 
 HRESULT CUI_Inventory::OnInit(void* pArg)
 {
 	INVENTORY_DESC* pDesc = static_cast<INVENTORY_DESC*>(pArg);
 	HRESULT hr = {};
-	hr = __super::OnInit(pDesc);
 
+
+
+
+
+	CUIImage::UIIMAGE_DESC ImgDesc = {};
+	ImgDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+	ImgDesc.TextureProtoName = L"Prototype_Component_Texture_PanelBackground";
+	ImgDesc.ZOrder = 3;
+
+	shared_ptr<CUIImage> pChild = CUIImage::Create(m_pDevice, m_pContext);
+	pChild->Initialize(&ImgDesc);
+
+	wstring NameTag = L"INVEN_BACK";
+
+
+
+	Add_Child(pChild, NameTag, false);
+	//pChild ->Set_Zorder(3);
+
+
+	hr = __super::OnInit(pDesc);
 	return hr;
 }
 

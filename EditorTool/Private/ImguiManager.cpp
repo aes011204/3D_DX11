@@ -132,6 +132,8 @@ void CImguiManager::Initialize(HWND _hWnd, ComPtr<ID3D11Device>_Device, ComPtr<I
     //// 혹은 기본 폰트를 쓰신다면 폰트 배율만 조절 (약간 흐려질 수 있음)
     io.FontGlobalScale = 0.85f; // 1.0f가 기본, 0.8~0.9 정도로 줄이면 작아짐
     ApplyEditorDarkStyle();
+
+
 }
 void CImguiManager::Begin()
 {

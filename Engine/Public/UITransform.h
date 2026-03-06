@@ -46,9 +46,12 @@ public:
     void SetRotation(_float _fDegree) { m_RotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
    // void SetTurn(_float fTimeDelta) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
 
+
+
     Rect GetWorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }
     XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_WorldMatrix); }
     _float2 Get_FinalSize() { return _float2(m_SizeDelta * m_LocalScale); }
+    _float2 Get_SizeDelta() { return m_SizeDelta; }
 
     void UpdateLayoutIfDirty();
 

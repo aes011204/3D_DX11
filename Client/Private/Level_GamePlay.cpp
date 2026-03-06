@@ -7,6 +7,7 @@
 #include "Camera_Play.h"
 #include "Camera_Free.h"
 #include "DInput_Manager.h"
+#include "UI_TabContainer.h"
 
 
 
@@ -56,7 +57,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	{
 		if (m_OnTab == false) // 꺼져있었다면 켜기
 		{
-			m_TapUI->UI_Active();
+
+			dynamic_pointer_cast<CUI_TabContainer>(m_TapUI)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE),TAB::INVEN);
 			m_OnTab = true;
 		}
 		else // 켜져있었다면 끄기

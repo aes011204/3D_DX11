@@ -12,10 +12,13 @@ extern WNDCLASSEXW wcex;
 
 namespace Client
 {
-	 const unsigned int g_iWinSizeX = { 1280 };
-	 const unsigned int g_iWinSizeY = { 720 };
+	const unsigned int g_iWinSizeX = { 1600 };
+	const unsigned int g_iWinSizeY = { 800 };
+	//const unsigned int g_iWinSizeX = { 1280 };
+	//const unsigned int g_iWinSizeY = { 720 };
 
-	enum class LEVEL { STATIC, LOADING, LOGO, GAMEPLAY, EDITOR, END};
+	enum class LEVEL { STATIC, LOADING, LOGO, GAMEPLAY, EDITOR, END };
+	enum class TAB : unsigned int { NONE = 0, INVEN = 1 << 0, STORAGE = 1 << 1, ETC = 1 << 2 };
 }
 
 

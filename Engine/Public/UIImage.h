@@ -1,19 +1,20 @@
 #pragma once
-#include "UI.h"
+#include "UIRenderable.h"
 
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CUIImage :
-    public CUI
+    public CUIRenderable
 {
 public:
-    struct UIIMAGE_DESC : public CUI::UI_DESC
+    struct UIIMAGE_DESC : public CUIRenderable::RENDERABLE_DESC
     {
-        _uint TextureComLevel = {};
-        _wstring TextureProtoName =L"";
+  /*      _uint TextureComLevel = {};
+        _wstring TextureProtoName =L"";*/
 
-        _float4 PxSliceLRTB = {};
-        bool bUseNineSlice = false;
+       /* _float4 PxSliceLRTB = {};
+        _float TileScale = {};
+        bool bUseNineSlice = false;*/
         
     };
 protected:
@@ -33,10 +34,10 @@ protected:
     HRESULT OnRender()override;
     void OnClear()override;
 
-    HRESULT Ready_Components(_uint Level, _wstring protoName);
-    HRESULT Bind_ShaderResources();
+   // HRESULT Ready_Components(_uint Level, _wstring protoName);
+   // HRESULT Bind_ShaderResources();
 
-    virtual void RebindCom()override;
+    //virtual void RebindCom()override;
 
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
@@ -47,16 +48,16 @@ protected:
 /// </summary>
 
 private:
-    bool m_bUseNineSlice = false;
-    _uint m_PassIndex = {0};
-    //vector<IUIButtonBehavior*> m_behavior; // 인터페이스 클래스
+    //bool m_bUseNineSlice = false;
+    //_uint m_PassIndex = {0};
 
-    NINESLICE_DESC m_SliceDesc = {};
+
+    //NINESLICE_DESC m_SliceDesc = {};
 protected:
 
-    shared_ptr<class CShader> m_pShaderCom = { nullptr };
+  /*  shared_ptr<class CShader> m_pShaderCom = { nullptr };
     shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
-    shared_ptr<class CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<class CTexture> m_pTextureCom = { nullptr };*/
 
 
 

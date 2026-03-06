@@ -28,6 +28,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 	hr = __super::OnInit(pDesc);
     
 
+	// 람다 제외 전부 데이터로 수정 가능
 	{
 		LEVEL eLevel = {};
 		for (_uint i = 0; i < 3;i++)
@@ -108,10 +109,10 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 		CUIImage::UIIMAGE_DESC image_desc{};
 		image_desc.TextureComLevel = ETOI(LEVEL::STATIC);
 		image_desc.TextureProtoName = L"Prototype_Component_Texture_Dredge";
-		image_desc.vAnchoredPos = Vector2{ 67.0f,0.f };
+		image_desc.vAnchoredPos = Vector2{ 0.f,0.f };
 		image_desc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
-		image_desc.vAnchorPoint = Vector2{ 0.f,0.319f };
-		image_desc.vPivot = Vector2{ 0.f, 0.5f };
+		image_desc.vAnchorPoint = Vector2{ 0.254f,0.319f };
+		image_desc.vPivot = Vector2{ 0.5f, 0.5f };
 		image_desc.vScale = Vector2{ 0.5f, 0.5f };
 		shared_ptr<CUIImage> pChild2 = CUIImage::Create(m_pDevice, m_pContext);
 		pChild2->Initialize(&image_desc);

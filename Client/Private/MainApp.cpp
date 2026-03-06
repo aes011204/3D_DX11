@@ -162,7 +162,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	///////////////////UItexture/////////////////////
 
-
+	// 메인메뉴 //
 	/* Prototype_Component_Texture_Button */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Button"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/Button_Default.png"), 1))))
@@ -186,8 +186,49 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	}
 
 
+	// 인밴 //
+	/* Prototype_Component_Texture_Button_RED */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Button_RED"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/Tab_Selected.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_Slot_Damage */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slot_Damage"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/DamageBox_%d.png"), 2))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_HealthBarPanel */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_HealthBarPanel"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/HealthBarPanel.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Texture_PanelBackground */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PanelBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PanelBackground.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_PlayerInventoryBackground */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PlayerInventoryBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PlayerInventoryBackground.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
 
 
+
+	// tab_Container //
 	/* Prototype_Component_Texture_TabContainer */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TabContainer"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/SidePanel.png"), 1))))

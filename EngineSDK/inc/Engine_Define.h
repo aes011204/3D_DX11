@@ -74,6 +74,7 @@ using namespace std;
 
 //
 #include "Log_Manager.h"
+#include "Engine_Helper.h"
 
 namespace Engine
 {

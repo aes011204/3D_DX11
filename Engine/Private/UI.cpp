@@ -26,6 +26,10 @@ HRESULT CUI::Initialize_Prototype()
 HRESULT CUI::Initialize(void* pArg)
 {
 
+	UI_DESC* pDesc = static_cast<UI_DESC*>(pArg);
+
+	Set_Zorder(pDesc->ZOrder);
+
 	if (m_bInitialized == true)
 		return S_OK;
 
@@ -297,7 +301,7 @@ void CUI::UI_InActive()
 {
 	m_bEnabled = false;
 	m_bVisible = false; //이건 정책에 따라
-	//m_bInteractable = false;
+	//m_bInteractable =true;
 
 	OnInActive(); // 자신의 행동 호출 가상함수
 
@@ -369,6 +373,11 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 
 	return S_OK;
 }
+
+
+
+
+
 
 void CUI::Free()
 {

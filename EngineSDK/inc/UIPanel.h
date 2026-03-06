@@ -1,16 +1,16 @@
 #pragma once
-#include "UI.h"
+#include "UIRenderable.h"
 // 패널의 역할 : 패널의 백 이미지, 레이아웃, 
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CUIPanel :
-    public CUI
+    public CUIRenderable
 {
 public:
-    struct UIPANEL_DESC : public CUI::UI_DESC
+    struct UIPANEL_DESC : public CUIRenderable::RENDERABLE_DESC
     {
-        _uint TextureComLevel = {};
-        _wstring TextureProtoName = L"";
+       /* _uint TextureComLevel = {};
+        _wstring TextureProtoName = L"";*/
 
         _bool IsTrnasparent = { false };
         _bool IsFullScreen = { false };
@@ -35,10 +35,10 @@ public:
     HRESULT OnRender()override;
     void OnClear()override;
 
-    HRESULT Ready_Components(_uint Level, _wstring protoName);
-    HRESULT Bind_ShaderResources();
+    //HRESULT Ready_Components(_uint Level, _wstring protoName);
+    //HRESULT Bind_ShaderResources();
 
-    void RebindCom()override;
+    //void RebindCom()override;
 
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
@@ -63,9 +63,9 @@ private:
     _bool m_IsUseLayout = {};
 
 protected:
-    shared_ptr<class CShader> m_pShaderCom = { nullptr };
+  /*  shared_ptr<class CShader> m_pShaderCom = { nullptr };
     shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
-    shared_ptr<class CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<class CTexture> m_pTextureCom = { nullptr };*/
 public:
       //static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 
