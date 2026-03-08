@@ -51,6 +51,20 @@ void CUISlot::OnClear()
 	CUIButton::OnClear();
 }
 
+shared_ptr<CUISlot> CUISlot::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+{
+	shared_ptr<CUISlot> pInstance(new CUISlot(pDevice, pContext), [](CUISlot* p) {p->Free(); delete(p); });
+
+	if (FAILED(pInstance->Initialize_Prototype()))
+	{
+		MSG_BOX("Failed to Created : CUISlot");
+		return nullptr;
+	}
+	return pInstance;
+
+}
+
+
 void CUISlot::Free()
 {
 	__super::Free();

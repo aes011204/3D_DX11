@@ -13,6 +13,8 @@ public:
 
         _float4 PxSliceLRTB = {};
         bool bUseNineSlice = false;
+
+        bool bUseDark = true;
     };
 protected:
     CUIRenderable(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -20,6 +22,7 @@ protected:
 public:
     virtual ~CUIRenderable() = default;
 
+    void Set_NotUseDark() { m_bUseDark = false; }
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;
@@ -43,10 +46,11 @@ protected:
 protected:
 
     _uint m_PassIndex = { 0 };
+    bool m_bUseDark = true;
+    float m_Dark = {}; //0~1
 
 private:
     bool m_bUseNineSlice = false;
-
     NINESLICE_DESC m_SliceDesc = {};
 
 

@@ -291,91 +291,55 @@ HRESULT CData_Manager::Load_UIData(const string& fileName)
 	const auto& uiMgr = pGameInstance->Get_UI_Manager();
 	auto& uiPool = uiMgr->GetUIPool();
 
-	//if (j.is_array())
-	//{
-	if (j.is_object())
+	if (j.contains("UI_ListData"))
 	{
-		if (j.contains("RootMapTag"))
-		{
-			wstring rootTag = S2W(j["RootMapTag"]);
-			auto it = uiPool.find(rootTag);
-			if (it != uiPool.end())
-			{
-				it->second->Load_FromJson(j); // 여기서 데이터 적용 시작!
-				CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "Single UI Root Loaded!");
-			}
+		for (auto& UI : j["UI_ListData"]) {
+			
+			
+				wstring rootTag = S2W(UI["RootMapTag"]);
+
+				auto it = uiPool.find(rootTag);
+				if (it != uiPool.end())
+				{
+					it->second->Load_FromJson(UI); // 여기서 데이터 적용 시작!
+					CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "Single UI Root Loaded!");
+				}
 				else
 				{
 					// 풀에 없는 이름이면 무시하거나 경고
 					CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::WARNING, "Error: Matching UI Tag not found in Pool.\n");
 				}
-			}
+			
 		}
-	//}
-	return S_OK;
+	}
+return S_OK;
 }
 HRESULT CData_Manager::Save_UIData(const string& fileName)
 {
-	nlohmann::json j;
-
+	nlohmann::json j = nlohmann::json::object();
 
 	//ui
+
 	const auto& uiMgr = m_pGameInstance.lock()->Get_UI_Manager();
 
 	auto& uiPool = uiMgr->GetUIPool();
 
+	
+	nlohmann::json jUIArray = nlohmann::json::array();
+
 	for (auto& pair : uiPool)
 	{
-
-		j["RootMapTag"] = W2S(pair.first);
-
-
-		pair.second->Save_ToJson(j);
-
-		//nlohmann::json jComponentArray = nlohmann::json::array();
-		//for (auto& pair : pair.second->Get_ComponentMap())
-		//{
-		//	nlohmann::json jCom;
-		//	// 컴포넌트에 공통적으로 들어가는거
-		//	jCom["ComProtoTag"] = W2S(pair.second->Get_ProtoTag());
-		//	jCom["ComProtoLevel"] = pair.second->Get_ProtoLevel();
-		//	jCom["ComponentTag"] = W2S(pair.first);
-		//	// 각 컴포넌트 안의 세부내용
-		//	pair.second->Save_ToJson(jCom);
-		//	jComponentArray.push_back(jCom);
-		//}
-
-		//j["Components"] = jComponentArray;
-
-		//nlohmann::json UIArray = nlohmann::json::array();
-		//for (auto& pair : pair.second->Get_mapChildren())
-		//{
-		//	nlohmann::json jUI;
-
-		//	jUI["UIChildrenTag"] = W2S(pair.first);
-		//	pair.second.lock()->Save_ToJson(jUI);
+		nlohmann::json jRootUI;
+		jRootUI["RootMapTag"] = W2S(pair.first);
 
 
-		//	nlohmann::json jComponentArray = nlohmann::json::array();
-		//	for (auto& pair : pair.second.lock()->Get_ComponentMap())
-		//	{
-		//		nlohmann::json jCom;
-		//		// 컴포넌트에 공통적으로 들어가는거
-		//		jCom["ComProtoTag"] = W2S(pair.second->Get_ProtoTag());
-		//		jCom["ComProtoLevel"] = pair.second->Get_ProtoLevel();
-		//		jCom["ComponentTag"] = W2S(pair.first);
-		//		// 각 컴포넌트 안의 세부내용
-		//		pair.second->Save_ToJson(jCom);
-		//		jComponentArray.push_back(jCom);
-		//	}
+		pair.second->Save_ToJson(jRootUI);
 
-		//	jUI["Components"] = jComponentArray;
-
-		//	UIArray.push_back(jUI);
-		//}
+		jUIArray.push_back(jRootUI);
+	
 
 	}
-
+	j["UI_ListData"] = jUIArray;
 
 	string folderPath = "../../Client/Bin/Resources/Data/UIData/";
 

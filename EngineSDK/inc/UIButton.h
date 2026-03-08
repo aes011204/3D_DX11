@@ -23,6 +23,8 @@ protected:
 public:
     virtual ~CUIButton() = default;
 
+    void ChangeState(BUTTON_STATE next);
+    _uint Get_TypeIndex();
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;
@@ -35,7 +37,6 @@ protected:
     void OnClear()override;
 
     void ProcessInput();
-    void ChangeState(BUTTON_STATE next);
 
   /*  HRESULT Ready_Components(_uint Level,_wstring protoName);
 
@@ -45,8 +46,10 @@ protected:
     void Load_FromJson(nlohmann::json& j)override;
 
 private:
+    _uint m_TypeIndex = {};
+
     bool  m_ClickInside = { false };
-    BUTTON_STATE m_UIState = BUTTON_STATE::NONE;
+    BUTTON_STATE m_UIState = BUTTON_STATE::NORMAL;
     function<void(CUIButton*)> m_ClickEvent = { nullptr };
     function<void(CUIButton*)> m_OverlapStartEvent = { nullptr };
     function<void(CUIButton*)> m_OverlapEndEvent = {nullptr};

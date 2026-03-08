@@ -38,31 +38,34 @@ void CUI_TabContainer::UI_Active()
 
 void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 {
-	UI_Clear();
+	//m_Children.clear();
 
+	// 일단 기본적으로 패널 은 다 inactive, 버튼은 iTabfig 에 따라 active
+	//::OnActive() 에서 클릭한 거만 활성화
 	if(iTabfig & ETOI(TAB::INVEN))
 	{
-		Add_Child(m_ButtonContents[ETOI(TAB::INVEN)], L"BUTTON_INVEN", false);
+		//Add_Child(m_ButtonContents[ETOI(TAB::INVEN)], L"BUTTON_INVEN", false);
 		(m_ButtonContents[ETOI(TAB::INVEN)]->UI_Active());
 
-		Add_Child(m_TabContents[ETOI(TAB::INVEN)], L"INVEN", false);
+
+		//Add_Child(m_TabContents[ETOI(TAB::INVEN)], L"INVEN", false);
 		m_TabContents[ETOI(TAB::INVEN)]->UI_InActive();
 
 	}
 	if (iTabfig & ETOI(TAB::STORAGE))
 	{
-		Add_Child(m_ButtonContents[ETOI(TAB::STORAGE)], L"BUTTON_STORAGE", false);
+		//(m_ButtonContents[ETOI(TAB::STORAGE)], L"BUTTON_STORAGE", false);
 		(m_ButtonContents[ETOI(TAB::STORAGE)]->UI_Active());
 
-		Add_Child(m_TabContents[ETOI(TAB::STORAGE)], L"STORAGE", false);
+		//Add_Child(m_TabContents[ETOI(TAB::STORAGE)], L"STORAGE", false);
 		m_TabContents[ETOI(TAB::STORAGE)]->UI_InActive();
 	}
 	if (iTabfig & ETOI(TAB::ETC))
 	{
-		Add_Child(m_ButtonContents[ETOI(TAB::ETC)], L"BUTTON_ETC", false);
+		//(m_ButtonContents[ETOI(TAB::ETC)], L"BUTTON_ETC", false);
 		m_ButtonContents[ETOI(TAB::ETC)]->UI_Active();
 
-		Add_Child(m_TabContents[ETOI(TAB::ETC)], L"ETC", false);
+		//Add_Child(m_TabContents[ETOI(TAB::ETC)], L"ETC", false);
 		m_TabContents[ETOI(TAB::ETC)]->UI_InActive();
 
 	}
@@ -95,17 +98,20 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 
 HRESULT CUI_TabContainer::OnInit(void* pArg)
 {
-
+	HRESULT hr = E_FAIL;
 	TABCONTAINER_DESC* TABpDesc = static_cast<TABCONTAINER_DESC*>(pArg);
 	//TABCONTAINER_DESC pDesc = {};
 	TABpDesc->IsFullScreen = false;
 	TABpDesc->IsTrnasparent = false;
 	TABpDesc->TextureComLevel = ETOI(LEVEL::STATIC);
 	TABpDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
+	TABpDesc->IsUseLayout = true;
 	//pDesc.vAnchorPoint = 일단 패스
 	//	pDesc.vPivot
 	//	pDesc.vAnchoredPos
 
+	hr = CUIPanel::OnInit(TABpDesc);
+	
 	for (_uint i = 0; i < 3; i++)
 	{
 		TAB eTab = static_cast<TAB>(1<<i);
@@ -115,6 +121,8 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		CUIButton::UIBUTTON_DESC ButDesc = {};
 		ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
+	
+	
 
 		//ButDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f ) };
 		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
@@ -124,19 +132,20 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		ButDesc.Index = ETOI(eTab);
 		ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
 		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
-		ButDesc.ClickEvent = [](CUIButton* pThis)
+		ButDesc.ClickEvent = [this](CUIButton* pThis)
 		{
-			
+				SetActiveTab(static_cast<TAB>(pThis->Get_TypeIndex()));
 		};
 		shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
 		pChild->Initialize(&ButDesc);
-
-		//wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
+		pChild->UI_InActive();
+	
 
 		//Add_Child(pChild, NameTag, false);
+		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
+		Add_Layout_Child(pChild, NameTag, false);
 		m_ButtonContents[ETOI(eTab)] = pChild;
-
-		pChild->Set_Zorder(2);
+		
 	}
 	for (_uint i = 0; i < 3; i++)
 	{
@@ -145,31 +154,42 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 
 		CUI_Inventory::INVENTORY_DESC InvenDesc = {};
 		InvenDesc.IsFullScreen = false;
-		InvenDesc.IsUseLayout = true;
 		InvenDesc.IsTrnasparent = true;
+		InvenDesc.bSetParentSize = true;
 
 
 		shared_ptr<CUI_Inventory> pInven = CUI_Inventory::Create(m_pDevice, m_pContext);
 		pInven->Initialize(&InvenDesc);
-		wstring Tag = L"INVENTORY";
+
+		wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
+
 		//(pInven, L"INVENTORY", false);
+		Add_Child(pInven, NameTag, false);
 		m_TabContents[ETOI(eTab)] = pInven;
+		pInven->UI_InActive();
 	}
 
 
 
-	return CUIPanel::OnInit(TABpDesc);
+
+	return hr;
 }
 
 void CUI_TabContainer::OnActive()
 {
 	m_TabContents[ETOI(m_Active)]->UI_Active();
-	
+	m_ButtonContents[ETOI(m_Active)]->ChangeState(BUTTON_STATE::SELECT);
+		
+	//m_TabContents[ETOI(m_Active)]->GetUITransform()->SetLocalScale(GetUITransform()->Get_LocalScale());
+	//m_TabContents[ETOI(m_Active)]->GetUITransform()->SetSizeDelta(GetUITransform()->Get_SizeDelta());
+
+	m_ButtonContents[ETOI(m_Active)]->Set_Zorder(2);
 	CUIPanel::OnActive();
 }
 
 void CUI_TabContainer::OnInActive()
 {
+	
 	CUIPanel::OnInActive();
 }
 
@@ -199,6 +219,26 @@ HRESULT CUI_TabContainer::OnRender()
 void CUI_TabContainer::OnClear()
 {
 	CUIPanel::OnClear();
+}
+
+void CUI_TabContainer::SetActiveTab(TAB tab)
+{
+	m_Active = tab;
+
+	for (int i = 0; i < 32; i++)
+	{
+		if (m_TabContents[i])
+			m_TabContents[i]->UI_InActive(); // 탭은 인엑티브를 해야하고 
+
+		if (m_ButtonContents[i])
+			m_ButtonContents[i]->ChangeState(BUTTON_STATE::NORMAL); // 버튼은 언셀렉트 
+	}
+
+	if (m_TabContents[ETOI(tab)])
+		m_TabContents[ETOI(tab)]->UI_Active(); // 해당 패널 활성화
+
+	if (m_ButtonContents[ETOI(tab)])
+		m_ButtonContents[ETOI(tab)]->ChangeState(BUTTON_STATE::SELECT); // 셀렉트
 }
 
 shared_ptr<CUI_TabContainer> CUI_TabContainer::Create(ComPtr<ID3D11Device> pDevice,

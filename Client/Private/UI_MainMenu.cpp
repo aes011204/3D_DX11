@@ -88,7 +88,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 
 			Add_Child(pChild,NameTag, false);
 
-			pChild->Set_Zorder(2);
+			
 
 			//
 
@@ -104,6 +104,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			wstring NameTag1 = L"IMGAE_SELECT" + S2W(string(magic_enum::enum_name(eLevel)));
 			pChild->Add_Child(Select, NameTag1, false);
 			//
+			Select->Set_Zorder(2);
 		}
 
 		CUIImage::UIIMAGE_DESC image_desc{};
@@ -119,7 +120,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 
 		Add_Child(pChild2, L"IMAGE_DRADGELOGO", false);
 
-		pChild2->Set_Zorder(1);
+		
 		//
 
 

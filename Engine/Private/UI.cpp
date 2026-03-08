@@ -12,7 +12,9 @@ CUI::CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 }
 
 CUI::CUI(const CUI& prototype)
-	: CEntity(prototype)
+	: CEntity(prototype),
+	m_ZOrder(prototype.m_ZOrder),
+	m_bLayoutTarget(prototype.m_bLayoutTarget)
 {
 }
 
@@ -117,10 +119,15 @@ weak_ptr<CUI> CUI::Find_Children(_wstring strTag)
 
 void CUI::Save_ToJson(nlohmann::json& j)
 {
-
+	float m_fX = {};
+	float m_fY = {};
+	if (!std::isnan(m_fX) && !std::isinf(m_fX)) j["X"] = m_fX;
+	if (!std::isnan(m_fY) && !std::isinf(m_fY)) j["Y"] = m_fY;
 	//CUI 데이터
-	if(m_ZOrder!=1)
+	if (m_ZOrder != 1)
 		j["ZOrder"] = m_ZOrder;
+
+	j["LayoutTarget"] = m_bLayoutTarget;
 
 	// Componet데이터 저장 
 	nlohmann::json jComponentArray = nlohmann::json::array();
@@ -160,8 +167,12 @@ void CUI::Load_FromJson(nlohmann::json& j)
 	if (j.contains("ZOrder")) {
 		m_ZOrder = j["ZOrder"];
 	}
-	
-	if (j.contains("Components")&& j["Components"].is_array())
+
+	if (j.contains("LayoutTarget")) {
+		m_bLayoutTarget = j["LayoutTarget"];
+	}
+
+	if (j.contains("Components") && j["Components"].is_array())
 	{
 		//Components배열 컨테이너가 있으면 엔티티에서 다 돌리면서 추가나(replace)해줌
 		CEntity::Load_FromJson(j);
@@ -191,10 +202,18 @@ void CUI::Load_FromJson(nlohmann::json& j)
 	}
 }
 
+void CUI::OnGui()
+{
+	ImGui::Text("ZOrder : %d", m_ZOrder);
+	ImGui::Text("bLayoutTarget : %s", m_bLayoutTarget ? "true" : "false");
+	ImGui::Text("UIState : %s", magic_enum::enum_name(m_UIState).data());
+
+}
+
 void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 {
 
-	
+
 
 	if (m_bEnabled)
 	{
@@ -227,11 +246,11 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 		if (!m_bRenderReady)
 			m_bRenderReady = true;
 
-		for (auto& it : m_behavior)
-		{
-			it->Tick(fTimeDelta, this);
-		}
 
+		for (auto& it : m_Children)
+		{
+			it->Late_Update(fTimeDelta);
+		}
 	}
 
 }
@@ -252,11 +271,11 @@ void CUI::Late_Update(_float fTimeDelta)
 
 HRESULT CUI::Render()
 {
-	if (m_bVisible&& m_bRenderReady==true)
+	if (m_bVisible && m_bRenderReady == true)
 	{
 		if (m_bIsDirty_Zorder)
 		{
-			if (m_Children.size() >=2)
+			if (m_Children.size() >= 2)
 			{
 				stable_sort(m_Children.begin(), m_Children.end(), [](const shared_ptr<CUI>& a, const shared_ptr<CUI>& b) {
 					//if(a->m_ZOrder==b->m_ZOrder)
@@ -280,6 +299,8 @@ HRESULT CUI::Render()
 
 void CUI::UI_Active()
 {
+	m_UIState = UI_STATE::ACTIVE;
+
 	m_bEnabled = true;
 	m_bVisible = true;
 
@@ -299,9 +320,11 @@ void CUI::UI_Active()
 
 void CUI::UI_InActive()
 {
+	m_UIState = UI_STATE::INACTIVE;
+
 	m_bEnabled = false;
 	m_bVisible = false; //이건 정책에 따라
-	//m_bInteractable =true;
+	//m_bInteractable = true;
 
 	OnInActive(); // 자신의 행동 호출 가상함수
 
@@ -313,6 +336,8 @@ void CUI::UI_InActive()
 
 void CUI::Set_UI_Disabled(bool isChangeEvent)
 {
+	m_UIState = UI_STATE::DISABLE;
+
 	m_bEnabled = true;
 	m_bVisible = true; //이건 정책에 따라
 	//m_bInteractable = false;
@@ -361,7 +386,7 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 
 	// 맵에 넣기 (검색용)
 	auto ui = Find_Children(UITag).lock();
-	if (ui!=nullptr)
+	if (ui != nullptr)
 		return E_FAIL;
 	m_mapChildren.emplace(UITag, child);
 
@@ -374,7 +399,18 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 	return S_OK;
 }
 
-
+void CUI::Set_Zorder(_uint Z)
+{
+	m_ZOrder = Z;
+	if (m_Parent.lock() != nullptr)
+	{
+		m_Parent.lock()->m_bIsDirty_Zorder = true;
+	}
+	for (auto& it : m_Children)
+	{
+		it->Set_Zorder(Z);
+	}
+}
 
 
 

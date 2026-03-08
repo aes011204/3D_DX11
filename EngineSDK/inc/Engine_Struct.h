@@ -94,11 +94,13 @@ namespace Engine
 
     struct LAYOUT_DESC
     {
-        int m_Raw = { 0 };
-        int m_Col = { 0 };
-        float m_SlotSize = { 0 };
-        _float2 m_Spacing = { };
-        _float2 m_Padding = { };
+        int m_Raw = { 5 };
+        int m_Col = { 5 };
+        float m_SlotSize = { 20.f };
+        _float2 m_Spacing = {5.f, 5.f };
+        _float2 m_Padding = { 0.f, 0.f };
+
+        _float2 m_Offset = { 0.f, 0.f };
     };
 }
 

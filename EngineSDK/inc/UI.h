@@ -43,18 +43,22 @@ public:
 
     HRESULT Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, D3DTS eTransformState);
 
-    void Set_Zorder(_uint Z) { m_ZOrder = Z; if (m_Parent.lock() != nullptr) { m_Parent.lock()->m_bIsDirty_Zorder = true; } }
+    void Set_Zorder(_uint Z);
 
     weak_ptr<CUI> Find_Children(_wstring strTag);
     const map<_wstring, weak_ptr<CUI>>& Get_mapChildren() const { return m_mapChildren; }
 
+
+    void Set_Interactive(_bool b) { m_bInteractable = b; }
+
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 
-
+    UI_STATE Get_UIState() { return m_UIState; }
     void Set_ActiveForCustom() { m_bEnabled = true; m_bVisible = true; }; // 특이한 경우만 쓰기 커스텀UI_Active();만들떄만 
 /// <IMGUI>
     const vector<shared_ptr<CUI>>& GetChildren() const { return m_Children; }
+    void OnGui() override;
 /// </IMGUI>
 
 protected:
@@ -74,6 +78,7 @@ protected:
     _bool m_bRenderReady = true;
 public:
     bool IsLayoutTarget() { return m_bLayoutTarget; }
+    void Set_LayoutTarget(_bool layoutTarget) { m_bLayoutTarget = layoutTarget; }
     class shared_ptr<CUITransform> GetUITransform() { return m_pUITransformCom; }
 
     vector<shared_ptr<class IModifier>> m_behavior; // 인터페이스 클래스
@@ -87,10 +92,10 @@ protected:
 
     // 검색용
     map<_wstring, weak_ptr<CUI>> m_mapChildren = {};
-
-private:
+protected: //임시 private으로 들어갈거임
     int m_ZOrder = { 1 };
-
+private:
+    UI_STATE m_UIState = { UI_STATE::END };
 
     bool m_bLayoutTarget = { false };
 

@@ -26,6 +26,8 @@ HRESULT CUIRenderable::OnInit(void* pArg)
 	m_SliceDesc.UISize = _float2(1.f, 1.f);// 어짜피 트렌스폼이 정함 최종 ui 사이즈
 	m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
 
+	m_bUseDark = pDesc->bUseDark;
+
 	m_bUseNineSlice = pDesc->bUseNineSlice;
 
 	if (pDesc->PxSliceLRTB.x != 0.f && pDesc->PxSliceLRTB.y != 0.f 
@@ -108,7 +110,7 @@ HRESULT CUIRenderable::Ready_Components(_uint Level, _wstring protoName)
 		return E_FAIL;
 	if (m_pTextureCom && m_pUITransformCom) {
 
-		m_pUITransformCom->SetSizeDelta(m_pTextureCom->Get_SizeFromSRV(0));
+		m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(0)/3.f)*2.f);
 	}
 	return S_OK;
 }
@@ -126,7 +128,11 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
 		return E_FAIL;
-
+	if (m_bUseDark == true)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_Dark", &m_Dark, sizeof(_float))))
+			return E_FAIL;
+	}
 	if (m_PassIndex == 1)
 	 {
 		 if (FAILED(m_pShaderCom->Bind_RawValue("g_TexOriginalSize", &m_SliceDesc.TexOriginalSize, sizeof(_float2))))
@@ -159,14 +165,15 @@ void CUIRenderable::OnClear()
 
 void CUIRenderable::Save_ToJson(nlohmann::json& j)
 {
+	__super::Save_ToJson(j);
 	j["PxSliceLRTB"] = { m_SliceDesc.PxSliceLRTB.x,  m_SliceDesc.PxSliceLRTB.y, m_SliceDesc.PxSliceLRTB.z, m_SliceDesc.PxSliceLRTB.w };
 	j["UseNineSlice"] = m_bUseNineSlice;
 
-	__super::Save_ToJson(j);
 }
 
 void CUIRenderable::Load_FromJson(nlohmann::json& j)
 {
+	__super::Load_FromJson(j);
 	if (j.contains("PxSliceLRTB"))
 	{
 		m_SliceDesc.PxSliceLRTB.x = j["PxSliceLRTB"][0];
@@ -180,7 +187,6 @@ void CUIRenderable::Load_FromJson(nlohmann::json& j)
 		m_bUseNineSlice = j["UseNineSlice"];
 	}
 
-	__super::Load_FromJson(j);
 }
 
 void CUIRenderable::OnGui()
@@ -199,6 +205,10 @@ void CUIRenderable::OnGui()
 
 	_float& TileScale = m_SliceDesc.TileScale;
 	ImGui::DragFloat("TileScale", &TileScale, 1.0f, 0.0f, 1000.0f);
+
+	ImGui::Text("ZOrder: %d", m_ZOrder);
+
+	__super::OnGui();
 }
 
 shared_ptr<CUIRenderable> CUIRenderable::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

@@ -50,13 +50,14 @@ public:
     /// </summary>
 public:
     void Layout();
-    void Add_Layout_Child();
+    HRESULT Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect);
+
 private:
     // 내부 계산 용
     int index = 0;
 
     LAYOUT_DESC m_LayoutDesc ;
-
+  
 
     _bool m_IsTransparent = {};
     _bool m_IsFullScreen = {};
@@ -67,7 +68,7 @@ protected:
     shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
     shared_ptr<class CTexture> m_pTextureCom = { nullptr };*/
 public:
-      //static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 
     void Free() override;
 };

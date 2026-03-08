@@ -17,6 +17,8 @@ public:
         Vector2 vSizeDelta = { 100.f, 100.f };
         Vector2 vAnchoredPos = { 0.f, 0.f };
         Vector2 vScale = { 1.f, 1.f };
+
+        _bool bSetParentSize = { false };
     };
         
 
@@ -52,6 +54,7 @@ public:
     XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_WorldMatrix); }
     _float2 Get_FinalSize() { return _float2(m_SizeDelta * m_LocalScale); }
     _float2 Get_SizeDelta() { return m_SizeDelta; }
+    _float2 Get_LocalScale() { return m_LocalScale; }
 
     void UpdateLayoutIfDirty();
 
@@ -95,7 +98,7 @@ private:
     float m_RotationRadian = { 0.f };// 내부 계산용
     float m_RotationDegreeView = {0.f}; // 수치 조절욜
 
-
+    _bool m_bSetParentSize = { false };
 
     // 결과
     Rect m_WorldRect = {};

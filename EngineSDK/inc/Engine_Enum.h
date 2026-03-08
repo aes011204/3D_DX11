@@ -34,7 +34,6 @@ namespace Engine
 
 	//enum TEXTUREID { TEX_NORMAL, TEX_CUBE, TEX_END };
 
-
 	//enum MOUSEKEYSTATE { DIM_LB, DIM_RB, DIM_MB, DIM_END };
 
 	//enum MOUSEMOVESTATE {	DIMS_X, DIMS_Y, DIMS_Z, DIMS_END };
@@ -43,11 +42,20 @@ namespace Engine
 
 	enum class BUTTON_STATE
 	{
-		NONE,// 아무것도 안할떄
+		NORMAL,// 아무것도 안할떄
+		SELECT,
 		HOVER,// 호버
 		CLICK,// 클릭
-		DISABLE,// 사라질때(레이어에서 빠질떄)
-		INABLE,// 나타날때(레이어에서 빠질떄)
+		DISABLE,// 사라질때
+		INABLE,// 나타날때
+
+	};
+	enum class UI_STATE
+	{
+		ACTIVE,
+		INACTIVE,
+		DISABLE,
+		END
 
 	};
 

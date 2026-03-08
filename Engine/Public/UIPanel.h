@@ -68,7 +68,7 @@ protected:
     shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
     shared_ptr<class CTexture> m_pTextureCom = { nullptr };*/
 public:
-      //static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 
     void Free() override;
 };

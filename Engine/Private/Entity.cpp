@@ -68,7 +68,7 @@ void CEntity::Load_FromJson(nlohmann::json& j)
 			m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
 
 		}
-		else
+		else if (jCom["ComponentTag"] != "Com_UITransform" && jCom["ComponentTag"] != "Com_Transform")
 		{
 			if (FAILED(Add_Component<CComponent>((_uint)jCom["ComProtoLevel"], S2W(jCom["ComProtoTag"]), S2W(jCom["ComponentTag"]), nullptr, nullptr)))
 			{

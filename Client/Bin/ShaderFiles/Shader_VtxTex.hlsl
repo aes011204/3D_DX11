@@ -10,6 +10,7 @@ float2 g_UISize;
 float4 g_PxSliceLRTB;
 float2 g_TexCustomSize;
 //}
+float g_Dark = 0.f;
 
 DepthStencilState UI_Depth_Disable
 {
@@ -68,9 +69,9 @@ PS_OUT PS_MAIN(PS_IN In)
     //Out.vColor = float4(In.vTexcoord.y, In.vTexcoord.y, In.vTexcoord.y, 1.f);
     Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
     //Out.vColor.gb = Out.vColor.r;
-    //
 
-    //Out.vColor = float4(1, 0, 1, 1);
+    Out.vColor.rgb *= lerp(1.0, 0.f, g_Dark);
+
     return Out;
 }
 
@@ -83,7 +84,7 @@ PS_OUT PS_NINESLICE(PS_IN In)
     float2 uv = UV9Slice(In.vTexcoord);
     
     Out.vColor = g_Texture.Sample(DefaultSampler, uv);
-
+    Out.vColor.rgb *= lerp(1.0, 0.f, g_Dark);
     return Out;
 }
 

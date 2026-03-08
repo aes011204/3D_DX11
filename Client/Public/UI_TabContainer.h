@@ -28,8 +28,8 @@ public:
 	~CUI_TabContainer() = default;
 
 public:
-	virtual void UI_Active() override; //  UI 활성활시 호출되는 함수// 이 패널은 다 켜지면 안되기떄문에 오버라이딩으로 호출뻇고 여기서 처리
 	void UI_PanelActive(_uint iTabfig, TAB Active);
+	virtual void UI_Active() override; //  UI 활성활시 호출되는 함수// 이 패널은 다 켜지면 안되기떄문에 오버라이딩으로 호출뻇고 여기서 처리
 	HRESULT OnInit(void* pArg) override;
 	void OnActive()override;
 	void OnInActive()override;
@@ -39,11 +39,13 @@ public:
 	HRESULT OnRender()override;
 	void OnClear()override;
 
+	void SetActiveTab(TAB tab);
 public:
 
 
 private:
 	TAB m_Active = TAB::NONE;
+	
 
 	shared_ptr < CUIButton >m_ButtonContents[32] = {};
 	shared_ptr < CUIPanel >m_TabContents[32] = {};

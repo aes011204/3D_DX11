@@ -20,6 +20,7 @@ HRESULT CUIButton::OnInit(void* pArg)
     m_ClickEvent = pDesc->ClickEvent;
     m_OverlapStartEvent = pDesc->OverlapStartEvent;
     m_OverlapEndEvent = pDesc->OverlapEndEvent;
+    m_TypeIndex = pDesc->Index;
    // m_TextureComLevel = pDesc->TextureComLevel;
 
 
@@ -58,21 +59,32 @@ void CUIButton::OnDisabled()
 
 void CUIButton::OnUpdate(const _float& timeDelta)
 {
-    //if (m_bIsDirtyCom) {
-    //    RebindCom();      // "바뀐 것"만 한 번 갱신
-    //    m_bIsDirtyCom = false;
-    //}
+   
 
     ProcessInput();
 
     switch (m_UIState)
     {
     case BUTTON_STATE::CLICK:
+        
+        m_Dark = 0.f;
+
+        break;
+    case BUTTON_STATE::SELECT:
+        if(m_bUseDark)
+        m_Dark = 0.f;
+
         break;
     case BUTTON_STATE::HOVER:
+        if (m_bUseDark)
+        m_Dark = 0.6f;
+       
         break;
-    case BUTTON_STATE::NONE:
-        break;
+    case BUTTON_STATE::NORMAL:
+        if (m_bUseDark)
+        m_Dark = 0.8;
+
+    	break;
     case BUTTON_STATE::DISABLE: // 상점등에서 보이는데 돈이 없어서 클릭 할수 없는 상태
         break;
 
@@ -144,9 +156,9 @@ void CUIButton::ProcessInput()
 
     //CLog_Manager::GetInstance()->Add_Log_F(LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
 
-    if (m_bHovered)
+    if (m_bHovered) // 젤최상위에서 처리
     {
-        if (mouseDown&& m_UIState != BUTTON_STATE::CLICK) // 방금 클릭
+        if (mouseDown&& m_UIState != BUTTON_STATE::CLICK&& m_UIState != BUTTON_STATE::SELECT) // 방금 클릭
         {
             m_ClickInside = true;
             m_UIState = BUTTON_STATE::CLICK;
@@ -155,7 +167,7 @@ void CUIButton::ProcessInput()
         if (mouseUp && m_ClickInside/*&& m_UIState == BUTTON_STATE::CLICK*/) // 안에서 클릭한 상태에서 안에서 뗏는지
         {
             m_ClickInside = false;
-            m_UIState = BUTTON_STATE::HOVER;
+            m_UIState = BUTTON_STATE::SELECT;
 
             if (m_ClickEvent) // 콜백 실행
             {
@@ -163,7 +175,7 @@ void CUIButton::ProcessInput()
             }
             return;
         }
-        if (!mouseDown && !mouseUp&& m_UIState != BUTTON_STATE::HOVER) // 호버링 중인가
+        if (!mouseDown && !mouseUp&& m_UIState != BUTTON_STATE::HOVER && m_UIState != BUTTON_STATE::SELECT) // 호버링 중인가
         {
             m_UIState = BUTTON_STATE::HOVER;
 
@@ -178,12 +190,12 @@ void CUIButton::ProcessInput()
     else
     {
 
-        if (m_UIState != BUTTON_STATE::NONE)
+        if (m_UIState != BUTTON_STATE::NORMAL && m_UIState != BUTTON_STATE::SELECT)
         {
             if (mouseUp)
                 m_ClickInside = false;
 
-            m_UIState = BUTTON_STATE::NONE;
+            m_UIState = BUTTON_STATE::NORMAL;
 
             if (m_OverlapEndEvent) // 콜백 실행
             {
@@ -198,6 +210,7 @@ void CUIButton::ProcessInput()
 
 void CUIButton::ChangeState(BUTTON_STATE next)
 {
+    m_UIState = next;
 }
 
 //HRESULT CUIButton::Ready_Components(_uint Level, _wstring protoName)
@@ -232,6 +245,11 @@ void CUIButton::Save_ToJson(nlohmann::json& j)
 void CUIButton::Load_FromJson(nlohmann::json& j)
 {
     __super::Load_FromJson(j);
+}
+
+_uint CUIButton::Get_TypeIndex()
+{
+    return m_TypeIndex; 
 }
 
 
