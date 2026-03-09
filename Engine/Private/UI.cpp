@@ -168,9 +168,9 @@ void CUI::Load_FromJson(nlohmann::json& j)
 		m_ZOrder = j["ZOrder"];
 	}
 
-	if (j.contains("LayoutTarget")) {
+	/*if (j.contains("LayoutTarget")) {
 		m_bLayoutTarget = j["LayoutTarget"];
-	}
+	}*/
 
 	if (j.contains("Components") && j["Components"].is_array())
 	{

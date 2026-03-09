@@ -2,13 +2,28 @@
 
 #include "Inventory.h"
 #include "InventoryUI.h"
+#include "GameInstance.h"
+#include "EventBus.h"
+#include "Event_Struct.h"
 
-CInventory_Controller::CInventory_Controller()
+CInventory_Controller::CInventory_Controller() :
+ m_pGameInstance(CGameInstance::GetInstance())
 {
 }
 
 HRESULT CInventory_Controller::Initialize()
 {
+	m_Inven = CInventory::Create();
+
+	auto tmppointer = dynamic_pointer_cast<CInventory_Controller>(shared_from_this());
+	if(tmppointer == nullptr)
+	{
+		return E_FAIL;
+	}
+	EvtControllerPoiner p = {};
+	p.m_contrl_Pointer = tmppointer;
+	m_pGameInstance.lock()->Get_EventBus()->Publish(p);
+
 	return S_OK;
 }
 

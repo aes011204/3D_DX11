@@ -9,6 +9,7 @@
 #include "Camera_Play.h"
 #include "Camera_Free.h"
 #include "Engine_Struct.h"
+#include "Inventory_Controller.h"
 
 #include "UI_MainMenu.h"
 #include "UI_TabContainer.h"
@@ -64,8 +65,8 @@ HRESULT CMainApp::Initialize()
 	if (FAILED((Ready_UI())))
 		return E_FAIL;
 
+  
 	//test
-   // CInventory::Create();
 	//CData_Manager::GetInstance()->Initialize();
 	//CDialogueDB::GetInstance()->Ready_DialogueDB();
 
@@ -284,6 +285,9 @@ HRESULT CMainApp::Ready_UI()
 	shared_ptr<CUI_TabContainer> TabContainer = CUI_TabContainer::Create(m_pDevice, m_pContext);
 	if (TabContainer == nullptr)
 		return E_FAIL;
+
+	m_Contr = CInventory_Controller::Create();// 일단 여기 안에 서  발행 함 임시임
+
 	TabContainer->Initialize(&pDescTap);
 	m_pGameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);
 
@@ -304,6 +308,9 @@ unique_ptr<CMainApp> CMainApp::Create()
 void CMainApp::Free()
 {
 	__super::Free();
+
+	m_Contr.reset();
+
 
 	m_pContext->ClearState();
 

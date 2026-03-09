@@ -45,8 +45,7 @@ void CHierarchyWin::Render()
     if (pGameObjects.empty())
     {
         ImGui::TextDisabled("(Empty)");
-        
-        
+
     }
     else
     {
@@ -107,7 +106,7 @@ void CHierarchyWin::Render()
                         ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
                         if (m_pSelectedObject == pUI) flags |= ImGuiTreeNodeFlags_Selected;
 
-                        const auto& children = pUI->GetChildren();
+                        const auto& children = pUI->Get_mapChildren();
                         if (children.empty()) flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
                         bool opened = ImGui::TreeNodeEx(label.c_str(), flags);
@@ -124,8 +123,16 @@ void CHierarchyWin::Render()
                         // 자식 UI가 있다면 재귀적으로 출력
                         if (!children.empty() && opened)
                         {
-                            for (auto& child : children)
-                                DrawUITree(child); // 기존에 정의하신 재귀 함수 호출
+                            for (auto& pair : children)
+                            {
+                                if (!pair.second.lock()) return;
+
+                                _string label = /*W2S(ui->Get_Name());*/W2S(pair.first);
+                                if (label.empty()) label = "UI_Child";
+
+                                _string imguiLabel = label + "##UI" + std::to_string((uint64_t)pair.second.lock().get());
+                                DrawUITree(pair.second.lock(), imguiLabel); // 기존에 정의하신 재귀 함수 호출
+                            }
 
                             ImGui::TreePop();
                         }
@@ -147,16 +154,16 @@ if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) &&
     ImGui::End();
 }
 
-void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui)
+void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiLabel)
 {
-    if (!ui) return;
+    /*if (!ui) return;
 
     _string label = W2S(ui->Get_Name());
     if (label.empty()) label = "UI_Child";
 
-    _string imguiLabel = label + "##UI" + std::to_string((uint64_t)ui.get());
+    _string imguiLabel = label + "##UI" + std::to_string((uint64_t)ui.get());*/
 
-    const auto& children = ui->GetChildren();
+    const auto& children = ui->Get_mapChildren();
 
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
@@ -175,15 +182,25 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui)
         ev.Entity = std::static_pointer_cast<Engine::CEntity>(ui);
 
         CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
-    
- 
+
     }
 
     //  자식이 있을 때만 TreePop
     if (!children.empty() && opened)
     {
-        for (auto& child : children)
-            DrawUITree(child);
+
+
+        for (auto& pair : children)
+        {
+            if (!pair.second.lock()) return;
+
+            _string label = /*W2S(ui->Get_Name());*/W2S(pair.first);
+            if (label.empty()) label = "UI_Child";
+
+            _string imguiLabel = label + "##UI" + std::to_string((uint64_t)pair.second.lock().get());
+
+            DrawUITree(pair.second.lock(), imguiLabel);
+        }
 
         ImGui::TreePop();
     }

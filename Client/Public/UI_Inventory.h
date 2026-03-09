@@ -18,7 +18,9 @@ public:
     ~CUI_Inventory() = default;
 
 public:
+    HRESULT Initialize_Prototype() override;
 
+    HRESULT Init_InventorySlot();
     HRESULT OnInit(void* pArg) override;
     void OnActive()override;
     void OnInActive()override;
@@ -30,7 +32,7 @@ public:
 
 
 private:
-
+    shared_ptr<class CInventory_Controller> Inven_Contrl = {nullptr};
 public:
     static shared_ptr<CUI_Inventory> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;

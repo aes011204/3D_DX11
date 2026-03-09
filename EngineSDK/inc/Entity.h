@@ -51,7 +51,7 @@ public:
 
 /// <IMGUI>
 
-    map<const _wstring, class shared_ptr<CComponent> >& const Get_ComponentMap() {return m_Components;};
+    map<const _wstring, class shared_ptr<CComponent> >& Get_ComponentMap() {return m_Components;};
 /// </summary>
 protected:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };

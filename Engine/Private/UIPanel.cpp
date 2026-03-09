@@ -210,7 +210,7 @@ void CUIPanel::Load_FromJson(nlohmann::json& j)
     {
         m_IsFullScreen = j["IsFullScreen"];
     }
-    if (j.contains("IsUseLayout"))
+   /* if (j.contains("IsUseLayout"))
     {
         m_IsUseLayout = j["IsUseLayout"];
     }
@@ -236,8 +236,8 @@ void CUIPanel::Load_FromJson(nlohmann::json& j)
             m_LayoutDesc.m_Offset.x = jLayout["Offset"][0];
             m_LayoutDesc.m_Offset.y = jLayout["Offset"][1];
         }
-        Layout();
-    }
+        Layout();*/
+    //}
 
 
 
@@ -335,18 +335,18 @@ void CUIPanel::Layout()
         if (child->IsLayoutTarget() != true|| child->Get_UIState()==UI_STATE::INACTIVE)
             continue;
 
-        float slotSize = child->GetUITransform()->Get_FinalSize().x;
-    float totalWidth = (m_LayoutDesc.m_Col * slotSize) + ((m_LayoutDesc.m_Col - 1) * m_LayoutDesc.m_Spacing.x);
-    float totalHeight = (m_LayoutDesc.m_Raw * slotSize) + ((m_LayoutDesc.m_Raw - 1) * m_LayoutDesc.m_Spacing.y);
+        _float2 slotSize = child->GetUITransform()->Get_FinalSize();
+    float totalWidth = (m_LayoutDesc.m_Col * slotSize.x) + ((m_LayoutDesc.m_Col - 1) * m_LayoutDesc.m_Spacing.x);
+    float totalHeight = (m_LayoutDesc.m_Raw * slotSize.y) + ((m_LayoutDesc.m_Raw - 1) * m_LayoutDesc.m_Spacing.y);
 
-    _float2 startPos = { -(totalWidth / 2) + (slotSize / 2)+m_LayoutDesc.m_Offset.x, (totalHeight / 2) - (slotSize / 2)+ m_LayoutDesc.m_Offset.y };
+    _float2 startPos = { -(totalWidth / 2) + (slotSize.x / 2)+m_LayoutDesc.m_Offset.x, (totalHeight / 2) - (slotSize.y / 2)+ m_LayoutDesc.m_Offset.y };
 
 
         int Col = index % m_LayoutDesc.m_Col;
         int Raw = index / m_LayoutDesc.m_Col;
 
-        float posX = startPos.x + (slotSize + m_LayoutDesc.m_Spacing.x) * Col;
-        float posY = startPos.y - (slotSize + m_LayoutDesc.m_Spacing.y) * Raw;
+        float posX = startPos.x + (slotSize.x + m_LayoutDesc.m_Spacing.x) * Col;
+        float posY = startPos.y - (slotSize.y + m_LayoutDesc.m_Spacing.y) * Raw;
 
         LOG_F(LOG_LEVEL::INFO, "First Slot AnchoredPos: %f, %f", posX, posY); 
         child->GetUITransform()->SetAnchoredPos({ posX, posY });

@@ -55,6 +55,7 @@ public:
     _float2 Get_FinalSize() { return _float2(m_SizeDelta * m_LocalScale); }
     _float2 Get_SizeDelta() { return m_SizeDelta; }
     _float2 Get_LocalScale() { return m_LocalScale; }
+    _float2 Get_AnchorPoint() { return m_AnchorPoint; }
 
     void UpdateLayoutIfDirty();
 

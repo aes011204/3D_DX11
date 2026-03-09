@@ -49,6 +49,12 @@ private:
 
 	shared_ptr < CUIButton >m_ButtonContents[32] = {};
 	shared_ptr < CUIPanel >m_TabContents[32] = {};
+
+
+	Vector2 m_vecAni = {};
+	_bool m_bStart = false;
+	float m_TimeAcc = {};
+	float m_fDuration = {};
 public:
 	static shared_ptr<CUI_TabContainer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	void Free() override;

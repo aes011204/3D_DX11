@@ -16,7 +16,7 @@ CUI_TabContainer::CUI_TabContainer(const CUIPanel& prototype)
 
 void CUI_TabContainer::UI_Active()
 {
-	
+
 	//m_bEnabled = true;
 	//m_bVisible = true;
 
@@ -39,39 +39,40 @@ void CUI_TabContainer::UI_Active()
 void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 {
 	//m_Children.clear();
-
+	_uint numPanel = {};
 	// 일단 기본적으로 패널 은 다 inactive, 버튼은 iTabfig 에 따라 active
 	//::OnActive() 에서 클릭한 거만 활성화
-	if(iTabfig & ETOI(TAB::INVEN))
+	if (iTabfig & ETOI(TAB::INVEN))
 	{
 		//Add_Child(m_ButtonContents[ETOI(TAB::INVEN)], L"BUTTON_INVEN", false);
 		(m_ButtonContents[ETOI(TAB::INVEN)]->UI_Active());
-
-
 		//Add_Child(m_TabContents[ETOI(TAB::INVEN)], L"INVEN", false);
 		m_TabContents[ETOI(TAB::INVEN)]->UI_InActive();
-
+		numPanel++;
 	}
 	if (iTabfig & ETOI(TAB::STORAGE))
 	{
 		//(m_ButtonContents[ETOI(TAB::STORAGE)], L"BUTTON_STORAGE", false);
 		(m_ButtonContents[ETOI(TAB::STORAGE)]->UI_Active());
-
 		//Add_Child(m_TabContents[ETOI(TAB::STORAGE)], L"STORAGE", false);
 		m_TabContents[ETOI(TAB::STORAGE)]->UI_InActive();
+		numPanel++;
+
 	}
 	if (iTabfig & ETOI(TAB::ETC))
 	{
 		//(m_ButtonContents[ETOI(TAB::ETC)], L"BUTTON_ETC", false);
 		m_ButtonContents[ETOI(TAB::ETC)]->UI_Active();
-
 		//Add_Child(m_TabContents[ETOI(TAB::ETC)], L"ETC", false);
 		m_TabContents[ETOI(TAB::ETC)]->UI_InActive();
-
+		numPanel++;
 	}
 
-	m_Active = Active;
 
+
+	Change_LayoutRawCol(1, numPanel);
+
+	m_Active = Active;
 
 	Set_ActiveForCustom();
 
@@ -111,18 +112,18 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	//	pDesc.vAnchoredPos
 
 	hr = CUIPanel::OnInit(TABpDesc);
-	
+
 	for (_uint i = 0; i < 3; i++)
 	{
-		TAB eTab = static_cast<TAB>(1<<i);
+		TAB eTab = static_cast<TAB>(1 << i);
 
 
 		/// 버튼
 		CUIButton::UIBUTTON_DESC ButDesc = {};
 		ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
-	
-	
+
+
 
 		//ButDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f ) };
 		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
@@ -133,19 +134,19 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
 		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc.ClickEvent = [this](CUIButton* pThis)
-		{
+			{
 				SetActiveTab(static_cast<TAB>(pThis->Get_TypeIndex()));
-		};
+			};
 		shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
 		pChild->Initialize(&ButDesc);
 		pChild->UI_InActive();
-	
+
 
 		//Add_Child(pChild, NameTag, false);
 		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
 		Add_Layout_Child(pChild, NameTag, false);
 		m_ButtonContents[ETOI(eTab)] = pChild;
-		
+
 	}
 	for (_uint i = 0; i < 3; i++)
 	{
@@ -170,8 +171,6 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	}
 
 
-
-
 	return hr;
 }
 
@@ -179,17 +178,24 @@ void CUI_TabContainer::OnActive()
 {
 	m_TabContents[ETOI(m_Active)]->UI_Active();
 	m_ButtonContents[ETOI(m_Active)]->ChangeState(BUTTON_STATE::SELECT);
-		
+
 	//m_TabContents[ETOI(m_Active)]->GetUITransform()->SetLocalScale(GetUITransform()->Get_LocalScale());
 	//m_TabContents[ETOI(m_Active)]->GetUITransform()->SetSizeDelta(GetUITransform()->Get_SizeDelta());
 
 	m_ButtonContents[ETOI(m_Active)]->Set_Zorder(2);
+
+	GetUITransform()->SetAnchoredPos(Vector2{ GetUITransform()->Get_FinalSize().x, 0.f });
+	m_vecAni = Vector2{ GetUITransform()->Get_FinalSize().x, 0.f };
+	m_bStart = true;
+	m_fDuration = 1.5f;
+
 	CUIPanel::OnActive();
 }
 
 void CUI_TabContainer::OnInActive()
 {
-	
+	m_bStart = false;
+	m_TimeAcc = 0;
 	CUIPanel::OnInActive();
 }
 
@@ -201,7 +207,25 @@ void CUI_TabContainer::OnDisabled()
 
 void CUI_TabContainer::OnUpdate(const _float& timeDelta)
 {
-	
+	// 여기에서 안보였다가 와야함
+	if (m_bStart == true)
+	{
+		m_TimeAcc += timeDelta;
+
+		float t = m_TimeAcc / m_fDuration;
+
+		if (t >= 1.f) t = 1.f;
+
+		m_vecAni = Vector2{ lerp(m_vecAni.x, 0.f, t),0.f };
+		GetUITransform()->SetAnchoredPos(m_vecAni);
+		LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
+
+		if (t >= 1.f) {
+			m_bStart = false;
+			m_TimeAcc = 0;
+		}
+	}
+
 
 	CUIPanel::OnUpdate(timeDelta);
 }
@@ -261,6 +285,6 @@ void CUI_TabContainer::Free()
 		m_TabContents[i].reset();
 		m_ButtonContents[i].reset();
 	}
-	
+
 	CUIPanel::Free();
 }

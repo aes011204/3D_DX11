@@ -2,6 +2,11 @@
 #include "Editor_Define.h"
 
 
+namespace Client
+{
+	class CInventory_Controller;
+}
+
 namespace Engine { class CEntity; }
 
 namespace Engine
@@ -34,4 +39,9 @@ namespace Engine
         _wstring Tag = {};
         _uint iLevel = {};
     };
+    struct EvtControllerPoiner
+    {
+        shared_ptr<class CInventory_Controller> m_contrl_Pointer = {};
+    };
+
 }

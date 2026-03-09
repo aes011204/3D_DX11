@@ -9,6 +9,14 @@ NS_BEGIN(Client)
 class CInventory :
     public CBase
 {
+public:
+    struct BoatLevelData
+    {
+
+        _uint width = {};
+        _uint height = {};
+        vector<_char> type = {};
+    };
 private:
     CInventory();
 public:
@@ -18,8 +26,9 @@ public:
     HRESULT Initialize();
     void Update(_float fTimeDelta);
 
-
-
+    vector<Slot>& Get_Invenslot() { return m_InvenSlot; }
+    int Get_W() { return w; }
+    int Get_H() { return h; }
 private:
     int w, h = {0};
     vector<Item_Inst> m_Inventory = {};
@@ -39,13 +48,13 @@ private:
 
 private:// ÀÎ¹êÄ­ ¼³Á¤
     static constexpr int m_MaxBoatLevel = 3;
-    vector<_char> m_BoatUpgrade_type[m_MaxBoatLevel] = {};
+    BoatLevelData m_BoatUpgrade_type[m_MaxBoatLevel] = {};
 
 private:
     void Apply_BaseMask(vector<Slot>& vecSlot);// ¶ô
     SLOT_TYPE CharToType(char c);// ½½¶ù Å¸ÀÔ
     void Init_BoatUpgrade();
-    void Upgrade_Boat(vector<_char> upgrade);
+    void Upgrade_Boat(BoatLevelData* BoatUpgrade_type,_uint index);
 
 public:
     static shared_ptr<CInventory> Create(); 
