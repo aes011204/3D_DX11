@@ -204,7 +204,7 @@ void CUI::Load_FromJson(nlohmann::json& j)
 
 void CUI::OnGui()
 {
-	ImGui::Text("ZOrder : %d", m_ZOrder);
+	ImGui::InputInt("ZOrder Control", &m_ZOrder);
 	ImGui::Text("bLayoutTarget : %s", m_bLayoutTarget ? "true" : "false");
 	ImGui::Text("UIState : %s", magic_enum::enum_name(m_UIState).data());
 
@@ -261,11 +261,27 @@ void CUI::Late_Update(_float fTimeDelta)
 	{
 		OnLateUpdate();
 
-		for (auto& it : m_Children)
-		{
-			it->Late_Update(fTimeDelta);
-		}
+		//for (auto& it : m_Children)
+		//{
+		//	it->Late_Update(fTimeDelta);
+		//}
 
+		{
+			for (auto it = m_Children.begin(); it != m_Children.end(); )
+			{
+				if (nullptr != *it)
+					(*it)->Late_Update(fTimeDelta);
+
+				if ((*it)->Is_PendingDestroy() == true)
+				{
+				
+					it = m_Children.erase(it);
+				}
+				else
+					it++;
+
+			}
+		}
 	}
 }
 
@@ -358,9 +374,14 @@ void CUI::UI_Clear() // 이건 삭제
 
 
 	for (auto& it : m_Children)
+	{
 		it->UI_Clear();
+		it->Mark_Destroy();
+	}
 
-	m_Children.clear();
+
+	//m_Children.clear();
+
 
 	// 트랜스폼 끊기
 	if (m_pUITransformCom)
@@ -417,7 +438,22 @@ void CUI::Set_Zorder(_uint Z)
 
 void CUI::Free()
 {
-	UI_Clear(); // 자식 먼저 처리 (자식들이 부모의 컴포넌트나 정보를 참조가능성)
+	for (auto& it : m_Children)
+		it->UI_Clear();
+
+	m_Children.clear();
+
+	// 트랜스폼 끊기
+	if (m_pUITransformCom)
+	{
+		m_Parent.reset();
+		//
+		// m_pUITransformCom->SetParent(shared_ptr<CUITransform>(nullptr), false); //이거 왜한거임??
+	}// 아 혹시 free 용이 아닌가?? 일단 패스
+
+	m_behavior.clear();
+
+	OnClear();
 
 	__super::Free();
 

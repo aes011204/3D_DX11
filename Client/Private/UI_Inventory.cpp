@@ -3,6 +3,7 @@
 #include "UISlot.h"
 #include "Inventory_Controller.h"
 #include "EventBus.h"
+#include "Client_Enum.h"
 
 CUI_Inventory::CUI_Inventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CUIPanel(pDevice, pContext)
@@ -20,7 +21,7 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 	// 이건 그냥  PreInitialize 대용으로 사용
 	//
 	///발행이 나중에 되야함 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<EvtControllerPoiner>([this](const EvtControllerPoiner& e) {this->Inven_Contrl = e.m_contrl_Pointer; });
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_UIslot_Data>([this](const Evt_UIslot_Data& e) {Rebuild_InventorySlot(e.w, e.h, e.InvenSlot);});
 
 	///
 
@@ -28,30 +29,23 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 	return CUIPanel::Initialize_Prototype();
 }
 
-HRESULT CUI_Inventory::Init_InventorySlot()
+_bool CUI_Inventory::Rebuild_InventorySlot(_uint w,_uint h, const vector<Slot>& inven_slot)
 {
-	_uint w, h = {};
+	//보트 슬롯모양이 바뀌면 람다등으로 Init_InventorySlot 호출 
+	//find boat back ground ->  clear boat back ground's chilren -> for{for{}} add new slot children
 
-	const vector<Slot>& m_inven_slot = Inven_Contrl->Get_Invanslot(w, h);
-
-
-	///// 인밴 슬롯 패널 /////
-	CUIPanel::UIPANEL_DESC Panel_Inven = {};
-	Panel_Inven.TextureProtoName = L"Prototype_Component_Texture_PlayerInventoryBackground";
-	Panel_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
-	Panel_Inven.IsFullScreen = false;
-	Panel_Inven.IsTrnasparent = false;
-	Panel_Inven.IsUseLayout = true;
-	Panel_Inven.bUseNineSlice = false;
-
-	Panel_Inven.LayoutDesc.m_Spacing = { 4.f ,4.f };
-	Panel_Inven.LayoutDesc.m_Col = h;
-	Panel_Inven.LayoutDesc.m_Raw = w;
-	Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
+	if (/*Inven_Contrl == nullptr||*/ m_InvenPanel==nullptr)
+	{
+		MSG_BOX("failed  : Rebuild_InventorySlot");
+		return false;
+	}
 
 
-	shared_ptr<CUIPanel> InvenPanel = CUIPanel::Create(m_pDevice, m_pContext);
-	InvenPanel->Initialize(&Panel_Inven);
+
+	m_InvenPanel->UI_Clear();
+
+
+	m_InvenPanel->Change_LayoutRawCol(w, h);
 
 
 	/// slot ///
@@ -61,46 +55,29 @@ HRESULT CUI_Inventory::Init_InventorySlot()
 	{
 		for (_uint j = 0; j < w; j++)
 		{
-			//if(m_inven_slot[i*w+j].IsLock == true)
-			//{
-			//}
 			CUISlot::SLOT_DESC slot_Inven = {};
 			slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
 			slot_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
 			slot_Inven.vScale = Vector2{ 1.6f,1.6f };
 
-
+			if(inven_slot[i*w+j].IsLock == true)
+			{
+				slot_Inven.IsTransparent = true;
+			}
+			slot_Inven.slotType = ETOI(inven_slot[i * w + j].slotType);
+			
 			shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_pDevice, m_pContext);
 			m_pInstanceINVEN->Initialize(&slot_Inven);
 
-			wstring NameTag = L"SLOT_INVEN_" + S2W(to_string(i));
+			wstring NameTag = L"SLOT_INVEN_" + S2W(to_string(i * w + j));
 
 
-			InvenPanel->Add_Layout_Child(m_pInstanceINVEN, NameTag, false);
+			m_InvenPanel->Add_Layout_Child(m_pInstanceINVEN, NameTag, false);
 		}
 	}
 
 
-	//for (_uint i = 0; i < Panel_Inven.LayoutDesc.m_Col * Panel_Inven.LayoutDesc.m_Raw; i++)
-	//{
-	//
-	//	CUISlot::SLOT_DESC slot_Inven = {};
-	//	slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-	//	slot_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
-	//	slot_Inven.vScale = Vector2{ 1.6f,1.6f };
-	//
-	//
-	//	shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_pDevice, m_pContext);
-	//	m_pInstanceINVEN->Initialize(&slot_Inven);
-	//
-	//	wstring NameTag = L"SLOT_INVEN_" + S2W(to_string(i));
-	//
-	//
-	//	InvenPanel->Add_Layout_Child(m_pInstanceINVEN, NameTag, false);
-	//}
-	Add_Child(InvenPanel, L"Panel_inven", false);
-
-	return S_OK;
+	return true;
 }
 
 HRESULT CUI_Inventory::OnInit(void* pArg)
@@ -128,7 +105,28 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 	Add_Child(pChild, NameTag, false);
 
 
-	Init_InventorySlot();
+	///// 인밴 슬롯 패널 /////
+	CUIPanel::UIPANEL_DESC Panel_Inven = {};
+	Panel_Inven.TextureProtoName = L"Prototype_Component_Texture_PlayerInventoryBackground";
+	Panel_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
+	Panel_Inven.IsFullScreen = false;
+	Panel_Inven.IsTransparent = false;
+	Panel_Inven.IsUseLayout = true;
+	Panel_Inven.bUseNineSlice = false;
+
+	Panel_Inven.LayoutDesc.m_Spacing = { 4.f ,4.f };
+	Panel_Inven.LayoutDesc.m_Col = 6;
+	Panel_Inven.LayoutDesc.m_Raw = 8;
+	Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
+
+
+	shared_ptr<CUIPanel> InvenPanel = CUIPanel::Create(m_pDevice, m_pContext);
+	InvenPanel->Initialize(&Panel_Inven);
+	m_InvenPanel = InvenPanel;
+
+	Add_Child(m_InvenPanel, L"Panel_inven", false);
+
+
 	
 
 	///// 데미지 슬로 패널 /////
@@ -136,7 +134,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 	Panel_damage.TextureProtoName = L"Prototype_Component_Texture_HealthBarPanel";
 	Panel_damage.TextureComLevel = ETOI(LEVEL::STATIC);
 	Panel_damage.IsFullScreen = false;
-	Panel_damage.IsTrnasparent = false;
+	Panel_damage.IsTransparent = false;
 	Panel_damage.IsUseLayout = true;
 
 	Panel_damage.LayoutDesc.m_Spacing = { 2.f ,2.f };
@@ -165,6 +163,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 			
 			DamgePanel->Add_Layout_Child(m_pInstance, NameTag, false);
 			m_pInstance->Set_Interactive(false);
+			m_pInstance->Set_Zorder(2);
 	}
 
 
@@ -177,7 +176,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 void CUI_Inventory::OnActive()
 {
-	__super::OnActive();
+		__super::OnActive();
 		
 }
 
@@ -225,7 +224,7 @@ shared_ptr<CUI_Inventory> CUI_Inventory::Create(ComPtr<ID3D11Device> pDevice, Co
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
-		MSG_BOX("Failed to Created : CUIPanel");
+		MSG_BOX("Failed to Created : CUI_Inventory");
 
 	}
 	return pInstance;

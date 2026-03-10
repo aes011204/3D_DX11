@@ -12,7 +12,7 @@ public:
        /* _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";*/
 
-        _bool IsTrnasparent = { false };
+        //_bool IsTransparent = { false };
         _bool IsFullScreen = { false };
         _bool IsUseLayout = { false };
 
@@ -51,7 +51,7 @@ public:
 public:
     void Layout();
     HRESULT Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect);
-    void Change_LayoutRawCol(_uint raw, _uint col) { m_LayoutDesc.m_Col = col; m_LayoutDesc.m_Raw = raw;}
+    void Change_LayoutRawCol(_uint raw, _uint col) { m_LayoutDesc.m_Col = col; m_LayoutDesc.m_Raw = raw; Layout(); }
 private:
     // 내부 계산 용
     int index = 0;
@@ -59,7 +59,7 @@ private:
     LAYOUT_DESC m_LayoutDesc ;
   
 
-    _bool m_IsTransparent = {};
+    //_bool m_IsTransparent = {};
     _bool m_IsFullScreen = {};
     _bool m_IsUseLayout = {};
 

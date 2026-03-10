@@ -110,6 +110,7 @@
     <ClInclude Include="..\Public\UI_TabContainer.h">
       <Filter>03.UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_Storage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -184,6 +185,7 @@
     <ClCompile Include="..\Private\UI_TabContainer.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\UI_Storage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

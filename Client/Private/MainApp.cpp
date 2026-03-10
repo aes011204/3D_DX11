@@ -72,6 +72,7 @@ HRESULT CMainApp::Initialize()
 
 
 
+	m_Contr = CInventory_Controller::Create();// 일단 여기 안에 서  발행 함 임시임
 
 
 	return S_OK;
@@ -235,7 +236,21 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
-
+	// 창고 //
+	/* Prototype_Component_Texture_StorageInventoryBackground */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StorageInventoryBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/StorageInventoryBackground.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Texture_TabDivider */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TabDivider"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/TabDivider.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
 
 	// tab_Container //
 	/* Prototype_Component_Texture_TabContainer */
@@ -272,7 +287,7 @@ HRESULT CMainApp::Ready_UI()
 {	
 	CUI_MainMenu::MAINMENU_DESC pDescPanel;
 	pDescPanel.IsFullScreen = true;
-	pDescPanel.IsTrnasparent = true;
+	pDescPanel.IsTransparent = true;
 
 
 	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_pDevice, m_pContext);
@@ -286,7 +301,6 @@ HRESULT CMainApp::Ready_UI()
 	if (TabContainer == nullptr)
 		return E_FAIL;
 
-	m_Contr = CInventory_Controller::Create();// 일단 여기 안에 서  발행 함 임시임
 
 	TabContainer->Initialize(&pDescTap);
 	m_pGameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);

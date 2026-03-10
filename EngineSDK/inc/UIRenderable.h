@@ -13,7 +13,7 @@ public:
 
         _float4 PxSliceLRTB = {};
         bool bUseNineSlice = false;
-
+        bool IsTransparent = false;
         bool bUseDark = true;
     };
 protected:
@@ -50,6 +50,8 @@ protected:
     float m_Dark = {}; //0~1
 
 private:
+    bool m_IsTransparent = { false };
+
     bool m_bUseNineSlice = false;
     NINESLICE_DESC m_SliceDesc = {};
 

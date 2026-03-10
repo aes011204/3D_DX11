@@ -2,6 +2,7 @@
 #include "Editor_Define.h"
 
 
+
 namespace Client
 {
 	class CInventory_Controller;

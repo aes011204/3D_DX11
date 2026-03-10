@@ -6,7 +6,7 @@ class ENGINE_DLL CUISlot :
 public:
     struct SLOT_DESC : public CUIButton::UIBUTTON_DESC
     {
-      
+        _uint slotType = {};
     };
 private:
     explicit CUISlot(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

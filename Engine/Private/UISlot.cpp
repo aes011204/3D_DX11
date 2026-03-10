@@ -11,7 +11,13 @@ CUISlot::CUISlot(const CUISlot& prototype) : CUIButton(prototype)
 
 HRESULT CUISlot::OnInit(void* pArg)
 {
-	CUIButton::OnInit( pArg);
+	SLOT_DESC* pDesc = static_cast<SLOT_DESC*>(pArg);
+	m_slotType = pDesc->slotType;
+
+
+
+	CUIButton::OnInit(pDesc);
+
 	return S_OK;
 }
 

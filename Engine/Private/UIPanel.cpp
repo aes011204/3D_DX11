@@ -24,16 +24,11 @@ HRESULT CUIPanel::OnInit(void* pArg)
     UIPANEL_DESC* pDesc = static_cast<UIPANEL_DESC*>(pArg);
 
     m_LayoutDesc = pDesc->LayoutDesc;
-    m_IsTransparent = pDesc->IsTrnasparent;
+    //m_IsTransparent = pDesc->IsTransparent;
     m_IsFullScreen = pDesc->IsFullScreen;
     m_IsUseLayout = pDesc->IsUseLayout;
 
-    if (m_IsTransparent==false)
-    {
-   /*if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
-        return E_FAIL;*/
 
-    }
 
    // m_IsUseLayout = pDesc->IsUseLayout;
 
@@ -99,8 +94,6 @@ void CUIPanel::OnLateUpdate()
 
 HRESULT CUIPanel::OnRender()
 {
-    if (m_IsTransparent == true)
-        return S_OK;
 
    /* if (FAILED(Bind_ShaderResources()))
         return E_FAIL;
@@ -179,7 +172,7 @@ void CUIPanel::OnClear()
 void CUIPanel::Save_ToJson(nlohmann::json& j)
 {
     __super::Save_ToJson(j);
-    j["IsTransparent"] = m_IsTransparent;
+    //j["IsTransparent"] = m_IsTransparent;
     j["IsFullScreen"] = m_IsFullScreen;
     j["IsUseLayout"] = m_IsUseLayout;
     if (m_IsUseLayout == true)
@@ -202,10 +195,10 @@ void CUIPanel::Save_ToJson(nlohmann::json& j)
 void CUIPanel::Load_FromJson(nlohmann::json& j)
 {
     __super::Load_FromJson(j);
-    if (j.contains("IsTransparent"))
-    {
-        m_IsTransparent = j["IsTransparent"];
-    }
+    //if (j.contains("IsTransparent"))
+    //{
+    //    m_IsTransparent = j["IsTransparent"];
+    //}
     if (j.contains("IsFullScreen"))
     {
         m_IsFullScreen = j["IsFullScreen"];

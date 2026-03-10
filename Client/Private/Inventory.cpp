@@ -1,7 +1,7 @@
 #include "Inventory.h"
 #include "ItemDB.h"
 
-CInventory::CInventory()
+CInventory::CInventory() 
 {
     w = 9;
     h = 11;
@@ -17,7 +17,7 @@ HRESULT CInventory::Initialize()
     m_InvenSlot.resize(w*h);
 
     Init_BoatUpgrade();
-    Upgrade_Boat(m_BoatUpgrade_type,0); // Á© Ã³À½
+
 
     return S_OK;
 }
@@ -259,18 +259,18 @@ void CInventory::Init_BoatUpgrade()
 
 }
 
-void CInventory::Upgrade_Boat(BoatLevelData* BoatUpgrade_type, _uint index)
+void CInventory::Upgrade_Boat( _uint index)
 {
-
-    w = BoatUpgrade_type[index].height;
-    h = BoatUpgrade_type[index].width;
+    
+    w = m_BoatUpgrade_type[index].height;
+    h = m_BoatUpgrade_type[index].width;
 
     //
     for (int th = 0; th < h; th++)
     {
         for (int tw = 0; tw < w; tw++)
         {
-            _int tmp = static_cast<_int>(BoatUpgrade_type[index].type[th * w + tw]);
+            _int tmp = static_cast<_int>(m_BoatUpgrade_type[index].type[th * w + tw]);
             switch (tmp)
             {
             case  static_cast<_int>('O'):

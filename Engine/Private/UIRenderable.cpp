@@ -18,17 +18,23 @@ HRESULT CUIRenderable::OnInit(void* pArg)
 
 	RENDERABLE_DESC* pDesc = static_cast<RENDERABLE_DESC*>(pArg);
 
-	if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
-		return E_FAIL;
+	m_IsTransparent = pDesc->IsTransparent;
+	m_bUseDark = pDesc->bUseDark;
+	m_bUseNineSlice = pDesc->bUseNineSlice;
 
+	if (m_IsTransparent == false)
+	{
+		if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
+			return E_FAIL;
 	_float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
 	m_SliceDesc.TexOriginalSize = orignSize;
 	m_SliceDesc.UISize = _float2(1.f, 1.f);// 어짜피 트렌스폼이 정함 최종 ui 사이즈
 	m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
+	}
 
-	m_bUseDark = pDesc->bUseDark;
 
-	m_bUseNineSlice = pDesc->bUseNineSlice;
+
+
 
 	if (pDesc->PxSliceLRTB.x != 0.f && pDesc->PxSliceLRTB.y != 0.f 
 	    && pDesc->PxSliceLRTB.z != 0.f && pDesc->PxSliceLRTB.w != 0.f)
@@ -83,6 +89,9 @@ void CUIRenderable::OnLateUpdate()
 
 HRESULT CUIRenderable::OnRender()
 {
+	if (m_IsTransparent == true)
+		return S_OK;
+
 
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;

@@ -2,6 +2,7 @@
 #include "Editor_Define.h"
 
 
+
 namespace Client
 {
 	class CInventory_Controller;
@@ -41,7 +42,7 @@ namespace Engine
     };
     struct EvtControllerPoiner
     {
-        shared_ptr<class CInventory_Controller> m_contrl_Pointer = {};
+        Client::CInventory_Controller* m_contrl_Pointer = {};
     };
 
 }

@@ -12,7 +12,6 @@ class CInventory :
 public:
     struct BoatLevelData
     {
-
         _uint width = {};
         _uint height = {};
         vector<_char> type = {};
@@ -42,6 +41,7 @@ public:// 아이템 넣고 뺴기
     _int CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY,PLACE_COLOR& color);
     Item_Inst TryMove_Item(_uint BaseX, _uint BaseY);
     void ThrowAwayFrom_Inven(_uint BaseX, _uint BaseY);
+    void Upgrade_Boat(_uint index);
 private:
     Item_Inst RemoveFrom_Inven(int inst_id);
     void PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY);
@@ -54,7 +54,7 @@ private:
     void Apply_BaseMask(vector<Slot>& vecSlot);// 락
     SLOT_TYPE CharToType(char c);// 슬랏 타입
     void Init_BoatUpgrade();
-    void Upgrade_Boat(BoatLevelData* BoatUpgrade_type,_uint index);
+    
 
 public:
     static shared_ptr<CInventory> Create(); 

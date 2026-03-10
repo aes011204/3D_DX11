@@ -9,6 +9,7 @@
 NS_BEGIN(Engine)
 
 class CUIButton;
+class CUIImage;
 NS_END
 NS_BEGIN(Client)
 
@@ -45,10 +46,11 @@ public:
 
 private:
 	TAB m_Active = TAB::NONE;
-	
 
-	shared_ptr < CUIButton >m_ButtonContents[32] = {};
-	shared_ptr < CUIPanel >m_TabContents[32] = {};
+	shared_ptr<CUIImage> m_Line = {};
+
+	shared_ptr<CUIButton> m_ButtonContents[32] = {};
+	shared_ptr<CUIPanel> m_TabContents[32] = {};
 
 
 	Vector2 m_vecAni = {};

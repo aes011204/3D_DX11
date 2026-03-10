@@ -2,6 +2,8 @@
 
 #include "UIButton.h"
 #include "UI_Inventory.h"
+#include "UI_Storage.h"
+#include "UIImage.h"
 
 
 CUI_TabContainer::CUI_TabContainer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -67,7 +69,7 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 		m_TabContents[ETOI(TAB::ETC)]->UI_InActive();
 		numPanel++;
 	}
-
+	m_Line->UI_Active();
 
 
 	Change_LayoutRawCol(1, numPanel);
@@ -103,7 +105,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	TABCONTAINER_DESC* TABpDesc = static_cast<TABCONTAINER_DESC*>(pArg);
 	//TABCONTAINER_DESC pDesc = {};
 	TABpDesc->IsFullScreen = false;
-	TABpDesc->IsTrnasparent = false;
+	TABpDesc->IsTransparent = false;
 	TABpDesc->TextureComLevel = ETOI(LEVEL::STATIC);
 	TABpDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
 	TABpDesc->IsUseLayout = true;
@@ -113,18 +115,26 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 
 	hr = CUIPanel::OnInit(TABpDesc);
 
+
+	CUIImage::UIIMAGE_DESC img = {};
+	img.TextureComLevel = ETOI(LEVEL::STATIC);
+	img.TextureProtoName = L"Prototype_Component_Texture_TabDivider";
+	img.bUseNineSlice = true;
+	shared_ptr<CUIImage> Line = CUIImage::Create(m_pDevice, m_pContext);
+	Line->Initialize(&img);
+	Line->Set_Zorder(1);
+
+	Add_Child(Line, L"Line", false); 
+	m_Line = Line;
+
 	for (_uint i = 0; i < 3; i++)
 	{
 		TAB eTab = static_cast<TAB>(1 << i);
-
 
 		/// 버튼
 		CUIButton::UIBUTTON_DESC ButDesc = {};
 		ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
-
-
-
 		//ButDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f ) };
 		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
 		//ButDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
@@ -137,39 +147,54 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 			{
 				SetActiveTab(static_cast<TAB>(pThis->Get_TypeIndex()));
 			};
-		shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
-		pChild->Initialize(&ButDesc);
-		pChild->UI_InActive();
-
+		shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
+		button->Initialize(&ButDesc);
+		button->Set_Zorder(2);
+		button->UI_InActive();
 
 		//Add_Child(pChild, NameTag, false);
 		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
-		Add_Layout_Child(pChild, NameTag, false);
-		m_ButtonContents[ETOI(eTab)] = pChild;
+		Add_Layout_Child(button, NameTag, false);
+		m_ButtonContents[ETOI(eTab)] = button;
 
 	}
-	for (_uint i = 0; i < 3; i++)
-	{
-		TAB eTab = static_cast<TAB>(1 << i);
-		// 일단 테스트 인벤 3개
 
+
+	//for (_uint i = 0; i < 3; i++)
+	{
+		TAB eTab = static_cast<TAB>(1 << 0);
+		// 일단 테스트 인벤 3개
 		CUI_Inventory::INVENTORY_DESC InvenDesc = {};
 		InvenDesc.IsFullScreen = false;
-		InvenDesc.IsTrnasparent = true;
+		InvenDesc.IsTransparent = true;
 		InvenDesc.bSetParentSize = true;
-
 
 		shared_ptr<CUI_Inventory> pInven = CUI_Inventory::Create(m_pDevice, m_pContext);
 		pInven->Initialize(&InvenDesc);
 
 		wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
 
-		//(pInven, L"INVENTORY", false);
 		Add_Child(pInven, NameTag, false);
 		m_TabContents[ETOI(eTab)] = pInven;
 		pInven->UI_InActive();
 	}
+		{
+			TAB eTab = static_cast<TAB>(1 << 1);
+			// 일단 테스트 인벤 3개
+			CUI_Storage::STORAGE_DESC StorageDesc = {};
+			StorageDesc.IsFullScreen = false;
+			StorageDesc.IsTransparent = true;
+			StorageDesc.bSetParentSize = true;
 
+			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
+			pStorage->Initialize(&StorageDesc);
+
+			wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
+
+			Add_Child(pStorage, NameTag, false);
+			m_TabContents[ETOI(eTab)] = pStorage;
+			pStorage->UI_InActive();
+		}
 
 	return hr;
 }
@@ -196,6 +221,7 @@ void CUI_TabContainer::OnInActive()
 {
 	m_bStart = false;
 	m_TimeAcc = 0;
+	m_Active = TAB::NONE;
 	CUIPanel::OnInActive();
 }
 

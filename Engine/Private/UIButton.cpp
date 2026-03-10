@@ -47,6 +47,7 @@ void CUIButton::OnActive()
 
 void CUIButton::OnInActive()
 {
+    m_UIState = BUTTON_STATE::NORMAL;
     __super::OnInActive();
 }
 

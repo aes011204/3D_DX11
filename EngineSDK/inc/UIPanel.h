@@ -12,7 +12,7 @@ public:
        /* _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";*/
 
-        _bool IsTrnasparent = { false };
+        //_bool IsTransparent = { false };
         _bool IsFullScreen = { false };
         _bool IsUseLayout = { false };
 
@@ -59,7 +59,7 @@ private:
     LAYOUT_DESC m_LayoutDesc ;
   
 
-    _bool m_IsTransparent = {};
+    //_bool m_IsTransparent = {};
     _bool m_IsFullScreen = {};
     _bool m_IsUseLayout = {};
 
