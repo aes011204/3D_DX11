@@ -27,17 +27,18 @@
                             "ComProtoLevel": 0,
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.8098200559616089,
+                                1.8098200559616089
+                            ],
                             "Pivot": [
                                 0.5,
                                 0.5
                             ],
+                            "RotationRadian": 0.0,
                             "SizeDelta": [
-                                128.0,
-                                44.0
-                            ],
-                            "m_LocalScale": [
-                                1.0,
-                                1.0
+                                85.33333587646484,
+                                29.33333396911621
                             ]
                         },
                         {
@@ -46,6 +47,7 @@
                             "ComponentTag": "Com_VIBuffer"
                         }
                     ],
+                    "LayoutTarget": false,
                     "PxSliceLRTB": [
                         46.0,
                         46.0,
@@ -79,17 +81,18 @@
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
                     "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        2.0,
+                        1.2999999523162842
+                    ],
                     "Pivot": [
                         0.5,
                         0.5
                     ],
+                    "RotationRadian": 0.0,
                     "SizeDelta": [
-                        192.0,
-                        64.0
-                    ],
-                    "m_LocalScale": [
-                        1.2999999523162842,
-                        1.0
+                        128.0,
+                        42.66666793823242
                     ]
                 },
                 {
@@ -98,7 +101,15 @@
                     "ComponentTag": "Com_VIBuffer"
                 }
             ],
+            "LayoutTarget": false,
+            "PxSliceLRTB": [
+                64.0,
+                64.0,
+                21.33333396911621,
+                21.33333396911621
+            ],
             "UIChildrenTag": "BUTTON_EDITOR",
+            "UseNineSlice": false,
             "ZOrder": 2
         },
         {
@@ -128,17 +139,18 @@
                             "ComProtoLevel": 0,
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.8019987344741821,
+                                1.8019987344741821
+                            ],
                             "Pivot": [
                                 0.5,
                                 0.5
                             ],
+                            "RotationRadian": 0.0,
                             "SizeDelta": [
-                                128.0,
-                                44.0
-                            ],
-                            "m_LocalScale": [
-                                1.0,
-                                1.0
+                                85.33333587646484,
+                                29.33333396911621
                             ]
                         },
                         {
@@ -147,6 +159,7 @@
                             "ComponentTag": "Com_VIBuffer"
                         }
                     ],
+                    "LayoutTarget": false,
                     "PxSliceLRTB": [
                         46.0,
                         46.0,
@@ -180,17 +193,18 @@
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
                     "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        2.0,
+                        1.2999999523162842
+                    ],
                     "Pivot": [
                         0.5,
                         0.5
                     ],
+                    "RotationRadian": 0.0,
                     "SizeDelta": [
-                        192.0,
-                        64.0
-                    ],
-                    "m_LocalScale": [
-                        1.2999999523162842,
-                        1.0
+                        128.0,
+                        42.66666793823242
                     ]
                 },
                 {
@@ -199,7 +213,15 @@
                     "ComponentTag": "Com_VIBuffer"
                 }
             ],
+            "LayoutTarget": false,
+            "PxSliceLRTB": [
+                64.0,
+                64.0,
+                21.33333396911621,
+                21.33333396911621
+            ],
             "UIChildrenTag": "BUTTON_END",
+            "UseNineSlice": false,
             "ZOrder": 2
         },
         {
@@ -229,17 +251,18 @@
                             "ComProtoLevel": 0,
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
+                            "LocalScale": [
+                                1.8039884567260742,
+                                1.8039884567260742
+                            ],
                             "Pivot": [
                                 0.5,
                                 0.5
                             ],
+                            "RotationRadian": 0.0,
                             "SizeDelta": [
-                                128.0,
-                                44.0
-                            ],
-                            "m_LocalScale": [
-                                1.0,
-                                1.0
+                                85.33333587646484,
+                                29.33333396911621
                             ]
                         },
                         {
@@ -248,6 +271,7 @@
                             "ComponentTag": "Com_VIBuffer"
                         }
                     ],
+                    "LayoutTarget": false,
                     "PxSliceLRTB": [
                         46.0,
                         46.0,
@@ -281,17 +305,18 @@
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
                     "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        2.0,
+                        1.2999999523162842
+                    ],
                     "Pivot": [
                         0.5,
                         0.5
                     ],
+                    "RotationRadian": 0.0,
                     "SizeDelta": [
-                        192.0,
-                        64.0
-                    ],
-                    "m_LocalScale": [
-                        1.2999999523162842,
-                        1.0
+                        128.0,
+                        42.66666793823242
                     ]
                 },
                 {
@@ -300,7 +325,15 @@
                     "ComponentTag": "Com_VIBuffer"
                 }
             ],
+            "LayoutTarget": false,
+            "PxSliceLRTB": [
+                64.0,
+                64.0,
+                21.33333396911621,
+                21.33333396911621
+            ],
             "UIChildrenTag": "BUTTON_GAMEPLAY",
+            "UseNineSlice": false,
             "ZOrder": 2
         },
         {
@@ -318,27 +351,28 @@
                 },
                 {
                     "AnchorPoint": [
-                        0.0,
+                        0.2540000081062317,
                         0.3190000057220459
                     ],
                     "AnchoredPos": [
-                        67.0,
+                        0.0,
                         0.0
                     ],
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
                     "ComponentTag": "Com_UITransform",
+                    "LocalScale": [
+                        1.0,
+                        1.0
+                    ],
                     "Pivot": [
-                        0.0,
-                        0.5
-                    ],
-                    "SizeDelta": [
-                        1024.0,
-                        338.0
-                    ],
-                    "m_LocalScale": [
                         0.5,
                         0.5
+                    ],
+                    "RotationRadian": 0.0,
+                    "SizeDelta": [
+                        682.6666870117188,
+                        225.3333282470703
                     ]
                 },
                 {
@@ -347,6 +381,7 @@
                     "ComponentTag": "Com_VIBuffer"
                 }
             ],
+            "LayoutTarget": false,
             "PxSliceLRTB": [
                 341.3333435058594,
                 341.3333435058594,
@@ -359,6 +394,11 @@
     ],
     "Components": [
         {
+            "ComProtoLevel": 0,
+            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+            "ComponentTag": "Com_Shader"
+        },
+        {
             "AnchorPoint": [
                 0.5,
                 0.5
@@ -370,22 +410,36 @@
             "ComProtoLevel": 0,
             "ComProtoTag": "",
             "ComponentTag": "Com_UITransform",
+            "LocalScale": [
+                1.0,
+                1.0
+            ],
             "Pivot": [
                 0.5,
                 0.5
             ],
+            "RotationRadian": 0.0,
             "SizeDelta": [
-                1280.0,
-                720.0
-            ],
-            "m_LocalScale": [
-                1.0,
-                1.0
+                1920.0,
+                1080.0
             ]
+        },
+        {
+            "ComProtoLevel": 0,
+            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+            "ComponentTag": "Com_VIBuffer"
         }
     ],
     "IsFullScreen": true,
     "IsTransparent": true,
     "IsUseLayout": false,
-    "RootMapTag": "MainMenu"
+    "LayoutTarget": false,
+    "PxSliceLRTB": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "RootMapTag": "MainMenu",
+    "UseNineSlice": false
 }

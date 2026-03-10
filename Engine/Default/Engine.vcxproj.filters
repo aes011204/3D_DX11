@@ -49,6 +49,12 @@
     <Filter Include="01.Utility\06.Lights">
       <UniqueIdentifier>{5207b0dc-e6c3-4a95-9445-d19c4dc63241}</UniqueIdentifier>
     </Filter>
+    <Filter Include="00.System\02.Input">
+      <UniqueIdentifier>{56e89f5b-3767-42c2-a9d3-cb02f305587a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00.System\03.Picking">
+      <UniqueIdentifier>{8854e13a-64d4-4ae1-bab1-214fc80c1cac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -131,9 +137,6 @@
     <ClCompile Include="..\Private\VIBuffer.cpp">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\DInput_Manager.cpp">
-      <Filter>00.System</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClCompile>
@@ -165,6 +168,21 @@
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Free.cpp">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Manager.cpp">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Picking_Manager.cpp">
+      <Filter>00.System\03.Picking</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\DInput_Manager.cpp">
+      <Filter>00.System\02.Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIRenderable.cpp">
+      <Filter>99.Defines\01.Utility\05.UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -266,9 +284,6 @@
     <ClInclude Include="..\Public\VIBuffer.h">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\DInput_Manager.h">
-      <Filter>00.System</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\VIBuffer_Rect.h">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClInclude>
@@ -282,7 +297,6 @@
     <ClInclude Include="..\Public\IModifier.h" />
     <ClInclude Include="..\Public\UIObject.h" />
     <ClInclude Include="..\Public\PipeLine.h" />
-    <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\Public\Camera.h">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClInclude>
@@ -299,6 +313,21 @@
     <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Manager.h">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Free.h">
+      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Picking_Manager.h">
+      <Filter>00.System\03.Picking</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\DInput_Manager.h">
+      <Filter>00.System\02.Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UIRenderable.h">
+      <Filter>99.Defines\01.Utility\05.UI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -21,18 +21,17 @@ public:
 
 public:
 	HRESULT Initialize(_uint iNumLevels);
-	shared_ptr<CGameObject> Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg);
-	//HRESULT Add_GameObject(shared_ptr<CBase> pClonedInst, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg);
 	void Priority_Update(_float fTimeDelta);
 	void Update(_float fTimeDelta);
 	void Late_Update(_float fTimeDelta);
 	HRESULT Clear_Layers(_uint iLevelIndex);
 
-
+	shared_ptr<CGameObject> Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg);
+	shared_ptr<CGameObject> Get_GameObject(_uint iLevelIndex, const _wstring& strLayerTag, _uint GObjIndex);
 	/// IMGUI
 	virtual void Update_Gui();
 
-	map<const _wstring, shared_ptr<CLayer>> Get_GameObjects(_uint levelIndex);
+	const map<const _wstring, shared_ptr<CLayer>>& Get_GameObjects(_uint levelIndex) const;
 	///
 private:
 	_uint m_iNumLevel = {};

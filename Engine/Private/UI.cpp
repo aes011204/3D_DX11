@@ -12,7 +12,9 @@ CUI::CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 }
 
 CUI::CUI(const CUI& prototype)
-	: CEntity(prototype)
+	: CEntity(prototype),
+	m_ZOrder(prototype.m_ZOrder),
+	m_bLayoutTarget(prototype.m_bLayoutTarget)
 {
 }
 
@@ -26,10 +28,15 @@ HRESULT CUI::Initialize_Prototype()
 HRESULT CUI::Initialize(void* pArg)
 {
 
+	UI_DESC* pDesc = static_cast<UI_DESC*>(pArg);
+
+	Set_Zorder(pDesc->ZOrder);
+
 	if (m_bInitialized == true)
 		return S_OK;
 
 	SetDefaultNameFromThisType();
+
 	{
 		m_pUITransformCom = CUITransform::Create(m_pDevice, m_pContext);
 		if (nullptr == m_pUITransformCom)
@@ -49,6 +56,8 @@ HRESULT CUI::Initialize(void* pArg)
 
 
 	OnInit(pArg);
+
+
 	// 최하위fianl 자식의 OnInit 호출 -> 
 	// 자신의 부모가 UI이면 __super::OnInit 안해도됨 (해도 됨 {}이거임)
 	// 아닌경우는 해줘야함 
@@ -110,10 +119,15 @@ weak_ptr<CUI> CUI::Find_Children(_wstring strTag)
 
 void CUI::Save_ToJson(nlohmann::json& j)
 {
-
+	float m_fX = {};
+	float m_fY = {};
+	if (!std::isnan(m_fX) && !std::isinf(m_fX)) j["X"] = m_fX;
+	if (!std::isnan(m_fY) && !std::isinf(m_fY)) j["Y"] = m_fY;
 	//CUI 데이터
-	if(m_ZOrder!=1)
+	if (m_ZOrder != 1)
 		j["ZOrder"] = m_ZOrder;
+
+	j["LayoutTarget"] = m_bLayoutTarget;
 
 	// Componet데이터 저장 
 	nlohmann::json jComponentArray = nlohmann::json::array();
@@ -153,8 +167,12 @@ void CUI::Load_FromJson(nlohmann::json& j)
 	if (j.contains("ZOrder")) {
 		m_ZOrder = j["ZOrder"];
 	}
-	
-	if (j.contains("Components")&& j["Components"].is_array())
+
+	/*if (j.contains("LayoutTarget")) {
+		m_bLayoutTarget = j["LayoutTarget"];
+	}*/
+
+	if (j.contains("Components") && j["Components"].is_array())
 	{
 		//Components배열 컨테이너가 있으면 엔티티에서 다 돌리면서 추가나(replace)해줌
 		CEntity::Load_FromJson(j);
@@ -184,8 +202,18 @@ void CUI::Load_FromJson(nlohmann::json& j)
 	}
 }
 
+void CUI::OnGui()
+{
+	ImGui::InputInt("ZOrder Control", &m_ZOrder);
+	ImGui::Text("bLayoutTarget : %s", m_bLayoutTarget ? "true" : "false");
+	ImGui::Text("UIState : %s", magic_enum::enum_name(m_UIState).data());
+
+}
+
 void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 {
+
+
 
 	if (m_bEnabled)
 	{
@@ -215,9 +243,13 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 
 		OnUpdate(fTimeDelta);
 
-		for (auto& it : m_behavior)
+		if (!m_bRenderReady)
+			m_bRenderReady = true;
+
+
+		for (auto& it : m_Children)
 		{
-			it->Tick(fTimeDelta, this);
+			it->Late_Update(fTimeDelta);
 		}
 	}
 
@@ -229,21 +261,37 @@ void CUI::Late_Update(_float fTimeDelta)
 	{
 		OnLateUpdate();
 
-		for (auto& it : m_Children)
-		{
-			it->Late_Update(fTimeDelta);
-		}
+		//for (auto& it : m_Children)
+		//{
+		//	it->Late_Update(fTimeDelta);
+		//}
 
+		{
+			for (auto it = m_Children.begin(); it != m_Children.end(); )
+			{
+				if (nullptr != *it)
+					(*it)->Late_Update(fTimeDelta);
+
+				if ((*it)->Is_PendingDestroy() == true)
+				{
+				
+					it = m_Children.erase(it);
+				}
+				else
+					it++;
+
+			}
+		}
 	}
 }
 
 HRESULT CUI::Render()
 {
-	if (m_bVisible)
+	if (m_bVisible && m_bRenderReady == true)
 	{
 		if (m_bIsDirty_Zorder)
 		{
-			if (m_Children.size() >=2)
+			if (m_Children.size() >= 2)
 			{
 				stable_sort(m_Children.begin(), m_Children.end(), [](const shared_ptr<CUI>& a, const shared_ptr<CUI>& b) {
 					//if(a->m_ZOrder==b->m_ZOrder)
@@ -261,13 +309,22 @@ HRESULT CUI::Render()
 			it->Render();
 		}
 	}
+	//m_bRenderReady = true;
 	return S_OK;
 }
 
 void CUI::UI_Active()
 {
+	m_UIState = UI_STATE::ACTIVE;
+
 	m_bEnabled = true;
 	m_bVisible = true;
+
+	m_bRenderReady = false;
+
+	if (m_pUITransformCom)
+		m_pUITransformCom->UpdateLayoutIfDirty();
+
 	//m_bInteractable = true;
 	OnActive();
 
@@ -279,9 +336,12 @@ void CUI::UI_Active()
 
 void CUI::UI_InActive()
 {
+	m_UIState = UI_STATE::INACTIVE;
+
 	m_bEnabled = false;
 	m_bVisible = false; //이건 정책에 따라
-	//m_bInteractable = false;
+	//m_bInteractable = true;
+
 	OnInActive(); // 자신의 행동 호출 가상함수
 
 	for (auto& it : m_Children)
@@ -292,6 +352,8 @@ void CUI::UI_InActive()
 
 void CUI::Set_UI_Disabled(bool isChangeEvent)
 {
+	m_UIState = UI_STATE::DISABLE;
+
 	m_bEnabled = true;
 	m_bVisible = true; //이건 정책에 따라
 	//m_bInteractable = false;
@@ -312,9 +374,14 @@ void CUI::UI_Clear() // 이건 삭제
 
 
 	for (auto& it : m_Children)
+	{
 		it->UI_Clear();
+		it->Mark_Destroy();
+	}
 
-	m_Children.clear();
+
+	//m_Children.clear();
+
 
 	// 트랜스폼 끊기
 	if (m_pUITransformCom)
@@ -340,7 +407,7 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 
 	// 맵에 넣기 (검색용)
 	auto ui = Find_Children(UITag).lock();
-	if (ui!=nullptr)
+	if (ui != nullptr)
 		return E_FAIL;
 	m_mapChildren.emplace(UITag, child);
 
@@ -353,34 +420,40 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 	return S_OK;
 }
 
-//shared_ptr<CUI> CUI::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-//{
-//	//shared_ptr<CUI> pInstance = CUI::Create(pDevice, pContext);
-//	//if (FAILED(pInstance->Initialize_Prototype()))
-//	//{
-//	//	MSG_BOX("failed prototype: CUIBase");
-//	//	Safe_Release(pInstance);
-//	//}
-//	//return pInstance;
-//	return nullptr;
-//}
-//
-//shared_ptr<CUI> CUI::Clone(void* pArg)
-//{
-//	//shared_ptr<CUI> pInstance = new CUI(*this);
-//	//if (FAILED(pInstance->Initialize(pArg)))
-//	//{
-//	//	MSG_BOX("failed prototype: CUIBase");
-//	//	Safe_Release(pInstance);
-//	//}
-//	//return pInstance;
-//	return nullptr;
-//
-//}
+void CUI::Set_Zorder(_uint Z)
+{
+	m_ZOrder = Z;
+	if (m_Parent.lock() != nullptr)
+	{
+		m_Parent.lock()->m_bIsDirty_Zorder = true;
+	}
+	for (auto& it : m_Children)
+	{
+		it->Set_Zorder(Z);
+	}
+}
+
+
+
 
 void CUI::Free()
 {
-	UI_Clear(); // 자식 먼저 처리 (자식들이 부모의 컴포넌트나 정보를 참조가능성)
+	for (auto& it : m_Children)
+		it->UI_Clear();
+
+	m_Children.clear();
+
+	// 트랜스폼 끊기
+	if (m_pUITransformCom)
+	{
+		m_Parent.reset();
+		//
+		// m_pUITransformCom->SetParent(shared_ptr<CUITransform>(nullptr), false); //이거 왜한거임??
+	}// 아 혹시 free 용이 아닌가?? 일단 패스
+
+	m_behavior.clear();
+
+	OnClear();
 
 	__super::Free();
 

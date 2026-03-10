@@ -12,6 +12,7 @@ public:
 
 public:
 	virtual HRESULT Initialize() override;
+	virtual HRESULT Post_Initialize()override { return S_OK; };
 	virtual void Update(_float fTimeDelta) override;
 	virtual HRESULT Render() override;
 

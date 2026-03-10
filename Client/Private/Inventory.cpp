@@ -1,7 +1,7 @@
 #include "Inventory.h"
 #include "ItemDB.h"
 
-CInventory::CInventory()
+CInventory::CInventory() 
 {
     w = 9;
     h = 11;
@@ -17,7 +17,7 @@ HRESULT CInventory::Initialize()
     m_InvenSlot.resize(w*h);
 
     Init_BoatUpgrade();
-    Upgrade_Boat(m_BoatUpgrade_type[0]); // Á© Ã³À½
+
 
     return S_OK;
 }
@@ -210,42 +210,40 @@ void CInventory::Apply_BaseMask(vector<Slot>& vecSlot)
 
 void CInventory::Init_BoatUpgrade()
 {
-    for(int i =0; i < m_MaxBoatLevel; i++)
-    {
-        m_BoatUpgrade_type[i].resize(w * h);
-       
-    }
   
-    //
-    m_BoatUpgrade_type[0] = {
-    'O','O','O','A','L','O','O','O','O',
-    'O','O','A','A','A','A','O','O','O',
-    'O','A','A','A','A','A','A','O','O',
-    'O','R','R','A','A','A','R','O','O',
-    'O','R','R','A','A','A','R','O','O',
-    'O','A','A','A','A','A','R','O','O',
-    'O','O','A','E','E','A','O','O','O',
-    'O','O','O','E','E','O','O','O','O',
-    'O','O','O','O','O','O','O','O','O',
-    'O','O','O','O','O','O','O','O','O',
-    'O','O','O','O','O','O','O','O','O',
+    _uint tw = m_BoatUpgrade_type[0].width = 6;
+    _uint th = m_BoatUpgrade_type[0].height = 8;
+    m_BoatUpgrade_type[0].type.resize(w* h);
+    m_BoatUpgrade_type[0].type = {
+    'O','O','A','L','O','O',
+    'O','A','A','A','A','O',
+    'A','A','A','A','A','A',
+    'R','R','A','A','A','R',
+    'R','R','A','A','A','R',
+    'A','A','A','A','A','R',
+    'O','A','E','E','A','O',
+    'O','O','E','E','O','O',
     };
 
-    m_BoatUpgrade_type[1] = {
-    'O','O','O','A','L','O','O','O','O',
-    'O','O','A','A','A','A','O','O','O',
-    'O','A','A','A','A','A','A','O','O',
-    'O','R','R','A','A','A','R','O','O',
-    'O','R','R','A','A','A','R','O','O',
-    'O','A','A','A','A','A','R','O','O',
-    'O','O','A','E','E','A','O','O','O',
-    'O','O','O','E','E','O','O','O','O',
-    'O','O','O','O','O','O','O','O','O',
-    'O','O','O','O','O','O','O','O','O',
-    'O','O','O','O','O','O','O','O','O',
+    tw = m_BoatUpgrade_type[1].width = 7;
+    th = m_BoatUpgrade_type[1].height = 9;
+    m_BoatUpgrade_type[1].type.resize(w * h);
+    m_BoatUpgrade_type[1].type = {
+    'O','O','A','L','O','O','O',
+    'O','A','A','A','A','O','O',
+    'A','A','A','A','A','A','A',
+    'R','R','A','A','A','R','R',
+    'R','R','A','A','A','R','R',
+    'A','A','A','A','A','R','R',
+    'O','A','E','E','A','O','O',
+    'O','O','E','E','O','O','O',
+    'O','O','E','E','O','O','O',
     };
 
-    m_BoatUpgrade_type[2] = {
+    tw = m_BoatUpgrade_type[2].width = 9;
+    th = m_BoatUpgrade_type[2].height = 11;
+    m_BoatUpgrade_type[2].type.resize(w * h);
+    m_BoatUpgrade_type[2].type = {
     'O','O','O','L','L','L','O','O','O',
     'O','O','A','A','A','A','A','O','O',
     'O','A','A','A','A','A','A','A','O',
@@ -261,14 +259,18 @@ void CInventory::Init_BoatUpgrade()
 
 }
 
-void CInventory::Upgrade_Boat(vector<_char> upgrade)
+void CInventory::Upgrade_Boat( _uint index)
 {
+    
+    w = m_BoatUpgrade_type[index].height;
+    h = m_BoatUpgrade_type[index].width;
+
     //
     for (int th = 0; th < h; th++)
     {
         for (int tw = 0; tw < w; tw++)
         {
-            _int tmp = static_cast<_int>(upgrade[th * w + tw]);
+            _int tmp = static_cast<_int>(m_BoatUpgrade_type[index].type[th * w + tw]);
             switch (tmp)
             {
             case  static_cast<_int>('O'):

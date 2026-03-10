@@ -1,8 +1,13 @@
 #pragma once
 #include "UIButton.h"
-class CUISlot :
+class ENGINE_DLL CUISlot :
     public CUIButton
 {
+public:
+    struct SLOT_DESC : public CUIButton::UIBUTTON_DESC
+    {
+        _uint slotType = {};
+    };
 private:
     explicit CUISlot(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     explicit CUISlot(const CUISlot& prototype);
@@ -43,6 +48,7 @@ private:
 
 
 public:
+    static shared_ptr<CUISlot> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free()override;
 
 

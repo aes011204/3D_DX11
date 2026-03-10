@@ -147,9 +147,9 @@
     <ClInclude Include="..\Public\DialogueDB.h" />
     <ClInclude Include="..\Public\Client_Define.h" />
     <ClInclude Include="..\Public\Client_Enum.h" />
+    <ClInclude Include="..\Public\InventoryUI.h" />
     <ClInclude Include="..\Public\ItemDB.h" />
     <ClInclude Include="..\Public\Inventory.h" />
-    <ClInclude Include="..\Public\InventoryUI.h" />
     <ClInclude Include="..\Public\Inventory_Controller.h" />
     <ClInclude Include="..\Public\Level_Editor.h" />
     <ClInclude Include="..\Public\Level_GamePlay.h" />
@@ -159,7 +159,11 @@
     <ClInclude Include="..\Public\MainApp.h" />
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\Public\Terrain.h" />
+    <ClInclude Include="..\Public\UI_Storage.h" />
+    <ClInclude Include="..\Public\UI_Inventory.h" />
     <ClInclude Include="..\Public\UI_MainMenu.h" />
+    <ClInclude Include="..\Public\UI_MiniGame.h" />
+    <ClInclude Include="..\Public\UI_TabContainer.h" />
     <ClInclude Include="EmptyGameObject.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="CScaleModifier.h" />
@@ -171,9 +175,9 @@
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\Camera_Play.cpp" />
     <ClCompile Include="..\Private\DialogueDB.cpp" />
+    <ClCompile Include="..\Private\InventoryUI.cpp" />
     <ClCompile Include="..\Private\ItemDB.cpp" />
     <ClCompile Include="..\Private\Inventory.cpp" />
-    <ClCompile Include="..\Private\InventoryUI.cpp" />
     <ClCompile Include="..\Private\Inventory_Controller.cpp" />
     <ClCompile Include="..\Private\Level_Editor.cpp" />
     <ClCompile Include="..\Private\Level_GamePlay.cpp" />
@@ -183,7 +187,11 @@
     <ClCompile Include="..\Private\MainApp.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
+    <ClCompile Include="..\Private\UI_Storage.cpp" />
+    <ClCompile Include="..\Private\UI_Inventory.cpp" />
     <ClCompile Include="..\Private\UI_MainMenu.cpp" />
+    <ClCompile Include="..\Private\UI_MiniGame.cpp" />
+    <ClCompile Include="..\Private\UI_TabContainer.cpp" />
     <ClCompile Include="EmptyGameObject.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CScaleModifier.cpp" />

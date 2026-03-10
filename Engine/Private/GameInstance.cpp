@@ -13,6 +13,8 @@
 #include "Data_Manager.h"
 #include "PipeLine.h"
 #include "Light_Manager.h"
+#include "Camera_Manager.h"
+#include "Picking_Manager.h"
 
 //#include "../../EditorTool/Public/ImguiManager.h"
 
@@ -87,6 +89,14 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
+	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iMaxLevelNum);
+	if (nullptr == m_pCamera_Manager)
+		return E_FAIL;
+
+	m_pPicking_Manager = CPicking_Manager::Create(ppDevice.Get(), ppContext.Get());
+	if (nullptr == m_pPicking_Manager)
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -105,7 +115,11 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
+	m_pCamera_Manager->Apply_To_PipeLine();
+
 	m_pPipeLine->Update();
+
+	m_pPicking_Manager->Update();
 
 	m_pObject_Manager->Update(fTimeDelta);
 	m_UI_Manager->Update(fTimeDelta);
@@ -144,6 +158,12 @@ void CGameInstance::Clear_Resources(_uint iLevelIndex)
 
 	m_UI_Manager->Detach_All();
 
+	if (FAILED(m_pCamera_Manager->Clear_Camera(iLevelIndex)))
+	{
+		MSG_BOX("failed to Clear Resourse");
+		return;
+	}
+
 	return;
 }
 
@@ -170,6 +190,7 @@ _float CGameInstance::Compute_TimeDelta(const _wstring& strTimeTag)
 HRESULT CGameInstance::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pNewLevel)
 {
 
+
 	return m_pLevel_Manager->Change_Level(iNewLevelIndex, pNewLevel);
 
 
@@ -191,15 +212,6 @@ shared_ptr<CBase> CGameInstance::Clone_Prototype(PROTOTYPE ePrototy, _uint iLeve
 	return  tmp;
 }
 
-//shared_ptr<CBase> CGameInstance::Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg)
-//{
-//	shared_ptr<CBase> tmp = m_pProto_Manager->Clone_Prototype(pPrototype,pArg);
-//	if (tmp == nullptr)
-//		return nullptr;
-//	tmp->SetDefaultNameFromThisType();
-//	return  tmp;
-//
-//}
 
 shared_ptr<CGameObject> CGameInstance::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
 	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
@@ -207,16 +219,12 @@ shared_ptr<CGameObject> CGameInstance::Add_GameObject(_uint iPrototypeLevelIndex
 	return m_pObject_Manager->Add_GameObject(iPrototypeLevelIndex, strPrototypeTag, iLayerLevelIndex, strLayerTag, pArg);
 }
 
+shared_ptr<CGameObject> CGameInstance::Get_GameObject(_uint iLayerLevelIndex,const _wstring& strLayerTag, _uint GObjIndex)
+{
+	return m_pObject_Manager->Get_GameObject(iLayerLevelIndex,strLayerTag, GObjIndex);
+}
 
-//HRESULT CGameInstance::Add_GameObject(shared_ptr<CBase> pClonedInst,
-//	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
-//{
-//
-//	//shared_ptr<CGameObject>pGameObject = dynamic_pointer_cast<CGameObject>(Clone_Prototype(pClonedInst, pArg));
-//	//if (nullptr == pGameObject)
-//	//	return E_FAIL;
-//	return m_pObject_Manager->Add_GameObject(pClonedInst, iLayerLevelIndex, strLayerTag, pArg);
-//}
+
 void CGameInstance::Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<CEntity> pNTT)
 {
 	m_Renderer->Add_RenderGroup(eRenderGroup, pNTT);
@@ -241,7 +249,7 @@ HRESULT CGameInstance::Present()
 	return m_pGraphic_Device->Present();;
 }
 
-map<const _wstring, shared_ptr<CLayer>> CGameInstance::Get_GameObjects(_uint levelIndex)
+const map<const _wstring, shared_ptr<CLayer>>& CGameInstance::Get_GameObjects(_uint levelIndex) const
 {
 	return m_pObject_Manager->Get_GameObjects(levelIndex);
 }
@@ -270,9 +278,9 @@ void CGameInstance::Push_ManagerClass(_wstring strKey, CBase* ManagerClass)
 	m_ManagerForImgui.emplace(strKey, ManagerClass);
 }
 
-void CGameInstance::UI_Push(UI_LAYER layer, wstring name, void* pArg)
+void CGameInstance::UI_Push(UI_LAYER layer, wstring name, _bool isOnActive, void* pArg)
 {
-	m_UI_Manager->Push(layer, name, pArg);
+	m_UI_Manager->Push(layer, name, isOnActive, pArg);
 }
 void CGameInstance::UI_Pop(UI_LAYER layer, wstring type)
 {
@@ -291,6 +299,12 @@ Rect CGameInstance::Get_WinSize()
 {
 	return m_UI_Manager->Get_WinSize();
 }
+
+shared_ptr<CUI> CGameInstance::Find_UI_InCurLevel(UI_LAYER layer, wstring type)
+{
+	return m_UI_Manager->Find_UI_InCurLevel(layer, type);
+}
+
 CEventBus* CGameInstance::Get_EventBus()
 {
 	return m_pEventBus.get(); ;
@@ -309,6 +323,12 @@ CEventBus* CGameInstance::Get_EventBus()
 void CGameInstance::Set_MousePos(float x, float y)
 {
 	m_pDInput_Manager->Set_MousePos(x, y);
+}
+
+_float2 CGameInstance::Get_MousePos()
+{
+	return m_pDInput_Manager->Get_MousePos();
+
 }
 
 bool CGameInstance::ClearMap(SAVETYPE eDATATYPE)
@@ -330,6 +350,11 @@ bool CGameInstance::Save(SAVETYPE eDATATYPE, const string& fileName)
 const _float4x4* CGameInstance::Get_Transfrom(D3DTS eTransformState) const
 {
 	return m_pPipeLine->Get_Transfrom(eTransformState);
+}
+
+const _float4x4* CGameInstance::Get_InverseTransfrom(D3DTS eTransformState) const
+{
+	return m_pPipeLine->Get_InverseTransfrom(eTransformState);
 }
 
 const _float4* CGameInstance::Get_CamPositon() const
@@ -365,6 +390,29 @@ const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iIndex)
 HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
 {
 	return m_pLight_Manager->Add_Light(LightDesc);
+}
+
+_bool CGameInstance::Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out)
+{
+	return m_pPicking_Manager->Picking_Terrain(layerTag, TerrainIndex, Out);
+}
+
+HRESULT CGameInstance::Add_Camera(_uint camLevel, _wstring key, shared_ptr<CCamera> cam)
+{
+	return m_pCamera_Manager->Add_Camera(camLevel, key, cam);
+}
+
+
+
+
+_bool CGameInstance::Change_Camera(_wstring key)
+{
+	return m_pCamera_Manager->Change_Camera(key);
+}
+
+void CGameInstance::CAM_Manger_OnGui()
+{
+	m_pCamera_Manager->OnGui();
 }
 
 

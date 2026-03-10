@@ -43,7 +43,8 @@ HRESULT CLevel_Manager::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pN
 
 	m_iCurLevelIdx = iNewLevelIndex;
 
-	return S_OK;
+	return m_pCurLevel->Post_Initialize();
+
 }
 
 void CLevel_Manager::Update(_float fTimeDelta)

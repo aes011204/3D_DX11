@@ -5,8 +5,6 @@
 #include "BackGround.h"
 #include "Terrain.h"
 #include "VIBuffer_Terrain.h"
-#include "Model.h"
-#include "Monster.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: m_pDevice(pDevice), m_pContext(pContext),
@@ -124,7 +122,7 @@ HRESULT CLoader::Loading_For_LogoLevel()
 
 HRESULT CLoader::Loading_For_GamePlayLevel()
 {
-	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩 중 입니다."));///////////////////////////////////
+	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩 중 입니다."));
 	/* Prototype_Component_Texture_Terrain */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Terrain"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile0.dds"), 1))))
@@ -134,7 +132,8 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	}
 
 
-	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));///////////////////////////////////////
+
+	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
 	/* Prototype_Component_Shader_VtxNorTex */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxNorTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
@@ -143,10 +142,10 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
-	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));///////////////////////////////////////
+	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
 
 
-	lstrcpy(m_szLoadingText, TEXT("모델를 로딩 중 입니다."));//////////////////////////////////
+	lstrcpy(m_szLoadingText, TEXT("모델를 로딩 중 입니다."));
 	/* Prototype_Component_VIBuffer_Terrain */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Terrain"),
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
@@ -155,15 +154,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
-	/* Prototype_Component_Model_Fiona */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/ForkLift/ForkLift.fbx"))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Model_Fiona");
-		return E_FAIL;
-	}
-
-	lstrcpy(m_szLoadingText, TEXT("객체원형를 로딩 중 입니다."));////////////////////////////////
+	lstrcpy(m_szLoadingText, TEXT("객체원형를 로딩 중 입니다."));
 	/* Prototype_GameObject_Terrain */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
 		CTerrain::Create(m_pDevice, m_pContext))))
@@ -171,15 +162,6 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		MSG_BOX("Faild to Add_Prototype :GameObject_Terrain");
 		return E_FAIL;
 	}
-
-	/* Prototype_GameObject_Monster */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster"),
-		CMonster::Create(m_pDevice, m_pContext))))
-	{
-		MSG_BOX("Faild to Add_Prototype : GameObject_Monster");
-		return E_FAIL;
-	}
-
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

@@ -28,7 +28,7 @@ void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
 	_float sin = m_Range * sinf(m_Speed * m_fAccTime + m_StartPosRad) + m_BaseScale;
 	m_pOwnerTransform->SetLocalScale({sin,sin});
 
-	//CLog_Manager::GetInstance()->Add_Log_F(CLog_Manager::LOG_LEVEL::INFO,"dt: %.4f  acc: %.3f  scale: %.4f", fDeltaTime, m_fAccTime, sin);
+	//CLog_Manager::GetInstance()->Add_Log_F(LOG_LEVEL::INFO,"dt: %.4f  acc: %.3f  scale: %.4f", fDeltaTime, m_fAccTime, sin);
 }
 
 void CScaleModifier::OnAppear(float fDeltaTime, CUI* pOwner)

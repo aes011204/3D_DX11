@@ -63,6 +63,20 @@ void CLayer::Update_Gui()
 	}
 }
 
+shared_ptr<CGameObject> CLayer::Get_GameObject(_uint GObjIndex)
+{
+	_uint index = {};
+	for (auto& obj : m_pGameObject)
+	{
+		if (index == GObjIndex)
+		{
+			
+			return obj;
+		}
+		++index;
+	}
+}
+
 list <shared_ptr<class CGameObject>> CLayer::Get_GameObject()
 {
 	return m_pGameObject;

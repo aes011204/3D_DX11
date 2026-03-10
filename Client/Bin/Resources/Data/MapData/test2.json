@@ -1,0 +1,53 @@
+{
+    "Level": 4,
+    "WorldGameObject": [
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Texture_Dredge",
+                    "ComponentTag": "Com_Texture"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        1.623732566833496,
+                        4.1407318115234375,
+                        2.4844751358032227,
+                        1.0
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        4.199999809265137,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                    "ComponentTag": "Com_VIBuffer"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGameObject",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_EmptyGameObject"
+        }
+    ]
+}

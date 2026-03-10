@@ -17,6 +17,8 @@ public:
         Vector2 vSizeDelta = { 100.f, 100.f };
         Vector2 vAnchoredPos = { 0.f, 0.f };
         Vector2 vScale = { 1.f, 1.f };
+
+        _bool bSetParentSize = { false };
     };
         
 
@@ -46,9 +48,14 @@ public:
     void SetRotation(_float _fDegree) { m_RotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
    // void SetTurn(_float fTimeDelta) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
 
+
+
     Rect GetWorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }
     XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_WorldMatrix); }
     _float2 Get_FinalSize() { return _float2(m_SizeDelta * m_LocalScale); }
+    _float2 Get_SizeDelta() { return m_SizeDelta; }
+    _float2 Get_LocalScale() { return m_LocalScale; }
+    _float2 Get_AnchorPoint() { return m_AnchorPoint; }
 
     void UpdateLayoutIfDirty();
 
@@ -89,7 +96,10 @@ private:
 
     Vector2 m_LocalScale = {}; // pivot 기준으로 UI를 배율로 키우거나 줄이는 연출용 배율 // 일단 안쓸듯
 
-    float m_RotationRadian = {0.f};
+    float m_RotationRadian = { 0.f };// 내부 계산용
+    float m_RotationDegreeView = {0.f}; // 수치 조절욜
+
+    _bool m_bSetParentSize = { false };
 
     // 결과
     Rect m_WorldRect = {};

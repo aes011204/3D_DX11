@@ -2,13 +2,39 @@
 
 #include "Inventory.h"
 #include "InventoryUI.h"
+#include "GameInstance.h"
+#include "EventBus.h"
+#include "Event_Struct.h"
+#include "Client_Enum.h"
 
-CInventory_Controller::CInventory_Controller()
+CInventory_Controller::CInventory_Controller() :
+ m_pGameInstance(CGameInstance::GetInstance())
 {
 }
 
 HRESULT CInventory_Controller::Initialize()
 {
+	m_Inven = CInventory::Create();
+
+	m_Inven->Upgrade_Boat(0); // Á© Ã³À½
+
+	Evt_UIslot_Data e = {};
+	e.h = m_Inven->Get_H();
+	e.w = m_Inven->Get_W();
+	e.InvenSlot = m_Inven->Get_Invenslot();
+
+	m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_UIslot_Data>(e);
+
+
+	//auto tmppointer = dynamic_pointer_cast<CInventory_Controller>(shared_from_this());
+	//if(tmppointer == nullptr)
+	//{
+	//	return E_FAIL;
+	//}
+	//EvtControllerPoiner p = {};
+	//p.m_contrl_Pointer = tmppointer;
+	//m_pGameInstance.lock()->Get_EventBus()->Publish(p);
+
 	return S_OK;
 }
 

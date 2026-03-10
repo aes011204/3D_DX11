@@ -154,6 +154,13 @@ namespace Engine
                 }                                                               \
                 return 0;                                                       \
             }
+
 }
+
+#define LOG_F(level, format, ...) \
+    CLog_Manager::GetInstance()->Add_Log_F(level, format, ##__VA_ARGS__)
+
+#define LOG(level, message) \
+    CLog_Manager::GetInstance()->Add_Log(level, message)
 
 #endif // Engine_Macro_h__

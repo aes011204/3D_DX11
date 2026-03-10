@@ -1,27 +1,18 @@
 #include "MainApp.h"
-
 #include "GameInstance.h"
 #include "Client_Define.h"
-
 #include "Data_Manager.h"
-#include "DialogueDB.h"
 #include "Inventory.h"
-
 #include "Level_Loading.h"
 #include "EditorInstance.h"
-#include "BackGround.h"
-#include "UIButton.h"
-#include "UICanvas.h"
-#include "UIPanel.h"
-#include "UIImage.h"
-#include "CScaleModifier.h"
-#include "IModifier.h"
 #include "EmptyGameObject.h"
 #include "Camera_Play.h"
 #include "Camera_Free.h"
 #include "Engine_Struct.h"
-#include "Loader.h"
+#include "Inventory_Controller.h"
+
 #include "UI_MainMenu.h"
+#include "UI_TabContainer.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() },
@@ -74,13 +65,14 @@ HRESULT CMainApp::Initialize()
 	if (FAILED((Ready_UI())))
 		return E_FAIL;
 
+  
 	//test
-   // CInventory::Create();
 	//CData_Manager::GetInstance()->Initialize();
 	//CDialogueDB::GetInstance()->Ready_DialogueDB();
 
 
 
+	m_Contr = CInventory_Controller::Create();// 일단 여기 안에 서  발행 함 임시임
 
 
 	return S_OK;
@@ -180,7 +172,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	///////////////////UItexture/////////////////////
 
-
+	// 메인메뉴 //
 	/* Prototype_Component_Texture_Button */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Button"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/Button_Default.png"), 1))))
@@ -203,6 +195,80 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+
+	// 인밴 //
+	/* Prototype_Component_Texture_Button_RED */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Button_RED"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/Tab_Selected.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_Slot_Damage */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slot_Damage"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/DamageBox_%d.png"), 2))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_Slot_Inven */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slot_Inven"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/CargoGrid_%d.png"), 2))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_HealthBarPanel */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_HealthBarPanel"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/HealthBarPanel.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Texture_PanelBackground */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PanelBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PanelBackground.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_PlayerInventoryBackground */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PlayerInventoryBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PlayerInventoryBackground.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	// 창고 //
+	/* Prototype_Component_Texture_StorageInventoryBackground */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StorageInventoryBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/StorageInventoryBackground.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Texture_TabDivider */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TabDivider"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/TabDivider.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	// tab_Container //
+	/* Prototype_Component_Texture_TabContainer */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TabContainer"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/SidePanel.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_TabContainer");
+		return E_FAIL;
+	}
+
 	/////////////////////////TEST//////////////////////////
 
 	//{
@@ -216,8 +282,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	}
 
 
-
-
+	
 
 
 
@@ -227,99 +292,26 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 }
 
 HRESULT CMainApp::Ready_UI()
-{	//
-	//////////////////////UI객체원본(프로토 타입X)//////////////////////
-	//
-	//shared_ptr<CUICanvas> pInstance = CUICanvas::Create(m_pDevice, m_pContext);
-	//pInstance->Initialize(nullptr);
-	//LEVEL eLevel = {};
-	//for (_uint i = 0; i < 3;i++)
-	//{
-	//	switch (i)
-	//	{
-	//		case 0:
-	//			eLevel = LEVEL::GAMEPLAY;
-	//			break;
-	//		case 2:
-	//			eLevel = LEVEL::EDITOR;
-	//			break;
-	//
-	//	}
-	//
-	//
-	//	CUIButton::UIBUTTON_DESC pDesc = {};
-	//	pDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	//	pDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
-	//	pDesc.vAnchoredPos = Vector2{ 0.f,16.7f+(98.f*i)};
-	//	pDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
-	//	pDesc.vAnchorPoint = Vector2{ 0.254,0.5f };
-	//	pDesc.vPivot = Vector2{ 0.5f, 0.5f };
-	//	pDesc.vScale = Vector2{ 1.3f, 1.0f };
-	//	pDesc.OverlapStartEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-	//	for (auto& it : ch)
-	//	{
-	//		if (!it) continue;
-	//		it->UI_Active();
-	//		it->m_behavior.push_back((make_shared<CScaleModifier>(0.03f, 4.f, 1.8f, 1.8f)));
-	//	}
-	//		};
-	//	pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-	//	for (auto& it : ch)
-	//	{
-	//		if (!it) continue;
-	//		it->UI_InActive();
-	//		it->m_behavior.clear();
-	//	}
-	//		};
-	//	pDesc.ClickEvent = [this, i, eLevel](CUIButton* pThis) {
-	//		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext,eLevel))))
-	//			return;};
-	//	shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
-	//	pChild->Initialize(&pDesc);
-	//	pInstance->Add_Child(pChild, false);
-	//	
-	//	pChild->Set_Zorder(2);
-	//
-	//	//
-	//
-	//	CUIImage::UIIMAGE_DESC selectImage{};
-	//	selectImage.TextureComLevel = ETOI(LEVEL::STATIC);
-	//	selectImage.TextureProtoName = L"Prototype_Component_Texture_Select";
-	//	selectImage.PxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
-	//	selectImage.bUseNineSlice = true;
-	//	shared_ptr<CUIImage> Select = CUIImage::Create(m_pDevice, m_pContext);
-	//	Select->Initialize(&selectImage);
-	//	Select->UI_InActive();
-	//	pChild->Add_Child(Select, false);
-	//	//
-	//}
-	//
-	//CUIImage::UIIMAGE_DESC image_desc{};
-	//image_desc.TextureComLevel = ETOI(LEVEL::STATIC);
-	//image_desc.TextureProtoName = L"Prototype_Component_Texture_Dredge";
-	//image_desc.vAnchoredPos = Vector2{ 67.0f,0.f };
-	//image_desc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
-	//image_desc.vAnchorPoint = Vector2{ 0.f,0.319f };
-	//image_desc.vPivot = Vector2{ 0.f, 0.5f };
-	//image_desc.vScale = Vector2{ 0.5f, 0.5f };
-	//shared_ptr<CUIImage> pChild2 = CUIImage::Create(m_pDevice, m_pContext);
-	//pChild2->Initialize(&image_desc);
-	//pInstance->Add_Child(pChild2, false);
-	//
-	//pChild2->Set_Zorder(1);
-	////
-	//
-	//
+{	
 	CUI_MainMenu::MAINMENU_DESC pDescPanel;
 	pDescPanel.IsFullScreen = true;
-	pDescPanel.IsTrnasparent = true;
+	pDescPanel.IsTransparent = true;
 
 
 	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_pDevice, m_pContext);
 	pInstance->Initialize(&pDescPanel);
 	m_pGameInstance.lock()->UI_InsertToPool(L"MainMenu", pInstance);
-	////////
+	///
+	///
+	///
+	CUI_TabContainer::TABCONTAINER_DESC pDescTap = {};
+	shared_ptr<CUI_TabContainer> TabContainer = CUI_TabContainer::Create(m_pDevice, m_pContext);
+	if (TabContainer == nullptr)
+		return E_FAIL;
 
+
+	TabContainer->Initialize(&pDescTap);
+	m_pGameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);
 
 	return S_OK;
 }
@@ -338,6 +330,9 @@ unique_ptr<CMainApp> CMainApp::Create()
 void CMainApp::Free()
 {
 	__super::Free();
+
+	m_Contr.reset();
+
 
 	m_pContext->ClearState();
 

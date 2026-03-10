@@ -30,6 +30,8 @@ HRESULT CUITransform::Initialize(void* Arg)
 
     m_LocalScale = pDesc->vScale;
 
+    m_bSetParentSize = pDesc->bSetParentSize;
+
     MarkDirtyRecursive();
     
     return S_OK;
@@ -81,12 +83,21 @@ void CUITransform::UpdateLayoutIfDirty()
         return;
 
     Computing_WorldRect();
+	        if(m_bSetParentSize==true&& m_Parent.lock() !=nullptr)
+	        {
+                m_LocalScale = m_Parent.lock()->Get_LocalScale();
+                m_SizeDelta = m_Parent.lock()->Get_SizeDelta();
+
+	        }
     m_Dirty = false;
 
     for (auto& children : m_Children)
     {
         if (children)
+        {
+
             children->UpdateLayoutIfDirty();
+        }
     }
 }
 
@@ -119,21 +130,32 @@ void CUITransform::OnGui()
         // Local Scale 
         if (ImGui::DragFloat2("Scale", (float*)&m_LocalScale, 0.01f, 0.0f, 10.0f))
             bChanged = true;
+        ImGui::Separator();
+        if (ImGui::DragFloat("Rotation (Rad)", &m_RotationRadian, 0.01f, -6.28f, 6.28f))
+        {
+            bChanged = true;
+        }
 
-        // 결과값 확인 (Read Only) - 현재 계산된 최종 월드 좌표를 보여줌
+        if (ImGui::DragFloat("Rotation (Deg)", &m_RotationDegreeView, 1.0f, -360.0f, 360.0f))
+        {
+            m_RotationRadian = XMConvertToRadians(m_RotationDegreeView);
+            bChanged = true;
+        }
+
+        
         ImGui::TextDisabled("World Rect Info");
-        Rect world = GetWorldRect(); // UpdateLayoutIfDirty가 내부에서 호출됨
+        Rect world = GetWorldRect(); 
         ImGui::Text("LT: (%.1f, %.1f)", world.x, world.y);
         ImGui::Text("Size: (%.1f, %.1f)", world.w - world.x, world.h - world.y);
 
-        // 값이 하나라도 바뀌었다면 Dirty 플래그를 세워 모든 자식까지 갱신되게 함
+
         if (bChanged)
         {
             MarkDirtyRecursive();
         }
     
 
-        // 행렬의 내용을 4x4 표 형태로 출력
+
         if (ImGui::BeginTable("MatrixTable", 4, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
         {
             for (int i = 0; i < 4; ++i)
@@ -142,10 +164,9 @@ void CUITransform::OnGui()
                 for (int j = 0; j < 4; ++j)
                 {
                     ImGui::TableSetColumnIndex(j);
-                    // m_WorldMatrix.m[행][열] 데이터 출력
+
                     float val = m_WorldMatrix.m[i][j];
 
-                    // 값이 너무 작거나 nan이면 빨간색으로 표시 (디버깅 꿀팁)
                     if (isnan(val))
                         ImGui::TextColored(ImVec4(1, 0, 0, 1), "nan");
                     else
@@ -161,7 +182,7 @@ void CUITransform::MarkDirtyRecursive()
 {
     if (m_Dirty)
     {
-        // 이미 바뀐 상태면 자식도 다시 마킹 // 방어적 설계
+        // 이미 바뀐 상태면 자식도 다시 마킹
         for (auto& children : m_Children)
         {
             if (children)
@@ -276,8 +297,10 @@ void CUITransform::Save_ToJson(nlohmann::json& j)
     j["Pivot"] = { m_Pivot.x , m_Pivot.y };
     j["SizeDelta"] = { m_SizeDelta.x , m_SizeDelta.y };
     j["AnchoredPos"] = { m_AnchoredPos.x , m_AnchoredPos.y };
-    j["m_LocalScale"] = { m_LocalScale.x , m_LocalScale.y};
+    j["LocalScale"] = { m_LocalScale.x , m_LocalScale.y};
+    j["RotationRadian"] = m_RotationRadian;
 
+    j["SetParentSize"] = m_bSetParentSize;
 }
 
 void CUITransform::Load_FromJson(nlohmann::json& j)
@@ -311,12 +334,16 @@ void CUITransform::Load_FromJson(nlohmann::json& j)
     }
 
     // 5. LocalScale 로드 (배율)
-    if (j.contains("m_LocalScale") && j["m_LocalScale"].is_array())
+    if (j.contains("LocalScale") && j["LocalScale"].is_array())
     {
-        m_LocalScale.x = j["m_LocalScale"][0];
-        m_LocalScale.y = j["m_LocalScale"][1];
+        m_LocalScale.x = j["LocalScale"][0];
+        m_LocalScale.y = j["LocalScale"][1];
     }
-
+    if (j.contains("RotationRadian"))
+    {
+        m_RotationRadian= j["RotationRadian"];
+       
+    }
     
     this->Computing_WorldRect();
 }
@@ -325,6 +352,8 @@ HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const 
 {
     return 	pShaderCom->Bind_Matrix(pConstantName, &m_WorldMatrix);;
 }
+
+
 
 shared_ptr<CUITransform> CUITransform::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {

@@ -39,6 +39,11 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 	return S_OK;
 }
 
+HRESULT CLevel_Loading::Post_Initialize()
+{
+	return S_OK;
+}
+
 void CLevel_Loading::Update(_float fTimeDelta)
 {
 	if( m_pLoader->Is_Finished() == true && GetKeyState(VK_RETURN) & 0x8000)

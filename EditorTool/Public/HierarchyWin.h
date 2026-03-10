@@ -23,7 +23,7 @@ public:
     virtual void Update(float fTimeDelta) override;
     virtual void Render() override;
 
-    void DrawUITree(const shared_ptr<Engine::CUI>& ui);
+    void DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiLabel);
 
 private:
     // ===== UI state =====

@@ -1,6 +1,13 @@
 #pragma once
 #include "Editor_Define.h"
 
+
+
+namespace Client
+{
+	class CInventory_Controller;
+}
+
 namespace Engine { class CEntity; }
 
 namespace Engine
@@ -25,4 +32,17 @@ namespace Engine
         wchar_t szTag[256] = {};
         _uint iLevel = {};
     };
+
+   
+    struct EvtTerrainPicking
+    {
+        _bool isOnPicking = false;
+        _wstring Tag = {};
+        _uint iLevel = {};
+    };
+    struct EvtControllerPoiner
+    {
+        Client::CInventory_Controller* m_contrl_Pointer = {};
+    };
+
 }

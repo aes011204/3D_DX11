@@ -10,6 +10,8 @@ CVIBuffer_Terrain::CVIBuffer_Terrain(const CVIBuffer_Terrain& Prototype)
 	m_iNumVerticesX{Prototype.m_iNumVerticesX},
 	m_iNumVerticesZ{Prototype.m_iNumVerticesZ}
 {
+	m_VtxPos = new _float3[m_iNumVertices];
+	memcpy(m_VtxPos, Prototype.m_VtxPos, sizeof(_float3) * m_iNumVertices);
 }
 
 HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath)
@@ -57,6 +59,7 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 	VertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
 
 	VTXNORTEX* pVertices = new VTXNORTEX[m_iNumVertices];
+	m_VtxPos = new _float3[m_iNumVertices];
 
 	for (size_t i = 0; i < m_iNumVerticesZ; i++)
 	{
@@ -69,6 +72,9 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 			pVertices[iIndex].vPosition = _float3(j, (pPixels[iIndex] & 0x000000ff )/10.f, i);
 			pVertices[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
 			pVertices[iIndex].vTexcoord = _float2(j / (m_iNumVerticesX - 1.f), i / (m_iNumVerticesZ - 1.f));
+		
+			m_VtxPos[iIndex] = pVertices[iIndex].vPosition;
+		
 		}
 
 	}
@@ -198,4 +204,6 @@ void CVIBuffer_Terrain::Free()
 {
 
 	__super::Free();
+	delete[] m_VtxPos;
+
 }

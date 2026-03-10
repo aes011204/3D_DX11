@@ -30,9 +30,9 @@ void CConsoleWin::Render()
         {
             ImVec4 vColor = { 1.f, 1.f, 1.f, 1.f }; // INFO
 
-            if (log.eLevel == CLog_Manager::LOG_LEVEL::WARNING)
+            if (log.eLevel ==LOG_LEVEL::WARNING)
                 vColor = { 1.f, 1.f, 0.f, 1.f }; // WARNING (노란색)
-            else if (log.eLevel == CLog_Manager::LOG_LEVEL::ERR)
+            else if (log.eLevel == LOG_LEVEL::ERR)
                 vColor = { 1.f, 0.f, 0.f, 1.f }; // ERR (빨간색)
 
             ImGui::TextUnformatted(log.strMessage.c_str());

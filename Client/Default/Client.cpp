@@ -110,6 +110,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			if (g_RsizeWidth != 0 && g_RsizeHeight != 0)
 			{
+
 				GameInstance.lock()->Resize(g_RsizeWidth, g_RsizeHeight);
 		
 				// ImGui의 디스플레이 사이즈를 강제로 맞춰줌
@@ -183,6 +184,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
 	g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+
 
 	RECT rc{ 0, 0, g_iWinSizeX, g_iWinSizeY };
 

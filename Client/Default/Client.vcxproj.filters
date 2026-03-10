@@ -31,6 +31,9 @@
     <Filter Include="NewFilter1">
       <UniqueIdentifier>{be9a5c72-e373-465f-b58b-780088cd71e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="03.UI">
+      <UniqueIdentifier>{9cf26258-9eff-4548-a171-3458c4f0b643}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -75,7 +78,6 @@
     <ClInclude Include="..\Public\ItemDB.h">
       <Filter>97.Data</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\InventoryUI.h" />
     <ClInclude Include="..\Public\DialogueDB.h">
       <Filter>97.Data</Filter>
     </ClInclude>
@@ -98,8 +100,25 @@
     <ClInclude Include="..\Public\Camera_Play.h">
       <Filter>02.GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_MainMenu.h" />
     <ClInclude Include="..\Public\Monster.h" />
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Inventory.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MainMenu.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\InventoryUI.h" />
+    <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_MiniGame.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_TabContainer.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Storage.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -139,7 +158,6 @@
     <ClCompile Include="..\Private\Inventory_Controller.cpp">
       <Filter>96.Inventory</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\InventoryUI.cpp" />
     <ClCompile Include="..\Private\DialogueDB.cpp">
       <Filter>97.Data</Filter>
     </ClCompile>
@@ -162,8 +180,24 @@
     <ClCompile Include="..\Private\Camera_Play.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_MainMenu.cpp" />
     <ClCompile Include="..\Private\Monster.cpp" />
+      <Filter>02.GameObject</Filter>
+    <ClCompile Include="..\Private\UI_Inventory.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_MainMenu.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\InventoryUI.cpp" />
+      <Filter>03.UI</Filter>
+    <ClCompile Include="..\Private\UI_MiniGame.cpp">
+    </ClCompile>
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_TabContainer.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Storage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

@@ -18,8 +18,13 @@ HRESULT CLevel_Logo::Initialize()
 	auto name_view = magic_enum::enum_name(EUI::Test);
 	_wstring Wname = S2W(string(name_view));
 
-	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MainMenu", nullptr);
+	return S_OK;
+}
 
+HRESULT CLevel_Logo::Post_Initialize()
+{
+	
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MainMenu",true, nullptr);
 	return S_OK;
 }
 
@@ -68,6 +73,6 @@ shared_ptr<CLevel_Logo> CLevel_Logo::Create(ComPtr<ID3D11Device> pDevice, ComPtr
 
 void CLevel_Logo::Free()
 {
-	m_pGameInstance.lock()->UI_Detach_All();
+	//m_pGameInstance.lock()->UI_Detach_All();
 	__super::Free();
 }

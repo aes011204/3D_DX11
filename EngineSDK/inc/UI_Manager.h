@@ -26,8 +26,10 @@ public:
     void Late_Update(float m_fDeltaTime);
     void Render(); // 안쓸듯 이거는 렌더러에서 하니까
 
-    void Push(UI_LAYER layer, wstring name, void* pArg);
+    void Push(UI_LAYER layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);
     void Pop(UI_LAYER layer,wstring type); // 레이어에서 넣얶다 뻇다하는건 안씀 
+
+    shared_ptr<CUI> Find_UI_InCurLevel(UI_LAYER layer, wstring type);
 
     void Detach_All(); // 씬 전환 할떄 레이어에 있는거 객체를 지우니까 그전에 
 
@@ -48,14 +50,14 @@ public:
 
 
 
-    const wstring& GetUIKey() const { return m_UIKey; }
-    void SetUIKey(const wstring& key) { m_UIKey = key; }
+    // const wstring& GetUIKey() const { return m_UIKey; }
+    //void SetUIKey(const wstring& key) { m_UIKey = key; }
 
     virtual void OnGui() override;
 private:
 
     void DrawUITree(const shared_ptr<Engine::CUI>& ui);
-    wstring m_UIKey;
+   // wstring m_UIKey;
     shared_ptr<CUI> m_pSelectedObject;
 
     ///IMGUI///
@@ -64,22 +66,21 @@ private:
 private:
     shared_ptr<CUI> FindUIOnPool(wstring type); // 해당 UI가 있는지 확인 있으면 해단 ui 반환
     //void OnComplete(UI_LAYER layer, shared_ptr<CUI> addUI, void* pArg); // 할거 하고   push 
-    void ProcessUIQ();
+  //  void ProcessUIQ();
     void OnFail();
 
 private:
 
     unordered_map<wstring, shared_ptr<CUI>> m_UIPool = {}; // 만들어진 UI를 소유하고 있는 창고(풀)
 
-    //stack<shared_ptr<CUI>> m_UIStack = {}; // 현재 화면에 띄워져 있는 UI 저장소 Active 되어 있는
     vector<shared_ptr<CUI>> m_UI[ETOI(UI_LAYER::END)] = {};
 
-	queue<RequestUI> m_RequestUIQueue = {}; // UI 전환 요청 큐 (씬 매니져의 요청 하는거랑 같음)
+	//queue<RequestUI> m_RequestUIQueue = {}; // UI 전환 요청 큐 (씬 매니져의 요청 하는거랑 같음)
     shared_ptr<CUI> m_ActiveUI = nullptr; // 보통 m_UIBases.top()과 동일
 
     Rect m_Winsize = {};
 
-   // unique_ptr<CUICanvas> m_UICanvas = { nullptr };
+   
 public:
     static unique_ptr<CUI_Manager> Create(_uint width, _uint height);
     void Free() override;

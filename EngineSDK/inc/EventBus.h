@@ -1,6 +1,7 @@
 #pragma once
 //#include "Base.h" // 베이스가 있어야 하는지 모르겠으니까 일단 패스
 #include "Engine_Define.h"
+#include "Event_Struct.h"
 #include <typeindex>
 
 NS_BEGIN(Engine)

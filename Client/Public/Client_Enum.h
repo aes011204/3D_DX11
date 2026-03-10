@@ -174,4 +174,11 @@ namespace Client
         Test,
         Test1,
     };
+
+    struct Evt_UIslot_Data
+    {
+        _uint w = {};
+        _uint h = {};
+        vector<Slot> InvenSlot = {};
+    };
 }

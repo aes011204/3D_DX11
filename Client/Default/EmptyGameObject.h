@@ -32,7 +32,7 @@ public:
 
     virtual void OnGui() override;
 
-    virtual void RebindCom();
+    virtual void RebindCom()override;
 
 protected:
     HRESULT Ready_Components();

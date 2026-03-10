@@ -74,11 +74,9 @@ HRESULT CCamera::Render()
 void CCamera::Update_TransformMatrices()
 {
 
-	m_pGameInstance.lock()->Set_Transform(D3DTS::VIEW,
-		XMMatrixInverse(nullptr, XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix())));
+	XMStoreFloat4x4(&m_CamTSMatrices[ETOI(D3DTS::VIEW)],XMMatrixInverse(nullptr, XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix())));
 
-	m_pGameInstance.lock()->Set_Transform(D3DTS::PROJ,
-		XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
+	XMStoreFloat4x4(&m_CamTSMatrices[ETOI(D3DTS::PROJ)],XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
 }
 
 shared_ptr<CCamera> CCamera::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
