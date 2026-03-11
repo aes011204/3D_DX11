@@ -160,7 +160,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	/* Prototype_Component_Model_Fiona */
 	PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Fiona/Fiona.fbx",MODEL::ANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Fiona/Fiona.fbx",MODEL::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Model_Fiona");
 		return E_FAIL;

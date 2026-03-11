@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "Mesh.h"
+#include "Material.h"
 
 CModel::CModel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
     : CComponent(pDevice, pContext)
@@ -12,7 +13,9 @@ CModel::CModel(const CModel& Prototype)
     m_eType{Prototype.m_eType},
     m_PreLocalTransformMatrix{ Prototype.m_PreLocalTransformMatrix },
     m_iNumMeshes{ Prototype.m_iNumMeshes },
-    m_Meshes{Prototype.m_Meshes}
+    m_Meshes{Prototype.m_Meshes},
+    m_iNumMaterials{ Prototype.m_iNumMaterials },
+    m_Materials{ Prototype.m_Materials }
 
 {
 }
@@ -40,7 +43,8 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _
         /* 메시를 생성한다. */
     if (FAILED(Ready_Meshes()))
         return E_FAIL;
-
+    if (FAILED(Ready_Material(pModelFilePath)))
+        return E_FAIL;
     return S_OK;
 }
 
@@ -49,13 +53,13 @@ HRESULT CModel::Initialize(void* pArg)
     return S_OK;
 }
 
-HRESULT CModel::Render()
+HRESULT CModel::Render(_uint iMeshIndex)
 {
-    for (auto& pMesh : m_Meshes)
-    {
-        pMesh->Bind_Resources();
-        pMesh->Render();
-    }
+    //for (auto& pMesh : m_Meshes)
+    //{
+    m_Meshes[iMeshIndex]->Bind_Resources();
+    m_Meshes[iMeshIndex]->Render();
+   // }
 
     return S_OK;
 }
@@ -74,6 +78,29 @@ HRESULT CModel::Ready_Meshes()
     }
 
     return S_OK;
+}
+
+HRESULT CModel::Ready_Material(const _char* pModelFilePath)
+{
+    m_iNumMaterials = m_pAIScene->mNumMaterials;
+
+    for (_uint i = 0; i < m_iNumMaterials; i++)
+    {
+        shared_ptr<CMaterial> pMat = CMaterial::Create(m_pDevice, m_pContext, m_pAIScene->mMaterials[i], pModelFilePath);
+        if (nullptr == pMat)
+            return E_FAIL;
+
+        m_Materials.push_back(pMat);
+    }
+
+    return S_OK;
+}
+
+HRESULT CModel::Bind_Material(shared_ptr<CShader> pShader,  const _char* pConstantName, _uint iMeshIndex, aiTextureType eMaterialType,
+                              _uint iTextureIndex)
+{
+    return m_Materials[m_Meshes[iMeshIndex]->Get_MaterialIndex()]->Bind_Material(pShader, pConstantName, eMaterialType, iTextureIndex);
+
 }
 
 shared_ptr<CModel> CModel::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix)

@@ -12,7 +12,7 @@ public:
 
 public:
     HRESULT Initialize(const aiMaterial* pAIMaterial, const _char* pModelFilePath);
-
+    HRESULT Bind_Material(shared_ptr<class CShader> pShader, const _char* pConstantName, aiTextureType eMaterialType, _uint iTextureIndex);
 private:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };
     ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };

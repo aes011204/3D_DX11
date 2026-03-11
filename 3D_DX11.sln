@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03.batch", "03.batch", "{2F
 		Update.bat = Update.bat
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Assimp_Converter", "Assimp_Converter\Default\Assimp_Converter.vcxproj", "{B525202A-CD85-4594-A798-8997441E5533}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -52,6 +54,14 @@ Global
 		{D1748550-79D1-4C31-B7F3-85E279944AF8}.Release|x64.Build.0 = Release|x64
 		{D1748550-79D1-4C31-B7F3-85E279944AF8}.Release|x86.ActiveCfg = Release|Win32
 		{D1748550-79D1-4C31-B7F3-85E279944AF8}.Release|x86.Build.0 = Release|Win32
+		{B525202A-CD85-4594-A798-8997441E5533}.Debug|x64.ActiveCfg = Debug|x64
+		{B525202A-CD85-4594-A798-8997441E5533}.Debug|x64.Build.0 = Debug|x64
+		{B525202A-CD85-4594-A798-8997441E5533}.Debug|x86.ActiveCfg = Debug|Win32
+		{B525202A-CD85-4594-A798-8997441E5533}.Debug|x86.Build.0 = Debug|Win32
+		{B525202A-CD85-4594-A798-8997441E5533}.Release|x64.ActiveCfg = Release|x64
+		{B525202A-CD85-4594-A798-8997441E5533}.Release|x64.Build.0 = Release|x64
+		{B525202A-CD85-4594-A798-8997441E5533}.Release|x86.ActiveCfg = Release|Win32
+		{B525202A-CD85-4594-A798-8997441E5533}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,5 +70,8 @@ Global
 		{BD8DB138-CC3B-46EA-8D0A-D6A5B98F8455} = {45943186-694A-4BF3-BC29-65BE1DCBFA6F}
 		{19A62025-55B6-4350-9A4C-91D5FA50A3F0} = {6CCE2D99-11B4-483D-A132-62FDB90C6BC3}
 		{D1748550-79D1-4C31-B7F3-85E279944AF8} = {D3B3A770-D8EA-4D13-86F9-79D2E37766BF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C0B6009-5B2A-4D0B-8192-2ABAF47AC0DF}
 	EndGlobalSection
 EndGlobal

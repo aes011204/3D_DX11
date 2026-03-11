@@ -55,6 +55,9 @@
     <Filter Include="00.System\03.Picking">
       <UniqueIdentifier>{8854e13a-64d4-4ae1-bab1-214fc80c1cac}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Components\Model">
+      <UniqueIdentifier>{1e6e43aa-e1a7-4729-8b57-0198b18e4bca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -149,9 +152,6 @@
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="..\Private\UIObject.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
-    <ClCompile Include="..\Public\Camera.cpp">
-      <Filter>01.Utility\03.GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Light.cpp">
       <Filter>01.Utility\06.Lights</Filter>
     </ClCompile>
@@ -160,11 +160,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Shader.cpp">
       <Filter>01.Utility\04.Components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Model.cpp" />
-    <ClCompile Include="..\Private\Mesh.cpp" />
-    <ClCompile Include="..\Private\Camera_Free.cpp">
-      <Filter>99.Defines</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
@@ -178,9 +173,23 @@
     <ClCompile Include="..\Private\DInput_Manager.cpp">
       <Filter>00.System\02.Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\UIRenderable.cpp" />
-    <ClCompile Include="..\Private\Material.cpp" />
+    <ClCompile Include="..\Private\Mesh.cpp">
+      <Filter>01.Utility\04.Components\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Model.cpp">
+      <Filter>01.Utility\04.Components\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Material.cpp">
+      <Filter>01.Utility\04.Components\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Free.cpp">
+      <Filter>01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Manager.cpp">
+      <Filter>01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\CCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -284,7 +293,6 @@
     <ClInclude Include="..\Public\VIBuffer_Rect.h">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Engine_Helper.h" />
     <ClInclude Include="..\Public\Log_Manager.h" />
     <ClInclude Include="..\Public\Data_Manager.h" />
     <ClInclude Include="..\Public\Event_Struct.h" />
@@ -306,8 +314,6 @@
     <ClInclude Include="..\Public\Shader.h">
       <Filter>01.Utility\04.Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Model.h" />
-    <ClInclude Include="..\Public\Mesh.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClInclude>
@@ -317,9 +323,25 @@
     <ClInclude Include="..\Public\DInput_Manager.h">
       <Filter>00.System\02.Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Camera_Free.h" />
-    <ClInclude Include="..\Public\Camera_Manager.h" />
     <ClInclude Include="..\public\UIRenderable.h" />
-    <ClInclude Include="..\Public\Material.h" />
+    <ClInclude Include="..\Public\Mesh.h">
+      <Filter>01.Utility\04.Components\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Model.h">
+      <Filter>01.Utility\04.Components\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Material.h">
+      <Filter>01.Utility\04.Components\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Free.h">
+      <Filter>01.Utility\03.GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Camera_Manager.h">
+      <Filter>01.Utility\03.GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Engine_Helper.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Converter_Struct.h" />
   </ItemGroup>
 </Project>

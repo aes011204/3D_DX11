@@ -117,7 +117,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;DirectXTKd.lib;EditorTool.lib;Effects11d.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;DirectXTKd.lib;EditorTool.lib;Effects11d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../ThirdPartyLib/;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -142,7 +142,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;Effects11.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;Effects11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -150,6 +150,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClInclude Include="..\Public\Camera.h" />
     <ClInclude Include="..\Public\Camera_Free.h" />
     <ClInclude Include="..\Public\Camera_Manager.h" />
+    <ClInclude Include="..\Public\Converter_Struct.h" />
     <ClInclude Include="..\Public\Data_Manager.h" />
     <ClInclude Include="..\Public\DInput_Manager.h" />
     <ClInclude Include="..\Public\Component.h" />
@@ -251,7 +252,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClCompile Include="..\Private\VIBuffer.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
-    <ClCompile Include="..\Public\Camera.cpp" />
+    <ClCompile Include="..\Public\CCamera.cpp" />
     <ClCompile Include="CCamera.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

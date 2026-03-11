@@ -12,7 +12,7 @@ CMesh::CMesh(const CMesh& Prototype)
 
 HRESULT CMesh::Initialize_Prototype(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix)
 {
-	
+	m_iMaterialIndex = pAIMesh->mMaterialIndex;
 	
 	m_iNumVertexBuffers = 1; 
 	m_iNumVertices = pAIMesh->mNumVertices;
@@ -48,7 +48,18 @@ HRESULT CMesh::Initialize_Prototype(const aiMesh* pAIMesh, _fmatrix PreTransform
 		XMStoreFloat3(&pVertices[i].vTangent,
 			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vTangent), PreTransformMatrix));
 
-		memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+		//memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+
+		if (pAIMesh->HasTextureCoords(0)) // UV 채널 0번이 있는지 확인
+		{
+			// memcpy 대신 직접 대입 (aiVector3D에서 필요한 x, y만 쏙 빼오기)
+			pVertices[i].vTexcoord.x = pAIMesh->mTextureCoords[0][i].x;
+			pVertices[i].vTexcoord.y = pAIMesh->mTextureCoords[0][i].y;
+		}
+		else
+		{
+			pVertices[i].vTexcoord = _float2(0.f, 0.f);
+		}
 		// 덱스쿠드는 여러개일수도 있으니 이차배열
 		// 하나의 세트인데 바디 에 디퓨즈 , 노말의 모양이 다르다면 , 텍스쿠드를더 선언해야함
 		// 큐브 라던지 그건 xyz 다있음 

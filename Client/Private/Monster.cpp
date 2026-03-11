@@ -45,11 +45,21 @@ HRESULT CMonster::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
+	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+
+	for(size_t i=0; i< iNumMesh; i++)
+	{
+		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, aiTextureType_DIFFUSE, 0);
+
+
 	if (FAILED(m_pShaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->Render()))
+	if (FAILED(m_pModelCom->Render(i)))
 		return E_FAIL;
+	}
+
+
 
 
 	return S_OK;
@@ -114,7 +124,7 @@ HRESULT CMonster::Ready_Components()
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_ForkLift"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 	//	return E_FAIL;

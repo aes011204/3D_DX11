@@ -22,10 +22,7 @@ using namespace DirectX;
 //fx11
 #include "Fx11/d3dx11effect.h"
 
-//assimp
-#include "Assimp/scene.h"
-#include "Assimp/Importer.hpp"
-#include "Assimp/postprocess.h"
+
 
 //// ImGui
 #include <imgui.h>

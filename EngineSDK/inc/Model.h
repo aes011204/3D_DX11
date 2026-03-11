@@ -5,7 +5,9 @@
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CModel final:
+class CShader;
+
+	class ENGINE_DLL CModel final:
     public CComponent
 {
 protected:
@@ -15,13 +17,18 @@ public:
 	virtual ~CModel() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const _char* pModelFilePat, MODEL eType, _fmatrix PreLocalTransformMatrix);
+	virtual HRESULT Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
 	virtual HRESULT Initialize(void* pArg);
-	virtual HRESULT Render();
+	virtual HRESULT Render(_uint iMeshIndex);
 
 	HRESULT Ready_Meshes();
 
+	HRESULT Ready_Material(const _char* pModelFilePath);
+	HRESULT Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex,
+	                      aiTextureType eMaterialType, _uint iTextureIndex);
+	
 
+	size_t Get_NumMeshes() { return m_Meshes.size(); }
 
 
 private:
@@ -35,6 +42,9 @@ private:
 private:
 	_uint m_iNumMeshes = {};
 	vector<shared_ptr<class CMesh>> m_Meshes;
+
+	_uint m_iNumMaterials = {};
+	vector<shared_ptr<class CMaterial>> m_Materials;
 public:
 	static shared_ptr<CModel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
 	virtual shared_ptr<CComponent> Clone(void* pArg);
