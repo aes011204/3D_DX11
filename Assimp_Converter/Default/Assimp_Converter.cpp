@@ -118,7 +118,7 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 			memcpy(&vtx.vPos, &pAIMesh->mVertices[j], sizeof(float) * 3);
 
 			if (pAIMesh->HasTextureCoords(0))
-			memcpy(&vtx.vUV, &pAIMesh->mTextureCoords[j], sizeof(float) * 3);
+			memcpy(&vtx.vUV, &pAIMesh->mTextureCoords[0][j], sizeof(float) * 3);
 			if (pAIMesh->HasNormals())
 			memcpy(&vtx.vNormal, &pAIMesh->mNormals[j], sizeof(float) * 3);
 			if (pAIMesh->HasTangentsAndBitangents())
@@ -159,11 +159,20 @@ bool GetPath(aiMaterial* pAIMat, aiTextureType type, char* pOutPath)
 	aiString aiPath;
 	if (pAIMat->GetTexture(type, 0, &aiPath) == AI_SUCCESS)
 	{
-		string fileName = std::filesystem::path(aiPath.C_Str()).filename().string();
-		strncpy_s(pOutPath, 260, fileName.c_str(), _TRUNCATE);
+		/*string fileName = std::filesystem::path(aiPath.C_Str()).filename().string();
+		strncpy_s(pOutPath, _MAX_PATH, fileName.c_str(), _TRUNCATE);
+		*/
+
+		string fullPath = aiPath.C_Str();
+		// 단순히 글자들을 뒤져서 '\'나 '/'가 나오는 위치를 찾음 (OS 규칙 안 따짐)
+		size_t lastSlash = fullPath.find_last_of("\\/");
+		string fileName = fullPath.substr(lastSlash + 1);
+
+		strncpy_s(pOutPath, _MAX_PATH, fileName.c_str(), _TRUNCATE);
+		return true;
 	}
 
-	cout << "FAILED TO : GetPath" << endl;
+	
 	return false;
 }
 
@@ -224,4 +233,6 @@ bool Convert_Binary(string fbxPath, string exportPath)
 
 		Write_Model(AIScene, OutFile, bIsAnim);
 		Write_Texture(AIScene, OutFile);
+
+		cout << "done" << endl;
 }
