@@ -6,7 +6,7 @@ CMaterial::CMaterial(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> p
 {
 }
 
-HRESULT CMaterial::Initialize(const aiMaterial* pAIMaterial, const _char* pModelFilePath)
+HRESULT CMaterial::Initialize(Cvt_Material& mat, const _char* pModelFilePath)
 {
 	_char szDrive[MAX_PATH] = {};
 	_char szDir[MAX_PATH] = {};
@@ -86,11 +86,11 @@ HRESULT CMaterial::Bind_Material(shared_ptr<CShader> pShader, const _char* pCons
 	return S_OK;
 }
 
-shared_ptr<CMaterial> CMaterial::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const aiMaterial* pAIMaterial, const _char* pModelFilePath)
+shared_ptr<CMaterial> CMaterial::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, Cvt_Material& mat, const _char* pModelFilePath)
 {
 	shared_ptr<CMaterial> pInstance(new CMaterial(pDevice, pContext), [](CMaterial* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pAIMaterial, pModelFilePath)))
+	if (FAILED(pInstance->Initialize(mat, pModelFilePath)))
 	{
 		MSG_BOX("Failed to Created : CMaterial");
 	}

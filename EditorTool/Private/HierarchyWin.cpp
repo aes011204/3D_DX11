@@ -234,12 +234,12 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
     }
 
     //  (4) Active 토글
-    bool active = Engine_GetActive(pObj);
-    ImGui::PushID((int)id);
+    //bool active = Engine_GetActive(pObj);
+    //ImGui::PushID((int)id);
 
-    // 체크박스는 “보이지만 ID는 분리”
-    if (ImGui::Checkbox("##active", &active))
-        Engine_SetActive(pObj, active);
+    //// 체크박스는 “보이지만 ID는 분리”
+    //if (ImGui::Checkbox("##active", &active))
+    //    Engine_SetActive(pObj, active);
 
     ImGui::SameLine();
 
@@ -356,7 +356,7 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
         ImGui::EndPopup();
     }
 
-    ImGui::PopID();
+   // ImGui::PopID();
 }
 
 uint64_t CHierarchyWin::PtrID(const shared_ptr<Engine::CGameObject>& pObj) const
@@ -377,34 +377,9 @@ void CHierarchyWin::CommitRename(const shared_ptr<Engine::CGameObject>& pObj, co
     // utf8 -> wstring
     wstring w = S2W(_string(newNameUtf8));
 
-    // 여기서 유니크 처리하고 싶으면:
-    // w = CBase::MakeUniqueName(w);  // (네가 static으로 만들었으면 가능)
+   
 
     pObj->Set_Name(w);
-}
-
-bool CHierarchyWin::Engine_GetActive(const shared_ptr<Engine::CGameObject>& pObj) const
-{
-    // ===== 너 엔진에 맞게 연결 =====
-    // 예) return pObj->Get_Active();
-    // 없으면 일단 true로 (토글 표시만 되게)
-    return true;
-}
-
-void CHierarchyWin::Engine_SetActive(const shared_ptr<Engine::CGameObject>& pObj, bool active)
-{
-    // ===== 너 엔진에 맞게 연결 =====
-    // 예) pObj->Set_Active(active);
-}
-
-void CHierarchyWin::Engine_DeleteObject(const shared_ptr<Engine::CGameObject>& pObj)
-{
-    // ===== 너 엔진에 맞게 연결 =====
-    // 1) Layer에서 제거
-    // 2) GameInstance/Scene에서 Destroy 예약
-    //
-    // 예시(가짜):
-    // CGameInstance::GetInstance()->Destroy_GameObject(pObj);
 }
 
 

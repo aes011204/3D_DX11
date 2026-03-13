@@ -128,6 +128,28 @@ HRESULT CShader::Bind_Matrix(const _char* pConstantName, const _float4x4* pMatri
 	
 }
 
+HRESULT CShader::Bind_Matrices(const _char* pConstantName, const _float4x4* pMatrix, _uint iNumMatrices)
+{
+	//매트릭스이름이 있는지 확인
+	ComPtr<ID3DX11EffectVariable> pVariable = m_pEffect->GetVariableByName(pConstantName);
+	if (nullptr == pVariable)
+	{
+		MSG_BOX("Failed to throw value to shader");
+		return E_FAIL;
+	}
+	// 그 이름을 가진 변수가 매트릭스인지 확인
+	ComPtr<ID3DX11EffectMatrixVariable> pMatrixVariable = pVariable->AsMatrix();
+	if (nullptr == pMatrixVariable)
+	{
+		MSG_BOX("Shader types do not match");
+		return E_FAIL;
+	}
+	// 둘다 맞다면 매트릭스 셋팅
+	return pMatrixVariable->SetMatrixArray(reinterpret_cast<const _float*>(pMatrix), 0, iNumMatrices);
+
+
+}
+
 HRESULT CShader::Bind_RawValue(const _char* pConstantName, const void* pData, _uint iLength)
 {
 	//매트릭스이름이 있는지 확인

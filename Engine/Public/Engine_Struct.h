@@ -64,8 +64,30 @@ namespace Engine
         };
     }VTXMESH;
 
+    typedef struct tagVertexAnimMesh
+    {
+        XMFLOAT3			vPosition;
+        XMFLOAT3			vNormal;
+        XMFLOAT3			vTangent;
+        XMFLOAT2			vTexcoord;
 
+        XMUINT4             vBlendIndex;
+        XMFLOAT4            vBlendWeight;
 
+        static const _uint iNumElements = { 6 };
+
+        static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+        {
+            {"POSITION", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"NORMAL", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"TANGENT", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+			{ "BLENDINDEX", 0 ,DXGI_FORMAT_R32G32B32A32_UINT , 0, 44, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+            {"BLENDWEIGHT", 0 , DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 60, D3D11_INPUT_PER_VERTEX_DATA, 0  }
+        };
+    }VTXANIMMESH;
+
+    
     struct Rect
     {
         float x = 0.f;

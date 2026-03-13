@@ -149,13 +149,13 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 
 
-	/* Prototype_Component_Shader_VtxMesh */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
-		return E_FAIL;
-	}
+	///* Prototype_Component_Shader_VtxMesh */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
+	//	return E_FAIL;
+	//}
 
 	/////////////////////////////////////////////
  /* Prototype_GameObject_EmptyGameObject */

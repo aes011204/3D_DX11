@@ -58,6 +58,12 @@
     <Filter Include="01.Utility\04.Components\Model">
       <UniqueIdentifier>{1e6e43aa-e1a7-4729-8b57-0198b18e4bca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\04.Components\Model\assimp">
+      <UniqueIdentifier>{a336f244-07d2-4823-894c-c8af3175bb3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Components\Model\converter">
+      <UniqueIdentifier>{2f91d600-09fc-4572-bdff-f35202218558}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -149,7 +155,6 @@
       <Filter>01.Utility\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\IModifier.cpp" />
-    <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="..\Private\UIObject.cpp" />
     <ClCompile Include="..\Private\PipeLine.cpp" />
     <ClCompile Include="..\Private\Light.cpp">
@@ -164,9 +169,6 @@
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Camera_Free.cpp">
-      <Filter>99.Defines\01.Utility\03.GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Picking_Manager.cpp">
       <Filter>00.System\03.Picking</Filter>
     </ClCompile>
@@ -174,22 +176,40 @@
       <Filter>00.System\02.Input</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UIRenderable.cpp" />
-    <ClCompile Include="..\Private\Mesh.cpp">
-      <Filter>01.Utility\04.Components\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Model.cpp">
-      <Filter>01.Utility\04.Components\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Material.cpp">
-      <Filter>01.Utility\04.Components\Model</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Camera_Free.cpp">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Public\CCamera.cpp" />
+    <ClCompile Include="..\Private\Camera_Free.cpp" />
+    <ClCompile Include="..\Private\Camera.cpp">
+      <Filter>01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Assimp_Bone.cpp">
+      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Assimp_Material.cpp">
+      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Assimp_Mesh.cpp">
+      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Assimp_Model.cpp">
+      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Bone.cpp">
+      <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Material.cpp">
+      <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mesh.cpp">
+      <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Model.cpp">
+      <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -324,15 +344,6 @@
       <Filter>00.System\02.Input</Filter>
     </ClInclude>
     <ClInclude Include="..\public\UIRenderable.h" />
-    <ClInclude Include="..\Public\Mesh.h">
-      <Filter>01.Utility\04.Components\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Model.h">
-      <Filter>01.Utility\04.Components\Model</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Material.h">
-      <Filter>01.Utility\04.Components\Model</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\Camera_Free.h">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClInclude>
@@ -343,5 +354,29 @@
       <Filter>99.Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Converter_Struct.h" />
+    <ClInclude Include="..\Public\Assimp_Bone.h">
+      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Assimp_Material.h">
+      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Assimp_Mesh.h">
+      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Assimp_Model.h">
+      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Bone.h">
+      <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Material.h">
+      <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mesh.h">
+      <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Model.h">
+      <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

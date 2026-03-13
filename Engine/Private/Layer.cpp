@@ -75,6 +75,7 @@ shared_ptr<CGameObject> CLayer::Get_GameObject(_uint GObjIndex)
 		}
 		++index;
 	}
+	return nullptr;
 }
 
 list <shared_ptr<class CGameObject>> CLayer::Get_GameObject()

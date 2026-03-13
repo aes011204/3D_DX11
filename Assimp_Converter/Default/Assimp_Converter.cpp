@@ -17,7 +17,7 @@ int main()
 
 
 	uint32_t iFlag = { /*aiProcess_GlobalScale | aiProcess_PreTransformVertices |*/ aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
-       
+	bool result = { false };
 	for (const auto& entry : filesystem::recursive_directory_iterator(pInputFilePath))
 	{
 		if (filesystem::is_regular_file(entry.path()))
@@ -31,9 +31,18 @@ int main()
 
 				filesystem::create_directories(exportPath.parent_path());
 
-				Convert_Binary(entry.path().string(), exportPath.string());
+				result = Convert_Binary(entry.path().string(), exportPath.string());
+
+				if (result == false)
+				{
+					cout << "----------------FAIL-------------------" << endl;
+				}
 			} 
 		}
+	}
+	if (result == true)
+	{
+		cout << "----------------FIN-------------------" << endl;
 	}
 
 }
@@ -61,6 +70,7 @@ int IsAnim(string fbxPath)
 
 	return 0;
 }
+
 static const aiScene* LoadScene_Assimp(Assimp::Importer& importer, const string fbxPath, bool IsAnim, uint32_t iFlag = 0)
 {
 	uint32_t flags =
@@ -86,6 +96,7 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 	header.iMagic = 0x4D534842;//MSHB
 	header.bIsAnim = bIsAnim ? 1 : 0;
 	header.iNumMeshes = scene->mNumMeshes;
+	header.iNumMaterial = scene->mNumMaterials;
 
 	// 저장
 	OutFile.write((char*)&header, sizeof(Cvt_Header));
@@ -106,10 +117,10 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 		OutFile.write((char*)&meshInfo, sizeof(Cvt_MeshInfo));
 
 
-		VTXMESH vtx = {};
+		Cvt_VTXMESH vtx = {};
 
 		// 버텍스 //
-		vector<VTXMESH> vecVertices;
+		vector<Cvt_VTXMESH> vecVertices;
 		vecVertices.reserve(meshInfo.iNumVertices);
 
 		for(size_t j =0; j< meshInfo.iNumVertices; j++)
@@ -117,8 +128,13 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 
 			memcpy(&vtx.vPos, &pAIMesh->mVertices[j], sizeof(float) * 3);
 
-			if (pAIMesh->HasTextureCoords(0))
-			memcpy(&vtx.vUV, &pAIMesh->mTextureCoords[0][j], sizeof(float) * 3);
+			for (uint32_t i = 0; i < 8; ++i) {
+				if (pAIMesh->HasTextureCoords(i)) {
+					// i번 채널의 j번째 정점 데이터를 우리 구조체 vUV[i]에 복사
+					vtx.vUV[i][0] = pAIMesh->mTextureCoords[i][j].x;
+					vtx.vUV[i][1] = pAIMesh->mTextureCoords[i][j].y;
+				}
+			}
 			if (pAIMesh->HasNormals())
 			memcpy(&vtx.vNormal, &pAIMesh->mNormals[j], sizeof(float) * 3);
 			if (pAIMesh->HasTangentsAndBitangents())
@@ -131,6 +147,7 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 
 			vecVertices.push_back(vtx);
 		}
+		OutFile.write((char*)vecVertices.data(), sizeof(Cvt_VTXMESH) * meshInfo.iNumVertices);
 
 		// 인덱스 //
 		vector<uint32_t> vecIndices;
@@ -143,7 +160,6 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 
 		}
 
-		OutFile.write((char*)vecVertices.data(), sizeof(VTXMESH) * meshInfo.iNumVertices);
 		OutFile.write((char*)vecIndices.data(), sizeof(uint32_t) * meshInfo.iNumIndices);
 	}
 
@@ -154,7 +170,7 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 
 }
 
-bool GetPath(aiMaterial* pAIMat, aiTextureType type, char* pOutPath)
+bool GetPath(aiMaterial* pAIMat, aiTextureType type, char* pOutPath, const char* szDrive, const char* szDir)
 {
 	aiString aiPath;
 	if (pAIMat->GetTexture(type, 0, &aiPath) == AI_SUCCESS)
@@ -168,19 +184,32 @@ bool GetPath(aiMaterial* pAIMat, aiTextureType type, char* pOutPath)
 		size_t lastSlash = fullPath.find_last_of("\\/");
 		string fileName = fullPath.substr(lastSlash + 1);
 
+
+		char szFinalPath[MAX_PATH] = {};
+		strcpy_s(szFinalPath, MAX_PATH, szDrive);
+		strcat_s(szFinalPath, MAX_PATH, szDir);
+		strcat_s(szFinalPath, MAX_PATH, fileName.c_str());
+
+
+
 		strncpy_s(pOutPath, _MAX_PATH, fileName.c_str(), _TRUNCATE);
 		return true;
 	}
 
-	
+
 	return false;
+	
 }
 
 
-bool Write_Texture(const aiScene* scene, ofstream& OutFile)
+bool Write_Texture(const aiScene* scene, ofstream& OutFile, const string& strInFilePath)
 {
 
 	uint32_t iNumMaterials = scene->mNumMaterials;
+
+
+	char szDrive[MAX_PATH] = {}, szDir[MAX_PATH] = {};
+	_splitpath_s(strInFilePath.c_str(), szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
 
 	vector<Cvt_Material> vecMat;
 	vecMat.reserve(iNumMaterials);
@@ -194,19 +223,23 @@ bool Write_Texture(const aiScene* scene, ofstream& OutFile)
 		pAIMat->Get(AI_MATKEY_NAME, matName);
 		strncpy_s(mat.szName, matName.C_Str(), _TRUNCATE);
 
+		GetPath(pAIMat, aiTextureType_DIFFUSE, mat.szDiffusePath, szDrive, szDir);// 색상
+		GetPath(pAIMat, aiTextureType_NORMALS, mat.szNormalPath, szDrive, szDir); // 노멀
+		GetPath(pAIMat, aiTextureType_SPECULAR, mat.szSpecularPath, szDrive, szDir);// 광택
+		GetPath(pAIMat, aiTextureType_OPACITY, mat.szOpacityPath, szDrive, szDir);// 투명도 (유리 등)
 
-		GetPath(pAIMat,aiTextureType_DIFFUSE, mat.szDiffusePath);  // 색상
-		GetPath(pAIMat,aiTextureType_NORMALS, mat.szNormalPath);   // 노멀
-		GetPath(pAIMat,aiTextureType_SPECULAR, mat.szSpecularPath); // 광택
-		GetPath(pAIMat,aiTextureType_OPACITY, mat.szOpacityPath);  // 투명도 (유리 등)
 
 		vecMat.push_back(mat);
 	}
 
-	OutFile.write((char*)vecMat.data(), sizeof(Cvt_MeshInfo) * vecMat.size());
+	OutFile.write((char*)vecMat.data(), sizeof(Cvt_Material) * vecMat.size());
 
 	cout << "SUCCESS CONVERT TEX" << endl;
 	return true;
+
+
+	
+	
 }
 
 
@@ -231,8 +264,16 @@ bool Convert_Binary(string fbxPath, string exportPath)
 		if (!OutFile.is_open()) return false;
 
 
-		Write_Model(AIScene, OutFile, bIsAnim);
-		Write_Texture(AIScene, OutFile);
+		if(false == Write_Model(AIScene, OutFile, bIsAnim))
+		{
+			return false;
+		}
+		if (false == Write_Texture(AIScene, OutFile, fbxPath))
+		{
+			return false;
+		}
 
 		cout << "done" << endl;
+
+		return true;
 }

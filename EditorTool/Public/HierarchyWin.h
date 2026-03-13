@@ -41,10 +41,7 @@ private:
     void DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj);
     bool PassFilter(const shared_ptr<Engine::CGameObject>& pObj) const;
 
-    // ===== engine hooks  =====
-    bool Engine_GetActive(const shared_ptr<Engine::CGameObject>& pObj) const;
-    void Engine_SetActive(const shared_ptr<Engine::CGameObject>& pObj, bool active);
-    void Engine_DeleteObject(const shared_ptr<Engine::CGameObject>& pObj);
+    void Engine_DeleteObject(const shared_ptr<Engine::CGameObject>& pObj) {};
 
     // Rename commit helper (중복 처리하고 싶으면 여기서 처리)
     void CommitRename(const shared_ptr<Engine::CGameObject>& pObj, const char* newNameUtf8);
