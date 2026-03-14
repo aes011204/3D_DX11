@@ -80,6 +80,9 @@ using namespace std;
 #include "Log_Manager.h"
 #include "Engine_Helper.h"
 
+//
+#include "Converter_Struct.h"
+
 namespace Engine
 {
 	static const wstring g_strTransformTag = TEXT("Com_Transform");

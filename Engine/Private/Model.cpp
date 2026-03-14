@@ -50,7 +50,7 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _
 
 	if (FAILED(Ready_Meshes(eType, InFile)))
 		return E_FAIL;
-	if (FAILED(Ready_Material(pModelFilePath)))
+	if (FAILED(Ready_Material( InFile)))
 		return E_FAIL;
 	return S_OK;
 }
@@ -92,10 +92,10 @@ HRESULT CModel::Ready_Meshes(MODEL eType, ifstream& InFile)
 	return S_OK;
 }
 
-HRESULT CModel::Ready_Material(const _char* pModelFilePath, ifstream& InFile)
+HRESULT CModel::Ready_Material( ifstream& InFile)
 {
 
-	for (_uint i = 0; i < m_iNumMaterials; i++)
+	/*for (_uint i = 0; i < m_iNumMaterials; i++)
 	{
 		Cvt_Material mat;
 		InFile.read(reinterpret_cast<_char*>(&mat), sizeof(Cvt_Material));
@@ -105,12 +105,21 @@ HRESULT CModel::Ready_Material(const _char* pModelFilePath, ifstream& InFile)
 			return E_FAIL;
 
 		m_Materials.push_back(pMat);
+	}*/
+
+	for (_uint i = 0; i < m_iNumMaterials; ++i)
+	{
+		shared_ptr<CMaterial> pMat = CMaterial::Create(m_pDevice, m_pContext, InFile);
+		if (nullptr == pMat)
+			return E_FAIL;
+
+		m_Materials.push_back(pMat);
 	}
 
 	return S_OK;
 }
 
-HRESULT CModel::Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex, aiTextureType eMaterialType,
+HRESULT CModel::Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex, Cvt_TexType eMaterialType,
 	_uint iTextureIndex)
 {
 	return m_Materials[m_Meshes[iMeshIndex]->Get_MaterialIndex()]->Bind_Material(pShader, pConstantName, eMaterialType, iTextureIndex);

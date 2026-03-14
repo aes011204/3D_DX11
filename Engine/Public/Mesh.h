@@ -34,7 +34,7 @@ private:
 
 private:
 	HRESULT Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTransformMatrix);
-	HRESULT Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<class CModel>);
+	HRESULT Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel>);
 public:
 	static shared_ptr<CMesh> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, MODEL eType, ifstream& InFile, shared_ptr<CModel>
 	                                pModel, _fmatrix PreTransformMatrix);

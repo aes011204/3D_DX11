@@ -20,6 +20,7 @@ int main()
 	bool result = { false };
 	for (const auto& entry : filesystem::recursive_directory_iterator(pInputFilePath))
 	{
+		cout << "Checking: " << entry.path().string() << endl;
 		if (filesystem::is_regular_file(entry.path()))
 		{
 			if (entry.path().extension() == ".fbx" || entry.path().extension() == ".FBX")
@@ -57,15 +58,29 @@ int IsAnim(string fbxPath)
 		return -1;
 	}
 
-	if (tmpScene->HasAnimations() == true)
-		return 1;
+	//if (tmpScene && tmpScene->mNumAnimations > 0)
+	//	return 1; 
 
-	for(uint32_t i =0; i< tmpScene->mNumMeshes; i++)
+	///*if (tmpScene->HasAnimations() == true)
+	//	return 1;*/
+
+	///*for(uint32_t i =0; i< tmpScene->mNumMeshes; i++)
+	//{
+	//	if (tmpScene->mMeshes[i]->HasBones())
+	//		return 1;
+	//}*/
+	//if (tmpScene == nullptr) return -1;
+
+	// 핵심: 애니메이션 바구니(Stack)가 있고, 그 바구니 안에 실제 채널(Keyframe)이 있는지 확인
+	if (tmpScene->mNumAnimations > 0)
 	{
-		if (tmpScene->mMeshes[i]->HasBones())
-			return 1;
+		for (unsigned int i = 0; i < tmpScene->mNumAnimations; ++i)
+		{
+			// 실제 애니메이션 채널(뼈대의 움직임 기록)이 하나라도 들어있어야 진짜 애니메이션 모델임
+			if (tmpScene->mAnimations[i]->mNumChannels > 0)
+				return 1;
+		}
 	}
-
 
 
 	return 0;
@@ -237,22 +252,82 @@ bool Write_Texture(const aiScene* scene, ofstream& OutFile, const string& strInF
 	cout << "SUCCESS CONVERT TEX" << endl;
 	return true;
 
-
-	
 	
 }
 
 
 
+bool Write_Texture_vector(const aiScene* scene, ofstream& OutFile, const string& strInFilePath)
+{
+	// 재질의 총 개수 기록
+	uint32_t iNumMaterials = scene->mNumMaterials;
+
+	cout << "NumMaterials : " << iNumMaterials << endl;
+	// 경로 조립용 정보
+	char szDrive[MAX_PATH] = {}, szDir[MAX_PATH] = {};
+	_splitpath_s(strInFilePath.c_str(), szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
+
+	for (size_t i = 0; i < iNumMaterials; i++)
+	{
+		aiMaterial* pAIMat = scene->mMaterials[i];
+
+		// 재질 이름 저장 (고정 크기)
+		aiString matName;
+		pAIMat->Get(AI_MATKEY_NAME, matName);
+		char szMatName[MAX_PATH] = {};
+		strncpy_s(szMatName, matName.C_Str(), _TRUNCATE);
+		OutFile.write(szMatName, MAX_PATH);
+
+		// 
+		for (size_t j = 0; j < MAX_TEXTURE_SLOT; j++)
+		{
+		// [확인용 로그] 만약 여기서 iNumTextures가 계속 0이면 FBX 문제임
+		if (iNumMaterials == 0 && j == aiTextureType_DIFFUSE) {
+			cout << "이 모델은 Diffuse 텍스처 정보가 아예 없음!" << endl;
+		}
+			uint32_t iNumTextures = pAIMat->GetTextureCount(static_cast<aiTextureType>(j));
+
+			// 이 타입(j)의 텍스처 개수를 먼저 기록
+			OutFile.write((char*)&iNumTextures, sizeof(uint32_t));
+
+			if(iNumTextures!=0)
+				cout << iNumTextures <<" / " << MAX_TEXTURE_SLOT <<"  this type's tex Num" <<iNumTextures<< endl;
+
+			for (size_t k = 0; k < iNumTextures; k++)
+			{
+				aiString aiPath;
+				pAIMat->GetTexture(static_cast<aiTextureType>(j), k, &aiPath);
+
+				// 경로 조립 (파일명만 추출해서 모델 폴더 경로와 합침)
+				string fullPath = aiPath.C_Str();
+				size_t lastSlash = fullPath.find_last_of("\\/");
+				string fileName = (lastSlash == string::npos) ? fullPath : fullPath.substr(lastSlash + 1);
+
+				//std::replace(fullPath.begin(), fullPath.end(), '\\', '/');
+
+				char szFinalPath[MAX_PATH] = {};
+				strcpy_s(szFinalPath, MAX_PATH, szDrive);
+				strcat_s(szFinalPath, MAX_PATH, szDir);
+				strcat_s(szFinalPath, MAX_PATH, fileName.c_str());
 
 
+				// 완성된 경로 기록
+				OutFile.write(szFinalPath, MAX_PATH);
+				cout << szFinalPath << endl;
+			}
+
+		}
+	}
+	cout << "SUCCESS CONVERT TEX" << endl;
+	return true;
+}
 bool Convert_Binary(string fbxPath, string exportPath)
 {
 	
 	int bIsAnim = IsAnim(fbxPath);
 	if(bIsAnim == -1)
 	{
-		return false;
+		return false; // 1이몀 애니메이션 2면 넌애님
 	}
 
 	Assimp::Importer Importer = {};
@@ -268,7 +343,7 @@ bool Convert_Binary(string fbxPath, string exportPath)
 		{
 			return false;
 		}
-		if (false == Write_Texture(AIScene, OutFile, fbxPath))
+		if (false == Write_Texture_vector(AIScene, OutFile, fbxPath))
 		{
 			return false;
 		}

@@ -119,6 +119,7 @@
       <Filter>03.UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Storage.h" />
+    <ClInclude Include="..\Public\PlayerBoat.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -199,6 +200,7 @@
       <Filter>03.UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Storage.cpp" />
+    <ClCompile Include="..\Private\PlayerBoat.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

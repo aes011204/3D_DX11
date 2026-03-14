@@ -176,9 +176,6 @@
       <Filter>00.System\02.Input</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UIRenderable.cpp" />
-    <ClCompile Include="..\Private\Camera_Free.cpp">
-      <Filter>01.Utility\03.GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClCompile>
@@ -209,6 +206,9 @@
     </ClCompile>
     <ClCompile Include="..\Private\Model.cpp">
       <Filter>01.Utility\04.Components\Model\converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Camera_Free.cpp">
+      <Filter>01.Utility\03.GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

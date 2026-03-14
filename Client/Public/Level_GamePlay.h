@@ -3,6 +3,7 @@
 #include "Level.h"
 NS_BEGIN(Engine)
 class CUI;
+class CGameObject;
 NS_END
 NS_BEGIN(Client)
 
@@ -24,14 +25,20 @@ public:
 	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 
 	HRESULT Ready_Layer_Monster(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Player(const _wstring& strLayerTag);
 
 
 private:
 	_bool m_OnTab = false;
 	shared_ptr<CUI> m_TapUI ={};
+
+	weak_ptr<CGameObject> m_pPlayer = {};
+
 public:
 	static shared_ptr<CLevel_GamePlay> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	virtual void Free() override;
 };
+
+
 
 NS_END;

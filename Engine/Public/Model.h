@@ -23,9 +23,9 @@ public:
 
 	HRESULT Ready_Meshes(MODEL eType, ifstream& InFile);
 
-	HRESULT Ready_Material(const _char* pModelFilePath, ifstream& InFile);
+	HRESULT Ready_Material(ifstream& InFile);
 	HRESULT Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex,
-	                      aiTextureType eMaterialType, _uint iTextureIndex);
+		Cvt_TexType eMaterialType, _uint iTextureIndex);
 
 	HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
 	HRESULT Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex);
@@ -53,7 +53,7 @@ private:
 	_uint m_iNumMaterials = {};
 	vector<shared_ptr<class CMaterial>> m_Materials={};
 
-	vector< shared_ptr<class CAssimp_Bone>> m_Bones = {};
+	vector< shared_ptr<class CBone>> m_Bones = {};
 public:
 	static shared_ptr<CModel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
 	virtual shared_ptr<CComponent> Clone(void* pArg);

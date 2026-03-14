@@ -241,7 +241,7 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
     //if (ImGui::Checkbox("##active", &active))
     //    Engine_SetActive(pObj, active);
 
-    ImGui::SameLine();
+   // ImGui::SameLine();
 
     //  (1) Rename (더블클릭/F2 + InputText)
     const bool renaming = (m_RenameTargetPtr == id);

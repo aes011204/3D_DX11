@@ -117,17 +117,6 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 			}
 
 
-			//if (D3DXIntersectTri(&pTerrainVtxPos[dwVtxNumber[1]],
-			//	&pTerrainVtxPos[dwVtxNumber[0]],
-			//	&pTerrainVtxPos[dwVtxNumber[2]],
-			//	&vRayPos, &vRayDir, &fU, &fV, &fDist))
-			//{
-			//	return _vec3(pTerrainVtxPos[dwVtxNumber[1]].x + fU * (pTerrainVtxPos[dwVtxNumber[0]].x - pTerrainVtxPos[dwVtxNumber[1]].x),
-			//		0.f,
-			//		pTerrainVtxPos[dwVtxNumber[1]].z + fV * (pTerrainVtxPos[dwVtxNumber[2]].z - pTerrainVtxPos[dwVtxNumber[0]].z));
-			//}
-
-
 			// 왼쪽 아래
 
 			dwVtxNumber[0] = dwIndex + pTerrainVtxNumX;
@@ -138,18 +127,7 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 			v1 = XMLoadFloat3(&pTerrainVtxPos[dwVtxNumber[1]]);
 			v2 = XMLoadFloat3(&pTerrainVtxPos[dwVtxNumber[2]]);
 
-			// 매개 변수로 들어간 버텍스 순서 기준
-			// V1 + U(V2 - V1) + V(V3 - V1)
-
-			/*if (D3DXIntersectTri(&pTerrainVtxPos[dwVtxNumber[2]],
-				&pTerrainVtxPos[dwVtxNumber[1]],
-				&pTerrainVtxPos[dwVtxNumber[0]],
-				&vRayPos, &vRayDir, &fU, &fV, &fDist))
-			{
-				return _vec3(pTerrainVtxPos[dwVtxNumber[2]].x + fU * (pTerrainVtxPos[dwVtxNumber[1]].x - pTerrainVtxPos[dwVtxNumber[2]].x),
-					0.f,
-					pTerrainVtxPos[dwVtxNumber[2]].z + fV * (pTerrainVtxPos[dwVtxNumber[0]].z - pTerrainVtxPos[dwVtxNumber[2]].z));
-			}*/
+			
 
 			fDist = 0.f;
 			if (DirectX::TriangleTests::Intersects(LocalRay.position, LocalRay.direction,

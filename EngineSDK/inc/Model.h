@@ -21,11 +21,11 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
 
-	HRESULT Ready_Meshes(MODEL eType);
+	HRESULT Ready_Meshes(MODEL eType, ifstream& InFile);
 
-	HRESULT Ready_Material(const _char* pModelFilePath);
+	HRESULT Ready_Material(ifstream& InFile);
 	HRESULT Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex,
-	                      aiTextureType eMaterialType, _uint iTextureIndex);
+		Cvt_TexType eMaterialType, _uint iTextureIndex);
 
 	HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
 	HRESULT Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex);
