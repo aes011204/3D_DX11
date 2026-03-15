@@ -32,32 +32,22 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 
 void CCamera_Play::Priority_Update(_float fTimeDelta)
 {
-	// 타겟을 항상 보고있다
-	if (auto pTarget = m_pTarget.lock())
-	{
-		// 타겟살아있을떄
+	// 움직임이 없으면 원래 상태로 돌아간다
+	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 
-		_vector dir = m_pTargetTransform.lock()->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::POSITION);
-		m_pTransformCom->LookAt(dir);
-		m_pTransformCom->Set_State(STATE::POSITION, m_pTargetTransform.lock()->Get_State(STATE::POSITION) -( XMVector3Normalize(dir) * 20.f));
+	_long		MouseMoveX = {};
+	_long		MouseMoveY = {};
+
+	if (MouseMoveX = dinput->Get_DIMouseMove(DIMM::X))
+	{
+		// 누적 하면 됨
+		//m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * MouseMove * m_fMouseSensor);
 	}
 
-	
-	// 움직임이 없으면 원래 상태로 돌아간다
-	//CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
-
-	//_long		MouseMove = {};
-
-	//if (MouseMove = dinput->Get_DIMouseMove(DIMM::X))
-	//{
-	//	m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * MouseMove * m_fMouseSensor);
-	//}
-
-	//if (MouseMove = dinput->Get_DIMouseMove(DIMM::Y))
-	//{
-	//	m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * MouseMove * m_fMouseSensor);
-	//}
-
+	if (MouseMoveY = dinput->Get_DIMouseMove(DIMM::Y))
+	{
+		//m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * MouseMove * m_fMouseSensor);
+	}
 
 	//if(dinput->Get_DIMouseMove(DIMM::X)==0&& dinput->Get_DIMouseMove(DIMM::Y) == 0)
 	//{
@@ -65,17 +55,27 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 	//	//{
 	//	//	// 타겟살아있을떄
 
-	//	//	_vector dir = m_pTargetTransform.lock()->Get_State(STATE::POSITION) - m_pTransformCom->Get_State(STATE::POSITION);
-	//	//	m_pTransformCom->LookAt(dir);
-	//	//	m_pTransformCom->Set_State(STATE::POSITION, m_pTargetTransform.lock()->Get_State(STATE::POSITION) - dir * 20.f);
+	//		// 0 이면  lerp 0으로 
 	//	//}
 	//}
+
+
+	// 타겟을 항상 보고있다
+	if (auto pTarget = m_pTarget.lock())
+	{
+		// 타겟살아있을떄
+		m_pTransformCom->Orbit(m_pTargetTransform.lock()->Get_Position(), m_pTargetTransform.lock()->Get_Quaternion(), 20.f, MouseMoveY+45.f, MouseMoveX);
+
+		// 클램프 바다 밑으로 못들어가게
+
+	}
 	__super::Update_TransformMatrices();
 
 }
 
 void CCamera_Play::Update(_float fTimeDelta)
 {
+	// 레이충돌로 장애물이 있을경우 앞으로 당기던가 해야함
 }
 
 void CCamera_Play::Late_Update(_float fTimeDelta)
@@ -85,6 +85,11 @@ void CCamera_Play::Late_Update(_float fTimeDelta)
 HRESULT CCamera_Play::Render()
 {
     return S_OK;
+}
+
+void CCamera_Play::Start_Targetting(_float4 startPos, _float degree, _float distance)
+{
+
 }
 
 shared_ptr<CCamera_Play> CCamera_Play::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

@@ -93,6 +93,7 @@ void CObject_Manager::Update(_float fTimeDelta)
 				pair.second->Update(fTimeDelta);
 		}
 	}
+
 }
 
 void CObject_Manager::Late_Update(_float fTimeDelta)

@@ -38,21 +38,36 @@ HRESULT CTransform::Initialize(void* pArg)
 
 HRESULT CTransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const _char* pConstantName)
 {
+	if (m_bIsDirty)
+		Update_WorldMatrix();
+
 	return 	pShaderCom->Bind_Matrix(pConstantName, &m_WorldMatrix);;
 }
 
 void CTransform::SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ)
 {
-	Set_State(STATE::RIGHT, XMVector3Normalize(Get_State(STATE::RIGHT)) * fScaleX);
+	/*Set_State(STATE::RIGHT, XMVector3Normalize(Get_State(STATE::RIGHT)) * fScaleX);
 	Set_State(STATE::UP, XMVector3Normalize(Get_State(STATE::UP)) * fScaleY);
-	Set_State(STATE::LOOK, XMVector3Normalize(Get_State(STATE::LOOK)) * fScaleZ);
+	Set_State(STATE::LOOK, XMVector3Normalize(Get_State(STATE::LOOK)) * fScaleZ);*/
+
+	m_vScale = { fScaleX, fScaleY, fScaleZ };
+
+	m_bIsDirty = true;
 }
 
 void CTransform::Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 {
-	Set_State(STATE::RIGHT, Get_State(STATE::RIGHT) * fScaleX);
+	/*Set_State(STATE::RIGHT, Get_State(STATE::RIGHT) * fScaleX);
 	Set_State(STATE::UP, Get_State(STATE::UP) * fScaleY);
-	Set_State(STATE::LOOK, Get_State(STATE::LOOK) * fScaleZ);
+	Set_State(STATE::LOOK, Get_State(STATE::LOOK) * fScaleZ);*/
+
+	m_vScale.x *= fScaleX;
+	m_vScale.y *= fScaleY;
+	m_vScale.z *= fScaleZ;
+
+
+
+	m_bIsDirty = true;
 }
 void CTransform::Go_Forward(_float fTimeDelta)
 {
@@ -61,7 +76,9 @@ void CTransform::Go_Forward(_float fTimeDelta)
 
 	vPosition += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
 
-	Set_State(STATE::POSITION, vPosition);
+	//Set_State(STATE::POSITION, vPosition);
+	Set_Position(vPosition);
+	m_bIsDirty = true;
 }
 
 void CTransform::Go_Backward(_float fTimeDelta)
@@ -71,7 +88,9 @@ void CTransform::Go_Backward(_float fTimeDelta)
 
 	vPosition -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
 
-	Set_State(STATE::POSITION, vPosition);
+	//Set_State(STATE::POSITION, vPosition);
+	Set_Position(vPosition);
+	m_bIsDirty = true;
 }
 
 void CTransform::Go_Right(_float fTimeDelta)
@@ -81,7 +100,9 @@ void CTransform::Go_Right(_float fTimeDelta)
 
 	vPosition += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
 
-	Set_State(STATE::POSITION, vPosition);
+	//Set_State(STATE::POSITION, vPosition);
+	Set_Position(vPosition);
+	m_bIsDirty = true;
 }
 
 void CTransform::Go_Left(_float fTimeDelta)
@@ -91,7 +112,9 @@ void CTransform::Go_Left(_float fTimeDelta)
 
 	vPosition -= XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
 
-	Set_State(STATE::POSITION, vPosition);
+	//Set_State(STATE::POSITION, vPosition);
+	Set_Position(vPosition);
+	m_bIsDirty = true;
 }
 
 void CTransform::Go_Up(_float fTimeDelta)
@@ -101,7 +124,9 @@ void CTransform::Go_Up(_float fTimeDelta)
 
 	vPosition += XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
 
-	Set_State(STATE::POSITION, vPosition);
+	//Set_State(STATE::POSITION, vPosition);
+	Set_Position(vPosition);
+	m_bIsDirty = true;
 }
 
 void CTransform::Go_Down(_float fTimeDelta)
@@ -111,33 +136,39 @@ void CTransform::Go_Down(_float fTimeDelta)
 
 	vPosition -= XMVector3Normalize(vRight) * m_fSpeedPerSec * fTimeDelta;
 
-	Set_State(STATE::POSITION, vPosition);
+	//Set_State(STATE::POSITION, vPosition);
+	Set_Position(vPosition);
+	m_bIsDirty = true;
 }
 
 void CTransform::Rotation(_fvector vAxis, _float fDegree)
 {
-	_float3 vScaled = Get_Scaled();
+	//_float3 vScaled = Get_Scaled();
+	//
+	//// vector는 대입도 함수를 통해해야함 우리간 생각하는 구조가 아님
+	//_vector		vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f) * vScaled.x;
+	//_vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f) * vScaled.y;
+	//_vector		vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f) * vScaled.z;
+	//
+	//_matrix RotationMatrix = XMMatrixRotationAxis(vAxis, XMConvertToRadians(fDegree));
+	//
+	////XMVector3TransformNormal(); - w가 0 곱할떄 행렬의 이동(Translation) 성분을 무시
+	////XMVector3TransformCoord(); -w가 1 곱할떄 행렬의 이동(Translation) 성분이 적용
+	//// XMVector4Transform(); - w에 확실히 뭐가 잇는지 알고때만/ 4x4 행렬 곱하기 하는거임
+	//
+	//Set_State(STATE::RIGHT, XMVector3TransformNormal(vRight, RotationMatrix));
+	//Set_State(STATE::UP, XMVector3TransformNormal(vUp, RotationMatrix));
+	//Set_State(STATE::LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
 
-	// vector는 대입도 함수를 통해해야함 우리간 생각하는 구조가 아님
-	_vector		vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f) * vScaled.x;
-	_vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f) * vScaled.y;
-	_vector		vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f) * vScaled.z;
+	_vector vQuat = XMQuaternionRotationAxis(vAxis, XMConvertToRadians(fDegree));
 
-	_matrix RotationMatrix = XMMatrixRotationAxis(vAxis, XMConvertToRadians(fDegree));
-
-	//XMVector3TransformNormal(); - w가 0 곱할떄 행렬의 이동(Translation) 성분을 무시
-	//XMVector3TransformCoord(); -w가 1 곱할떄 행렬의 이동(Translation) 성분이 적용
-	// XMVector4Transform(); - w에 확실히 뭐가 잇는지 알고때만/ 4x4 행렬 곱하기 하는거임
-
-	Set_State(STATE::RIGHT, XMVector3TransformNormal(vRight, RotationMatrix));
-	Set_State(STATE::UP, XMVector3TransformNormal(vUp, RotationMatrix));
-	Set_State(STATE::LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
-
+	XMStoreFloat4(&m_vRotationQuat, vQuat);
+	m_bIsDirty = true;
 }
 
 void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 {
-	_vector		vRight = Get_State(STATE::RIGHT);
+	/*_vector		vRight = Get_State(STATE::RIGHT);
 	_vector		vUp = Get_State(STATE::UP);
 	_vector		vLook = Get_State(STATE::LOOK);
 
@@ -146,27 +177,89 @@ void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 
 	Set_State(STATE::RIGHT, XMVector3TransformNormal(vRight, RotationMatrix));
 	Set_State(STATE::UP, XMVector3TransformNormal(vUp, RotationMatrix));
-	Set_State(STATE::LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
+	Set_State(STATE::LOOK, XMVector3TransformNormal(vLook, RotationMatrix));*/
 
+	_vector vQuat = XMLoadFloat4(&m_vRotationQuat);
+
+	_vector vRotDelta = XMQuaternionRotationAxis(vAxis, m_fRadianPerSec * fTimeDelta);
+
+	vQuat = XMQuaternionMultiply(vQuat, vRotDelta);
+
+	XMStoreFloat4(&m_vRotationQuat, vQuat);
+	m_bIsDirty = true;
 }
-
 void CTransform::LookAt(_fvector vAt)
 {
-	_vector vPosition = Get_State(STATE::POSITION);
-	_float3 vScaled = Get_Scaled();
+	//_vector vPosition = Get_State(STATE::POSITION);
+	//_float3 vScaled = Get_Scaled();
 
+	//_vector		vLook = vAt - vPosition;
+
+	//_vector		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
+	//_vector		vUp = XMVector3Cross(vLook, vRight);
+
+	//Set_State(STATE::RIGHT, XMVector3Normalize(vRight) * vScaled.x);
+	//Set_State(STATE::UP, XMVector3Normalize(vUp) * vScaled.y);
+	//Set_State(STATE::LOOK, XMVector3Normalize(vLook) * vScaled.z);
+	////외적 결과로 나온 벡터들은 길이가 제멋대로림 그대로 행렬에 넣으면 물체의 크기가 변함 정규화를 통해 길이를 1로 만들어 순수 방향만 남깁
+	_vector vPosition = Get_Position();
 	_vector		vLook = vAt - vPosition;
-	_vector		vRight = XMVector3Cross(XMVectorSet(0.f, 1.f, 0.f, 0.f), vLook);
-	_vector		vUp = XMVector3Cross(vLook, vRight);
+	_matrix matLookAt = XMMatrixLookAtLH(vPosition, vAt, XMVectorSet(0.f, 1.f, 0.f, 0.f));
+	_matrix matWorldRot = XMMatrixInverse(nullptr, matLookAt);
 
-	Set_State(STATE::RIGHT, XMVector3Normalize(vRight) * vScaled.x);
-	Set_State(STATE::UP, XMVector3Normalize(vUp) * vScaled.y);
-	Set_State(STATE::LOOK, XMVector3Normalize(vLook) * vScaled.z);
-	//외적 결과로 나온 벡터들은 길이가 제멋대로림 그대로 행렬에 넣으면 물체의 크기가 변함 정규화를 통해 길이를 1로 만들어 순수 방향만 남깁
+	_vector vQuat = XMQuaternionRotationMatrix(matWorldRot);
+	XMStoreFloat4(&m_vRotationQuat, vQuat);
+	m_bIsDirty = true;
+}
+
+auto CTransform::Orbit(_fvector vTargetPos, _fvector vTargetQuat, _float fDistance, _float fPitch, _float fYaw) -> void
+{
+
+	// 1. 공전용 회전 쿼터니언 생성
+	_vector qOrbit = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(fPitch), XMConvertToRadians(fYaw), 0.f);
+
+	_vector qFinalOrbit = XMQuaternionMultiply(qOrbit, vTargetQuat);
+
+
+	_vector vOffset = XMVectorSet(0.f, 0.f, -fDistance, 0.f);
+	vOffset = XMVector3Rotate(vOffset, qFinalOrbit);
+
+	_vector vNewPos = vTargetPos + vOffset;
+
+
+	Set_Position(vNewPos);       // 위치 갱신
+	Set_Quaternion(qFinalOrbit);      // 회전 갱신 (타겟을 바라보게 됨)
+}
+
+void CTransform::Update_WorldMatrix()
+{
+	
+	_matrix matScale = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z);
+	_matrix matRot = XMMatrixRotationQuaternion(XMLoadFloat4(&m_vRotationQuat));
+	_matrix matTrans = XMMatrixTranslation(m_vPosition.x, m_vPosition.y, m_vPosition.z);
+
+	_matrix matWorld = matScale * matRot * matTrans;
+
+
+
+	/*matWorld *= */
+
+	if (m_pParentMatrix)
+	{
+		_matrix matParent = XMLoadFloat4x4(m_pParentMatrix);
+		matWorld *= matParent;
+	}
+
+	XMStoreFloat4x4(&m_WorldMatrix, matWorld);
+
+	m_bIsDirty = false;
 }
 
 void CTransform::OnGui()
 {
+	if (m_bIsDirty)
+		Update_WorldMatrix();
+
 	_float3 vPosition;
 	vPosition = _float3(m_WorldMatrix._41, m_WorldMatrix._42, m_WorldMatrix._43);
 
@@ -182,12 +275,20 @@ void CTransform::OnGui()
 
 		_vector vNextPos = XMLoadFloat3(&vPosition);
 		vNextPos = XMVectorSetW(vNextPos, 1.f);
-		Set_State(STATE::POSITION, vNextPos);
+		//Set_State(STATE::POSITION, vNextPos);
+		Set_Position(vNextPos);
 	}
 	// Rotation (각도 단위)
 	if (ImGui::DragFloat3("Rotation", (float*)&vEditRotation, 0.5f))
 	{
-
+		// 입력받은 Degree 각도를 쿼터니언으로 변환
+		_vector vQuat = XMQuaternionRotationRollPitchYaw(
+			XMConvertToRadians(vEditRotation.x),
+			XMConvertToRadians(vEditRotation.y),
+			XMConvertToRadians(vEditRotation.z)
+		);
+		Set_Quaternion(vQuat); // 여기서 m_bIsDirty = true 가 됨
+		m_bIsDirty = true;
 	}
 
 
@@ -235,7 +336,6 @@ void CTransform::Save_ToJson(nlohmann::json& j)
 {
 	j["Type"] = "Transform";
 	j["Position"] = { m_WorldMatrix._41,m_WorldMatrix._42, m_WorldMatrix._43, m_WorldMatrix._44 };
-	j["Scale"] = { Get_Scaled().x,Get_Scaled().y, Get_Scaled().z};
 	j["Rotation"] = {0.f,0.f,0.f,1.f};
 
 	j["Move Speed"] = m_fSpeedPerSec;
@@ -249,12 +349,16 @@ void CTransform::Load_FromJson(nlohmann::json& j)
 
 	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
 	_float4 f4 = { j["Position"][0], j["Position"][1] ,j["Position"][2] ,j["Position"][3] };
-	Set_State(STATE::POSITION,XMLoadFloat4(&f4));
+	//Set_State(STATE::POSITION,XMLoadFloat4(&f4));
+	Set_Position(XMLoadFloat4(&f4));
+
 	_float3 f3 = { j["Scale"][0], j["Scale"][1] ,j["Scale"][2] };
 	SetUp_Scale(f3.x, f3.y, f3.z);
 		//Rotation()
 	m_fSpeedPerSec = j["Move Speed"];
 	m_fRadianPerSec = j["Turn Speed"];
+
+	
 }
 
 

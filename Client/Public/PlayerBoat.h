@@ -5,6 +5,12 @@ NS_BEGIN(Engine)
 class CPlayerBoat :
     public CGameObject
 {
+public:
+    struct PLAYERBOAT_DESC : public CGameObject::GAMEOBJECT_DESC
+    {
+
+
+    };
 private:
     CPlayerBoat(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     CPlayerBoat(const CPlayerBoat& prototype);

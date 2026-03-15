@@ -104,7 +104,7 @@ public:/*For.Light_Manager*/
 	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
 
 public:/*For.Picking_Manager*/
-	
+	_bool Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag = L"Layer_BackGround", _uint TerrainIndex = 0);
 	_bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
 public:/*For.Camera_Manager*/
 	HRESULT Add_Camera(_uint camLevel, _wstring key, shared_ptr<class CCamera> cam);

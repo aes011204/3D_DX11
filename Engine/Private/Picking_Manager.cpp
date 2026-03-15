@@ -8,7 +8,7 @@
 
 
 CPicking_Manager::CPicking_Manager(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice{ pDevice }, m_pContext{ pContext }, 
+	: m_pDevice{ pDevice }, m_pContext{ pContext },
 	m_pGameInstance{ CGameInstance::GetInstance() }
 {
 }
@@ -22,7 +22,7 @@ HRESULT CPicking_Manager::Initialize()
 {
 
 
-    return S_OK;
+	return S_OK;
 }
 
 void CPicking_Manager::Update()
@@ -71,14 +71,14 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 	const _float4x4* World = pTransform->Get_WorldMatrix();
 	_matrix InvWorld = XMMatrixInverse(0, XMLoadFloat4x4(World));
 
-	LocalRay.position = XMVector3TransformCoord(LocalRay.position,InvWorld);
-	LocalRay.direction = XMVector3TransformNormal(LocalRay.direction,InvWorld);
+	LocalRay.position = XMVector3TransformCoord(LocalRay.position, InvWorld);
+	LocalRay.direction = XMVector3TransformNormal(LocalRay.direction, InvWorld);
 	// 4번째 성분에 0을 곱한다 이동(Translation)을 무시하기 위해서
-	
+
 	LocalRay.direction = XMVector3Normalize(LocalRay.direction);
 	// 길이를 1로 만듬 위에거랑 다른거임
-	
-		_ulong		dwVtxNumber[3]{};
+
+	_ulong		dwVtxNumber[3]{};
 	const _float3* pTerrainVtxPos = pBuffer->Get_VtxPos();
 	_uint pTerrainVtxNumX = pBuffer->Get_NumVerticeX();
 	_uint pTerrainVtxNumZ = pBuffer->Get_NumVerticeZ();
@@ -87,7 +87,7 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 
 	for (_ulong i = 0; i < pTerrainVtxNumZ - 1; ++i)
 	{
-		for (_ulong j = 0; j < pTerrainVtxNumX- 1; ++j)
+		for (_ulong j = 0; j < pTerrainVtxNumX - 1; ++j)
 		{
 			_ulong dwIndex = i * pTerrainVtxNumX + j;
 
@@ -110,7 +110,7 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 				_float3 result = {};
 				XMStoreFloat3(&result,
 					LocalRay.position + (LocalRay.direction * fDist));
-			
+
 				*pOutPos = result;
 				return true;
 
@@ -127,7 +127,7 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 			v1 = XMLoadFloat3(&pTerrainVtxPos[dwVtxNumber[1]]);
 			v2 = XMLoadFloat3(&pTerrainVtxPos[dwVtxNumber[2]]);
 
-			
+
 
 			fDist = 0.f;
 			if (DirectX::TriangleTests::Intersects(LocalRay.position, LocalRay.direction,
@@ -148,15 +148,86 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 	return false;
 }
 
-_bool CPicking_Manager::Picking_Terrain(  _wstring layerTag, _uint TerrainIndex, _float3* Out )
+_bool CPicking_Manager::Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out)
 {
 	_uint levelIndex = m_pGameInstance.lock()->Get_Current_LevelIdx();
 	auto terrain = m_pGameInstance.lock()->Get_GameObject(levelIndex, layerTag, TerrainIndex);
-	auto transform = dynamic_pointer_cast<CTransform>( terrain->Get_Component(g_strTransformTag));
+	auto transform = dynamic_pointer_cast<CTransform>(terrain->Get_Component(g_strTransformTag));
 	auto buffer = dynamic_pointer_cast<CVIBuffer_Terrain>(terrain->Get_Component(L"Com_VIBuffer"));
 
 	return Culaulate_Terrain(buffer.get(), transform.get(), Out);
 }
+
+
+_float CPicking_Manager::Calculate_HeightOnTerrain(const _fvector pPos,
+
+	const _fvector vPointA,
+	const _fvector vPointB,
+	const _fvector vPointC)
+{
+	_vector vPlane = XMPlaneFromPoints(vPointA, vPointB, vPointC);
+
+	// ax + by + cz + d = 0;
+
+	// by = -ax - cz - d
+
+	// y = (-ax - cz - d) / b;
+
+	return  (-XMVectorGetX(vPlane) * XMVectorGetX(pPos) - XMVectorGetZ(vPlane) * XMVectorGetZ(pPos) - XMVectorGetW(vPlane)) / XMVectorGetY(vPlane);
+}
+
+_bool CPicking_Manager::Compute_HeightOnTerrain(_wstring layerTag, _uint TerrainIndex, const _fvector pCurPos,  _float* Out)
+
+{
+
+	_uint levelIndex = m_pGameInstance.lock()->Get_Current_LevelIdx();
+	auto terrain = m_pGameInstance.lock()->Get_GameObject(levelIndex, layerTag, TerrainIndex);
+	auto transform = dynamic_pointer_cast<CTransform>(terrain->Get_Component(g_strTransformTag));
+	auto buffer = dynamic_pointer_cast<CVIBuffer_Terrain>(terrain->Get_Component(L"Com_VIBuffer"));
+
+	_uint dwCntX = buffer->Get_NumVerticeX();
+	_float3* pTerrainVtxPos = buffer->Get_VtxPos();
+	_float3 pPos = {};
+	XMStoreFloat3(&pPos,pCurPos);
+
+	_ulong		dwIndex = _ulong(pPos.z) * dwCntX + _ulong(pPos.x );
+
+	_float		fWidth = (pPos.x - pTerrainVtxPos[dwIndex + dwCntX].x) ;
+	_float		fHeight = (pTerrainVtxPos[dwIndex + dwCntX].z - pPos.z);
+
+	_vector		vPlane;
+
+	// ax + by + cz + d = 0;
+
+	// by = -ax - cz - d
+
+	// y = (-ax - cz - d) / b;
+
+	// 오른쪽 위
+	if (fWidth >= fHeight)
+	{
+		vPlane = XMPlaneFromPoints(
+			XMLoadFloat3(&pTerrainVtxPos[dwIndex + dwCntX]),
+			XMLoadFloat3(&pTerrainVtxPos[dwIndex + dwCntX + 1]),
+			XMLoadFloat3(&pTerrainVtxPos[dwIndex + 1]));
+		*Out = (-XMVectorGetX(vPlane) * XMVectorGetX(pCurPos) - XMVectorGetZ(vPlane) * XMVectorGetZ(pCurPos) - XMVectorGetW(vPlane)) / XMVectorGetY(vPlane);
+		return true;
+	}
+	// 왼쪽 아래
+	else if (fWidth < fHeight)
+	{
+		vPlane = XMPlaneFromPoints(
+			XMLoadFloat3(&pTerrainVtxPos[dwIndex + dwCntX]),
+			XMLoadFloat3(&pTerrainVtxPos[dwIndex + 1]),
+			XMLoadFloat3(&pTerrainVtxPos[dwIndex]));
+		*Out = (-XMVectorGetX(vPlane) * XMVectorGetX(pCurPos) - XMVectorGetZ(vPlane) * XMVectorGetZ(pCurPos) - XMVectorGetW(vPlane)) / XMVectorGetY(vPlane);
+		return true;
+	}
+	else
+		return false;
+
+}
+
 
 unique_ptr<CPicking_Manager> CPicking_Manager::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {

@@ -94,7 +94,7 @@ void CManagerWin::Render()
 				if (transform != nullptr)
 				{
 				_vector vec4 = XMVectorSetW(XMLoadFloat3(&Out), 1.f);
-				transform->Set_State(STATE::POSITION, vec4);
+				transform->Set_Position( vec4);
 
 				}
 

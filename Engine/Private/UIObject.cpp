@@ -70,7 +70,7 @@ HRESULT CUIObject::Render()
 void CUIObject::Update_Transform()
 {
 	m_pTransformCom->SetUp_Scale(m_fSizeX, m_fSizeY, 1.f);
-	m_pTransformCom->Set_State(STATE::POSITION,
+	m_pTransformCom->Set_Position(
 		XMVectorSet(m_fX - m_fViewportWidth * 0.5f, -m_fY + m_fViewportHeight * 0.5f, 0.f, 1.f));
 }
 

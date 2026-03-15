@@ -28,6 +28,10 @@ public:
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
 
+
+private:
+    void Start_Targetting(_float4 startPos, _float degree, _float distance);
+
 private:
     _float	m_fMouseSensor = {};
     weak_ptr<CGameObject> m_pTarget = {  };

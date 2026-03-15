@@ -39,7 +39,7 @@ HRESULT CCamera::Initialize(void* pArg)
 
 	CAMERA_DESC* pDesc = static_cast<CAMERA_DESC*>(pArg);
 
-	m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&pDesc->vEyes));
+	m_pTransformCom->Set_Position( XMLoadFloat4(&pDesc->vEyes));
 	m_pTransformCom->LookAt(XMLoadFloat4(&pDesc->vAt));
 
 	m_fFovy = pDesc->fFovY;

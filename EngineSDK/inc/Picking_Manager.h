@@ -15,7 +15,9 @@ public:
     void Update();   // 여기서 무거운거 한 번만 계산 후 캐싱
     _bool Culaulate_Terrain(class CVIBuffer_Terrain* pBuffer,class CTransform* pTransform, _float3* pOutPos);
     _bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
-
+    _float Calculate_HeightOnTerrain(_fvector pPos, _fvector vPointA, _fvector vPointB, _fvector vPointC);
+    _bool Compute_HeightOnTerrain(_wstring layerTag, _uint TerrainIndex, _fvector pCurPos, _float* Out);
+    _bool Compute_HeightOnTerrain(_wstring layerTag, _uint TerrainIndex, const _fvector pPos, _float3* Out);
 
 
     const Ray& GetRay() const { return m_CurrentRay; }

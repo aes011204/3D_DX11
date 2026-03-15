@@ -14,7 +14,12 @@ class ENGINE_DLL CTransform final:
 public:
     struct TRANSFOM_DESC
     {
-        _float4x4				WorldMatrix = {};
+        //_float4x4				WorldMatrix = {};
+
+        _float3 vPosition = { 0.f, 0.f, 0.f };
+        _float3 vRotationDegree = { 0.f, 0.f, 0.f };
+        _float3 vScale = { 1.f, 1.f, 1.f };
+
         _float					fSpeedPerSec = {};
         _float					fDegreePerSec = {};
     };
@@ -27,31 +32,70 @@ public:
 public:
     _vector Get_State(STATE eState)
     {
-        return XMLoadFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]));
+        //return XMLoadFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]));
+        switch(ETOI(eState))
+        {
+        case ETOI(STATE::POSITION):
+            return XMLoadFloat3(&m_vPosition);
+        case ETOI(STATE::LOOK):
+            return XMVector3Rotate(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMLoadFloat4(&m_vRotationQuat));
+        case ETOI(STATE::RIGHT):
+            return XMVector3Rotate(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMLoadFloat4(&m_vRotationQuat));
+        case ETOI(STATE::UP):
+            return XMVector3Rotate(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMLoadFloat4(&m_vRotationQuat));
+
+            //// 핵심 데이터 접근 (Get/Set)
+            //_vector Get_Position() { return XMLoadFloat3(&m_vPosition); }
+            //void Set_Position(_fvector vPos) { XMStoreFloat3(&m_vPosition, vPos); m_bIsDirty = true; }
+
+            //_vector Get_Quaternion() { return XMLoadFloat4(&m_vRotationQuat); }
+            //void Set_Quaternion(_fvector vQuat) { XMStoreFloat4(&m_vRotationQuat, vQuat); m_bIsDirty = true; }
+
+            //_float3 Get_Scale() { return m_vScale; }
+            //void Set_Scale(_float3 vScale) { m_vScale = vScale; m_bIsDirty = true; }
+        }
     }
 
     _float3 Get_Scaled()
     {
-        return _float3(
+        /*return _float3(
             XMVectorGetX(XMVector3Length(Get_State(STATE::RIGHT))),
             XMVectorGetX(XMVector3Length(Get_State(STATE::UP))),
             XMVectorGetX(XMVector3Length(Get_State(STATE::LOOK)))
-        );
+        );*/
+
+        return m_vScale;
     }
 
-    const _float4x4* Get_WorldMatrix() const {
+    const _float4x4* Get_WorldMatrix()  {
+        if (m_bIsDirty)
+            Update_WorldMatrix();
+
         return &m_WorldMatrix;
     }
 
-    void Set_State(STATE eState, _fvector vState)//
-    {
-        XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]), vState);
+    //void Set_State(STATE eState, _fvector vState)//
+    //{
+    //    XMStoreFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]), vState);
 
-        //if (eState == STATE::POSITION)
-        //{
-        //    m_WorldMatrix._44 = 1.f;
-        //}
-    }
+    //    //if (eState == STATE::POSITION)
+    //    //{
+    //    //    m_WorldMatrix._44 = 1.f;
+    //    //}
+
+    //    m_bIsDirty = true;
+    //}
+    _vector Get_Position() { return XMLoadFloat3(&m_vPosition); }
+    void Set_Position(_fvector vPos) { XMStoreFloat3(&m_vPosition, vPos); m_bIsDirty = true; }
+
+    _vector Get_Quaternion() { return XMLoadFloat4(&m_vRotationQuat); }
+    void Set_Quaternion(_fvector vQuat) { XMStoreFloat4(&m_vRotationQuat, vQuat); m_bIsDirty = true; }
+
+    _float3 Get_Scale() { return m_vScale; }
+    void Set_Scale(_float3 vScale) { m_vScale = vScale; m_bIsDirty = true; }
+
+    void Set_ParentMatrix(const _float4x4* pParentMatrix) { m_pParentMatrix = pParentMatrix; m_bIsDirty = true; }
+
 public:
     virtual HRESULT Initialize_Prototype() override;
     virtual HRESULT Initialize(void* pArg) override;
@@ -67,7 +111,6 @@ public:
     void Go_Left(_float fTimeDelta);
 
     void Go_Up(_float fTimeDelta);
-
     void Go_Down(_float fTimeDelta);
 
     void Rotation(_fvector vAxis, _float fDegree);//속도X 정해논 각도로 따라 항등상태에서 회전 하는거임
@@ -75,15 +118,29 @@ public:
 
     void LookAt(_fvector vAt);
 
+    void Orbit(_fvector vTargetPos, _fvector vTargetQuat, _float fDistance, _float fPitch, _float fYaw);
+
     void OnGui() override;
     virtual void Save_ToJson(nlohmann::json& j) override;
     virtual void Load_FromJson(nlohmann::json& j) override;
+
+
 private:
-    _float4x4				m_WorldMatrix = {};
+    _float4x4 m_WorldMatrix = {}; //저장소
+    _bool m_bIsDirty = true;
     _float					m_fSpeedPerSec = {};
     _float					m_fRadianPerSec = {};
 
+    _float3 m_vPosition = { 0.f, 0.f, 0.f };
+    _float4 m_vRotationQuat = { 0.f, 0.f, 0.f , 1.f};
+    _float3 m_vScale = { 1.f, 1.f, 1.f };
+
+    const _float4x4* m_pParentMatrix = {};
+
     //_float3 m_vScale = {};
+private:
+    void Update_WorldMatrix();
+
 public:
     static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     virtual shared_ptr<CComponent> Clone(void* pArg)override;

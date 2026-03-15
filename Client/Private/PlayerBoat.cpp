@@ -20,7 +20,12 @@ HRESULT CPlayerBoat::Initialize_Prototype()
 
 HRESULT CPlayerBoat::Initialize(void* pArg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+
+	PLAYERBOAT_DESC pDesc = {};
+	pDesc.fSpeedPerSec = 10.f;
+	pDesc.fDegreePerSec = 25.f;
+
+	if (FAILED(__super::Initialize(&pDesc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -35,12 +40,16 @@ void CPlayerBoat::Priority_Update(_float fTimeDelta)
 
 void CPlayerBoat::Update(_float fTimeDelta)
 {
+
+	//
+	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
+
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 
 
 	if (dinput->KeyPress(DIK_UP))
 	{
-		m_pTransformCom->Go_Forward(fTimeDelta*50.f);
+		m_pTransformCom->Go_Forward(fTimeDelta);
 	}
 
 	if (dinput->KeyPress(DIK_DOWN))
@@ -48,27 +57,61 @@ void CPlayerBoat::Update(_float fTimeDelta)
 		m_pTransformCom->Go_Backward(fTimeDelta);
 	}
 
-	if (dinput->KeyPress(DIK_LEFT))
-	{
-		m_pTransformCom->Go_Left(fTimeDelta);
-	}
-
 	if (dinput->KeyPress(DIK_RIGHT))
 	{
-		m_pTransformCom->Go_Right(fTimeDelta);
+		m_pTransformCom->Turn(XMLoadFloat4(&upDir),fTimeDelta);
 	}
 
-
-	if (dinput->KeyPress(DIK_E))
+	if (dinput->KeyPress(DIK_LEFT))
 	{
-		m_pTransformCom->Go_Up(fTimeDelta);
+		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
 	}
 
+	// 임시코드 /////////////////
+	_vector CurPos = m_pTransformCom->Get_Position();
 
-	if (dinput->KeyPress(DIK_Q))
-	{
-		m_pTransformCom->Go_Down(fTimeDelta);
-	}
+	_float fOut0 = {};
+	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fOut0);
+	_float3 fianlPos = { XMVectorGetX(CurPos), fOut0, XMVectorGetZ(CurPos) };
+	m_pTransformCom->Set_Position(XMLoadFloat3( &fianlPos));
+	//_float3 fianlPos = { XMVectorGetX(CurPos), fOut0, XMVectorGetZ(CurPos) };
+	_float3 fianlPos0 = { XMVectorGetX(CurPos), fOut0, XMVectorGetZ(CurPos) };
+
+	_float3 Pos1 = { XMVectorGetX(CurPos)+0.5f, XMVectorGetY(CurPos), XMVectorGetZ(CurPos) };
+	_float fOut1 = {};
+	m_pGameInstance.lock()->Compute_HeightOnTerrain(XMLoadFloat3(&Pos1), &fOut1);
+	_float3 fianlPos1 = { Pos1.x, fOut1, Pos1.z };
+
+
+	_float3 Pos2 = { XMVectorGetX(CurPos), XMVectorGetY(CurPos), XMVectorGetZ(CurPos) + 0.5f };
+	_float fOut2 = {};
+	m_pGameInstance.lock()->Compute_HeightOnTerrain(XMLoadFloat3(&Pos2), &fOut2);
+	_float3 fianlPos2 = { Pos2.x, fOut2, Pos2.z };
+
+
+	_vector vVecForward = XMLoadFloat3(&fianlPos1) - XMLoadFloat3(&fianlPos0);
+	_vector vVecRight = XMLoadFloat3(&fianlPos2) - XMLoadFloat3(&fianlPos1);
+
+	_vector FinalUpDir = XMVector3Normalize(XMVector3Cross(vVecRight,vVecForward));
+
+	_vector vOldShipForward = m_pTransformCom->Get_State(STATE::LOOK);
+
+	_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, vOldShipForward));
+
+	_vector FinalLookDir = XMVector3Normalize(XMVector3Cross(FinalRightDir, FinalUpDir));
+
+	_matrix NewRotationMatrix;
+	NewRotationMatrix.r[0] = FinalRightDir;
+	NewRotationMatrix.r[1] = FinalUpDir;
+	NewRotationMatrix.r[2] = FinalLookDir;
+	NewRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
+
+	m_pTransformCom->Set_Quaternion(XMQuaternionRotationMatrix(NewRotationMatrix));
+
+	/*_vector CurPo3 = m_pTransformCom->Get_Position();
+	_float fOut3 = {};
+	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fOut3);*/
+
 
 
 

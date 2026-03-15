@@ -392,8 +392,16 @@ HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
 	return m_pLight_Manager->Add_Light(LightDesc);
 }
 
+_bool CGameInstance::Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag, _uint TerrainIndex)
+{
+
+
+	return m_pPicking_Manager-> Compute_HeightOnTerrain(  layerTag, TerrainIndex, pPos, Out);
+}
+
 _bool CGameInstance::Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out)
 {
+
 	return m_pPicking_Manager->Picking_Terrain(layerTag, TerrainIndex, Out);
 }
 
