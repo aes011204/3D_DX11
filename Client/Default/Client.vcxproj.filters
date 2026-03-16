@@ -94,7 +94,7 @@
     <ClInclude Include="..\Public\Terrain.h">
       <Filter>02.GameObject</Filter>
     </ClInclude>
-    <ClInclude Include="EmptyGameObject.h">
+    <ClInclude Include="EmptyUObject.h">
       <Filter>02.GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Play.h">
@@ -120,6 +120,7 @@
     </ClInclude>
     <ClInclude Include="..\Public\UI_Storage.h" />
     <ClInclude Include="..\Public\PlayerBoat.h" />
+    <ClInclude Include="..\Public\EmptyGObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -175,7 +176,7 @@
     <ClCompile Include="..\Private\Terrain.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
-    <ClCompile Include="EmptyGameObject.cpp">
+    <ClCompile Include="EmptyUObject.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Play.cpp">
@@ -201,6 +202,7 @@
     </ClCompile>
     <ClCompile Include="..\Private\UI_Storage.cpp" />
     <ClCompile Include="..\Private\PlayerBoat.cpp" />
+    <ClCompile Include="..\Private\EmptyGObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

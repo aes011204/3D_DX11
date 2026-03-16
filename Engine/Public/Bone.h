@@ -13,7 +13,7 @@ public:
     HRESULT Initialize(const aiNode* pAINode, _int iParentBoneIndex);
 
     void Update_CombinedTransformMatrix(const vector<shared_ptr<CBone>> Bones, _fmatrix PreTransformMatrix);
-
+    void Update_TransformationMatrix(_fmatrix TransformMatrix);
 public:
     _bool isCompare(const _char* pBoneName) {return !strcmp(pBoneName, m_szName);}
     const _float4x4* Get_m_CombinedTransformationMatrixPtr() const { return &m_CombinedTransformationMatrix; }

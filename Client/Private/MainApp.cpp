@@ -5,7 +5,8 @@
 #include "Inventory.h"
 #include "Level_Loading.h"
 #include "EditorInstance.h"
-#include "EmptyGameObject.h"
+#include "EmptyUObject.h"
+#include "EmptyGObject.h"
 #include "Camera_Play.h"
 #include "Camera_Free.h"
 #include "Engine_Struct.h"
@@ -137,15 +138,41 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : Camera_Free");
 		return E_FAIL;
 	}
-
-	/* Prototype_Component_VIBuffer_Rect */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
-		CVIBuffer_Rect::Create(m_pDevice, m_pContext))))
+	////////////////////////////////////////////////
+	/* Prototype_Component_Shader_VtxNorTex */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxNorTex"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
 		return E_FAIL;
+	}
+
+	/* Prototype_Component_Shader_VtxMesh */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Shader_VtxAnimMesh */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
+		return E_FAIL;
+	}
 
 	/* Prototype_Component_Shader_VtxTex */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_VtxTex.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
+		return E_FAIL;
+
+	///////////////////////////////////////////////////////
+
+	/* Prototype_Component_VIBuffer_Rect */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
+		CVIBuffer_Rect::Create(m_pDevice, m_pContext))))
 		return E_FAIL;
 
 
@@ -158,16 +185,22 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	//}
 
 	/////////////////////////////////////////////
- /* Prototype_GameObject_EmptyGameObject */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_EmptyGameObject"),
-		CEmptyGameObject::Create(m_pDevice, m_pContext))))
+ /* Prototype_GameObject_CEmptyUObject */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_CEmptyUObject"),
+		CEmptyUObject::Create(m_pDevice, m_pContext))))
 	{
-		MSG_BOX("Faild to Add_Prototype : EmptyGameObject");
+		MSG_BOX("Faild to Add_Prototype : CEmptyUObject");
 		return E_FAIL;
 	}
 
 
-
+	/* Prototype_GameObject_CEmptyGObject */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_CEmptyGObject"),
+		CEmptyGObject::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CEmptyGObject");
+		return E_FAIL;
+	}
 
 
 	///////////////////UItexture/////////////////////

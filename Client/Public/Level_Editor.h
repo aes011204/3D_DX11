@@ -14,6 +14,9 @@ public:
 	virtual HRESULT Initialize() override;
 	virtual HRESULT Post_Initialize()override { return S_OK; };
 	virtual void Update(_float fTimeDelta) override;
+	HRESULT Ready_Lights();
+	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Camera(const _wstring& strLayerTag);
 	virtual HRESULT Render() override;
 
 	void OnGui()override;

@@ -3,6 +3,7 @@
 #include "Material.h"
 #include "Bone.h"
 #include "Converter_Struct.h"
+#include "Animation.h"
 
 CModel::CModel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CComponent(pDevice, pContext)
@@ -18,7 +19,9 @@ CModel::CModel(const CModel& Prototype)
 	m_Meshes{ Prototype.m_Meshes },
 	m_iNumMaterials{ Prototype.m_iNumMaterials },
 	m_Materials{ Prototype.m_Materials },
-	m_Bones{ Prototype.m_Bones }
+	m_Bones{ Prototype.m_Bones },
+	m_iNumAnimations{ Prototype.m_iNumAnimations },
+	m_Animations{ Prototype.m_Animations }
 
 {
 }
@@ -52,6 +55,12 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _
 		return E_FAIL;
 	if (FAILED(Ready_Material( InFile)))
 		return E_FAIL;
+	if (m_eType == MODEL::ANIM)
+	{
+		if (FAILED(Ready_Animations()))
+			return E_FAIL;
+	}
+
 	return S_OK;
 }
 
@@ -81,7 +90,8 @@ HRESULT CModel::Ready_Meshes(MODEL eType, ifstream& InFile)
 		shared_ptr<CMesh> pMesh = CMesh::Create(m_pDevice, m_pContext, eType, 
 			InFile,
 			static_pointer_cast<CModel>(shared_from_this()),
-			XMLoadFloat4x4(&m_PreLocalTransformMatrix));
+			XMLoadFloat4x4(&m_PreLocalTransformMatrix)
+		, m_pAIScene->mMeshes[i]);
 
 		if (nullptr == pMesh)
 			return E_FAIL;
@@ -148,9 +158,28 @@ HRESULT CModel::Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pCon
 	return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantNamem, m_Bones);
 }
 
+HRESULT CModel::Ready_Animations()
+{
+	m_iNumAnimations = m_pAIScene->mNumAnimations;
+
+	for (_uint i = 0; i < m_iNumAnimations; i++)
+	{
+		shared_ptr<CAnimation> pAnimation = CAnimation::Create(m_pAIScene->mAnimations[i], this);
+		if (nullptr == pAnimation)
+			return E_FAIL;
+
+		m_Animations.push_back(pAnimation);
+	}
+
+	return S_OK;
+}
+
 HRESULT CModel::Play_Animation(_float fTimeDelta)
 {
 	// 현제 애니메이션에 맞는 상태대로 뼈의 Transformation을 갱신해준다
+	_bool       isFinish = { false };
+	isFinish = m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_Bones, m_isAnimLoop);
+
 
 	// 모든뼈를 순회하면 CombinedTransformation을 셋팅 해준다
 
@@ -209,7 +238,13 @@ void CModel::Free()
 {
 	__super::Free();
 
+	m_Animations.clear();
+
+	m_Materials.clear();
+
 	m_Meshes.clear();
+
+	m_Bones.clear();
 
 	m_Importer.FreeScene();
 }

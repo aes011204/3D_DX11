@@ -33,6 +33,10 @@ HRESULT CTransform::Initialize(void* pArg)
 	m_fRadianPerSec = XMConvertToRadians(pDesc->fDegreePerSec);
 
 
+	m_vPosition = pDesc->vPosition;
+	m_vScale = pDesc->vScale;
+	m_vRotationDegree = pDesc->vRotationDegree;
+
 	return S_OK;
 }
 
@@ -141,30 +145,30 @@ void CTransform::Go_Down(_float fTimeDelta)
 	m_bIsDirty = true;
 }
 
-void CTransform::Rotation(_fvector vAxis, _float fDegree)
-{
-	//_float3 vScaled = Get_Scaled();
-	//
-	//// vector는 대입도 함수를 통해해야함 우리간 생각하는 구조가 아님
-	//_vector		vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f) * vScaled.x;
-	//_vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f) * vScaled.y;
-	//_vector		vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f) * vScaled.z;
-	//
-	//_matrix RotationMatrix = XMMatrixRotationAxis(vAxis, XMConvertToRadians(fDegree));
-	//
-	////XMVector3TransformNormal(); - w가 0 곱할떄 행렬의 이동(Translation) 성분을 무시
-	////XMVector3TransformCoord(); -w가 1 곱할떄 행렬의 이동(Translation) 성분이 적용
-	//// XMVector4Transform(); - w에 확실히 뭐가 잇는지 알고때만/ 4x4 행렬 곱하기 하는거임
-	//
-	//Set_State(STATE::RIGHT, XMVector3TransformNormal(vRight, RotationMatrix));
-	//Set_State(STATE::UP, XMVector3TransformNormal(vUp, RotationMatrix));
-	//Set_State(STATE::LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
-
-	_vector vQuat = XMQuaternionRotationAxis(vAxis, XMConvertToRadians(fDegree));
-
-	XMStoreFloat4(&m_vRotationQuat, vQuat);
-	m_bIsDirty = true;
-}
+//void CTransform::Rotation(_fvector vAxis, _float fDegree)
+//{
+//	//_float3 vScaled = Get_Scaled();
+//	//
+//	//// vector는 대입도 함수를 통해해야함 우리간 생각하는 구조가 아님
+//	//_vector		vRight = XMVectorSet(1.f, 0.f, 0.f, 0.f) * vScaled.x;
+//	//_vector		vUp = XMVectorSet(0.f, 1.f, 0.f, 0.f) * vScaled.y;
+//	//_vector		vLook = XMVectorSet(0.f, 0.f, 1.f, 0.f) * vScaled.z;
+//	//
+//	//_matrix RotationMatrix = XMMatrixRotationAxis(vAxis, XMConvertToRadians(fDegree));
+//	//
+//	////XMVector3TransformNormal(); - w가 0 곱할떄 행렬의 이동(Translation) 성분을 무시
+//	////XMVector3TransformCoord(); -w가 1 곱할떄 행렬의 이동(Translation) 성분이 적용
+//	//// XMVector4Transform(); - w에 확실히 뭐가 잇는지 알고때만/ 4x4 행렬 곱하기 하는거임
+//	//
+//	//Set_State(STATE::RIGHT, XMVector3TransformNormal(vRight, RotationMatrix));
+//	//Set_State(STATE::UP, XMVector3TransformNormal(vUp, RotationMatrix));
+//	//Set_State(STATE::LOOK, XMVector3TransformNormal(vLook, RotationMatrix));
+//
+//	_vector vQuat = XMQuaternionRotationAxis(vAxis, XMConvertToRadians(fDegree));
+//
+//	XMStoreFloat4(&m_vRotationQuat, vQuat);
+//	m_bIsDirty = true;
+//}
 
 void CTransform::Turn(_fvector vAxis, _float fTimeDelta)
 {
@@ -230,6 +234,39 @@ auto CTransform::Orbit(_fvector vTargetPos, _fvector vTargetQuat, _float fDistan
 	Set_Position(vNewPos);       // 위치 갱신
 	Set_Quaternion(qFinalOrbit);      // 회전 갱신 (타겟을 바라보게 됨)
 }
+
+
+
+_float3 CTransform::QuaternionToEuler(_float4 q)
+{
+	_float3 euler;
+
+	// Roll (X축 회전)
+	float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+	float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+	euler.x = std::atan2(sinr_cosp, cosr_cosp);
+
+	// Pitch (Y축 회전)
+	float sinp = 2 * (q.w * q.y - q.z * q.x);
+	if (std::abs(sinp) >= 1)
+		euler.y = std::copysign(XM_PI / 2.f, sinp);
+	else
+		euler.y = std::asin(sinp);
+
+	// Yaw (Z축 회전)
+	float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+	float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+	euler.z = std::atan2(siny_cosp, cosy_cosp);
+
+	// Radian -> Degree 변환
+	euler.x = XMConvertToDegrees(euler.x);
+	euler.y = XMConvertToDegrees(euler.y);
+	euler.z = XMConvertToDegrees(euler.z);
+
+	return euler;
+}
+
+
 
 void CTransform::Update_WorldMatrix()
 {
@@ -335,8 +372,11 @@ void CTransform::OnGui()
 void CTransform::Save_ToJson(nlohmann::json& j)
 {
 	j["Type"] = "Transform";
-	j["Position"] = { m_WorldMatrix._41,m_WorldMatrix._42, m_WorldMatrix._43, m_WorldMatrix._44 };
-	j["Rotation"] = {0.f,0.f,0.f,1.f};
+	j["Position"] = { m_vPosition.x, m_vPosition.y, m_vPosition.z };
+	j["Scale"] = { m_vScale.x, m_vScale.y, m_vScale.z };
+
+	
+	j["Rotation"] = {  m_vRotationDegree.x, m_vRotationDegree.y, m_vRotationDegree.z };
 
 	j["Move Speed"] = m_fSpeedPerSec;
 	j["Turn Speed"] = m_fRadianPerSec;
@@ -346,15 +386,24 @@ void CTransform::Save_ToJson(nlohmann::json& j)
 
 void CTransform::Load_FromJson(nlohmann::json& j)
 {
+	if (j.contains("Position")) {
+		XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
+		_float3 f3 = { j["Position"][0], j["Position"][1] ,j["Position"][2]  };
+		//Set_State(STATE::POSITION,XMLoadFloat4(&f4));
+		Set_Position(XMLoadFloat3(&f3));
+	}
 
-	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
-	_float4 f4 = { j["Position"][0], j["Position"][1] ,j["Position"][2] ,j["Position"][3] };
-	//Set_State(STATE::POSITION,XMLoadFloat4(&f4));
-	Set_Position(XMLoadFloat4(&f4));
-
-	_float3 f3 = { j["Scale"][0], j["Scale"][1] ,j["Scale"][2] };
-	SetUp_Scale(f3.x, f3.y, f3.z);
+	if (j.contains("Scale")) {
+		_float3 Scale = { j["Scale"][0], j["Scale"][1] ,j["Scale"][2] };
+		SetUp_Scale(Scale.x, Scale.y, Scale.z);
+	}
 		//Rotation()
+	if (j.contains("Rotation")) {
+		_float3 Rotaion = { j["Rotation"][0], j["Rotation"][1] ,j["Rotation"][2] };
+		Set_RotationDegree(Rotaion);
+
+	}
+
 	m_fSpeedPerSec = j["Move Speed"];
 	m_fRadianPerSec = j["Turn Speed"];
 

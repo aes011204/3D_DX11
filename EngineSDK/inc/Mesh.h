@@ -16,7 +16,7 @@ public:
 
 
 public:
-	virtual HRESULT Initialize_Prototype(MODEL eType, ifstream& InFile, shared_ptr<class CModel> pModel, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(MODEL eType, ifstream& InFile, shared_ptr<class CModel> pModel, _fmatrix PreTransformMatrix, const aiMesh* pAIMesh);
 	virtual HRESULT Initialize(void* pArg);
 
 
@@ -34,10 +34,10 @@ private:
 
 private:
 	HRESULT Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTransformMatrix);
-	HRESULT Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel>);
+	HRESULT Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel>, const aiMesh* pAIMesh);
 public:
-	static shared_ptr<CMesh> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, MODEL eType, ifstream& InFile, shared_ptr<CModel>
-	                                pModel, _fmatrix PreTransformMatrix);
+	static shared_ptr<CMesh> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, MODEL eType, ifstream& InFile, shared_ptr<class CModel>
+	                                pModel, _fmatrix PreTransformMatrix, const aiMesh* pAIMesh);
 	virtual shared_ptr<CComponent> Clone(void* pArg);
 	virtual void Free() override;
 };

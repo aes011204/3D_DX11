@@ -136,29 +136,29 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
-	/* Prototype_Component_Shader_VtxNorTex */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxNorTex"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
-		return E_FAIL;
-	}
+	///* Prototype_Component_Shader_VtxNorTex */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxNorTex"),
+	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
+	//	return E_FAIL;
+	//}
 
-	/* Prototype_Component_Shader_VtxMesh */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
-		return E_FAIL;
-	}
+	///* Prototype_Component_Shader_VtxMesh */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"),
+	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
+	//	return E_FAIL;
+	//}
 
-	/* Prototype_Component_Shader_VtxAnimMesh */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
-		return E_FAIL;
-	}
+	///* Prototype_Component_Shader_VtxAnimMesh */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
+	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
+	//	return E_FAIL;
+	//}
 
 	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
 
@@ -183,7 +183,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	//	return E_FAIL;
 	//}
 
-	 /* Prototype_Component_Model_ForkLift */
+	/* Prototype_Component_Model_ForkLift */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f,0.01f,0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_ForkLift"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/ForkLift/ForkLift.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
@@ -204,7 +204,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	/* Prototype_Component_Model_GM_Town */
 	PreLocalTransformMatrix =  XMMatrixScaling(0.01f,0.01f,0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Town"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/GM_TOWN/GM_Town.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/GM_TOWN/GM_Town_tx.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;

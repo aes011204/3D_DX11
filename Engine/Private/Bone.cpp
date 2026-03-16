@@ -33,6 +33,11 @@ void CBone::Update_CombinedTransformMatrix(const vector<shared_ptr<CBone>> Bones
     }
 }
 
+void CBone::Update_TransformationMatrix(_fmatrix TransformMatrix)
+{
+    XMStoreFloat4x4(&m_TransformationMatrix, TransformMatrix);
+}
+
 
 shared_ptr<CBone> CBone::Create(const aiNode* pAINode, _int iParentBoneIndex)
 {

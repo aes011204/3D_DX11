@@ -124,6 +124,17 @@ namespace Engine
      
     };
 
+    struct KEYFRAME
+    {
+        XMFLOAT3 vScale;
+        XMFLOAT4 vRotation;
+        XMFLOAT3 vTranslation;
+
+        float fTrackPosition;
+    };
+
+
+
     struct NINESLICE_DESC
     {
         _float2 TexOriginalSize = {};

@@ -1,0 +1,46 @@
+{
+    "Level": 4,
+    "WorldGameObject": [
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 3,
+                    "ComProtoTag": "Prototype_Component_Model_Town",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 3,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        47.012001037597656,
+                        10.199999809265137,
+                        52.86000061035156
+                    ],
+                    "Rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "Scale": [
+                        10.0,
+                        10.0,
+                        10.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        }
+    ]
+}

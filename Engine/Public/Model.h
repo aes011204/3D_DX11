@@ -30,6 +30,10 @@ public:
 	HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
 	HRESULT Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex);
 
+
+	HRESULT Ready_Animations(); // 각 뼈들이 시간에 따라서 어떤 상태를 띈다.
+
+
 	HRESULT Play_Animation(_float fTimeDelta);
 
 
@@ -54,6 +58,11 @@ private:
 	vector<shared_ptr<class CMaterial>> m_Materials={};
 
 	vector< shared_ptr<class CBone>> m_Bones = {};
+
+	_bool m_isAnimLoop = { false };
+	_uint m_iCurrentAnimIndex = {};
+	_uint m_iNumAnimations = {};
+	vector<shared_ptr<class CAnimation>> m_Animations;
 public:
 	static shared_ptr<CModel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
 	virtual shared_ptr<CComponent> Clone(void* pArg);

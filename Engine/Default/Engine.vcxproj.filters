@@ -58,11 +58,14 @@
     <Filter Include="01.Utility\04.Components\Model">
       <UniqueIdentifier>{1e6e43aa-e1a7-4729-8b57-0198b18e4bca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\04.Components\Model\assimp">
+    <Filter Include="01.Utility\04.Components\Model\Assimp">
       <UniqueIdentifier>{a336f244-07d2-4823-894c-c8af3175bb3f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="01.Utility\04.Components\Model\converter">
+    <Filter Include="01.Utility\04.Components\Model\Converter">
       <UniqueIdentifier>{2f91d600-09fc-4572-bdff-f35202218558}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="01.Utility\04.Components\Model\Converter\Anim">
+      <UniqueIdentifier>{71b5dfa4-e1e7-4ca1-8a95-ab6ad9b6f472}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -184,31 +187,37 @@
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Assimp_Bone.cpp">
-      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Assimp_Material.cpp">
-      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Assimp_Mesh.cpp">
-      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Assimp_Model.cpp">
-      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Bone.cpp">
-      <Filter>01.Utility\04.Components\Model\converter</Filter>
+      <Filter>01.Utility\04.Components\Model\Converter</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Material.cpp">
-      <Filter>01.Utility\04.Components\Model\converter</Filter>
+      <Filter>01.Utility\04.Components\Model\Converter</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Mesh.cpp">
-      <Filter>01.Utility\04.Components\Model\converter</Filter>
+      <Filter>01.Utility\04.Components\Model\Converter</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Model.cpp">
-      <Filter>01.Utility\04.Components\Model\converter</Filter>
+      <Filter>01.Utility\04.Components\Model\Converter</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Free.cpp">
       <Filter>01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Animation.cpp">
+      <Filter>01.Utility\04.Components\Model\Converter\Anim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Channel.cpp">
+      <Filter>01.Utility\04.Components\Model\Converter\Anim</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -355,28 +364,34 @@
     </ClInclude>
     <ClInclude Include="..\Public\Converter_Struct.h" />
     <ClInclude Include="..\Public\Assimp_Bone.h">
-      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Assimp_Material.h">
-      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Assimp_Mesh.h">
-      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Assimp_Model.h">
-      <Filter>01.Utility\04.Components\Model\assimp</Filter>
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Bone.h">
-      <Filter>01.Utility\04.Components\Model\converter</Filter>
+      <Filter>01.Utility\04.Components\Model\Converter</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Material.h">
-      <Filter>01.Utility\04.Components\Model\converter</Filter>
+      <Filter>01.Utility\04.Components\Model\Converter</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Mesh.h">
-      <Filter>01.Utility\04.Components\Model\converter</Filter>
+      <Filter>01.Utility\04.Components\Model\Converter</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Model.h">
-      <Filter>01.Utility\04.Components\Model\converter</Filter>
+      <Filter>01.Utility\04.Components\Model\Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Animation.h">
+      <Filter>01.Utility\04.Components\Model\Converter\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Channel.h">
+      <Filter>01.Utility\04.Components\Model\Converter\Anim</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -89,8 +89,29 @@ public:
     void Set_Position(_fvector vPos) { XMStoreFloat3(&m_vPosition, vPos); m_bIsDirty = true; }
 
     _vector Get_Quaternion() { return XMLoadFloat4(&m_vRotationQuat); }
-    void Set_Quaternion(_fvector vQuat) { XMStoreFloat4(&m_vRotationQuat, vQuat); m_bIsDirty = true; }
+    void Set_Quaternion(_fvector vQuat)
+	{
+    	XMStoreFloat4(&m_vRotationQuat, vQuat);
 
+        _float4 q = {};
+        XMStoreFloat4(&q, vQuat);
+        m_vRotationDegree = QuaternionToEuler(q);
+    	m_bIsDirty = true;
+	}
+    _float3 Get_RotationDegree() { return m_vRotationDegree; };
+    void Set_RotationDegree(_float3 vRotation)
+    {
+        m_vRotationDegree = vRotation;
+
+        _vector vRadian = XMVectorSet(
+            XMConvertToRadians(m_vRotationDegree.x),
+            XMConvertToRadians(m_vRotationDegree.y),
+            XMConvertToRadians(m_vRotationDegree.z), 0.f);
+
+        XMStoreFloat4(&m_vRotationQuat, XMQuaternionRotationRollPitchYawFromVector(vRadian));
+        m_bIsDirty = true;
+    }
+    
     _float3 Get_Scale() { return m_vScale; }
     void Set_Scale(_float3 vScale) { m_vScale = vScale; m_bIsDirty = true; }
 
@@ -113,7 +134,7 @@ public:
     void Go_Up(_float fTimeDelta);
     void Go_Down(_float fTimeDelta);
 
-    void Rotation(_fvector vAxis, _float fDegree);//속도X 정해논 각도로 따라 항등상태에서 회전 하는거임
+   // void Rotation(_fvector vAxis, _float fDegree);//속도X 정해논 각도로 따라 항등상태에서 회전 하는거임
     void Turn(_fvector vAxis, _float fTimeDelta);//나한테 저장된 회전 속도 만큼 서서히 회전
 
     void LookAt(_fvector vAt);
@@ -125,6 +146,7 @@ public:
     virtual void Load_FromJson(nlohmann::json& j) override;
 
 
+    _float3 QuaternionToEuler(_float4 q);
 private:
     _float4x4 m_WorldMatrix = {}; //저장소
     _bool m_bIsDirty = true;
@@ -132,6 +154,7 @@ private:
     _float					m_fRadianPerSec = {};
 
     _float3 m_vPosition = { 0.f, 0.f, 0.f };
+    _float3 m_vRotationDegree = { 0.f, 0.f, 0.f };
     _float4 m_vRotationQuat = { 0.f, 0.f, 0.f , 1.f};
     _float3 m_vScale = { 1.f, 1.f, 1.f };
 
