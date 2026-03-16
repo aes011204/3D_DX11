@@ -7,6 +7,8 @@
 #include "VIBuffer_Terrain.h"
 #include "Monster.h"
 #include "PlayerBoat.h"
+#include "Assimp_Model.h"
+#include "Monster_Anim.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: m_pDevice(pDevice), m_pContext(pContext),
@@ -174,14 +176,14 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
 
-	///* Prototype_Component_Model_Fiona */
-	//PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
-	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
-	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Fiona/Fiona.dat",MODEL::ANIM, PreLocalTransformMatrix))))
-	//{
-	//	MSG_BOX("Faild to Add_Prototype : Model_Fiona");
-	//	return E_FAIL;
-	//}
+	/* Prototype_Component_Model_Fiona */
+	PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
+		CAssimp_Model::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Fiona/Fiona.fbx",MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Model_Fiona");
+		return E_FAIL;
+	}
 
 	/* Prototype_Component_Model_ForkLift */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f,0.01f,0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
@@ -224,6 +226,15 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		CMonster::Create(m_pDevice, m_pContext))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GameObject_Monster");
+		return E_FAIL;
+	}
+
+
+	/* Prototype_GameObject_Monster_Anim */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster_Anim"),
+		CMonster_Anim::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Prototype_GameObject_Monster_Anim");
 		return E_FAIL;
 	}
 

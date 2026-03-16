@@ -164,6 +164,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster_Anim"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

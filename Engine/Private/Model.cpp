@@ -91,7 +91,7 @@ HRESULT CModel::Ready_Meshes(MODEL eType, ifstream& InFile)
 			InFile,
 			static_pointer_cast<CModel>(shared_from_this()),
 			XMLoadFloat4x4(&m_PreLocalTransformMatrix)
-		, m_pAIScene->mMeshes[i]);
+		);
 
 		if (nullptr == pMesh)
 			return E_FAIL;

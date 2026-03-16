@@ -36,7 +36,10 @@ public:
 
 	HRESULT Play_Animation(_float fTimeDelta);
 
-
+	void Set_Animation(_uint iIndex, _bool isLoop) {
+		m_iCurrentAnimIndex = iIndex;
+		m_isAnimLoop = isLoop;
+	}
 
 	public:
 	size_t Get_NumMeshes() { return m_Meshes.size(); }

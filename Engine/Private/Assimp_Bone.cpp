@@ -33,6 +33,11 @@ void CAssimp_Bone::Update_CombinedTransformMatrix(const vector<shared_ptr<CAssim
     }
 }
 
+void CAssimp_Bone::Update_TransformationMatrix(_fmatrix TransformMatrix)
+{
+    XMStoreFloat4x4(&m_TransformationMatrix, TransformMatrix);
+}
+
 
 shared_ptr<CAssimp_Bone> CAssimp_Bone::Create(const aiNode* pAINode, _int iParentBoneIndex)
 {

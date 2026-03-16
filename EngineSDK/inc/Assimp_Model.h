@@ -30,9 +30,13 @@ public:
 	HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
 	HRESULT Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex);
 
+	HRESULT Ready_Animations();
 	HRESULT Play_Animation(_float fTimeDelta);
 
-
+	void Set_Animation(_uint iIndex, _bool isLoop) {
+		m_iCurrentAnimIndex = iIndex;
+		m_isAnimLoop = isLoop;
+	}
 
 	public:
 	size_t Get_NumMeshes() { return m_Meshes.size(); }
@@ -54,6 +58,11 @@ private:
 	vector<shared_ptr<class CAssimp_Material>> m_Materials={};
 
 	vector< shared_ptr<class CAssimp_Bone>> m_Bones = {};
+
+	_bool m_isAnimLoop = { false };
+	_uint m_iCurrentAnimIndex = {};
+	_uint m_iNumAnimations = {};
+	vector<shared_ptr<class CAssimp_Animation>> m_Animations;
 public:
 	static shared_ptr<CAssimp_Model> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
 	virtual shared_ptr<CComponent> Clone(void* pArg);

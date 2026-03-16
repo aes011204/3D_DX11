@@ -2,6 +2,7 @@
 #include "Assimp_Mesh.h"
 #include "Assimp_Material.h"
 #include "Assimp_Bone.h"
+#include "Assimp_Animation.h"
 
 CAssimp_Model::CAssimp_Model(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
     : CComponent(pDevice, pContext)
@@ -17,7 +18,9 @@ CAssimp_Model::CAssimp_Model(const CAssimp_Model& Prototype)
     m_Meshes{Prototype.m_Meshes},
     m_iNumMaterials{ Prototype.m_iNumMaterials },
     m_Materials{ Prototype.m_Materials },
-	m_Bones{Prototype.m_Bones}
+	m_Bones{Prototype.m_Bones},
+    m_iNumAnimations{ Prototype.m_iNumAnimations },
+    m_Animations{ Prototype.m_Animations }
 
 {
 }
@@ -48,6 +51,8 @@ HRESULT CAssimp_Model::Initialize_Prototype(const _char* pModelFilePath, MODEL e
     if (FAILED(Ready_Meshes(eType)))
         return E_FAIL;
     if (FAILED(Ready_Material(pModelFilePath)))
+        return E_FAIL;
+    if (FAILED(Ready_Animations()))
         return E_FAIL;
     return S_OK;
 }
@@ -110,6 +115,8 @@ HRESULT CAssimp_Model::Bind_Material(shared_ptr<CShader> pShader,  const _char* 
     return m_Materials[m_Meshes[iMeshIndex]->Get_MaterialIndex()]->Bind_Material(pShader, pConstantName, eMaterialType, iTextureIndex);
 }
 
+
+
 HRESULT CAssimp_Model::Ready_Bones(const aiNode* pAINode, _int iParentIndex)
 {
     shared_ptr<CAssimp_Bone> pBone = CAssimp_Bone::Create(pAINode, iParentIndex);
@@ -133,13 +140,32 @@ HRESULT CAssimp_Model::Bind_BoneMatrices(shared_ptr<CShader> pShader, const _cha
     return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantNamem, m_Bones);
 }
 
+HRESULT CAssimp_Model::Ready_Animations()
+{
+    m_iNumAnimations = m_pAIScene->mNumAnimations;
+
+    for (_uint i = 0; i < m_iNumAnimations; i++)
+    {
+        shared_ptr<CAssimp_Animation> pAnimation = CAssimp_Animation::Create(m_pAIScene->mAnimations[i], static_pointer_cast<CAssimp_Model>(shared_from_this()));
+        if (nullptr == pAnimation)
+            return E_FAIL;
+
+        m_Animations.push_back(pAnimation);
+    }
+
+    return S_OK;
+}
+
 HRESULT CAssimp_Model::Play_Animation(_float fTimeDelta)
 {
     // 현제 애니메이션에 맞는 상태대로 뼈의 Transformation을 갱신해준다
+    _bool       isFinish = { false };
+    isFinish = m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_Bones, m_isAnimLoop);
+
 
     // 모든뼈를 순회하면 CombinedTransformation을 셋팅 해준다
 
-    for(auto& pBone :m_Bones)
+    for (auto& pBone : m_Bones)
     {
         pBone->Update_CombinedTransformMatrix(m_Bones, XMLoadFloat4x4(&m_PreLocalTransformMatrix));
     }

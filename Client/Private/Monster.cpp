@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Model.h"
 
+
 CMonster::CMonster(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CGameObject{ pDevice ,pContext }
 {

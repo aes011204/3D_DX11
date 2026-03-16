@@ -219,6 +219,12 @@
     <ClCompile Include="..\Private\Channel.cpp">
       <Filter>01.Utility\04.Components\Model\Converter\Anim</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Assimp_Animation.cpp">
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Assimp_Channel.cpp">
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -392,6 +398,12 @@
     </ClInclude>
     <ClInclude Include="..\Public\Channel.h">
       <Filter>01.Utility\04.Components\Model\Converter\Anim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Assimp_Animation.h">
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Assimp_Channel.h">
+      <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

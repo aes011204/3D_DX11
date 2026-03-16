@@ -12,7 +12,7 @@ CAssimp_Mesh::CAssimp_Mesh(const CAssimp_Mesh& Prototype)
 {
 }
 
-HRESULT CAssimp_Mesh::Initialize_Prototype(MODEL eType, const aiMesh* pAIMesh, shared_ptr<CModel> pModel, _fmatrix PreTransformMatrix)
+HRESULT CAssimp_Mesh::Initialize_Prototype(MODEL eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix)
 {
 	m_iMaterialIndex = pAIMesh->mMaterialIndex;
 	
