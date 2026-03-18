@@ -103,8 +103,8 @@ public:
 		return S_OK;
 	};
 
-protected:
 	_bool m_bIsDirtyCom = {true};// 처음은 해야하니까
+protected:
 
     map<const _wstring, class shared_ptr<CComponent> > m_Components;
 

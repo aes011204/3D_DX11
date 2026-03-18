@@ -243,6 +243,12 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 
 		OnUpdate(fTimeDelta);
 
+
+		for (auto& it : m_behavior)
+		{
+			it->Tick(fTimeDelta, this);
+		}
+
 		if (!m_bRenderReady)
 			m_bRenderReady = true;
 

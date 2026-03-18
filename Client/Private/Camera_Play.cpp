@@ -13,7 +13,7 @@ CCamera_Play::CCamera_Play(const CCamera& prototype)
 
 HRESULT CCamera_Play::Initialize_Prototype()
 {
-    return S_OK;
+	return S_OK;
 }
 
 HRESULT CCamera_Play::Initialize(void* pArg)
@@ -27,7 +27,10 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-    return S_OK;
+
+	m_fMouseSensor = 0.2f;
+
+	return S_OK;
 }
 
 void CCamera_Play::Priority_Update(_float fTimeDelta)
@@ -38,46 +41,52 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 
 	_long dx = dinput->Get_DIMouseMove(DIMM::X);
 	_long dy = dinput->Get_DIMouseMove(DIMM::Y);
-
-
-
-	m_Yaw += dx;
 	
-	m_Pitch += dy;
-	
-	_float speed = 10.f;
-	//m_time += fTimeDelta;
-	if(dx ==0 && dy==0)
-	{
 
-		m_Yaw += (m_pTargetTransform.lock()->Get_RotationDegree().y - m_Yaw) * speed * fTimeDelta;
-		//m_Pitch += (m_pTargetTransform.lock()->Get_RotationDegree().x - m_Pitch) * (speed/10) * fTimeDelta;
-		//if (m_Yaw > 0)
-		//	m_Yaw -= speed* fTimeDelta;
-		//if (m_Yaw < 0)
-		//	m_Yaw += speed* fTimeDelta;
-		//
-		//if (m_Pitch > 0)
-		//	m_Pitch -= speed* fTimeDelta;
-		//if (m_Pitch < 0)
-		//	m_Pitch += speed* fTimeDelta;
-
-	}
-		//m_Yaw= clamp(m_Yaw, -90.f, 90.f);
-		//m_Pitch = clamp(m_Pitch, -90.f, 90.f);
 
 
 	// 타겟을 항상 보고있다
 	if (auto pTarget = m_pTarget.lock())
 	{
-		// 타겟살아있을떄
-		_float pitch = m_Pitch + 45.f;
-		//pitch = max(5.f, pitch);
 
-		float yawRad = XMConvertToRadians(m_Yaw +180.f);
-		float pitchRad = XMConvertToRadians(m_Pitch +45.f);
+		m_Yaw += dx *m_fMouseSensor;
+		m_Pitch += dy * m_fMouseSensor;
+		_float speed = 5.f;
+		//m_time += fTimeDelta;
+		if (dx == 0 && dy == 0)
+		{
+			float delta = m_pTargetTransform.lock()->Get_RotationDegree().y - m_Yaw;
+			if (delta >= 180.f) delta -= 360.f;
+			if (delta < -180.f) delta += 360.f;
+
+			m_Yaw += delta * speed * fTimeDelta;
+		}
+
+		// 피치가 0 min 에가까워지면 distance 줄고 max에 가까워질수록 distance 멀어짐
+
+		m_MinPitch = 5.f;
+		m_MaxPitch = 80.f;
+		_float normalizePitch = (m_Pitch- m_MinPitch) / (m_MaxPitch - m_MinPitch);
+
+		m_MinDistance = 5.f;
+		m_MaxDistance = 20.f;
 
 		m_fDistance = 20.f;
+
+		m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
+
+		m_Pitch = clamp(m_Pitch, m_MinPitch, m_MaxPitch);
+
+		_float3 BasePosition = { 180.f, 45.f, 0.f };
+		float finalAngleYaw = m_Yaw + BasePosition.x;
+		float finalAnglePitch = m_Pitch /*+ BasePosition.y*/;
+
+		//finalAnglePitch = clamp(finalAnglePitch, -80.f, 80.f);
+
+
+		float yawRad = XMConvertToRadians(finalAngleYaw);
+		float pitchRad = XMConvertToRadians(finalAnglePitch);
+
 
 		float x = m_fDistance * cosf(pitchRad) * sinf(yawRad);
 		float y = m_fDistance * sinf(pitchRad);
@@ -89,19 +98,26 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 
 		_vector camPos = targetPos + offset;
 
-		m_pTransformCom->Set_Position(camPos);
+		_vector newPos = XMVectorLerp(m_pTransformCom->Get_Position(), camPos, 8.f * fTimeDelta);
+
+		
+
+		m_pTransformCom->Set_Position(newPos);
 
 		//m_pTransformCom->Orbit(m_pTargetTransform.lock()->Get_Position(), m_pTargetTransform.lock()->Get_RotationDegree(), 20.f, pitch , m_Yaw);
 		m_pTransformCom->LookAt(m_pTargetTransform.lock()->Get_Position());
 
 
 
-
-		// 클램프 바다 밑으로 못들어가게
-
 	}
 	__super::Update_TransformMatrices();
 
+}
+
+
+void CCamera_Play::SetTarget(weak_ptr<CGameObject> target, _float startPitchAngle, _float startYawAngle, _float startDistance , _float fTimeDelta)
+{
+	
 }
 
 void CCamera_Play::Update(_float fTimeDelta)
@@ -115,7 +131,7 @@ void CCamera_Play::Late_Update(_float fTimeDelta)
 
 HRESULT CCamera_Play::Render()
 {
-    return S_OK;
+	return S_OK;
 }
 
 void CCamera_Play::Start_Targetting(_float4 startPos, _float degree, _float distance)
@@ -125,7 +141,7 @@ void CCamera_Play::Start_Targetting(_float4 startPos, _float degree, _float dist
 
 shared_ptr<CCamera_Play> CCamera_Play::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
-	shared_ptr<CCamera_Play> pInstance(new CCamera_Play(pDevice, pContext), [](CCamera* p) {p->Free(); delete p;});
+	shared_ptr<CCamera_Play> pInstance(new CCamera_Play(pDevice, pContext), [](CCamera* p) {p->Free(); delete p; });
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
@@ -136,7 +152,7 @@ shared_ptr<CCamera_Play> CCamera_Play::Create(ComPtr<ID3D11Device> pDevice, ComP
 
 shared_ptr<CGameObject> CCamera_Play::Clone(void* pArg)
 {
-	shared_ptr<CCamera_Play> pInstance(new CCamera_Play(*this), [](CCamera* p) {p->Free(); delete p;});
+	shared_ptr<CCamera_Play> pInstance(new CCamera_Play(*this), [](CCamera* p) {p->Free(); delete p; });
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{

@@ -23,13 +23,16 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 
 	PLAYERBOAT_DESC pDesc = {};
 	pDesc.fSpeedPerSec = 10.f;
-	pDesc.fDegreePerSec = 25.f;
+	pDesc.fDegreePerSec = 40.f;
 
 	if (FAILED(__super::Initialize(&pDesc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+
+	_float3 tmp = { 5.f, 5.f, 5.f };
+	m_pTransformCom->Set_Position(XMLoadFloat3(&tmp));
 
 	return S_OK;
 }
@@ -67,52 +70,61 @@ void CPlayerBoat::Update(_float fTimeDelta)
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
 	}
 
-	// 임시코드 ///////////////// 3점 -> 4점으로 수정예정 + 코드 정리 
+	// 임시코드 ///////////////// 3점 -> 4점으로 수정예정 + 코드 정리
+	//
 	_vector CurPos = m_pTransformCom->Get_Position();
 
-	_float fOut0 = {};
-	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fOut0);
-	_float3 fianlPos = { XMVectorGetX(CurPos), fOut0, XMVectorGetZ(CurPos) };
+	//중점으로 y 위치
+	{
+	_float fFinalPosY= {};
+	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fFinalPosY);
+	_float3 fianlPos = { XMVectorGetX(CurPos), fFinalPosY, XMVectorGetZ(CurPos) };
 	m_pTransformCom->Set_Position(XMLoadFloat3( &fianlPos));
-	//_float3 fianlPos = { XMVectorGetX(CurPos), fOut0, XMVectorGetZ(CurPos) };
-	_float3 fianlPos0 = { XMVectorGetX(CurPos), fOut0, XMVectorGetZ(CurPos) };
+		
+	}
 
-	_float3 Pos1 = { XMVectorGetX(CurPos)+0.5f, XMVectorGetY(CurPos), XMVectorGetZ(CurPos) };
-	_float fOut1 = {};
-	m_pGameInstance.lock()->Compute_HeightOnTerrain(XMLoadFloat3(&Pos1), &fOut1);
-	_float3 fianlPos1 = { Pos1.x, fOut1, Pos1.z };
+	// 4점 으로 기울기 + 보간
+	{
+		_float3 FRBL[4] = { { 0.f,  0.f,0.5f }, { 1.f,0.f,0.f} , { 0.f, 0.f,-0.5f }, { -1.f, 0.f, 0.f, } };
+		_vector Pos[4];
+		_float3 fianlPosFRBL[4];
+		for(_uint i =0; i < 4; i++)
+		{
+			Pos[i] = CurPos + XMLoadFloat3(&FRBL[i]) ;
+			_float fOut1 = {};
+			m_pGameInstance.lock()->Compute_HeightOnTerrain(Pos[i], &fOut1);
+			fianlPosFRBL[i] = { XMVectorGetX( Pos[i]), fOut1, XMVectorGetZ(Pos[i])};
+		}
 
+		_vector forwordDir = XMLoadFloat3(&fianlPosFRBL[0]) - XMLoadFloat3(&fianlPosFRBL[2]);
+		_vector RightDir = XMLoadFloat3(&fianlPosFRBL[1]) - XMLoadFloat3(&fianlPosFRBL[3]);
 
-	_float3 Pos2 = { XMVectorGetX(CurPos), XMVectorGetY(CurPos), XMVectorGetZ(CurPos) + 0.5f };
-	_float fOut2 = {};
-	m_pGameInstance.lock()->Compute_HeightOnTerrain(XMLoadFloat3(&Pos2), &fOut2);
-	_float3 fianlPos2 = { Pos2.x, fOut2, Pos2.z };
+		forwordDir = XMVector3Normalize(forwordDir);
+		RightDir = XMVector3Normalize(RightDir);
 
+		_vector FinalUpDir = XMVector3Normalize(XMVector3Cross(forwordDir, RightDir));
 
-	_vector vVecForward = XMLoadFloat3(&fianlPos1) - XMLoadFloat3(&fianlPos0);
-	_vector vVecRight = XMLoadFloat3(&fianlPos2) - XMLoadFloat3(&fianlPos1);
+		_vector vOldShipForward = m_pTransformCom->Get_State(STATE::LOOK);
 
-	_vector FinalUpDir = XMVector3Normalize(XMVector3Cross(vVecRight,vVecForward));
+		_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, vOldShipForward));
 
-	_vector vOldShipForward = m_pTransformCom->Get_State(STATE::LOOK);
+		_vector FinalLookDir = XMVector3Normalize(XMVector3Cross(FinalRightDir, FinalUpDir));
 
-	_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, vOldShipForward));
+		_matrix NewRotationMatrix;
+		NewRotationMatrix.r[0] = FinalRightDir;
+		NewRotationMatrix.r[1] = FinalUpDir;
+		NewRotationMatrix.r[2] = FinalLookDir;
+		NewRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
 
-	_vector FinalLookDir = XMVector3Normalize(XMVector3Cross(FinalRightDir, FinalUpDir));
+		_vector targetQuat = XMQuaternionRotationMatrix(NewRotationMatrix);
+		targetQuat = XMQuaternionNormalize(targetQuat);
+		_vector currentQuat = m_pTransformCom->Get_Quaternion();
 
-	_matrix NewRotationMatrix;
-	NewRotationMatrix.r[0] = FinalRightDir;
-	NewRotationMatrix.r[1] = FinalUpDir;
-	NewRotationMatrix.r[2] = FinalLookDir;
-	NewRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
+		_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 4.f*fTimeDelta);
 
-
-	_vector targetQuat = XMQuaternionRotationMatrix(NewRotationMatrix);
-	_vector currentQuat = m_pTransformCom->Get_Quaternion();
+		m_pTransformCom->Set_Quaternion(smoothQuat);
+	}
 	
-	_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 0.1f);
-
-	m_pTransformCom->Set_Quaternion(smoothQuat);
 
 	/*_vector CurPo3 = m_pTransformCom->Get_Position();
 	_float fOut3 = {};

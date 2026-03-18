@@ -12,12 +12,12 @@ public:
 
 public:
 	HRESULT Initialize(ifstream& InFile);
-	void Update_TransformationMatrix(_float fCurrentTrackPosition, const vector<shared_ptr<class CBone>>& Bones);
+	void Update_TransformationMatrix(_uint* pCurrentKeyFrameIndex, _float fCurrentTrackPosition, const vector<shared_ptr<class CBone>>& Bones);
 
 private:
 	vector<KEYFRAME> m_KeyFrames;
 	_uint m_iNumKeyFrames = {};
-	_uint m_iCurrentKeyFrameIndex = { 0 };
+	//_uint m_iCurrentKeyFrameIndex = { 0 };
 	_int m_iBoneIndex = { -1 };
 
 public:

@@ -24,6 +24,8 @@ public:
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(void* pArg);
     virtual void Priority_Update(_float fTimeDelta);
+    void SetTarget(weak_ptr<CGameObject> target, _float startPitchAngle, _float startYawAngle, _float startDistance,
+                   _float fTimeDelta);
     virtual void Update(_float fTimeDelta);
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
@@ -37,6 +39,12 @@ private:
     weak_ptr<CGameObject> m_pTarget = {  };
     weak_ptr<CTransform> m_pTargetTransform = {  };
 
+
+    _float m_MinPitch = 5.f;
+    _float m_MaxPitch = 90.f;
+
+    _float m_MinDistance = 5.f;
+    _float m_MaxDistance = 90.f;
 
     _float m_Yaw = {};
     _float m_Pitch = {};

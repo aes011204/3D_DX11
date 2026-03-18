@@ -12,18 +12,26 @@ CModel::CModel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContex
 
 CModel::CModel(const CModel& Prototype)
 	:CComponent{ Prototype },
-	m_pAIScene{ Prototype.m_pAIScene },
 	m_eType{ Prototype.m_eType },
 	m_PreLocalTransformMatrix{ Prototype.m_PreLocalTransformMatrix },
 	m_iNumMeshes{ Prototype.m_iNumMeshes },
 	m_Meshes{ Prototype.m_Meshes },
 	m_iNumMaterials{ Prototype.m_iNumMaterials },
 	m_Materials{ Prototype.m_Materials },
-	m_Bones{ Prototype.m_Bones },
-	m_iNumAnimations{ Prototype.m_iNumAnimations },
-	m_Animations{ Prototype.m_Animations }
+	//m_Bones{ Prototype.m_Bones },
+	m_iNumAnimations{ Prototype.m_iNumAnimations }
+	//m_Animations{ Prototype.m_Animations }
 
 {
+	for(auto& PrototypeAnim : Prototype.m_Animations)
+	{
+		m_Animations.push_back(PrototypeAnim->Clone());
+	}
+	for (auto& PrototypeBone : Prototype.m_Bones )
+	{
+		m_Bones.push_back(PrototypeBone->Clone());
+	}
+
 }
 
 HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix)
@@ -279,5 +287,5 @@ void CModel::Free()
 
 	m_Bones.clear();
 
-	m_Importer.FreeScene();
+
 }

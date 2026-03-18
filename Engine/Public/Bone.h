@@ -27,6 +27,7 @@ private:
 public:
    
     static shared_ptr<CBone> Create(const Cvt_Bone& BoneDesc);
+	shared_ptr<CBone> Clone();
     void Free() override;
 
 

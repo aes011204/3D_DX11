@@ -9,7 +9,7 @@ NS_BEGIN(Client)
 class CScaleModifier :public IModifier
 {
 public:
-	CScaleModifier(_float range, _float speed, _float startPosRad =0.f, _float baseScale = 1.f, _bool continuous = true);
+	CScaleModifier(_float range, _float speed, _float startPosRad = 0.f, _float2 baseScale = {1.f, 1.f}, _bool continuous = true);
 	virtual ~CScaleModifier();
 
 
@@ -28,7 +28,7 @@ private:
 	_float m_Range = {};
 	_float m_Speed = {};
 	_float m_StartPosRad = {};
-	_float m_BaseScale = {};
+	_float2 m_BaseScale = {};
 	_bool m_Continuous = {};
 };
 

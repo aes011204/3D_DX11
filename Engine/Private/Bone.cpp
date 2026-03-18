@@ -51,6 +51,15 @@ shared_ptr<CBone> CBone::Create(const Cvt_Bone& BoneDesc)
 
 }
 
+shared_ptr<CBone> CBone::Clone()
+{
+
+        shared_ptr<CBone> pInstance(new CBone(*this), [](CBone* p) {p->Free(); delete p; });
+        return pInstance;
+    
+
+}
+
 void CBone::Free()
 {
 	__super::Free();
