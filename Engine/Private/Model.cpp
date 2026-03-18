@@ -42,24 +42,28 @@ HRESULT CModel::Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _
 
 	m_iNumMaterials = header.iNumMaterial;
 
+	m_iNumAnimations = header.iNumAnimation;
+
+	m_iTotalNumBone = header.iTotalNumBone;
+
+
 	XMStoreFloat4x4(&m_PreLocalTransformMatrix, PreLocalTransformMatrix);
 
 	/* 메시를 생성한다. */
-	if (m_eType == MODEL::ANIM)
-	{
-		if (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1)))
+	
+		if (FAILED(Ready_Bones(InFile)))
 			return E_FAIL;
-	}
+	
 
 	if (FAILED(Ready_Meshes(eType, InFile)))
 		return E_FAIL;
-	if (FAILED(Ready_Material( InFile)))
-		return E_FAIL;
 	if (m_eType == MODEL::ANIM)
 	{
-		if (FAILED(Ready_Animations()))
+		if (FAILED(Ready_Animations(InFile)))
 			return E_FAIL;
 	}
+	if (FAILED(Ready_Material( InFile)))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -135,21 +139,40 @@ HRESULT CModel::Bind_Material(shared_ptr<CShader> pShader, const _char* pConstan
 	return m_Materials[m_Meshes[iMeshIndex]->Get_MaterialIndex()]->Bind_Material(pShader, pConstantName, eMaterialType, iTextureIndex);
 }
 
-HRESULT CModel::Ready_Bones(const aiNode* pAINode, _int iParentIndex)
+HRESULT CModel::Ready_Bones(ifstream& InFile)
 {
-	shared_ptr<CBone> pBone = CBone::Create(pAINode, iParentIndex);
+	/*Cvt_Bone Bone = {};
+	InFile.read((char*)&Bone,sizeof(Cvt_Bone) );
+
+
+	shared_ptr<CBone> pBone = CBone::Create(Bone, iParentIndex);
 	if (nullptr == pBone)
 		return E_FAIL;
 
-	m_Bones.push_back(pBone);
+	m_Bones.push_back(pBone);*/
 
-	_int iPIndex = m_Bones.size() - 1; // 부모인덱스 = 백터 사이즈 -1 
+	//_int iPIndex = m_Bones.size() - 1; // 부모인덱스 = 백터 사이즈 -1 
 
-	for (_uint i = 0; i < pAINode->mNumChildren; i++)
+	//for (_uint i = 0; i < pAINode->mNumChildren; i++)
+	//{
+	//	Ready_Bones(pAINode->mChildren[i], iPIndex);
+	//}
+
+
+	for (uint32_t i = 0; i < m_iTotalNumBone; ++i)
 	{
-		Ready_Bones(pAINode->mChildren[i], iPIndex);
-	}
+		Cvt_Bone BoneDesc = {};
 
+		
+		InFile.read((char*)&BoneDesc, sizeof(Cvt_Bone));
+
+		shared_ptr<CBone> pBone = CBone::Create(BoneDesc);
+
+		if (nullptr == pBone)
+			return E_FAIL;
+
+		m_Bones.push_back(pBone);
+	}
 	return S_OK;
 }
 
@@ -158,9 +181,9 @@ HRESULT CModel::Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pCon
 	return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantNamem, m_Bones);
 }
 
-HRESULT CModel::Ready_Animations()
+HRESULT CModel::Ready_Animations(ifstream& InFile)
 {
-	m_iNumAnimations = m_pAIScene->mNumAnimations;
+	/*m_iNumAnimations = m_pAIScene->mNumAnimations;
 
 	for (_uint i = 0; i < m_iNumAnimations; i++)
 	{
@@ -169,8 +192,18 @@ HRESULT CModel::Ready_Animations()
 			return E_FAIL;
 
 		m_Animations.push_back(pAnimation);
-	}
+	}*/
 
+
+	for (_uint i = 0; i < m_iNumAnimations; i++)
+	{
+
+		shared_ptr<CAnimation> pAnimation = CAnimation::Create(InFile);
+		if (nullptr == pAnimation)
+			return E_FAIL;
+
+		m_Animations.push_back(pAnimation);
+	}
 	return S_OK;
 }
 

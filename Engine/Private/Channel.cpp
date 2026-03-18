@@ -8,48 +8,76 @@ CChannel::CChannel()
 }
 
 
-HRESULT CChannel::Initialize(const aiNodeAnim* pAIChannel, CModel* pModel)
+HRESULT CChannel::Initialize(ifstream& InFile)
 {
-    m_iBoneIndex = pModel->Get_BoneIndex(pAIChannel->mNodeName.data);
 
-	m_iNumKeyFrames = max(pAIChannel->mNumPositionKeys, pAIChannel->mNumRotationKeys);
-	m_iNumKeyFrames = max(m_iNumKeyFrames, pAIChannel->mNumScalingKeys);
+    Cvt_Channel ChannelDesc = {};
+    InFile.read((char*)&ChannelDesc, sizeof(Cvt_Channel));
 
-    _float3 vScale = {};
-    _float4 vRotation = {};
-    _float3 vTranslation = {};
 
-    for(size_t i =0;i<m_iNumKeyFrames;i++)
+
+
+    m_iBoneIndex = ChannelDesc.iBoneIndex;
+
+    m_iNumKeyFrames = ChannelDesc.iNumKeyframes;
+
+    m_KeyFrames.reserve(m_iNumKeyFrames); // 미리 공간 확보
+
+    for (size_t i = 0; i < m_iNumKeyFrames; i++)
     {
+        Cvt_Keyframe KeyFrameDesc = {};
+        InFile.read((char*)&KeyFrameDesc, sizeof(Cvt_Keyframe));
+
         KEYFRAME KeyFrame = {};
-        if(pAIChannel->mNumScalingKeys > i)
-        {
-            memcpy(&vScale, &pAIChannel->mScalingKeys[i].mValue, sizeof(_float3));
-            KeyFrame.fTrackPosition = pAIChannel->mScalingKeys[i].mTime; // 이거 실제 시간이 아님
-        }
-        if (pAIChannel->mNumRotationKeys > i)
-        {
-            vRotation.x = pAIChannel->mRotationKeys[i].mValue.x;
-            vRotation.y = pAIChannel->mRotationKeys[i].mValue.y;
-            vRotation.z = pAIChannel->mRotationKeys[i].mValue.z;
-            vRotation.w = pAIChannel->mRotationKeys[i].mValue.w;
+        // 실제 컨버터에서 저장한 시간을 트랙 포지션으로 사용
+        KeyFrame.fTrackPosition = (float)KeyFrameDesc.dTrackPosition;
 
-            KeyFrame.fTrackPosition = pAIChannel->mRotationKeys[i].mTime;
-        }
-        if (pAIChannel->mNumPositionKeys > i)
-        {
-            memcpy(&vTranslation, &pAIChannel->mPositionKeys[i].mValue, sizeof(_float3));
-            KeyFrame.fTrackPosition = pAIChannel->mPositionKeys[i].mTime; // 이거 실제 시간이 아님
-        }
-
-        KeyFrame.vScale = vScale;
-        KeyFrame.vRotation = vRotation;
-        KeyFrame.vTranslation = vTranslation;
+        // 데이터 복사 (Cvt_Keyframe -> KEYFRAME)
+        memcpy(&KeyFrame.vScale, KeyFrameDesc.vScale, sizeof(_float3));
+        memcpy(&KeyFrame.vRotation, KeyFrameDesc.qRotation, sizeof(_float4)); // qRot 사용
+        memcpy(&KeyFrame.vTranslation, KeyFrameDesc.vPos, sizeof(_float3)); // vPos 사용
 
         m_KeyFrames.push_back(KeyFrame);
     }
 
-     
+
+
+
+//    _float3 vScale = {};
+//    _float4 vRotation = {};
+//    _float3 vTranslation = {};
+//
+//    for(size_t i =0;i<m_iNumKeyFrames;i++)
+//    {
+//        KEYFRAME KeyFrame = {};
+//        if(pAIChannel->mNumScalingKeys > i)
+//        {
+//            memcpy(&vScale, &pAIChannel->mScalingKeys[i].mValue, sizeof(_float3));
+//            KeyFrame.fTrackPosition = pAIChannel->mScalingKeys[i].mTime; // 이거 실제 시간이 아님
+//        }
+//        if (pAIChannel->mNumRotationKeys > i)
+//        {
+//            vRotation.x = pAIChannel->mRotationKeys[i].mValue.x;
+//            vRotation.y = pAIChannel->mRotationKeys[i].mValue.y;
+//            vRotation.z = pAIChannel->mRotationKeys[i].mValue.z;
+//            vRotation.w = pAIChannel->mRotationKeys[i].mValue.w;
+//
+//            KeyFrame.fTrackPosition = pAIChannel->mRotationKeys[i].mTime;
+//        }
+//        if (pAIChannel->mNumPositionKeys > i)
+//        {
+//            memcpy(&vTranslation, &pAIChannel->mPositionKeys[i].mValue, sizeof(_float3));
+//            KeyFrame.fTrackPosition = pAIChannel->mPositionKeys[i].mTime; // 이거 실제 시간이 아님
+//        }
+//
+//        KeyFrame.vScale = vScale;
+//        KeyFrame.vRotation = vRotation;
+//        KeyFrame.vTranslation = vTranslation;
+//
+//        m_KeyFrames.push_back(KeyFrame);
+//    }
+//
+//     
     return S_OK;
 }
 
@@ -86,7 +114,7 @@ void CChannel::Update_TransformationMatrix(_float fCurrentTrackPosition, const v
 
         vLeftRotation = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrameIndex].vRotation);
         vRightRotation = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrameIndex + 1].vRotation);
-        vRotation = XMVectorLerp(vLeftRotation, vRightRotation, fRatio);
+        vRotation = XMQuaternionSlerp(vLeftRotation, vRightRotation, fRatio);
 
         vLeftTranslation = XMVectorSetW(XMLoadFloat3(&m_KeyFrames[m_iCurrentKeyFrameIndex].vTranslation), 1.f);
         vRightTranslation = XMVectorSetW(XMLoadFloat3(&m_KeyFrames[m_iCurrentKeyFrameIndex + 1].vTranslation), 1.f);
@@ -99,11 +127,11 @@ void CChannel::Update_TransformationMatrix(_float fCurrentTrackPosition, const v
     Bones[m_iBoneIndex]->Update_TransformationMatrix(BoneTransformationMatrix);
 }
 
-shared_ptr<CChannel> CChannel::Create(const aiNodeAnim* pAIChannel, CModel* pModel)
+shared_ptr<CChannel> CChannel::Create(ifstream& InFile)
 {
     shared_ptr<CChannel> pInstance(new CChannel(), [](CChannel* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pAIChannel, pModel)))
+    if (FAILED(pInstance->Initialize(InFile)))
     {
         MSG_BOX("Failed to Created : CChannel");
     }

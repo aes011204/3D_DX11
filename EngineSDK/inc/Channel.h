@@ -11,7 +11,7 @@ public:
 	virtual ~CChannel() = default;
 
 public:
-	HRESULT Initialize(const aiNodeAnim* pAIChannel, class CModel* pModel);
+	HRESULT Initialize(ifstream& InFile);
 	void Update_TransformationMatrix(_float fCurrentTrackPosition, const vector<shared_ptr<class CBone>>& Bones);
 
 private:
@@ -21,7 +21,7 @@ private:
 	_int m_iBoneIndex = { -1 };
 
 public:
-	static shared_ptr<CChannel> Create(const aiNodeAnim* pAIChannel, class CModel* pModel);
+	static shared_ptr<CChannel> Create(ifstream& InFile);
 	void Free() override;
 
 };

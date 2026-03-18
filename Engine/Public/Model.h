@@ -27,11 +27,15 @@ public:
 	HRESULT Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex,
 		Cvt_TexType eMaterialType, _uint iTextureIndex);
 
-	HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
+	HRESULT Ready_Bones(ifstream& InFile);
+
+	//HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
 	HRESULT Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex);
 
+	HRESULT Ready_Animations(ifstream& InFile);
 
-	HRESULT Ready_Animations(); // 각 뼈들이 시간에 따라서 어떤 상태를 띈다.
+
+	//HRESULT Ready_Animations(); // 각 뼈들이 시간에 따라서 어떤 상태를 띈다.
 
 
 	HRESULT Play_Animation(_float fTimeDelta);
@@ -60,6 +64,7 @@ private:
 	_uint m_iNumMaterials = {};
 	vector<shared_ptr<class CMaterial>> m_Materials={};
 
+	_uint m_iTotalNumBone = {};
 	vector< shared_ptr<class CBone>> m_Bones = {};
 
 	_bool m_isAnimLoop = { false };

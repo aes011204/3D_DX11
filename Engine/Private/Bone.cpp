@@ -4,15 +4,15 @@ CBone::CBone()
 {
 }
 
-HRESULT CBone::Initialize(const aiNode* pAINode, _int iParentBoneIndex)
+HRESULT CBone::Initialize(const Cvt_Bone& BoneDesc)
 {
-    strcpy_s(m_szName, pAINode->mName.data);
+    strcpy_s(m_szName, BoneDesc.szName);
 
-    m_iParentBoneIndex = iParentBoneIndex;
+    m_iParentBoneIndex = BoneDesc.iParentBoneIndex;
 
-    memcpy(&m_TransformationMatrix, &pAINode->mTransformation, sizeof(_float4x4));
-    XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
-    // 전치 필수
+    memcpy(&m_TransformationMatrix, &BoneDesc.TransformationMatrix, sizeof(_float4x4));
+   // XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
+    // 전치 필수 -> 내부에서 햇음 
 
     XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity());
 
@@ -39,13 +39,13 @@ void CBone::Update_TransformationMatrix(_fmatrix TransformMatrix)
 }
 
 
-shared_ptr<CBone> CBone::Create(const aiNode* pAINode, _int iParentBoneIndex)
+shared_ptr<CBone> CBone::Create(const Cvt_Bone& BoneDesc)
 {
     shared_ptr<CBone> pInstance(new CBone(), [](CBone* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pAINode, iParentBoneIndex)))
+    if (FAILED(pInstance->Initialize(BoneDesc)))
     {
-        MSG_BOX("Failed to Created : CMesh");
+        MSG_BOX("Failed to Created : CBone");
     }
     return pInstance;
 

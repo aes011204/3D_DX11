@@ -192,7 +192,7 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 		m_OffsetMatrices.push_back(OffsetMatrix);
 
 
-		//pAIBone->mNumWeights 이뼈가 몇개의 정점에 영향을 주는가
+		//pAIBone->mNumWeights 이 뼈가 몇개의 정점에 영향을 주는가
 		for (size_t j = 0; j < pAIBone->mNumWeights; j++)
 		{
 			aiVertexWeight AIVertexWeight = pAIBone->mWeights[j];

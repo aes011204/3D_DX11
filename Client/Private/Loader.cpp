@@ -177,9 +177,28 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
 
 	/* Prototype_Component_Model_Fiona */
+	//PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
+	//	CAssimp_Model::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Fiona/Fiona.fbx",MODEL::ANIM, PreLocalTransformMatrix))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Model_Fiona");
+	//	return E_FAIL;
+	//}
+
+	/* Prototype_Component_Model_FullBoatCrab */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/FullBoatCrab/FullBoatCrab.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+
 	PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
-		CAssimp_Model::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Fiona/Fiona.fbx",MODEL::ANIM, PreLocalTransformMatrix))))
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona_Anim"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Fiona/Fiona.dat", MODEL::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Model_Fiona");
 		return E_FAIL;

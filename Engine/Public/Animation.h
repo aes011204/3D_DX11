@@ -12,9 +12,11 @@ public:
     virtual ~CAnimation() = default;
 
 public:
-    HRESULT Initialize(const aiAnimation* pAIAnimation, class CModel* pModel);
+    HRESULT Initialize(ifstream& InFile);
+    //HRESULT Initialize(const aiAnimation* pAIAnimation, class CModel* pModel);
 
     _bool Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<class CBone>>& Bones, _bool isLoop);
+
 
 public:
  
@@ -27,7 +29,8 @@ public:
     vector<shared_ptr<class CChannel>> m_Channels;
 
 public:
-    static shared_ptr<CAnimation> Create(const aiAnimation* pAIAnimation, class CModel* pModel);
+    static shared_ptr<CAnimation> Create(ifstream& InFile);
+    //static shared_ptr<CAnimation> Create(const aiAnimation* pAIAnimation, class CModel* pModel);
     void Free() override;
 
 

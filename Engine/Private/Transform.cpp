@@ -208,6 +208,9 @@ void CTransform::LookAt(_fvector vAt)
 	////외적 결과로 나온 벡터들은 길이가 제멋대로림 그대로 행렬에 넣으면 물체의 크기가 변함 정규화를 통해 길이를 1로 만들어 순수 방향만 남깁
 	_vector vPosition = Get_Position();
 	_vector		vLook = vAt - vPosition;
+
+	if (XMVector3LengthSq(vLook).m128_f32[0] < 0.000001f)
+		return;
 	_matrix matLookAt = XMMatrixLookAtLH(vPosition, vAt, XMVectorSet(0.f, 1.f, 0.f, 0.f));
 	_matrix matWorldRot = XMMatrixInverse(nullptr, matLookAt);
 
@@ -216,13 +219,17 @@ void CTransform::LookAt(_fvector vAt)
 	m_bIsDirty = true;
 }
 
-auto CTransform::Orbit(_fvector vTargetPos, _fvector vTargetQuat, _float fDistance, _float fPitch, _float fYaw) -> void
+auto CTransform::Orbit(_fvector vTargetPos, _float3 vTargetRotationDegree, _float fDistance, _float fPitch, _float fYaw) -> void
 {
 
 	// 1. 공전용 회전 쿼터니언 생성
 	_vector qOrbit = XMQuaternionRotationRollPitchYaw(XMConvertToRadians(fPitch), XMConvertToRadians(fYaw), 0.f);
 
-	_vector qFinalOrbit = XMQuaternionMultiply(qOrbit, vTargetQuat);
+
+	
+	_vector MoveXQuat = XMQuaternionRotationRollPitchYaw(0.f, XMConvertToRadians(vTargetRotationDegree.y), 0.f);
+
+	_vector qFinalOrbit = XMQuaternionMultiply(qOrbit, MoveXQuat);
 
 
 	_vector vOffset = XMVectorSet(0.f, 0.f, -fDistance, 0.f);
@@ -232,7 +239,7 @@ auto CTransform::Orbit(_fvector vTargetPos, _fvector vTargetQuat, _float fDistan
 
 
 	Set_Position(vNewPos);       // 위치 갱신
-	Set_Quaternion(qFinalOrbit);      // 회전 갱신 (타겟을 바라보게 됨)
+	//Set_Quaternion(qFinalOrbit);      // 회전 갱신 (타겟을 바라보게 됨)
 }
 
 

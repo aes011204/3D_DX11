@@ -5,16 +5,20 @@ CAnimation::CAnimation()
 {
 }
 
-HRESULT CAnimation::Initialize(const aiAnimation* pAIAnimation, CModel* pModel)
+HRESULT CAnimation::Initialize(ifstream& InFile)
 {
-    m_fDuration = pAIAnimation->mDuration;
-    m_fTickPerSecond = pAIAnimation->mTicksPerSecond;
+    Cvt_Animation animationDesc = {};
+    InFile.read((char*)&animationDesc, sizeof(Cvt_Animation));
 
-    m_iNumChannels = pAIAnimation->mNumChannels; // 애니메이션을 재생하는데 필요한 뼈의 갯수
+
+    m_fDuration = animationDesc.dDuration;
+    m_fTickPerSecond = animationDesc.dTickPerSecond;
+
+    m_iNumChannels = animationDesc.iNumChannels; // 애니메이션을 재생하는데 필요한 뼈의 갯수
 
     for(size_t i =0;i< m_iNumChannels;i++)
     {
-        auto pChannel = CChannel::Create(pAIAnimation->mChannels[i], pModel);
+        auto pChannel = CChannel::Create(InFile);
         if (nullptr == pChannel)
             return E_FAIL;
 
@@ -42,11 +46,11 @@ _bool CAnimation::Update_TransformationMatrices(_float fTimeDelta, const vector<
     return false;
 }
 
-shared_ptr<CAnimation> CAnimation::Create(const aiAnimation* pAIAnimation, CModel* pModel)
+shared_ptr<CAnimation> CAnimation::Create(ifstream& InFile)
 {
     shared_ptr<CAnimation> pInstance(new CAnimation(), [](CAnimation* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pAIAnimation, pModel)))
+    if (FAILED(pInstance->Initialize(InFile)))
     {
         MSG_BOX("Failed to Created : CAnimation");
     }

@@ -50,9 +50,9 @@ HRESULT CAssimp_Model::Initialize_Prototype(const _char* pModelFilePath, MODEL e
         return E_FAIL;
     if (FAILED(Ready_Meshes(eType)))
         return E_FAIL;
-    if (FAILED(Ready_Material(pModelFilePath)))
-        return E_FAIL;
     if (FAILED(Ready_Animations()))
+        return E_FAIL;
+    if (FAILED(Ready_Material(pModelFilePath)))
         return E_FAIL;
     return S_OK;
 }

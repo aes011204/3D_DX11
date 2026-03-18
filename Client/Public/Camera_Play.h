@@ -36,6 +36,12 @@ private:
     _float	m_fMouseSensor = {};
     weak_ptr<CGameObject> m_pTarget = {  };
     weak_ptr<CTransform> m_pTargetTransform = {  };
+
+
+    _float m_Yaw = {};
+    _float m_Pitch = {};
+    _float m_fDistance = {};
+    _float m_time = {};
 public:
     //void* pArg : 사본객체의 추가적인 초기화가 필요 할수 있음 런타임 할당 되는 주소 같은거
     static shared_ptr<CCamera_Play> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

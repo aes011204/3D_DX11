@@ -67,7 +67,7 @@ void CPlayerBoat::Update(_float fTimeDelta)
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
 	}
 
-	// 임시코드 /////////////////
+	// 임시코드 ///////////////// 3점 -> 4점으로 수정예정 + 코드 정리 
 	_vector CurPos = m_pTransformCom->Get_Position();
 
 	_float fOut0 = {};
@@ -106,7 +106,13 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	NewRotationMatrix.r[2] = FinalLookDir;
 	NewRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
 
-	m_pTransformCom->Set_Quaternion(XMQuaternionRotationMatrix(NewRotationMatrix));
+
+	_vector targetQuat = XMQuaternionRotationMatrix(NewRotationMatrix);
+	_vector currentQuat = m_pTransformCom->Get_Quaternion();
+	
+	_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 0.1f);
+
+	m_pTransformCom->Set_Quaternion(smoothQuat);
 
 	/*_vector CurPo3 = m_pTransformCom->Get_Position();
 	_float fOut3 = {};

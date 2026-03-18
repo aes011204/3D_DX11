@@ -10,7 +10,7 @@ public:
     virtual ~CBone() = default;
 
 public:
-    HRESULT Initialize(const aiNode* pAINode, _int iParentBoneIndex);
+    HRESULT Initialize(const Cvt_Bone& BoneDesc);
 
     void Update_CombinedTransformMatrix(const vector<shared_ptr<CBone>> Bones, _fmatrix PreTransformMatrix);
     void Update_TransformationMatrix(_fmatrix TransformMatrix);
@@ -25,7 +25,8 @@ private:
     _int m_iParentBoneIndex = { -1 }; // -1 ¿Ã∏È  root bone ¿”
 
 public:
-    static shared_ptr<CBone> Create(const aiNode* pAINode, _int iParentBoneIndex);
+   
+    static shared_ptr<CBone> Create(const Cvt_Bone& BoneDesc);
     void Free() override;
 
 

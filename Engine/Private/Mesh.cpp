@@ -28,12 +28,36 @@ HRESULT CMesh::Initialize_Prototype(MODEL eType,
 	m_iIndexStride = 4; // 크게 4바이트로 잡음
 	m_ePrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
+	m_iNumBones = meshInfo.iNumBones;
+
+
+	if (m_iNumBones > 0)
+	{
+		m_BoneIndices.reserve(m_iNumBones);
+		m_OffsetMatrices.reserve(m_iNumBones);
+
+		for (size_t i = 0; i < m_iNumBones; ++i)
+		{
+			Cvt_BoneAdd boneAdd = {};
+			InFile.read(reinterpret_cast<_char*>(&boneAdd), sizeof(Cvt_BoneAdd));
+
+			// 데이터 벡터에 보관 (나중에 Bind_BoneMatrices에서 사용)
+			m_BoneIndices.push_back((_uint)boneAdd.iBoneIndex);
+			_float4x4 offset = {  };
+			memcpy(&offset, &boneAdd.OffsetMatrix, sizeof(_float4x4));
+			m_OffsetMatrices.push_back(offset);
+		}
+	}
+
+
+
 	//vertex Buffer
 	HRESULT hr = MODEL::NONANIM == eType ? Ready_VertexBuffer_For_NonAnim(InFile, PreTransformMatrix)
 		: Ready_VertexBuffer_For_Anim(InFile, pModel);
 
 	if (FAILED(hr))
 		return E_FAIL;
+
 
 	//Index Buffer
 
@@ -155,95 +179,78 @@ HRESULT CMesh::Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTran
 
 HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> pModel)
 {
-	//m_iVertexStride = sizeof(VTXANIMMESH);
-	//
-	//// Vertex Buffer
-	//
-	//D3D11_BUFFER_DESC VertexBufferDesc{};
-	//VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
-	//VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	//VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//VertexBufferDesc.StructureByteStride = m_iVertexStride;
-	//
-	//VertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
-	//VertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
-	//
-	//VTXANIMMESH* pVertices = new VTXANIMMESH[m_iNumVertices];
-	//ZeroMemory(pVertices, sizeof(VTXANIMMESH) * m_iNumVertices);
-	//
-	//for (size_t i = 0; i < m_iNumVertices; i++)
-	//{
-	//	memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
-	//	
-	//	memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
-	//	
-	//	memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
-	//
-	//	memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
-	//
-	//	// 덱스쿠드는 여러개일수도 있으니 이차배열
-	//	// 하나의 세트인데 바디 에 디퓨즈 , 노말의 모양이 다르다면 , 텍스쿠드를더 선언해야함
-	//	// 큐브 라던지 그건 xyz 다있음 
-	//}
-	//
-	//	m_iNumBones = pAIMesh->mNumBones;
-	//
+	m_iVertexStride = sizeof(VTXANIMMESH);
+	
+	// Vertex Buffer
+	
+	D3D11_BUFFER_DESC VertexBufferDesc{};
+	VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	VertexBufferDesc.StructureByteStride = m_iVertexStride;
+	
+	VertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
+	VertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
+	
+
+
+
+	// read
+	Cvt_VTXMESH* tmpVertices = new Cvt_VTXMESH[m_iNumVertices];
+	InFile.read(reinterpret_cast<_char*>(tmpVertices), sizeof(Cvt_VTXMESH) * m_iNumVertices);
+
+
+	VTXANIMMESH* pVertices = new VTXANIMMESH[m_iNumVertices];
+
+	for (size_t i = 0; i < m_iNumVertices; i++)
+	{
+		memcpy(&pVertices[i].vPosition, &tmpVertices[i].vPos, sizeof(_float3));
+		//XMStoreFloat3(&pVertices[i].vPosition,
+		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PreTransformMatrix));
+
+		memcpy(&pVertices[i].vNormal, &tmpVertices[i].vNormal, sizeof(_float3));
+		//XMStoreFloat3(&pVertices[i].vNormal,
+		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vNormal), PreTransformMatrix));
+
+		memcpy(&pVertices[i].vTangent, &tmpVertices[i].vTangent, sizeof(_float3));
+		//XMStoreFloat3(&pVertices[i].vTangent,
+		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vTangent), PreTransformMatrix));
+
+		pVertices[i].vTexcoord.x = tmpVertices[i].vUV[0][0];
+		pVertices[i].vTexcoord.y = tmpVertices[i].vUV[0][1];
+
+		memcpy(&pVertices[i].vBlendIndex, tmpVertices[i].vIndices, sizeof(_uint) * 4);
+		memcpy(&pVertices[i].vBlendWeight, tmpVertices[i].vWeights, sizeof(_float) * 4);
+
+
+	}
+
+
+
+	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
+	VertexInitialData.pSysMem = pVertices;
+
+	if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
+		return E_FAIL;
+
+
 	//for (size_t i = 0; i < m_iNumBones; i++)
 	//{
-	//	aiBone* pAIBone = pAIMesh->mBones[i];
-	//
-	//	_int iBoneIndex = pModel->Get_BoneIndex(pAIBone->mName.data);//(이건 전체 기준 본 인덱스)
-	//	if (-1 == iBoneIndex)
-	//		return E_FAIL;
-	//
-	//	m_BoneIndices.push_back(iBoneIndex); // 여기 넣은 순서가 메쉬기준 본 인댁스 임 
-	//
-	//	// set offset once in initialize 
-	//	_float4x4 OffsetMatrix = {};
-	//
-	//	memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
-	//	XMStoreFloat4x4(&OffsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
-	//
+	//	// 이 메쉬가 사용하는 뼈의 이름을 읽거나 인덱스를 읽어서 pModel에서 찾아야 합니다.
+	//	// (만약 컨버터에서 본 인덱스를 저장했다면 인덱스를 읽으세요)
+
+	//	// 예시: 뼈의 인덱스와 OffsetMatrix를 읽는 경우
+	//	
+
+	//	m_BoneIndices.push_back(tmpVertices->vIndices);
+
+	//	_float4x4 OffsetMatrix;
+	//	InFile.read((char*)&OffsetMatrix, sizeof(_float4x4));
 	//	m_OffsetMatrices.push_back(OffsetMatrix);
-	//
-	//
-	//	//pAIBone->mNumWeights 이뼈가 몇개의 정점에 영향을 주는가
-	//	for (size_t j = 0; j < pAIBone->mNumWeights; j++)
-	//	{
-	//		aiVertexWeight AIVertexWeight = pAIBone->mWeights[j];
-	//
-	//		if(0== pVertices[AIVertexWeight.mVertexId].vBlendWeight.x) //pVertices[AIVertexWeight.mVertexId] 에 이미적혀 있는지 없는지 확인용
-	//		{
-	//			pVertices[AIVertexWeight.mVertexId].vBlendIndex.x = i;  // 뼈의 인댁스 (메쉬 기준)
-	//			pVertices[AIVertexWeight.mVertexId].vBlendWeight.x = AIVertexWeight.mWeight;
-	//		}
-	//		else if(0 == pVertices[AIVertexWeight.mVertexId].vBlendWeight.y)
-	//		{
-	//			pVertices[AIVertexWeight.mVertexId].vBlendIndex.y = i;
-	//			pVertices[AIVertexWeight.mVertexId].vBlendWeight.y = AIVertexWeight.mWeight;
-	//		}
-	//		else if (0 == pVertices[AIVertexWeight.mVertexId].vBlendWeight.z)
-	//		{
-	//			pVertices[AIVertexWeight.mVertexId].vBlendIndex.z = i;
-	//			pVertices[AIVertexWeight.mVertexId].vBlendWeight.z = AIVertexWeight.mWeight;
-	//		}
-	//		else if (0 == pVertices[AIVertexWeight.mVertexId].vBlendWeight.w)
-	//		{
-	//			pVertices[AIVertexWeight.mVertexId].vBlendIndex.w = i;
-	//			pVertices[AIVertexWeight.mVertexId].vBlendWeight.w = AIVertexWeight.mWeight;
-	//		}
-	//	}
 	//}
-	//
-	//
-	//D3D11_SUBRESOURCE_DATA			VertexInitialData{};
-	//VertexInitialData.pSysMem = pVertices;
-	//
-	//if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
-	//	return E_FAIL;
-	//
-	//Safe_Delete_Array(pVertices);
-	//
+	
+	Safe_Delete_Array(pVertices);
+	Safe_Delete_Array(tmpVertices);
 	return S_OK;
 
 }

@@ -139,7 +139,7 @@ public:
 
     void LookAt(_fvector vAt);
 
-    void Orbit(_fvector vTargetPos, _fvector vTargetQuat, _float fDistance, _float fPitch, _float fYaw);
+    void Orbit(_fvector vTargetPos, _float3 vTargetQuat, _float fDistance, _float fPitch, _float fYaw);
 
     void OnGui() override;
     virtual void Save_ToJson(nlohmann::json& j) override;

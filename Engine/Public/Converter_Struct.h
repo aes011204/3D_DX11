@@ -9,6 +9,8 @@ struct Cvt_Header
     uint32_t bIsAnim = {};
     uint32_t iNumMeshes = {};
     uint32_t iNumMaterial = {};
+    uint32_t iNumAnimation = { 0 };
+    uint32_t iTotalNumBone = {0};
 
 };
 
@@ -18,6 +20,7 @@ struct Cvt_MeshInfo
     uint32_t iMaterialIndex;
     uint32_t iNumVertices;
     uint32_t iNumIndices;
+    uint32_t iNumBones = { 0 };
 
 };
 
@@ -27,9 +30,53 @@ struct Cvt_VTXMESH {
     float vNormal[3] = {};
     float vTangent[3] = {};
 
-    //int32_t vIndices[4] = { -1, -1, -1, -1 }; // Bone Indices
-    //float vWeights[4] = { 0.f, 0.f, 0.f, 0.f }; // Bone Weights
+    int32_t vIndices[4] = { -1, -1, -1, -1 }; // Bone Indices
+    float vWeights[4] = { 0.f, 0.f, 0.f, 0.f }; // Bone Weights
 };
+
+
+struct Cvt_Bone {
+    char szName[MAX_PATH] = {};
+    float OffsetMatrix[4][4];
+    float TransformationMatrix[4][4];
+    int iParentBoneIndex = { -1 }; // -1 이면  root bone 임
+};
+
+
+struct Cvt_BoneAdd
+{
+    uint32_t iBoneIndex;
+    float OffsetMatrix[4][4];
+
+};
+
+struct Cvt_Keyframe
+{
+    double dTrackPosition;       // 시간 (Ticks)
+    float vPos[3];      // 위치
+    float qRotation[4];      // 회전 (Quaternion: x, y, z, w)
+    float vScale[3];    // 크기
+};
+
+// 2. 채널 (특정 본의 모든 키프레임들)
+struct Cvt_Channel 
+{
+    char szName[MAX_PATH]; // 채널의 이름
+
+    char szBoneName[MAX_PATH];    // 이 채널이 영향을 줄 본의 이름
+    uint32_t iBoneIndex;   
+    uint32_t iNumKeyframes; // 키프레임 개수
+};
+
+// 3. 애니메이션 (전체 동작 정보)
+struct Cvt_Animation 
+{
+    char szName[MAX_PATH];        // 애니메이션 이름 (예: "Run", "Attack")
+    double dDuration;       // 전체 재생 시간
+    double dTickPerSecond;  // 초당 티크 수 (속도)
+    uint32_t iNumChannels;  // 채널 개수
+};
+
 
 #define MAX_TEXTURE_SLOT 28
 
@@ -55,13 +102,13 @@ struct Cvt_Material
 };
 
 //
-struct Cvt_VTXANIMMESH : public Cvt_VTXMESH
-{
-
-    // --- 추가 데이터 ---
-    uint32_t iBlendIndex[4];  // 4바이트 * 4 = 16바이트
-    float    fBlendWeight[4]; // 4바이트 * 4 = 16바이트
-};
+//struct Cvt_VTXANIMMESH : public Cvt_VTXMESH
+//{
+//
+//    // --- 추가 데이터 ---
+//    uint32_t iBlendIndex[4];  // 4바이트 * 4 = 16바이트
+//    float    fBlendWeight[4]; // 4바이트 * 4 = 16바이트
+//};
 
 enum Cvt_TexType {
     TextureType_NONE = 0,

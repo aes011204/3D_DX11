@@ -35,36 +35,67 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 	// 움직임이 없으면 원래 상태로 돌아간다
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 
-	_long		MouseMoveX = {};
-	_long		MouseMoveY = {};
 
-	if (MouseMoveX = dinput->Get_DIMouseMove(DIMM::X))
+	_long dx = dinput->Get_DIMouseMove(DIMM::X);
+	_long dy = dinput->Get_DIMouseMove(DIMM::Y);
+
+
+
+	m_Yaw += dx;
+	
+	m_Pitch += dy;
+	
+	_float speed = 10.f;
+	//m_time += fTimeDelta;
+	if(dx ==0 && dy==0)
 	{
-		// 누적 하면 됨
-		//m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * MouseMove * m_fMouseSensor);
+
+		m_Yaw += (m_pTargetTransform.lock()->Get_RotationDegree().y - m_Yaw) * speed * fTimeDelta;
+		//m_Pitch += (m_pTargetTransform.lock()->Get_RotationDegree().x - m_Pitch) * (speed/10) * fTimeDelta;
+		//if (m_Yaw > 0)
+		//	m_Yaw -= speed* fTimeDelta;
+		//if (m_Yaw < 0)
+		//	m_Yaw += speed* fTimeDelta;
+		//
+		//if (m_Pitch > 0)
+		//	m_Pitch -= speed* fTimeDelta;
+		//if (m_Pitch < 0)
+		//	m_Pitch += speed* fTimeDelta;
+
 	}
-
-	if (MouseMoveY = dinput->Get_DIMouseMove(DIMM::Y))
-	{
-		//m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * MouseMove * m_fMouseSensor);
-	}
-
-	//if(dinput->Get_DIMouseMove(DIMM::X)==0&& dinput->Get_DIMouseMove(DIMM::Y) == 0)
-	//{
-	//	//if (auto pTarget = m_pTarget.lock())
-	//	//{
-	//	//	// 타겟살아있을떄
-
-	//		// 0 이면  lerp 0으로 
-	//	//}
-	//}
+		//m_Yaw= clamp(m_Yaw, -90.f, 90.f);
+		//m_Pitch = clamp(m_Pitch, -90.f, 90.f);
 
 
 	// 타겟을 항상 보고있다
 	if (auto pTarget = m_pTarget.lock())
 	{
 		// 타겟살아있을떄
-		m_pTransformCom->Orbit(m_pTargetTransform.lock()->Get_Position(), m_pTargetTransform.lock()->Get_Quaternion(), 20.f, MouseMoveY+45.f, MouseMoveX);
+		_float pitch = m_Pitch + 45.f;
+		//pitch = max(5.f, pitch);
+
+		float yawRad = XMConvertToRadians(m_Yaw +180.f);
+		float pitchRad = XMConvertToRadians(m_Pitch +45.f);
+
+		m_fDistance = 20.f;
+
+		float x = m_fDistance * cosf(pitchRad) * sinf(yawRad);
+		float y = m_fDistance * sinf(pitchRad);
+		float z = m_fDistance * cosf(pitchRad) * cosf(yawRad);
+
+		_vector offset = XMVectorSet(x, y, z, 0.f);
+
+		_vector targetPos = m_pTargetTransform.lock()->Get_Position();
+
+		_vector camPos = targetPos + offset;
+
+		m_pTransformCom->Set_Position(camPos);
+
+		//m_pTransformCom->Orbit(m_pTargetTransform.lock()->Get_Position(), m_pTargetTransform.lock()->Get_RotationDegree(), 20.f, pitch , m_Yaw);
+		m_pTransformCom->LookAt(m_pTargetTransform.lock()->Get_Position());
+
+
+
 
 		// 클램프 바다 밑으로 못들어가게
 
