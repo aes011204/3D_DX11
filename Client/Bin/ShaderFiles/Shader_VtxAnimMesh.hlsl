@@ -73,10 +73,12 @@ VS_OUT VS_MAIN(VS_IN In)
     
     float4x4 matWV, matWVP;
 
+    float fWeightW = 1.f - (In.vBlendWeight.x + In.vBlendWeight.y + In.vBlendWeight.z);
+
     matrix BoneMatrix = g_BoneMatrices[In.vBlendIndex.x] * In.vBlendWeight.x +
     g_BoneMatrices[In.vBlendIndex.y] * In.vBlendWeight.y +
     g_BoneMatrices[In.vBlendIndex.z] * In.vBlendWeight.z +
-    g_BoneMatrices[In.vBlendIndex.w] * In.vBlendWeight.w;
+    g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
 
     vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
 

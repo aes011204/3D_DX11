@@ -95,7 +95,16 @@ HRESULT CUI::Initialize(void* pArg)
 	XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::PROJ)], XMMatrixOrthographicOffCenterLH(0.f, ViewportWidth,
 		0.f, ViewportHeight,
 		0.f, 1.f));
-	//
+
+	//XMMatrixOrthographicOffCenterLH(0.f, ViewportWidth, ViewportHeight, 0.f, 0.f, 1.f);
+	//XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::PROJ)], 
+	//XMMatrixOrthographicOffCenterLH(
+	//	0.f,              // Left
+	//	ViewportWidth,    // Right
+	//	ViewportHeight,   // Bottom (Å« °ª)
+	//	0.f,              // Top (0)
+	//	0.f, 1.f
+	//));
 
 	m_bInitialized = true;
 

@@ -260,13 +260,13 @@ void CUITransform::Computing_WorldRect()
     Vector2 topLeft = pivotWorld - Hadamard(m_Pivot, size);
     m_WorldRect = { topLeft.x, topLeft.y, topLeft.x + size.x, topLeft.y + size.y };
 
-    float renderY = m_pGameInstance.lock()->Get_WinSize().h - pivotWorld.y;
+    float renderY = pivotWorld.y;
 
     // VIBuffer_Rect가 (-0.5 ~ 0.5) 중심 기준이라는 전제
     // pivot 보정
     Vector2 pivotOffset = {
-        (0.5f - m_Pivot.x) * size.x,
-        (m_Pivot.y - 0.5f ) * size.y
+        (0.5f - m_Pivot.x)* size.x,
+        (0.5f - m_Pivot.y)* size.y
     };
 
     XMMATRIX S = XMMatrixScaling(size.x, size.y, 1.f);

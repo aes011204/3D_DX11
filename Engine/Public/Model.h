@@ -48,7 +48,7 @@ public:
 	public:
 	size_t Get_NumMeshes() { return m_Meshes.size(); }
 	_int Get_BoneIndex(const _char* pBoneName);
-
+	const _float4x4* Get_BoneMatrixPtr(const _char* pBoneName);
 private:
 	// 이두개는 내부에서 알아서 메모리 관리 해줌 shared_ptr이런거 필요 x
 	// 임포터가 지워질떄 aiScene 도 알아서 지워짐 임포터는 CModel이 메모리에서 해제될 때 자동으로 소멸자 호출

@@ -1,12 +1,14 @@
 
 #include "ItemDB.h"
+#include "GameInstance.h"
+#include "Texture.h"
 
 
 
 
 IMPLEMENT_SINGLETON(CItemDB)
 
-CItemDB::CItemDB()
+CItemDB::CItemDB() : m_pGameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -102,7 +104,7 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 
 			for (int h = 0; h < item_def.ItemShape.Height; h++)
 			{
-				for (int w = 0; w < item_def.ItemShape.Width;w++)
+				for (int w = 0; w < item_def.ItemShape.Width; w++)
 				{
 					int mask = node["ItemShape"]["Shape_Mask"][h][w].get<int>(); // 일단 int로 받고 나중에 형변환
 					if (mask != 1) { mask = 0; }
@@ -117,28 +119,28 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 				item_def.ItemShape.Occ[1] =
 				item_def.ItemShape.Occ[2] =
 				item_def.ItemShape.Occ[3] =*/
-			//}
-
+				//}
+			Compute_Occ(item_def.ItemShape, item_def.ItemShape.Width, item_def.ItemShape.Height);
 		}
 		item_def.SizeNum = node.value("SizeNum", 0);
-			//item_def.ItemShape.width * item_def.ItemShape.Height;// 이거하면 특이한 모양 불가 네모만 가능
+		//item_def.ItemShape.width * item_def.ItemShape.Height;// 이거하면 특이한 모양 불가 네모만 가능
 
-		switch(item_def.ItemType)
+		switch (item_def.ItemType)
 		{
 		case ITEM_TYPE::FISH:
-			{
-				Fish_Def fish_def;
-				Parse_Fish_Def(fish_def, node);
-				item_def.TypeDef = fish_def;
+		{
+			Fish_Def fish_def;
+			Parse_Fish_Def(fish_def, node);
+			item_def.TypeDef = fish_def;
 			break;
-			}
+		}
 		case ITEM_TYPE::EQUIP:
-			{
+		{
 			Equip_Def equip_def;
 			Parse_Equip_Def(equip_def, node);
 			item_def.TypeDef = equip_def;
 			break;
-			}
+		}
 		case ITEM_TYPE::MATERIAL:
 		{
 			Material_Def material_def;
@@ -150,18 +152,23 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 			// 없음 그냥 monostate로 ㄱ
 			break;
 		case ITEM_TYPE::TRINKET:
-			{
+		{
 			Trinket_Def trinket_def;
 			trinket_def.Cost = node.value("Cost", 0);
 			item_def.TypeDef = trinket_def;
 			break;
-			}
 		}
+		}
+
+
+		item_def.pTexture = dynamic_pointer_cast<CTexture>(m_pGameInstance.lock()->
+			Clone_Prototype(PROTOTYPE::COMPONENT, ETOI(LEVEL::STATIC), S2W(item_def.TexturePath)));
+
 
 		// 마지막 vec에 넣기
 		m_vec_ItemDefs.push_back(item_def);
 		m_map_ItemID.emplace(item_def.ItemID, m_vec_ItemDefs.size() - 1);
-		
+
 	}
 
 
@@ -172,46 +179,46 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 void CItemDB::Parse_Fish_Def(Fish_Def& fish_def, const nlohmann::json& node)
 {
 
-		fish_def.Cost = node.value("Cost", 0);
+	fish_def.Cost = node.value("Cost", 0);
 
-		_string str = node.value("FishTime", "END");
-		TIME timeEnum = magic_enum::enum_cast<TIME>(str).value();
-		fish_def.FishTime = timeEnum;
+	_string str = node.value("FishTime", "END");
+	TIME timeEnum = magic_enum::enum_cast<TIME>(str).value();
+	fish_def.FishTime = timeEnum;
 
-		fish_def.SeaType_Mask = BitFlag_SeaType(node, "SeaType_Mask");
-		//for (const string& str : node["SeaType_Mask"]) //.get<_string>() 이건 안됨 배열로 저장 되어 있는거라
-		//{
-		//	if (str == "COASTAL") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::COASTAL); }
-		//	else if (str == "SHALLOW") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::SHALLOW); }
-		//	else if (str == "OCEANIC") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::OCEANIC); }
-		//	else if (str == "ABYSSAL") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::ABYSSAL); }
-		//	else if (str == "HADAL") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::HADAL); }
-		//	else if (str == "MANGROVE") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::MANGROVE); }
-		//	else if (str == "VOLCANIC") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::VOLCANIC); }
-		//	else if (str == "ICE") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::ICE); }
-		//	else if (str == "CRAB") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::CRAB); }
-		//}
+	fish_def.SeaType_Mask = BitFlag_SeaType(node, "SeaType_Mask");
+	//for (const string& str : node["SeaType_Mask"]) //.get<_string>() 이건 안됨 배열로 저장 되어 있는거라
+	//{
+	//	if (str == "COASTAL") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::COASTAL); }
+	//	else if (str == "SHALLOW") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::SHALLOW); }
+	//	else if (str == "OCEANIC") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::OCEANIC); }
+	//	else if (str == "ABYSSAL") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::ABYSSAL); }
+	//	else if (str == "HADAL") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::HADAL); }
+	//	else if (str == "MANGROVE") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::MANGROVE); }
+	//	else if (str == "VOLCANIC") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::VOLCANIC); }
+	//	else if (str == "ICE") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::ICE); }
+	//	else if (str == "CRAB") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::CRAB); }
+	//}
 
-		if (node.contains("Mutation"))
+	if (node.contains("Mutation"))
+	{
+		fish_def.vec_Mutation.resize(node["Mutation"].size());
+		for (int i = 0; i < node["Mutation"].size(); i++)
 		{
-			fish_def.vec_Mutation.resize(node["Mutation"].size());
-			for (int i = 0; i < node["Mutation"].size(); i++)
-			{
-				auto& mut = node["Mutation"][i];
-				fish_def.vec_Mutation[i].Mutation_ID = i + 1;
-				fish_def.vec_Mutation[i].Species_ID = node.value("ItemID", 0);
+			auto& mut = node["Mutation"][i];
+			fish_def.vec_Mutation[i].Mutation_ID = i + 1;
+			fish_def.vec_Mutation[i].Species_ID = node.value("ItemID", 0);
 
-				fish_def.vec_Mutation[i].MutName = mut.value("MutName", "a");
-				fish_def.vec_Mutation[i].MutDesc = mut.value("MutDesc", "a");
-				fish_def.vec_Mutation[i].MutTexturePath = mut.value("MutTexturePath", "a");
-				fish_def.vec_Mutation[i].MutCost = mut.value("MutCost", 0);
+			fish_def.vec_Mutation[i].MutName = mut.value("MutName", "a");
+			fish_def.vec_Mutation[i].MutDesc = mut.value("MutDesc", "a");
+			fish_def.vec_Mutation[i].MutTexturePath = mut.value("MutTexturePath", "a");
+			fish_def.vec_Mutation[i].MutCost = mut.value("MutCost", 0);
 
-			}
 		}
+	}
 
-		fish_def.IsRod = node.value("IsRod", false);
-		fish_def.IsTrawl = node.value("IsTrawl", false);
-		fish_def.IsPot = node.value("IsPot", false);
+	fish_def.IsRod = node.value("IsRod", false);
+	fish_def.IsTrawl = node.value("IsTrawl", false);
+	fish_def.IsPot = node.value("IsPot", false);
 }
 void CItemDB::Parse_Equip_Def(Equip_Def& equip_def, const nlohmann::json& node)
 {
@@ -229,14 +236,14 @@ void CItemDB::Parse_Equip_Def(Equip_Def& equip_def, const nlohmann::json& node)
 	switch (equip_def.EquipType)
 	{
 	case EQUIP_TYPE::ENGINE:
-		{
+	{
 		Equip_Engine effect;
 		effect.Research_Lv = EffNode.value("Research_Lv", 0);
 		effect.Speed_Kn = EffNode.value("Speed_Kn", 0);
 		equip_def.EquipType_Effect = effect;
-	
+
 		break;
-		}
+	}
 	case EQUIP_TYPE::LIGHT:
 	{
 		Equip_Light effect;
@@ -250,7 +257,7 @@ void CItemDB::Parse_Equip_Def(Equip_Def& equip_def, const nlohmann::json& node)
 	{
 		Equip_Rod effect;
 		effect.Research_Lv = EffNode.value("Research_Lv", 0);
-			effect.SeaType_Mask = BitFlag_SeaType(EffNode, "SeaType_Mask");
+		effect.SeaType_Mask = BitFlag_SeaType(EffNode, "SeaType_Mask");
 		effect.Speed_Per = EffNode.value("Speed_Per", 0);
 		equip_def.EquipType_Effect = effect;
 
@@ -286,7 +293,7 @@ void CItemDB::Parse_Equip_Def(Equip_Def& equip_def, const nlohmann::json& node)
 	}
 }
 
-SEA_MASK CItemDB::BitFlag_SeaType(const nlohmann::json& node,const string str)
+SEA_MASK CItemDB::BitFlag_SeaType(const nlohmann::json& node, const string str)
 {
 	SEA_MASK mask = 0;
 	if (!node.contains(str) || !node.at(str).is_array())
@@ -311,43 +318,40 @@ SEA_MASK CItemDB::BitFlag_SeaType(const nlohmann::json& node,const string str)
 
 void CItemDB::Compute_Occ(Shape& shape, _uint w, _uint h)
 {
+	shape.Occ[0].clear();
+	shape.Occ[1].clear();
+	shape.Occ[2].clear();
+	shape.Occ[3].clear();
 
-	_uint _w = {w};
-	_uint _h = {h};
-	for(_uint y =0; y < shape.Height; y++)
+	_uint _w = { w };
+	_uint _h = { h };
+	for (_uint y = 0; y < shape.Height; y++)
 	{
-		for(_uint x = 0; x < shape.Width; x++)
+		for (_uint x = 0; x < shape.Width; x++)
 		{
-			if(shape.Shape_Mask[y*w+x] == 1)
+			if (shape.Shape_Mask[y * w + x] == 1)
 			{
 				shape.Occ[0].push_back({ x,y });
-				
+
 			}
 		}
 	}
 
 	// 공식 90도 회전 = [x,y]->[h-1-y,x]
 	//Rotation 90
-	_w = h;_h = w;
-	for (_uint i = 0; i < shape.Occ[0].size(); i++)
-	{
-		shape.Occ[1].push_back({ _h - 1 - shape.Occ[0][i].dy,shape.Occ[0][i].dx });
-	}
+	_w = h; _h = w;
 
-	//Rotation 180
-	_w = h;_h = w;
-	for (_uint i = 0; i < shape.Occ[0].size(); i++)
-	{
-		shape.Occ[2].push_back({ _h - 1 - shape.Occ[1][i].dy,shape.Occ[1][i].dx });
-	}
+	// 90도 회전: (x, y) -> (h-1-y, x) 
+	for (auto& pos : shape.Occ[0])
+		shape.Occ[1].push_back({ h - 1 - pos.dy, pos.dx });
 
-	//Rotation 270
-	_w = h;_h = w;
-	for (_uint i = 0; i < shape.Occ[0].size(); i++)
-	{
-		shape.Occ[3].push_back({ _h - 1 - shape.Occ[2][i].dy,shape.Occ[2][i].dx });
-	}
-	
+	// 180도 회전: (x, y) -> (w-1-y, x) 
+	for (auto& pos : shape.Occ[1])
+		shape.Occ[2].push_back({ w - 1 - pos.dy, pos.dx });
+
+	// 270도 회전: (x, y) -> (h-1-y, x) 
+	for (auto& pos : shape.Occ[2])
+		shape.Occ[3].push_back({ h - 1 - pos.dy, pos.dx });
 
 }
 

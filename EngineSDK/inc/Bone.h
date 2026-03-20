@@ -16,7 +16,7 @@ public:
     void Update_TransformationMatrix(_fmatrix TransformMatrix);
 public:
     _bool isCompare(const _char* pBoneName) {return !strcmp(pBoneName, m_szName);}
-    const _float4x4* Get_m_CombinedTransformationMatrixPtr() const { return &m_CombinedTransformationMatrix; }
+    const _float4x4* Get_CombinedTransformationMatrixPtr() const { return &m_CombinedTransformationMatrix; }
 private:
 
     _char m_szName[MAX_PATH] = {};

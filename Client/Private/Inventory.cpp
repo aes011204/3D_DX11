@@ -1,27 +1,99 @@
 #include "Inventory.h"
+
+#include "GameInstance.h"
+#include "EventBus.h"
+
 #include "ItemDB.h"
 
-CInventory::CInventory() 
+
+
+static _uint Num = {1};
+
+CInventory::CInventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+:CComponent(pDevice, pContext)
 {
-    w = 9;
-    h = 11;
 }
 
-HRESULT CInventory::Initialize()
+HRESULT CInventory::Initialize_Prototype()
 {
-
-    // 아이템 갯수기준
-    m_Inventory.reserve(10);
-
-    // 슬롯기준 (최대 인밴)
-    m_InvenSlot.resize(w*h);
-
-    Init_BoatUpgrade();
-
-
+    m_w = 9;
+    m_h = 11;
     return S_OK;
 }
 
+HRESULT CInventory::Initialize(void* pArg)
+{
+    if(pArg!= nullptr)
+    {
+        INVEN_DESC* inven_desc = static_cast<INVEN_DESC*>(pArg);
+
+        if (inven_desc->invenType == INVENTYPE::PLAYER)
+        {
+            Init_BoatUpgrade();
+			Upgrade_Boat(0 );
+        } 
+        else if(inven_desc->invenType == INVENTYPE::SHOP)
+        {
+            m_w = inven_desc->width;
+            m_h = inven_desc->height;
+
+        }
+    }
+
+
+
+    // 아이템 갯수기준
+    m_Inventory.reserve(m_w * m_h);
+
+    // 슬롯기준 (최대 인밴)
+    m_InvenSlot.resize(m_w*m_h);
+
+
+    /*Evt_InvenPlayerInit_Data e = {};
+    e.Inven_ptr = static_pointer_cast<CInventory>(shared_from_this());
+
+    m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenPlayerInit_Data>(e);*/
+    // 이거 플레이어 보트로 옮김 
+
+
+
+
+    //test
+    //
+    //
+    Item_Inst inst1 = Create_ItemInstance(1001, 3);
+    
+    inst1.BaseXY = { 2,2 };
+    AddItem(inst1, 2, 2);
+    
+    Item_Inst inst = Create_ItemInstance(1001, 1);
+    
+    inst.BaseXY = { 3,5 };
+    AddItem(inst, 3, 5);
+    
+    Item_Inst inst2 = Create_ItemInstance(1002, 0);
+    
+    inst2.BaseXY = { 3,3 };
+    AddItem(inst2, 3, 3);
+     return S_OK;
+}
+Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, int rot)
+{
+
+    const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemDefID);
+
+    Item_Inst newInst;
+    newInst.ItemDef_ID = def.ItemID;
+    newInst.ItemInst_ID = Num++/*Generate_Unique_ID()*/;
+    newInst.ItemType = def.ItemType;
+
+    newInst.Rotation = rot;
+
+    // variant의 index나 type에 따라 분기 처리
+    //Init_TypeSpecificData(def, newInst);
+
+    return newInst;
+}
 void CInventory::Update(_float fTimeDelta)
 {
   
@@ -87,7 +159,7 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
   
       // 락이랑 겹치는지, 밑아이템 하나랑 겹치는지 , 바로 놓을 수 있는지
 
-        const Slot& the_Slot = m_InvenSlot[fy * w + fx];
+        const Slot& the_Slot = m_InvenSlot[fy * m_w + fx];
         ID_First = the_Slot.ItemInst_ID;
 
 
@@ -102,11 +174,18 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
         {
             absenceNum++;
         }
-        else if (the_Slot.ItemInst_ID != ID_First)
+        else/* if (the_Slot.ItemInst_ID != ID_First)*/
         {
-            //다른 종류의 아이템이 2 개 이상 겹쳐 있다 - place 불가 - 빨간
-            color = PLACE_COLOR::RED;
-            return -1;
+            ////다른 종류의 아이템이 2 개 이상 겹쳐 있다 - place 불가 - 빨간
+            //color = PLACE_COLOR::RED;
+            //return -1;
+            if (ID_First == ID_Absence)
+                ID_First = the_Slot.ItemInst_ID;
+            else if (the_Slot.ItemInst_ID != ID_First)
+            {
+                color = PLACE_COLOR::RED;
+                return -1;
+            }
         }
     }
 
@@ -152,18 +231,98 @@ Item_Inst CInventory::RemoveFrom_Inven(int inst_id)
 
     for(int i = 0; i <inst.CurBase.size(); i++)
     {
-        m_InvenSlot[inst.CurBase[i].dy * w + inst.CurBase[i].dx].ItemInst_ID = 0;
+        m_InvenSlot[inst.CurBase[i].dy * m_w + inst.CurBase[i].dx].ItemInst_ID = 0;
     }
 
 
     return inst;
 }
 
+void CInventory::OnGui()
+{
+    
+        ImGui::Text("Size: %d x %d", m_w, m_h);
+        ImGui::Text("Item Count: %d", (int)m_Inventory.size());
+
+        if (ImGui::BeginTabBar("InvenTabs"))
+        {
+            // --- Tab 1: 격자 시각화 (Slot View) ---
+            if (ImGui::BeginTabItem("Grid View"))
+            {
+                // 격자 그리기 시작
+                if (ImGui::BeginTable("InvenGrid", m_w, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
+                {
+                    for (int row = 0; row < m_h; row++)
+                    {
+                        ImGui::TableNextRow();
+                        for (int col = 0; col < m_w; col++)
+                        {
+                            ImGui::TableSetColumnIndex(col);
+
+                            int slotIndex = row * m_w + col;
+                            Slot& slot = m_InvenSlot[slotIndex];
+
+                            // 슬롯 상태에 따른 색상 지정
+                            ImVec4 color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // 기본 빈칸 (어두운 회색)
+
+                            if (slot.IsLock) color = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);      // 잠금 (검정)
+                            else if (slot.IsBroken) color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f); // 파손 (빨강)
+                            else if (slot.ItemInst_ID != 0) color = ImVec4(0.2f, 0.7f, 0.2f, 1.0f); // 아이템 존재 (초록)
+
+                            // 해당 색상으로 버튼 출력 (내부에는 ID 표시)
+                            ImGui::PushStyleColor(ImGuiCol_Button, color);
+                            string slotLabel = to_string(slot.ItemInst_ID) + "##" + to_string(slotIndex);
+                            ImGui::Button(slotLabel.c_str(), ImVec2(35, 35));
+
+                            // 마우스 올리면 툴팁으로 상세 정보 표시
+                            if (ImGui::IsItemHovered()) {
+                                ImGui::BeginTooltip();
+                                ImGui::Text("Index: %d (x:%d, y:%d)", slotIndex, col, row);
+                                ImGui::Text("ItemInstID: %d", slot.ItemInst_ID);
+                                ImGui::Text("Type: %d", (int)slot.slotType);
+                                ImGui::EndTooltip();
+                            }
+                            ImGui::PopStyleColor();
+                        }
+                    }
+                    ImGui::EndTable();
+                }
+                ImGui::EndTabItem();
+            }
+
+            // --- Tab 2: 아이템 리스트 (Data View) ---
+            if (ImGui::BeginTabItem("Item List"))
+            {
+                for (auto& item : m_Inventory)
+                {
+                    string headerLabel = "InstID: " +  to_string(item.ItemInst_ID) + " (DefID: " + to_string(item.ItemDef_ID) + ")";
+                    if (ImGui::CollapsingHeader(headerLabel.c_str()))
+                    {
+                        ImGui::BulletText("Type: %d", (int)item.ItemType);
+                        ImGui::BulletText("Rotation: %d", item.Rotation);
+                        ImGui::BulletText("Base Pos: %d, %d", item.BaseXY.x, item.BaseXY.y);
+
+                        if (ImGui::TreeNode("Occupied Cells"))
+                        {
+                            for (auto& occ : item.CurBase)
+                                ImGui::Text(" - dx: %d, dy: %d (Global x:%d, y:%d)", occ.dx, occ.dy, item.BaseXY.x + occ.dx, item.BaseXY.y + occ.dy);
+                            ImGui::TreePop();
+                        }
+                    }
+                }
+                ImGui::EndTabItem();
+            }
+            ImGui::EndTabBar();
+        }
+    
+   
+}
+
 void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)
 {
     // 인밴에 넣기
-    m_Inventory.push_back(itemInst);
-
+	m_Inventory.push_back(itemInst);
+    Item_Inst& stored = m_Inventory.back();
         // 인밴슬롯에 넣기
     const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
 
@@ -175,15 +334,15 @@ void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)
 
       // 락이랑 겹치는지, 밑아이템 하나랑 겹치는지 , 바로 놓을 수 있는지
 
-        m_InvenSlot[fy * w + fx].ItemInst_ID = itemInst.ItemInst_ID;
-        itemInst.CurBase.push_back({ fx,fy });
+        m_InvenSlot[fy * m_w + fx].ItemInst_ID = itemInst.ItemInst_ID;
+        stored.CurBase.push_back({ fx,fy });
     }
 
 }
 
 Item_Inst CInventory::TryMove_Item(_uint BaseX, _uint BaseY)
 {
-    ID_uint id = m_InvenSlot[BaseY * w + BaseX].ItemInst_ID;
+    ID_uint id = m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID;
 
     Item_Inst holdInst = RemoveFrom_Inven(id);
 
@@ -196,7 +355,7 @@ void CInventory::ThrowAwayFrom_Inven(_uint BaseX, _uint BaseY)
 
     // 집고 있는거 버리는건 컨트롤러에서 (집고 있는 아이템의 관리는 컨트로러)
 
-    ID_uint id = m_InvenSlot[BaseY * w + BaseX].ItemInst_ID;
+    ID_uint id = m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID;
 
 	RemoveFrom_Inven(id);
 
@@ -211,11 +370,11 @@ void CInventory::Apply_BaseMask(vector<Slot>& vecSlot)
 void CInventory::Init_BoatUpgrade()
 {
   
-    _uint tw = m_BoatUpgrade_type[0].width = 6;
-    _uint th = m_BoatUpgrade_type[0].height = 8;
-    m_BoatUpgrade_type[0].type.resize(w* h);
-    m_BoatUpgrade_type[0].type = {
-    'O','O','A','L','O','O',
+    _uint tw = m_BoatUpgrade_type[0].m_width = 6;
+    _uint th = m_BoatUpgrade_type[0].m_height = 8;
+    m_BoatUpgrade_type[0].m_type.resize(m_w* m_h);
+    m_BoatUpgrade_type[0].m_type = {
+    'O','A','A','L','O','O',
     'O','A','A','A','A','O',
     'A','A','A','A','A','A',
     'R','R','A','A','A','R',
@@ -225,10 +384,10 @@ void CInventory::Init_BoatUpgrade()
     'O','O','E','E','O','O',
     };
 
-    tw = m_BoatUpgrade_type[1].width = 7;
-    th = m_BoatUpgrade_type[1].height = 9;
-    m_BoatUpgrade_type[1].type.resize(w * h);
-    m_BoatUpgrade_type[1].type = {
+    tw = m_BoatUpgrade_type[1].m_width = 7;
+    th = m_BoatUpgrade_type[1].m_height = 9;
+    m_BoatUpgrade_type[1].m_type.resize(m_w * m_h);
+    m_BoatUpgrade_type[1].m_type = {
     'O','O','A','L','O','O','O',
     'O','A','A','A','A','O','O',
     'A','A','A','A','A','A','A',
@@ -240,10 +399,10 @@ void CInventory::Init_BoatUpgrade()
     'O','O','E','E','O','O','O',
     };
 
-    tw = m_BoatUpgrade_type[2].width = 9;
-    th = m_BoatUpgrade_type[2].height = 11;
-    m_BoatUpgrade_type[2].type.resize(w * h);
-    m_BoatUpgrade_type[2].type = {
+    tw = m_BoatUpgrade_type[2].m_width = 9;
+    th = m_BoatUpgrade_type[2].m_height = 11;
+    m_BoatUpgrade_type[2].m_type.resize(m_w * m_h);
+    m_BoatUpgrade_type[2].m_type = {
     'O','O','O','L','L','L','O','O','O',
     'O','O','A','A','A','A','A','O','O',
     'O','A','A','A','A','A','A','A','O',
@@ -261,41 +420,45 @@ void CInventory::Init_BoatUpgrade()
 
 void CInventory::Upgrade_Boat( _uint index)
 {
-    
-    w = m_BoatUpgrade_type[index].height;
-    h = m_BoatUpgrade_type[index].width;
+   
+    m_h = m_BoatUpgrade_type[index].m_height;
+    m_w = m_BoatUpgrade_type[index].m_width;
+
+    m_Inventory.reserve(m_w * m_h);
+    m_InvenSlot.resize(m_w * m_h);
 
     //
-    for (int th = 0; th < h; th++)
+
+    for (int th = 0; th < m_h; th++)
     {
-        for (int tw = 0; tw < w; tw++)
+        for (int tw = 0; tw < m_w; tw++)
         {
-            _int tmp = static_cast<_int>(m_BoatUpgrade_type[index].type[th * w + tw]);
+            _int tmp = static_cast<_int>(m_BoatUpgrade_type[index].m_type[th * m_w + tw]);
             switch (tmp)
             {
             case  static_cast<_int>('O'):
-                m_InvenSlot[th * w + tw].IsLock = true;
-                m_InvenSlot[th * w + tw].slotType = SLOT_TYPE::END;
+                m_InvenSlot[th * m_w + tw].IsLock = true;
+                m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::END;
                 break;
             case static_cast<_int>('A'):
-                m_InvenSlot[th * w + tw].IsLock = false;
-                m_InvenSlot[th * w + tw].slotType = SLOT_TYPE::ANY;
+                m_InvenSlot[th * m_w + tw].IsLock = false;
+                m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::ANY;
                 break;
             case static_cast<_int>('E'):
-                m_InvenSlot[th * w + tw].IsLock = false;
-                m_InvenSlot[th * w + tw].slotType = SLOT_TYPE::ENGINE;
+                m_InvenSlot[th * m_w + tw].IsLock = false;
+                m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::ENGINE;
                 break;
             case static_cast<_int>('L'):
-                m_InvenSlot[th * w + tw].IsLock = false;
-                m_InvenSlot[th * w + tw].slotType = SLOT_TYPE::LIGHT;
+                m_InvenSlot[th * m_w + tw].IsLock = false;
+                m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::LIGHT;
                 break;
             case static_cast<_int>('R'):
-                m_InvenSlot[th * w + tw].IsLock = false;
-                m_InvenSlot[th * w + tw].slotType = SLOT_TYPE::ROT;
+                m_InvenSlot[th * m_w + tw].IsLock = false;
+                m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::ROT;
                 break;
             case static_cast<_int>('N'):
-                m_InvenSlot[th * w + tw].IsLock = false;
-                m_InvenSlot[th * w + tw].slotType = SLOT_TYPE::NET;
+                m_InvenSlot[th * m_w + tw].IsLock = false;
+                m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::NET;
                 break;
             }
             // 아 비트 플레그 해야 하나...
@@ -304,17 +467,29 @@ void CInventory::Upgrade_Boat( _uint index)
 
 }
 
-shared_ptr<CInventory> CInventory::Create()
+shared_ptr<CInventory> CInventory::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
-    shared_ptr<CInventory> pInstance ( new CInventory());
+    shared_ptr<CInventory> pInstance ( new CInventory(pDevice, pContext), [](CInventory* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize()))
+    if (FAILED(pInstance->Initialize_Prototype()))
     {
         MSG_BOX("Failed to Created : CInventory");
     }
     return pInstance;
 }
 
+
+shared_ptr<CComponent> CInventory::Clone(void* pArg)
+{
+    shared_ptr<CInventory> pInstance(new CInventory(*this), [](CInventory* p) {p->Free(); delete p; });
+
+    if (FAILED(pInstance->Initialize(pArg)))
+    {
+        MSG_BOX("Failed to Cloned : CInventory");
+        return nullptr;
+    }
+    return pInstance;
+}
 void CInventory::Free()
 {
 	__super::Free();

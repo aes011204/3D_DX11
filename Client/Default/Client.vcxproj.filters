@@ -34,6 +34,9 @@
     <Filter Include="03.UI">
       <UniqueIdentifier>{9cf26258-9eff-4548-a171-3458c4f0b643}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\00.Player">
+      <UniqueIdentifier>{e7e37baf-7bda-4e58-8b1e-f1d94650db38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -118,10 +121,22 @@
     <ClInclude Include="..\Public\UI_TabContainer.h">
       <Filter>03.UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_Storage.h" />
-    <ClInclude Include="..\Public\PlayerBoat.h" />
-    <ClInclude Include="..\Public\EmptyGObject.h" />
-    <ClInclude Include="..\Public\Monster_Anim.h" />
+    <ClInclude Include="..\Public\UI_Item.h" />
+    <ClInclude Include="..\Public\PlayerBoat.h">
+      <Filter>02.GameObject\00.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Monster_Anim.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\EmptyGObject.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Storage.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Body_Player.h">
+      <Filter>02.GameObject\00.Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -201,10 +216,22 @@
     <ClCompile Include="..\Private\UI_TabContainer.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_Storage.cpp" />
-    <ClCompile Include="..\Private\PlayerBoat.cpp" />
-    <ClCompile Include="..\Private\EmptyGObject.cpp" />
-    <ClCompile Include="..\Private\Monster_Anim.cpp" />
+    <ClCompile Include="..\Private\UI_Item.cpp" />
+    <ClCompile Include="..\Private\PlayerBoat.cpp">
+      <Filter>02.GameObject\00.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster_Anim.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\EmptyGObject.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Storage.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Body_Player.cpp">
+      <Filter>02.GameObject\00.Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

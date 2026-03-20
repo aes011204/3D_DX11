@@ -6,6 +6,12 @@
 
 // json 파일든 정적데이터 로드 , 조회
 
+
+NS_BEGIN(Engine)
+class CGameInstance;
+NS_END
+
+
 NS_BEGIN(Client)
 
 class CItemDB :
@@ -37,6 +43,8 @@ private:
 private:
     vector<Item_Def>               m_vec_ItemDefs;
     unordered_map<_uint, _uint> m_map_ItemID;
+
+    weak_ptr<CGameInstance >m_pGameInstance = {};
 public:
     //shared_ptr<CData_Manager> Create();
     void Free() override;

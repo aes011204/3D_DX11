@@ -28,6 +28,8 @@ public:
     //shared_ptr<CBase> Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg);
     HRESULT Clear_Prototype(_uint iLevelIndex);
 
+
+    shared_ptr<CBase> Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);
     void OnGui()override;
 private:
     map<const _wstring, shared_ptr<CBase>>* m_pPrototypes = { nullptr }; //
@@ -38,7 +40,6 @@ private:
     _wstring m_strSelectedTag = {};
     _uint m_iSelectedLevel = {};
     weak_ptr<CGameInstance> m_pGameInstance = {};
-    shared_ptr<CBase> Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);
 public:
     static unique_ptr<CPrototype_Manager> Create(_uint iNumLevel);
     virtual void Free() override;

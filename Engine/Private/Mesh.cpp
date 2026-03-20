@@ -29,10 +29,11 @@ HRESULT CMesh::Initialize_Prototype(MODEL eType,
 	m_ePrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	m_iNumBones = meshInfo.iNumBones;
+	memcpy(&m_szName, &meshInfo.szName, MAX_PATH);
 
 
-	if (m_iNumBones > 0)
-	{
+
+
 		m_BoneIndices.reserve(m_iNumBones);
 		m_OffsetMatrices.reserve(m_iNumBones);
 
@@ -47,8 +48,7 @@ HRESULT CMesh::Initialize_Prototype(MODEL eType,
 			memcpy(&offset, &boneAdd.OffsetMatrix, sizeof(_float4x4));
 			m_OffsetMatrices.push_back(offset);
 		}
-	}
-
+	
 
 
 	//vertex Buffer
@@ -114,7 +114,7 @@ HRESULT CMesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* pConst
 	for(size_t i =0; i<m_iNumBones; i++)
 	{
 		XMStoreFloat4x4(&m_BoneMatrices[i], XMLoadFloat4x4(&m_OffsetMatrices[i] )*
-			XMLoadFloat4x4(bones[m_BoneIndices[i]]->Get_m_CombinedTransformationMatrixPtr()));
+			XMLoadFloat4x4(bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrixPtr()));
 	}
 	
 		return shader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
@@ -225,6 +225,22 @@ HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> 
 
 	}
 
+	if (0 == m_iNumBones)
+	{
+
+		m_BoneIndices.push_back(pModel->Get_BoneIndex(m_szName));
+
+		m_iNumBones = 1;
+
+		_float4x4		OffsetMatrix = {};
+		XMStoreFloat4x4(&OffsetMatrix, XMMatrixIdentity());
+
+		m_OffsetMatrices.push_back(OffsetMatrix);
+		for (size_t i = 0; i < m_iNumVertices; ++i) {
+			pVertices[i].vBlendIndex = { 0, 0, 0, 0 }; // 셰이더가 딴데 안 가게 고정
+			pVertices[i].vBlendWeight = _float4(0.f, 0.f, 0.f, 0.f); // x,y,z가 0이면 fWeightW가 1이 됨
+		}
+		}
 
 
 	D3D11_SUBRESOURCE_DATA			VertexInitialData{};

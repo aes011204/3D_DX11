@@ -1,5 +1,8 @@
 #pragma once
 #include "UIButton.h"
+
+NS_BEGIN(Engine)
+
 class ENGINE_DLL CUISlot :
     public CUIButton
 {
@@ -54,3 +57,4 @@ public:
 
 };
 
+NS_END

@@ -6,8 +6,10 @@
 #include "Terrain.h"
 #include "VIBuffer_Terrain.h"
 #include "Monster.h"
+#include "Texture.h"
 #include "PlayerBoat.h"
 #include "Assimp_Model.h"
+#include "Body_Player.h"
 #include "Monster_Anim.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -45,6 +47,8 @@ HRESULT CLoader::Initialize(LEVEL eNextLevelID)
 		MSG_BOX("Failed to Created : m_hThread");
 		return E_FAIL;
 	}
+
+	
 
 	return S_OK;
 }
@@ -138,6 +142,9 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
+
+	// 이거 전부 main app 에
+
 	///* Prototype_Component_Shader_VtxNorTex */
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxNorTex"),
 	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
@@ -176,14 +183,6 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
 
-	/* Prototype_Component_Model_Fiona */
-	//PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
-	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
-	//	CAssimp_Model::Create(m_pDevice, m_pContext, "../Bin/Resources/Models/Fiona/Fiona.fbx",MODEL::ANIM, PreLocalTransformMatrix))))
-	//{
-	//	MSG_BOX("Faild to Add_Prototype : Model_Fiona");
-	//	return E_FAIL;
-	//}
 
 	/* Prototype_Component_Model_FullBoatCrab */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
@@ -196,10 +195,10 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	}
 
 	PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
-
+	/*Prototype_Component_Model_Fiona_Anim*/
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona_Anim"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Fiona/Fiona.dat", MODEL::ANIM, PreLocalTransformMatrix))))
-	{
+	{ 
 		MSG_BOX("Faild to Add_Prototype : Model_Fiona");
 		return E_FAIL;
 	}
@@ -262,6 +261,14 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		CPlayerBoat::Create(m_pDevice, m_pContext))))
 	{
 		MSG_BOX("Faild to Add_Prototype : PlayerBoat");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_Body_Player */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Body_Player"),
+		CBody_Player::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Body_Player");
 		return E_FAIL;
 	}
 

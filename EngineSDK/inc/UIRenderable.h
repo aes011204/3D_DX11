@@ -22,7 +22,17 @@ protected:
 public:
     virtual ~CUIRenderable() = default;
 
+
+public:
+
     void Set_NotUseDark() { m_bUseDark = false; }
+    void Set_Transparent(_bool isTransparent) { m_IsTransparent = isTransparent; }
+    _bool Get_Transparent() { return m_IsTransparent; }
+
+    //이건
+    HRESULT Change_Texture(shared_ptr<CTexture> texture);
+   
+
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;
@@ -54,6 +64,11 @@ private:
 
     bool m_bUseNineSlice = false;
     NINESLICE_DESC m_SliceDesc = {};
+
+
+    _uint m_TexProtoLevel = {};
+    _wstring m_TexProtoName = L"";
+
 
 
     shared_ptr<class CShader> m_pShaderCom = { nullptr };

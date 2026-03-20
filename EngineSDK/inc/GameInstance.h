@@ -48,6 +48,7 @@ public:/* For.levelManager*/
 public: /* For.PrototypeManager*/
 	HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
 	shared_ptr<CBase> Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);;
+	//shared_ptr<CBase> Get_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);;
 
 public: /*For.GameObject_Manager*/
 	shared_ptr<CGameObject> Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr);

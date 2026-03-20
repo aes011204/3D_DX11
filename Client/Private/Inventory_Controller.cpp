@@ -7,6 +7,9 @@
 #include "Event_Struct.h"
 #include "Client_Enum.h"
 
+
+IMPLEMENT_SINGLETON(CInventory_Controller)
+
 CInventory_Controller::CInventory_Controller() :
  m_pGameInstance(CGameInstance::GetInstance())
 {
@@ -14,16 +17,16 @@ CInventory_Controller::CInventory_Controller() :
 
 HRESULT CInventory_Controller::Initialize()
 {
-	m_Inven = CInventory::Create();
+	////m_Inven = CInventory::Create();
+	//
+	////m_Inven->Upgrade_Boat(0); // 젤 처음
 
-	m_Inven->Upgrade_Boat(0); // 젤 처음
+	//Evt_UIslot_Data e = {};
+	//e.h = m_Inven->Get_H();
+	//e.w = m_Inven->Get_W();
+	//e.InvenSlot = m_Inven->Get_Invenslot();
 
-	Evt_UIslot_Data e = {};
-	e.h = m_Inven->Get_H();
-	e.w = m_Inven->Get_W();
-	e.InvenSlot = m_Inven->Get_Invenslot();
-
-	m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_UIslot_Data>(e);
+	//m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_UIslot_Data>(e);
 
 
 	//auto tmppointer = dynamic_pointer_cast<CInventory_Controller>(shared_from_this());
@@ -38,9 +41,13 @@ HRESULT CInventory_Controller::Initialize()
 	return S_OK;
 }
 
-void CInventory_Controller::Update()
+void CInventory_Controller::Update(float TimeDelta)
 {
-
+	auto Inven = m_Inven.lock();
+	if (Inven == nullptr)
+	{
+		return;
+	}
 
 	_uint SlotX, SlotY = { 0 };
 
@@ -55,7 +62,7 @@ void CInventory_Controller::Update()
 			{
 				//잡고 있는 아이템이 없을경우
 				// 집기
-				tmpInst = m_Inven->TryMove_Item(SlotX, SlotY);
+				tmpInst = Inven->TryMove_Item(SlotX, SlotY);
 
 				if (tmpInst.ItemInst_ID == ID_Absence)
 					MSG_BOX("Faild : TryMove_Item");
@@ -67,7 +74,7 @@ void CInventory_Controller::Update()
 			else if (true /* + ui 가 z 반환+일정 시간 이상 누르고 있을떄*/)
 			{
 				//인밴에 있는거 버리기
-				m_Inven->ThrowAwayFrom_Inven(SlotX, SlotY);
+				Inven->ThrowAwayFrom_Inven(SlotX, SlotY);
 			}
 		}
 		else if (Is_Dragging == true)
@@ -75,7 +82,7 @@ void CInventory_Controller::Update()
 			// 잡고있는 아이템이 있는경우
 			PLACE_COLOR color = PLACE_COLOR::END;
 
-			m_Inven->CanPlace(m_HoldItem, SlotX, SlotY, color);
+			Inven->CanPlace(m_HoldItem, SlotX, SlotY, color);
 
 			if (true /* + ui 가 클릭은 반환*/)
 			{
@@ -83,12 +90,12 @@ void CInventory_Controller::Update()
 				switch (color)
 				{
 				case PLACE_COLOR::GREEN:
-					tmpInst = m_Inven->AddItem(m_HoldItem, SlotX, SlotY);
+					tmpInst = Inven->AddItem(m_HoldItem, SlotX, SlotY);
 					m_HoldItem = tmpInst;// 이건 빈 인스턴스
 					Is_Dragging = false;
 					break;
 				case PLACE_COLOR::ORANGE:
-					tmpInst = m_Inven->AddItem(m_HoldItem, SlotX, SlotY);
+					tmpInst = Inven->AddItem(m_HoldItem, SlotX, SlotY);
 
 					if (tmpInst.ItemInst_ID == ID_Absence)
 						MSG_BOX("Faild : Get Swap Item from AddItem");
@@ -129,20 +136,20 @@ void CInventory_Controller::Update()
 
 }
 
-shared_ptr<CInventory_Controller> CInventory_Controller::Create()
-{
-	shared_ptr<CInventory_Controller> pInstance(new CInventory_Controller(),
-		[](CInventory_Controller* p) {p->Free(); delete p;});
-
-	if (FAILED(pInstance->Initialize()))
-	{
-		MSG_BOX("Failed to Created : CInventory_Controller");
-	}
-	return pInstance;
-}
-
-void CInventory_Controller::Free()
-{
-	__super::Free();
-
-}
+//shared_ptr<CInventory_Controller> CInventory_Controller::Create()
+//{
+//	shared_ptr<CInventory_Controller> pInstance(new CInventory_Controller(),
+//		[](CInventory_Controller* p) {p->Free(); delete p;});
+//
+//	if (FAILED(pInstance->Initialize()))
+//	{
+//		MSG_BOX("Failed to Created : CInventory_Controller");
+//	}
+//	return pInstance;
+//}
+//
+//void CInventory_Controller::Free()
+//{
+//	__super::Free();
+//
+//}

@@ -1,7 +1,7 @@
 #include "Monster_Anim.h"
 #include "GameInstance.h"
 #include "Model.h"
-#include "Assimp_Model.h"
+//#include "Assimp_Model.h"
 
 CMonster_Anim::CMonster_Anim(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CGameObject{ pDevice ,pContext }
@@ -54,7 +54,7 @@ HRESULT CMonster_Anim::Render()
 
 	for(size_t i=0; i< iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i,aiTextureType_DIFFUSE, 0);
+		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i,TextureType_DIFFUSE, 0);
 		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
 	if (FAILED(m_pShaderCom->Begin(0)))
@@ -78,7 +78,7 @@ void CMonster_Anim::RebindCom()
 {
 	// 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
 	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CAssimp_Model>(L"Com_Model");
+	m_pModelCom = Get_Component<CModel>(L"Com_Model");
 	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
 }
@@ -129,7 +129,7 @@ HRESULT CMonster_Anim::Ready_Components()
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona_Anim"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 	//	return E_FAIL;

@@ -1,12 +1,12 @@
 #pragma once
-#include "GameObject.h"
+#include "ContainerObject.h"
 #include "Client_Define.h"
 NS_BEGIN(Engine)
 class CPlayerBoat :
-    public CGameObject
+    public CContainerObject
 {
 public:
-    struct PLAYERBOAT_DESC : public CGameObject::GAMEOBJECT_DESC
+    struct PLAYERBOAT_DESC : public CContainerObject::ContainerOBJ_DESC
     {
 
 
@@ -27,19 +27,22 @@ public:
 
     virtual void OnGui() override;
 
-    virtual void RebindCom();
+    //virtual void RebindCom();
     HRESULT Bind_ShaderResources();
 
 protected:
     HRESULT Ready_Components();
+    HRESULT Ready_PartObjects();
 private:
 
 
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr };
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    //shared_ptr<CShader> m_pShaderCom = { nullptr };
+    //shared_ptr<CModel> m_pModelCom = { nullptr };
+    //shared_ptr<CTexture> m_pTextureCom = { nullptr };
+
+    shared_ptr<class CInventory> m_pInvenCom = { nullptr };
 
 public:
     static shared_ptr<CPlayerBoat> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

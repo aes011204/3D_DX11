@@ -251,6 +251,21 @@ _int CModel::Get_BoneIndex(const _char* pBoneName)
 	return iBoneIndex;
 }
 
+const _float4x4* CModel::Get_BoneMatrixPtr(const _char* pBoneName)
+{
+	auto iter = find_if(m_Bones.begin(),m_Bones.end(),
+		[&](shared_ptr<CBone> pBone)->bool{
+	
+		return pBone->isCompare(pBoneName);
+	});
+
+	if (iter == m_Bones.end())
+		return nullptr;
+
+	return (*iter)->Get_CombinedTransformationMatrixPtr();
+
+}
+
 shared_ptr<CModel> CModel::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix)
 {
 	shared_ptr<CModel> pInstance(new CModel(pDevice, pContext), [](CModel* p) {p->Free(); delete p; });

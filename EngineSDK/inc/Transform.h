@@ -117,11 +117,14 @@ public:
 
     void Set_ParentMatrix(const _float4x4* pParentMatrix) { m_pParentMatrix = pParentMatrix; m_bIsDirty = true; }
 
+	const _float4x4* Get_WorldMatrixPtr() const { return &m_WorldMatrix;}
+
 public:
     virtual HRESULT Initialize_Prototype() override;
     virtual HRESULT Initialize(void* pArg) override;
     virtual HRESULT Bind_ShaderResource(shared_ptr<class CShader>pShaderCom, const _char* pConstantName );
 
+    void Update_WorldMatrix();
 public:
     void SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ);//기존의 있는 크기에 배수가 아니라 스케일정보 바꿔줌
     void Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);//저장된 크기의 배수로 키우기
@@ -162,7 +165,6 @@ private:
 
     //_float3 m_vScale = {};
 private:
-    void Update_WorldMatrix();
 
 public:
     static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

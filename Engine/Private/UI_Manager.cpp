@@ -102,7 +102,8 @@ void CUI_Manager::Push(UI_LAYER layer, wstring name,_bool isOnActive, void* pArg
 
 		// 이미 있으면 젤위로 
 		auto it = find(m_UI[ETOI(layer)].begin(), m_UI[ETOI(layer)].end(), addUI);
-		if (it != m_UI[ETOI(layer)].end())
+
+	if (it != m_UI[ETOI(layer)].end())
 		{
 			m_UI[ETOI(layer)].erase(it);
 		}
@@ -110,7 +111,7 @@ void CUI_Manager::Push(UI_LAYER layer, wstring name,_bool isOnActive, void* pArg
 		{
 			addUI->UI_InActive();
 		}
-	
+
 		//addUI->Initialize(UIQ.pArg); // 넣었다 뺏다 할떄 계속 불릴 위험있음 CBase 안에서 bool로 처리
 		//addUI->UI_Active();
 

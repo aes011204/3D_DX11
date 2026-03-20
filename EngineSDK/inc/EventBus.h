@@ -6,7 +6,7 @@
 
 NS_BEGIN(Engine)
 
-class CEventBus 
+class ENGINE_DLL CEventBus 
 {
 public:
 	CEventBus();

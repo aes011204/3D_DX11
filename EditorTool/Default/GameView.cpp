@@ -190,8 +190,9 @@ void CGameView::Update(float fTimeDelta)
 		float fCalibratedX = (fLocalX / m_vRenderSize.x) * m_Width;
 		float fCalibratedY = (fLocalY / m_vRenderSize.y) * m_Height;
 
+		float fFixedY = (float)m_Height - fCalibratedY; //카르트 좌표계에 맞게 보정
 
-		CGameInstance::GetInstance()->Set_MousePos(fCalibratedX, fCalibratedY);
+		CGameInstance::GetInstance()->Set_MousePos(fCalibratedX, fFixedY);
 	}
 	else
 		CGameInstance::GetInstance()->Set_MousePos(-10.f, -10.f);

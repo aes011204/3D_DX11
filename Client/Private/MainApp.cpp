@@ -1,4 +1,7 @@
 #include "MainApp.h"
+
+#include <UIImage.h>
+
 #include "GameInstance.h"
 #include "Client_Define.h"
 #include "Data_Manager.h"
@@ -11,6 +14,8 @@
 #include "Camera_Free.h"
 #include "Engine_Struct.h"
 #include "Inventory_Controller.h"
+#include "ItemDB.h"
+#include "Texture.h"
 
 #include "UI_MainMenu.h"
 #include "UI_TabContainer.h"
@@ -54,26 +59,22 @@ HRESULT CMainApp::Initialize()
 	ImGui::SetCurrentContext(imgContext);
 	m_pGameInstance.lock()->SetImguiContext(imgContext);
 
-
-	/* 게임의 시작을 위해 시작이 되는 레벨 할당과 동작을 시킨다 */
-	if (FAILED((Ready_StartLevel(LEVEL::LOGO))))
-		return E_FAIL;
-
-	if (FAILED((Ready_Prototype_For_Static_Level())))
+	if (FAILED(Ready_Prototype_For_Static_Level()))
 		return E_FAIL;
 
 
 	if (FAILED((Ready_UI())))
 		return E_FAIL;
 
+	/* 게임의 시작을 위해 시작이 되는 레벨 할당과 동작을 시킨다 */
+	if (FAILED(Ready_StartLevel(LEVEL::LOGO)))
+		return E_FAIL;
+
+
   
-	//test
-	//CData_Manager::GetInstance()->Initialize();
+	//아이템은 아이템 UI 다 프로토 타입 만든후 사용
+	CItemDB ::GetInstance()->Initialize();
 	//CDialogueDB::GetInstance()->Ready_DialogueDB();
-
-
-
-	m_Contr = CInventory_Controller::Create();// 일단 여기 안에 서  발행 함 임시임
 
 
 	return S_OK;
@@ -123,6 +124,8 @@ HRESULT CMainApp::Ready_StartLevel(LEVEL eStartLevelID)
 
 HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 {
+	////////////////////////CAMERA////////////////////////
+
 	/* Prototype_GameObject_Camera_Play */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Play"),
 		CCamera_Play::Create(m_pDevice, m_pContext))))
@@ -138,7 +141,11 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : Camera_Free");
 		return E_FAIL;
 	}
-	////////////////////////////////////////////////
+
+
+
+	////////////////////////SHADER////////////////////////
+	///
 	/* Prototype_Component_Shader_VtxNorTex */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxNorTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
@@ -168,6 +175,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_VtxTex.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
 		return E_FAIL;
 
+	////////////////////////COMPONENT////////////////////////
+
+	/* Prototype_Component_Inven */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"),
+		CInventory::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Component_Inven ");
+		return E_FAIL;
+	}
+
 	///////////////////////////////////////////////////////
 
 	/* Prototype_Component_VIBuffer_Rect */
@@ -176,13 +193,6 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 
 
-	///* Prototype_Component_Shader_VtxMesh */
-	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
-	//	CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
-	//{
-	//	MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
-	//	return E_FAIL;
-	//}
 
 	/////////////////////////////////////////////
  /* Prototype_GameObject_CEmptyUObject */
@@ -302,6 +312,38 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+
+
+	/////////////////////ITEM_TEX///////////////////////
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/cod.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+
+
+	///////////////////////LOADING//////////////////////////////
+
+	//Prototype_Component_Texture_Black
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Black"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Black.jpg"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Black");
+		return E_FAIL;
+	}
+
+
+
 	/////////////////////////TEST//////////////////////////
 
 	//{
@@ -325,11 +367,23 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 }
 
 HRESULT CMainApp::Ready_UI()
-{	
+{
+
+
+	{
+		CUIPanel::UIPANEL_DESC LoadingDesc;
+		LoadingDesc.IsFullScreen = true;
+		LoadingDesc.TextureProtoName = L"Prototype_Component_Texture_Black";
+		LoadingDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		shared_ptr<CUIPanel> pInstance = CUIPanel::Create(m_pDevice, m_pContext);
+		pInstance->Initialize(&LoadingDesc);
+		m_pGameInstance.lock()->UI_InsertToPool(L"Loading", pInstance);
+	}
+
+
 	CUI_MainMenu::MAINMENU_DESC pDescPanel;
 	pDescPanel.IsFullScreen = true;
 	pDescPanel.IsTransparent = true;
-
 
 	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_pDevice, m_pContext);
 	pInstance->Initialize(&pDescPanel);
@@ -364,8 +418,8 @@ void CMainApp::Free()
 {
 	__super::Free();
 
-	m_Contr.reset();
-
+	CInventory_Controller::DestroyInstance();
+	CItemDB::DestroyInstance();
 
 	m_pContext->ClearState();
 

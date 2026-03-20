@@ -14,6 +14,7 @@
 #include "Client_Enum.h"
 #include "Client_Helper.h"
 #include "UITransform.h"
+#include "GameInstance.h"
 //
 
 CLevel_Loading::CLevel_Loading(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -35,12 +36,18 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 	m_pLoader = CLoader::Create(m_pDevice, m_pContext, eNextLevelID);
 	if(m_pLoader == nullptr)
 		return E_FAIL;
-	
+
+
+
 	return S_OK;
 }
 
 HRESULT CLevel_Loading::Post_Initialize()
 {
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Loading", true, nullptr);
+	//m_TapUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+
+
 	return S_OK;
 }
 
@@ -96,6 +103,8 @@ HRESULT CLevel_Loading::Render()
 
 HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar* pLayerTag)
 {
+
+
 	return S_OK;
 }
 

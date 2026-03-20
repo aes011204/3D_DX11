@@ -212,9 +212,14 @@ shared_ptr<CBase> CGameInstance::Clone_Prototype(PROTOTYPE ePrototy, _uint iLeve
 	return  tmp;
 }
 
+//shared_ptr<CBase> CGameInstance::Get_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag)
+//{
+//	return m_pProto_Manager->Find_Prototype(iLevelIndex, strPrototypeTag);
+//}
+
 
 shared_ptr<CGameObject> CGameInstance::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
-	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
+                                                      _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
 {
 	return m_pObject_Manager->Add_GameObject(iPrototypeLevelIndex, strPrototypeTag, iLayerLevelIndex, strLayerTag, pArg);
 }

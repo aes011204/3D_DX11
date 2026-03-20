@@ -3,6 +3,11 @@
 #include  "Client_Define.h"
 
 
+namespace Engine
+{
+	class CTexture;
+}
+
 namespace Client
 {
 	// 아이템 관련 
@@ -36,7 +41,7 @@ namespace Client
     {
         _uint Width , Height = { 0 };
         vector<_ubyte> Shape_Mask = {}; // 0,1 로만 할건데 bool 문제생길수있음 // ex) [ 111, 101 ] 
-        vector<OccCell> Occ[3] = {}; // uint16_t //Shape_Mask 의 좌표 캐싱 // 회전도 같이 캐싱 // ex) {(0,0),(1,0),(2,0),(0,1),(0,2)}
+        vector<OccCell> Occ[4] = {}; // uint16_t //Shape_Mask 의 좌표 캐싱 // 회전도 같이 캐싱 // ex) {(0,0),(1,0),(2,0),(0,1),(0,2)}
         
     };
 
@@ -85,6 +90,8 @@ namespace Client
         ID_uint ItemInst_ID = { ID_Absence };
         ITEM_TYPE ItemType = ITEM_TYPE::END; // 이건 그냥 캐싱용으로 두자
 
+        _float2 BaseXY = {};
+
         vector<OccCell> CurBase = {};
         _uint Rotation = { 0 };
 
@@ -102,6 +109,8 @@ namespace Client
 		_string ItemDesc = {};
         _string TexturePath = {};
 
+    	shared_ptr<Engine:: CTexture> pTexture = nullptr;
+
         Shape ItemShape = {};
         _uint SizeNum = { 0 };
 
@@ -118,8 +127,8 @@ namespace Client
     struct Slot
     {
         ID_uint ItemInst_ID = { ID_Absence };
-        SLOT_TYPE slotType = SLOT_TYPE::END;
-        _bool IsLock = { true };
+        SLOT_TYPE slotType = SLOT_TYPE::ANY;
+        _bool IsLock = { false };
         _bool IsBroken = { false };
     };
 
@@ -175,10 +184,12 @@ namespace Client
         Test1,
     };
 
-    struct Evt_UIslot_Data
+    enum class INVENTYPE {PLAYER, CHEST, SHOP, END};
+
+
+    struct Evt_InvenPlayerInit_Data
     {
-        _uint w = {};
-        _uint h = {};
-        vector<Slot> InvenSlot = {};
+        weak_ptr<class CInventory> Inven_ptr = {};
     };
+
 }

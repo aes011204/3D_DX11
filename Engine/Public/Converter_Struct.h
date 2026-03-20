@@ -16,7 +16,7 @@ struct Cvt_Header
 
 struct Cvt_MeshInfo
 {
-    char szName[64];
+    char szName[MAX_PATH];
     uint32_t iMaterialIndex;
     uint32_t iNumVertices;
     uint32_t iNumIndices;
@@ -25,6 +25,8 @@ struct Cvt_MeshInfo
 };
 
 struct Cvt_VTXMESH {
+
+
     float vPos[3] = {};
     float vUV[8][2] = {};
     float vNormal[3] = {};

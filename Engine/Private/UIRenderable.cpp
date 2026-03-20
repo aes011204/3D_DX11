@@ -22,24 +22,28 @@ HRESULT CUIRenderable::OnInit(void* pArg)
 	m_bUseDark = pDesc->bUseDark;
 	m_bUseNineSlice = pDesc->bUseNineSlice;
 
+		_uint m_TexProtoLevel = pDesc->TextureComLevel;
+		_wstring m_TexProtoName = pDesc->TextureProtoName;
+
+		if (FAILED(Ready_Components(m_TexProtoLevel, m_TexProtoName)))
+			return E_FAIL;
+
 	if (m_IsTransparent == false)
 	{
-		if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
-			return E_FAIL;
-	_float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
-	m_SliceDesc.TexOriginalSize = orignSize;
-	m_SliceDesc.UISize = _float2(1.f, 1.f);// 어짜피 트렌스폼이 정함 최종 ui 사이즈
-	m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
+		_float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
+		m_SliceDesc.TexOriginalSize = orignSize;
+		m_SliceDesc.UISize = _float2(1.f, 1.f);// 어짜피 트렌스폼이 정함 최종 ui 사이즈
+		m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
 	}
 
 
 
 
 
-	if (pDesc->PxSliceLRTB.x != 0.f && pDesc->PxSliceLRTB.y != 0.f 
-	    && pDesc->PxSliceLRTB.z != 0.f && pDesc->PxSliceLRTB.w != 0.f)
+	if (pDesc->PxSliceLRTB.x != 0.f && pDesc->PxSliceLRTB.y != 0.f
+		&& pDesc->PxSliceLRTB.z != 0.f && pDesc->PxSliceLRTB.w != 0.f)
 	{
-	    m_SliceDesc.PxSliceLRTB = (pDesc->PxSliceLRTB);
+		m_SliceDesc.PxSliceLRTB = (pDesc->PxSliceLRTB);
 	}
 
 
@@ -48,17 +52,17 @@ HRESULT CUIRenderable::OnInit(void* pArg)
 
 void CUIRenderable::OnActive()
 {
-	
+
 }
 
 void CUIRenderable::OnInActive()
 {
-	
+
 }
 
 void CUIRenderable::OnDisabled()
 {
-	
+
 }
 
 void CUIRenderable::OnUpdate(const _float& timeDelta)
@@ -68,7 +72,7 @@ void CUIRenderable::OnUpdate(const _float& timeDelta)
 		m_bIsDirtyCom = false;
 	}
 
-	if(m_bUseNineSlice)
+	if (m_bUseNineSlice)
 		m_SliceDesc.UISize = m_pUITransformCom->Get_FinalSize();
 	if (m_bUseNineSlice)
 		m_SliceDesc.TexCustomSize = m_pUITransformCom->Get_SizeDelta();
@@ -108,18 +112,37 @@ HRESULT CUIRenderable::OnRender()
 	return S_OK;
 }
 
+HRESULT CUIRenderable::Change_Texture(shared_ptr<CTexture> texture)
+{
+	//if(protoName != m_TexProtoName)
+	//{
 
+	m_pTextureCom = texture;
+
+	if (m_pTextureCom && m_pUITransformCom) {
+
+		m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(0) / 3.f) * 2.f);
+	}
+	return S_OK;
+	//}
+
+}
 HRESULT CUIRenderable::Ready_Components(_uint Level, _wstring protoName)
 {
 	if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
 		return E_FAIL;
 	if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
-		return E_FAIL;
-	if (m_pTextureCom && m_pUITransformCom) {
 
-		m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(0)/3.f)*2.f);
+
+	if (m_IsTransparent == false)
+	{
+		if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+			return E_FAIL;
+		if (m_pTextureCom && m_pUITransformCom) {
+
+			m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(0) / 3.f) * 2.f);
+		}
 	}
 	return S_OK;
 }
@@ -143,17 +166,17 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 			return E_FAIL;
 	}
 	if (m_PassIndex == 1)
-	 {
-		 if (FAILED(m_pShaderCom->Bind_RawValue("g_TexOriginalSize", &m_SliceDesc.TexOriginalSize, sizeof(_float2))))
-			 return E_FAIL;
-		 if (FAILED(m_pShaderCom->Bind_RawValue("g_TexCustomSize", &m_SliceDesc.TexCustomSize, sizeof(_float2))))
-			 return E_FAIL;
-		 if (FAILED(m_pShaderCom->Bind_RawValue("g_UISize", &m_SliceDesc.UISize, sizeof(_float2))))
-			 return E_FAIL;
-		 if (FAILED(m_pShaderCom->Bind_RawValue("g_PxSliceLRTB", &m_SliceDesc.PxSliceLRTB, sizeof(_float4))))
-			 return E_FAIL;
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_TexOriginalSize", &m_SliceDesc.TexOriginalSize, sizeof(_float2))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_TexCustomSize", &m_SliceDesc.TexCustomSize, sizeof(_float2))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_UISize", &m_SliceDesc.UISize, sizeof(_float2))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_PxSliceLRTB", &m_SliceDesc.PxSliceLRTB, sizeof(_float4))))
+			return E_FAIL;
 
-	 }
+	}
 
 
 
@@ -169,7 +192,7 @@ void CUIRenderable::RebindCom()
 }
 void CUIRenderable::OnClear()
 {
-	
+
 }
 
 void CUIRenderable::Save_ToJson(nlohmann::json& j)

@@ -74,11 +74,10 @@ void CMonster::OnGui()
 
 void CMonster::RebindCom()
 {
-	// 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
+
 	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
 	m_pModelCom = Get_Component<CModel>(L"Com_Model");
-	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
-	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+
 }
 
 HRESULT CMonster::Bind_ShaderResources()
@@ -115,13 +114,6 @@ HRESULT CMonster::Bind_ShaderResources()
 
 HRESULT CMonster::Ready_Components()
 {
-	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"),
-	//	TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-	//	return E_FAIL;
-
-	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
-	//	TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-	//	return E_FAIL;
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
@@ -129,9 +121,6 @@ HRESULT CMonster::Ready_Components()
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
-	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
-	//	return E_FAIL;
-
 
 	return S_OK;
 }

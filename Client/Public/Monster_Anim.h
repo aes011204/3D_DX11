@@ -3,7 +3,7 @@
 #include "Client_Define.h"
 NS_BEGIN(Engine)
 
-class CAssimp_Model;
+class CModel;
 NS_END
 
 
@@ -38,7 +38,7 @@ private:
 private:
 
     shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CAssimp_Model> m_pModelCom = { nullptr }; 
+    shared_ptr<CModel> m_pModelCom = { nullptr }; 
     shared_ptr<CTexture> m_pTextureCom = { nullptr };
 
 public:

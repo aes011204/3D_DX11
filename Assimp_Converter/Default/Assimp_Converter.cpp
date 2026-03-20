@@ -125,7 +125,7 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 
 		aiMesh* pAIMesh = scene->mMeshes[i];
 
-		strncpy_s(meshInfo.szName, pAIMesh->mName.C_Str(), 63);//strncpy_s 파일 이름이 63 개보다 많으면 짤리지만 들어감
+		strncpy_s(meshInfo.szName, pAIMesh->mName.C_Str(), MAX_PATH);//strncpy_s 파일 이름이 63 개보다 많으면 짤리지만 들어감
 		meshInfo.iNumVertices = pAIMesh->mNumVertices;
 		meshInfo.iMaterialIndex = pAIMesh->mMaterialIndex;
 

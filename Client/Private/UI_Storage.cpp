@@ -128,4 +128,5 @@ shared_ptr<CUI_Storage> CUI_Storage::Create(ComPtr<ID3D11Device> pDevice, ComPtr
 
 void CUI_Storage::Free()
 {
+	__super::Free();
 }

@@ -1,15 +1,20 @@
 #include "PlayerBoat.h"
+
+#include "Body_Player.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "DInput_Manager.h"
+#include "GameInstance.h"
+#include "EventBus.h"
+#include "Inventory.h"
 
 CPlayerBoat::CPlayerBoat(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+	: CContainerObject{ pDevice ,pContext }
 {
 }
 
 CPlayerBoat::CPlayerBoat(const CPlayerBoat& prototype)
-	: CGameObject{ prototype }
+	: CContainerObject{ prototype }
 {
 }
 
@@ -31,20 +36,33 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
+	// 0,0 에서 시작하면 터레인 예외처리 안해서 터짐여
 	_float3 tmp = { 5.f, 5.f, 5.f };
 	m_pTransformCom->Set_Position(XMLoadFloat3(&tmp));
+
+	if (FAILED(Ready_PartObjects()))
+		return E_FAIL;
+
+	{
+		Evt_InvenPlayerInit_Data e = {};
+		e.Inven_ptr = m_pInvenCom;
+
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenPlayerInit_Data>(e);
+	}
 
 	return S_OK;
 }
 
 void CPlayerBoat::Priority_Update(_float fTimeDelta)
 {
+	__super::Priority_Update(fTimeDelta);
 }
 
 void CPlayerBoat::Update(_float fTimeDelta)
 {
-
+	//m_pTransformCom->Get_WorldMatrix();
 	//
+
 	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
 
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
@@ -130,36 +148,37 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	_float fOut3 = {};
 	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fOut3);*/
 
+	m_pTransformCom->Update_WorldMatrix();
 
-
-
+	__super::Update(fTimeDelta);
 
 	//m_pModelCom->Play_Animation(fTimeDelta);
 }
 
 void CPlayerBoat::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	__super::Late_Update(fTimeDelta);
+	//m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CPlayerBoat::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
+	//if (FAILED(Bind_ShaderResources()))
+	//	return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	//size_t iNumMesh = m_pModelCom->Get_NumMeshes();
 
-	for (size_t i = 0; i < iNumMesh; i++)
-	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+	//for (size_t i = 0; i < iNumMesh; i++)
+	//{
+	//	m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+	//	//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-		if (FAILED(m_pShaderCom->Begin(0)))
-			return E_FAIL;
+	//	if (FAILED(m_pShaderCom->Begin(0)))
+	//		return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
-			return E_FAIL;
-	}
+	//	if (FAILED(m_pModelCom->Render(i)))
+	//		return E_FAIL;
+	//}
 
 
 	return S_OK;
@@ -169,65 +188,76 @@ void CPlayerBoat::OnGui()
 {
 }
 
-void CPlayerBoat::RebindCom()
+//void CPlayerBoat::RebindCom()
+//{
+//	// 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
+//	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+//	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+//	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
+//	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+//}
+//
+//HRESULT CPlayerBoat::Bind_ShaderResources()
+//{
+//	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+//		return E_FAIL;
+//
+//	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+//		return E_FAIL;
+//
+//
+//
+//	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+//		return E_FAIL;
+//
+//	const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
+//	if (nullptr == pLightDesc)
+//		return E_FAIL;
+//
+//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
+//		return E_FAIL;
+//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
+//		return E_FAIL;
+//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
+//		return E_FAIL;
+//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
+//		return E_FAIL;
+//
+//	return S_OK;
+//}
+
+HRESULT CPlayerBoat::Ready_Components()
 {
-	// 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
-	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
-	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
-}
-
-HRESULT CPlayerBoat::Bind_ShaderResources()
-{
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
-		return E_FAIL;
-
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
-		return E_FAIL;
 
 
+	//// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
+	//if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	//	return E_FAIL;
+	//// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
+	//if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	//	return E_FAIL;
+	////if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+	////	return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
-		return E_FAIL;
-
-	const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
-	if (nullptr == pLightDesc)
-		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
+	CInventory::INVEN_DESC inven_desc = {};
+	inven_desc.invenType = INVENTYPE::PLAYER;
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Inven"), &m_pInvenCom, &inven_desc)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CPlayerBoat::Ready_Components()
+HRESULT CPlayerBoat::Ready_PartObjects()
 {
-	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"),
-	//	TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-	//	return E_FAIL;
+	CBody_Player::BodyPlayer_DESC bodyDesc{};
+	bodyDesc.pParentMatrix = m_pTransformCom->Get_WorldMatrixPtr();
 
-	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
-	//	TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-	//	return E_FAIL;
+	if (FAILED(__super::Add_PartObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Body_Player"), TEXT("Part_Body"), &bodyDesc)))
+		return E_FAIL;
 
-	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
-		return E_FAIL;
-	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
-		return E_FAIL;
-	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
-	//	return E_FAIL;
 
 
 	return S_OK;

@@ -44,6 +44,8 @@ public:
     void Load_FromJson(nlohmann::json& j)override;
 
 
+    LAYOUT_DESC Get_LayoutDesc() { return m_LayoutDesc; }
+
     /// <IMGUI>
     virtual void OnGui() override;
 
