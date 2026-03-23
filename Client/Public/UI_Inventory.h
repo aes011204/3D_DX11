@@ -41,6 +41,8 @@ public:
     void OnLateUpdate()override;
     HRESULT OnRender()override;
     void OnClear()override;
+
+    _bool MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/);
  
     void Render_Item();
     _float2 SlotToPos(int col, int row);

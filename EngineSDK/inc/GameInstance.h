@@ -111,6 +111,11 @@ public:/*For.Camera_Manager*/
 	HRESULT Add_Camera(_uint camLevel, _wstring key, shared_ptr<class CCamera> cam);
 	_bool Change_Camera(_wstring key);
 	void CAM_Manger_OnGui();
+
+public:/*For.Font_Manager*/
+	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
+	void Font_Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor = { 1.f,1.f,1.f,1.f });
+
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
@@ -125,6 +130,7 @@ private:
 	unique_ptr<class CLight_Manager> m_pLight_Manager = { nullptr };
 	unique_ptr<class CCamera_Manager> m_pCamera_Manager = { nullptr };
 	unique_ptr<class CPicking_Manager> m_pPicking_Manager = { nullptr };
+	unique_ptr<class CFont_Manager> m_pFont_Manager = { nullptr };
 
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 

@@ -169,6 +169,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClInclude Include="..\Public\Assimp_Model.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\Public\CustomFont.h" />
     <ClInclude Include="..\Public\Data_Manager.h" />
     <ClInclude Include="..\Public\DInput_Manager.h" />
     <ClInclude Include="..\Public\Component.h" />
@@ -176,6 +177,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClInclude Include="..\Public\Entity.h" />
     <ClInclude Include="..\public\EventBus.h" />
     <ClInclude Include="..\Public\Event_Struct.h" />
+    <ClInclude Include="..\Public\Font_Manager.h" />
     <ClInclude Include="..\Public\GameInstance.h" />
     <ClInclude Include="..\Public\GameObject.h" />
     <ClInclude Include="..\Public\IModifier.h" />
@@ -220,6 +222,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClInclude Include="..\Public\UITransform.h" />
     <ClInclude Include="..\Public\UI_Manager.h" />
     <ClInclude Include="..\Public\VIBuffer.h" />
+    <ClInclude Include="..\Public\VIBuffer_Cube.h" />
     <ClInclude Include="..\Public\VIBuffer_Rect.h" />
     <ClInclude Include="..\Public\VIBuffer_Terrain.h" />
   </ItemGroup>
@@ -246,11 +249,13 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClCompile Include="..\Private\Camera_Manager.cpp" />
     <ClCompile Include="..\Private\Channel.cpp" />
     <ClCompile Include="..\Private\ContainerObject.cpp" />
+    <ClCompile Include="..\Private\CustomFont.cpp" />
     <ClCompile Include="..\Private\Data_Manager.cpp" />
     <ClCompile Include="..\Private\DInput_Manager.cpp" />
     <ClCompile Include="..\Private\Component.cpp" />
     <ClCompile Include="..\Private\Entity.cpp" />
     <ClCompile Include="..\Private\EventBus.cpp" />
+    <ClCompile Include="..\Private\Font_Manager.cpp" />
     <ClCompile Include="..\Private\GameInstance.cpp" />
     <ClCompile Include="..\Private\GameObject.cpp" />
     <ClCompile Include="..\Private\IModifier.cpp" />
@@ -289,6 +294,7 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClCompile Include="..\Private\UITransform.cpp" />
     <ClCompile Include="..\Private\UI_Manager.cpp" />
     <ClCompile Include="..\Private\VIBuffer.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
   </ItemGroup>

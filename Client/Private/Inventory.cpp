@@ -68,13 +68,13 @@ HRESULT CInventory::Initialize(void* pArg)
     
     Item_Inst inst = Create_ItemInstance(1001, 1);
     
-    inst.BaseXY = { 3,5 };
-    AddItem(inst, 3, 5);
+    inst.BaseXY = { 0,2 };
+    AddItem(inst, 0, 2);
     
     Item_Inst inst2 = Create_ItemInstance(1002, 0);
     
-    inst2.BaseXY = { 3,3 };
-    AddItem(inst2, 3, 3);
+    inst2.BaseXY = { 2,0 };
+    AddItem(inst2, 2, 0);
      return S_OK;
 }
 Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, int rot)
@@ -147,7 +147,8 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
 {
     // 해당 아이템의 모양 + BaseX,Y
     const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
-
+    _bool hasOverlap = false;
+    int overlapID = {};
     int absenceNum = {};
     _uint ID_First = {};
 
@@ -156,7 +157,11 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
         _int fx = def.ItemShape.Occ[itemInst.Rotation][i].dx + BaseX;
         _int fy = def.ItemShape.Occ[itemInst.Rotation][i].dy + BaseY;
         // finalCells.push_back({ fx,fy });
-  
+
+        if (fx < 0 || fx >= m_w || fy < 0 || fy >= m_h) {
+            color = PLACE_COLOR::RED;
+            return -1;
+        }
       // 락이랑 겹치는지, 밑아이템 하나랑 겹치는지 , 바로 놓을 수 있는지
 
         const Slot& the_Slot = m_InvenSlot[fy * m_w + fx];
@@ -174,15 +179,20 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
         {
             absenceNum++;
         }
-        else/* if (the_Slot.ItemInst_ID != ID_First)*/
-        {
+        /* if (the_Slot.ItemInst_ID != ID_First)*/
+        else{
             ////다른 종류의 아이템이 2 개 이상 겹쳐 있다 - place 불가 - 빨간
             //color = PLACE_COLOR::RED;
             //return -1;
-            if (ID_First == ID_Absence)
-                ID_First = the_Slot.ItemInst_ID;
-            else if (the_Slot.ItemInst_ID != ID_First)
+            if (!hasOverlap)
             {
+                //첫 번째 겹친 아이템
+                overlapID = the_Slot.ItemInst_ID;
+                hasOverlap = true;
+            }
+            else if (the_Slot.ItemInst_ID != overlapID)
+            {
+  
                 color = PLACE_COLOR::RED;
                 return -1;
             }
@@ -200,7 +210,7 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
 
     // 겹치는 아이템이 있긴한데 동일한 아이템이다 들고 있는거랑 스위치 가능 - 주황
     color = PLACE_COLOR::ORANGE;
-    return static_cast<_int>(ID_First);
+    return static_cast<_int>(overlapID);
 }
 
 Item_Inst CInventory::RemoveFrom_Inven(int inst_id)
@@ -328,13 +338,14 @@ void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)
 
     for (int i = 0;i < def.ItemShape.Occ[itemInst.Rotation].size(); i++)
     {
-        _uint fx = def.ItemShape.Occ[itemInst.Rotation][i].dx + BaseX;
-        _uint fy = def.ItemShape.Occ[itemInst.Rotation][i].dy + BaseY;
+        _uint fx = (def.ItemShape.Occ[itemInst.Rotation][i].dx) + BaseX;
+        _uint fy = (def.ItemShape.Occ[itemInst.Rotation][i].dy) + BaseY;
         // finalCells.push_back({ fx,fy });
 
       // 락이랑 겹치는지, 밑아이템 하나랑 겹치는지 , 바로 놓을 수 있는지
-
+        LOG_F(LOG_LEVEL::INFO, "fx:%d fy:%d w:%d h:%d", fx, fy, m_w, m_h);
         m_InvenSlot[fy * m_w + fx].ItemInst_ID = itemInst.ItemInst_ID;
+
         stored.CurBase.push_back({ fx,fy });
     }
 

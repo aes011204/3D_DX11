@@ -32,8 +32,8 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 
 	Panel_Inven.LayoutDesc.m_Spacing = { 4.f ,4.f };
 	Panel_Inven.LayoutDesc.m_Col = 7;
-	Panel_Inven.LayoutDesc.m_Raw = 8;
-	Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
+	Panel_Inven.LayoutDesc.m_Row = 8;
+	//Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
 
 
 	shared_ptr<CUIPanel> StoragePanel = CUIPanel::Create(m_pDevice, m_pContext);
@@ -44,7 +44,7 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 
 
 	/// slot ///
-	for (_uint i = 0; i < Panel_Inven.LayoutDesc.m_Col* Panel_Inven.LayoutDesc.m_Raw; i++)
+	for (_uint i = 0; i < Panel_Inven.LayoutDesc.m_Col* Panel_Inven.LayoutDesc.m_Row; i++)
 	{
 		/*for (_uint j = 0; j < w; j++)
 		{*/

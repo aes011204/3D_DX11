@@ -37,6 +37,9 @@
     <Filter Include="02.GameObject\00.Player">
       <UniqueIdentifier>{e7e37baf-7bda-4e58-8b1e-f1d94650db38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\99.Etc">
+      <UniqueIdentifier>{066ce912-d58e-4e7e-8c11-9068d1fd6917}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -75,9 +78,6 @@
     <ClInclude Include="..\Public\Inventory.h">
       <Filter>96.Inventory</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Inventory_Controller.h">
-      <Filter>96.Inventory</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\ItemDB.h">
       <Filter>97.Data</Filter>
     </ClInclude>
@@ -112,9 +112,6 @@
     <ClInclude Include="..\Public\UI_MainMenu.h">
       <Filter>03.UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\InventoryUI.h">
-      <Filter>03.UI</Filter>
-    </ClInclude>
     <ClInclude Include="..\Public\UI_MiniGame.h">
       <Filter>03.UI</Filter>
     </ClInclude>
@@ -136,6 +133,10 @@
     </ClInclude>
     <ClInclude Include="..\Public\Body_Player.h">
       <Filter>02.GameObject\00.Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sky.h" />
+    <ClInclude Include="..\Public\Inventory_Controller.h">
+      <Filter>02.GameObject\99.Etc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -173,9 +174,6 @@
     <ClCompile Include="..\Private\Inventory.cpp">
       <Filter>96.Inventory</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Inventory_Controller.cpp">
-      <Filter>96.Inventory</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\DialogueDB.cpp">
       <Filter>97.Data</Filter>
     </ClCompile>
@@ -207,9 +205,6 @@
     <ClCompile Include="..\Private\UI_MainMenu.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\InventoryUI.cpp">
-      <Filter>03.UI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\UI_MiniGame.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
@@ -231,6 +226,10 @@
     </ClCompile>
     <ClCompile Include="..\Private\Body_Player.cpp">
       <Filter>02.GameObject\00.Player</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sky.cpp" />
+    <ClCompile Include="..\Private\Inventory_Controller.cpp">
+      <Filter>02.GameObject\99.Etc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -258,5 +257,6 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxNorTex.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxMesh.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxAnimMesh.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxCube.hlsl" />
   </ItemGroup>
 </Project>

@@ -15,6 +15,7 @@
 #include "Light_Manager.h"
 #include "Camera_Manager.h"
 #include "Picking_Manager.h"
+#include "Font_Manager.h"
 
 //#include "../../EditorTool/Public/ImguiManager.h"
 
@@ -94,6 +95,11 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 		return E_FAIL;
 
 	m_pPicking_Manager = CPicking_Manager::Create(ppDevice.Get(), ppContext.Get());
+	if (nullptr == m_pPicking_Manager)
+		return E_FAIL;
+
+
+	m_pFont_Manager = CFont_Manager::Create(ppDevice.Get(), ppContext.Get());
 	if (nullptr == m_pPicking_Manager)
 		return E_FAIL;
 
@@ -426,6 +432,16 @@ _bool CGameInstance::Change_Camera(_wstring key)
 void CGameInstance::CAM_Manger_OnGui()
 {
 	m_pCamera_Manager->OnGui();
+}
+
+HRESULT CGameInstance::Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath)
+{
+	return m_pFont_Manager->Add_Font(strFontTag, pFontFilePath);
+}
+
+void CGameInstance::Font_Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor)
+{
+	m_pFont_Manager->Draw(strFontTag, pText, vPosition, vColor);
 }
 
 

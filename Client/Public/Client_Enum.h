@@ -192,4 +192,11 @@ namespace Client
         weak_ptr<class CInventory> Inven_ptr = {};
     };
 
+    struct Evt_MouseToIndex_Data
+    {
+        _bool IsOnSlot = { false };
+        _uint x = {};
+        _uint y = {};
+    };
+
 }

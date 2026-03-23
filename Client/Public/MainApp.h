@@ -28,6 +28,7 @@ public:
 	HRESULT Render();
 
 
+
 public:
 
 	static unique_ptr<CMainApp> Create();
@@ -35,6 +36,7 @@ public:
 	void Free() override;
 
 private:
+	HRESULT Ready_Fonts();
 	HRESULT Ready_StartLevel(LEVEL eStartLevelID);
 	HRESULT Ready_Prototype_For_Static_Level();
 

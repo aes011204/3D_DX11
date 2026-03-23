@@ -160,7 +160,7 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 		}
 		}
 
-
+		// 일단 이러면 복사된 택스쳐의 얕은 복사인데 일단 문제는 없을듯 문제 생기면 수정
 		item_def.pTexture = dynamic_pointer_cast<CTexture>(m_pGameInstance.lock()->
 			Clone_Prototype(PROTOTYPE::COMPONENT, ETOI(LEVEL::STATIC), S2W(item_def.TexturePath)));
 

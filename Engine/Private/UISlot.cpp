@@ -13,7 +13,7 @@ HRESULT CUISlot::OnInit(void* pArg)
 {
 	SLOT_DESC* pDesc = static_cast<SLOT_DESC*>(pArg);
 	m_slotType = pDesc->slotType;
-
+	m_GridIndex = pDesc->Index;
 
 
 	CUIButton::OnInit(pDesc);

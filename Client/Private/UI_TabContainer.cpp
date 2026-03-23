@@ -72,7 +72,7 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 	m_Line->UI_Active();
 
 
-	Change_LayoutRawCol(1, numPanel);
+	Change_LayoutRawCol( numPanel,1);
 
 	m_Active = Active;
 
@@ -140,7 +140,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		//ButDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
 		//ButDesc.vPivot = Vector2{ 0.5f, 0.5f };
 		//ButDesc.vScale = Vector2{ 1.3f, 1.0f };
-		ButDesc.Index = ETOI(eTab);
+		ButDesc.typeIndex = ETOI(eTab);
 		ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
 		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc.ClickEvent = [this](CUIButton* pThis)

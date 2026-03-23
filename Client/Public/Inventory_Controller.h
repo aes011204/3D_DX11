@@ -1,10 +1,11 @@
 #pragma once
-#include "Base.h"
+#include "GameObject.h"
 #include "Client_Define.h"
 #include "Client_Enum.h"
 #include "Inventory.h"
 
 // 싱글톤 or 전역 마우스커서와 비슷하게사용
+// 게임 오브젝트 인데 1개만 만들거임
 NS_BEGIN(Engine)
 class CGameInstance;
 NS_END
@@ -13,26 +14,25 @@ NS_BEGIN(Client)
 	class CInventory;
 
 class CInventory_Controller :
-    public CBase
+    public CGameObject
 {
-    DECLARE_SINGLETON(CInventory_Controller)
+    //DECLARE_SINGLETON(CInventory_Controller)
+    CInventory_Controller(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 
-private:
-    CInventory_Controller();
 public:
     virtual ~CInventory_Controller() = default;
 
 public:
-    HRESULT Initialize();
+    HRESULT Initialize(weak_ptr<CInventory> Inven, shared_ptr<class CUI_Item> UIHoldItem);
     void Update(float TimeDelta);
 
-    void Set_Inven(weak_ptr<class CInventory> inventory) { m_Inven = inventory; }
+    void Set_Inven(weak_ptr<class CInventory> inventory) { m_PlayerInven = inventory; }
 
 
-    _bool PickUp_Item(Item_Inst HoldItem) {
-        m_HoldItem = HoldItem; Is_Dragging = true;
-        m_Inven.lock()->RemoveFrom_Inven(m_HoldItem.ItemInst_ID);
-    }
+    //_bool PickUp_Item(Item_Inst HoldItem) {
+    //    m_HoldItem = HoldItem; Is_Dragging = true;
+    //    m_Inven.lock()->RemoveFrom_Inven(m_HoldItem.ItemInst_ID);
+    //}
 
    //const vector<Slot>& Get_Invanslot(_uint& w, _uint& h) const{
    //      w = m_Inven->Get_W(); h = m_Inven->Get_H(); return m_Inven->Get_Invenslot();
@@ -40,17 +40,24 @@ public:
 
     //HRESULT Create_HoldItem(Item_Inst HoldItem) { m_HoldItem = HoldItem};
 private:
-    Item_Inst m_HoldItem = {};
+    //Item_Inst m_HoldItem = {};
     vector<_float2> m_OffSet = {};
     /*_float m_Rotaion = {};*/ // 이거 인스턴스 안에 있음
     bool Is_Dragging = false;
 
-    class weak_ptr<class CInventory> m_Inven = {};
-    class shared_ptr<class CInventoryUI> m_UIInven = { nullptr };
+    _uint m_SlotX, m_SlotY = {};
+    _bool m_bIsOnSlot = { false };
+
+    // 상점 등등을 위한 인밴 데이터도 필요함
+    class weak_ptr<class CInventory> m_PlayerInven = {}; // 로직
+   // class shared_ptr<class CUI_Inventory> m_UIInven = { nullptr }; // UI
+    class shared_ptr<class CUI_Item> m_UIHoldItem = { nullptr };
     class weak_ptr<CGameInstance>m_pGameInstance = { };
 public:
-    //static shared_ptr<CInventory_Controller> Create();
-    //virtual void Free() override;
+    static shared_ptr<CInventory_Controller> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven,shared_ptr<CUI_Item> UIHoldItem);
+    virtual void Free() override;
+
+    shared_ptr<CGameObject> Clone(void* pArg) { return shared_ptr<CGameObject>{}; };
 };
 
 NS_END

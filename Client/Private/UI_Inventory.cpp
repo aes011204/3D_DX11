@@ -5,6 +5,8 @@
 #include "EventBus.h"
 #include "Client_Enum.h"
 #include "ItemDB.h"
+#include "GameInstance.h"
+#include "DInput_Manager.h"
 
 CUI_Inventory::CUI_Inventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CUIPanel(pDevice, pContext)
@@ -26,8 +28,10 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 	{
 		m_Inven = e.Inven_ptr;
 		if (m_Inven.lock() != nullptr)
-			Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+ 			Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
 	});
+
+
 
 
 
@@ -147,8 +151,8 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 	Panel_Inven.LayoutDesc.m_Spacing = { 4.f ,4.f };
 	Panel_Inven.LayoutDesc.m_Col = 6;
-	Panel_Inven.LayoutDesc.m_Raw = 8;
-	Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
+	Panel_Inven.LayoutDesc.m_Row = 8;
+	//Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
 
 
 	shared_ptr<CUIPanel> InvenPanel = CUIPanel::Create(m_pDevice, m_pContext);
@@ -169,8 +173,8 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 	Panel_damage.LayoutDesc.m_Spacing = { 2.f ,2.f };
 	Panel_damage.LayoutDesc.m_Col = 0;
-	Panel_damage.LayoutDesc.m_Raw = 3;
-	Panel_damage.LayoutDesc.m_Offset = { 0.f, 0.f};
+	Panel_damage.LayoutDesc.m_Row = 3;
+	//Panel_damage.LayoutDesc.m_Offset = { 0.f, 0.f};
 
 	Panel_damage.bUseNineSlice = true;
 
@@ -231,7 +235,7 @@ void CUI_Inventory::OnDisabled()
 void CUI_Inventory::OnUpdate(const _float& timeDelta)
 {
 
-
+	MousePosToSlot();
 	__super::OnUpdate(timeDelta);
 
 	Render_Item();
@@ -257,56 +261,142 @@ void CUI_Inventory::OnClear()
 	__super::OnClear();
 
 }
-_float2 CUI_Inventory::SlotToPos(int col, int row)
+
+_bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 {
+			Evt_MouseToIndex_Data e = {};
+
 	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
 
-	_float2 slotSize = { layout.m_SlotSize, layout.m_SlotSize };
-	_float2 spacing = layout.m_Spacing;
+	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
 
-	float totalWidth = (layout.m_Col * slotSize.x) +
-		((layout.m_Col - 1) * spacing.x);
+	for (auto& slot : m_Slot)
+	{
+		if (true == slot->GetUITransform()->GetWorldRect().Contains(musPos.x, musPos.y))
+		{
+			//_float2 index2d = {};
+			_uint index = slot->GetGridIndex();
+			//SlotX =  index / layout.m_Col;
+			//SlotY = index % layout.m_Col;
 
-	float totalHeight = (layout.m_Raw * slotSize.y) +
-		((layout.m_Raw - 1) * spacing.y);
 
-	_float2 startPos = {
-		-(totalWidth / 2.f) + (slotSize.x / 2.f) + layout.m_Offset.x,
-		(totalHeight / 2.f) - (slotSize.y / 2.f) + layout.m_Offset.y
-	};
+			e.x = index % layout.m_Col;;
+			e.y = index / layout.m_Col;;
+			e.IsOnSlot = true;
 
-	float posX = startPos.x + (slotSize.x + spacing.x) * col;
-	float posY = startPos.y - (slotSize.y + spacing.y) * row;
+			break;
+		}
 
-	return { posX, posY };
+	}
+	//return false;
+
+
+	//LOG_F(LOG_LEVEL::INFO, "x: %d ,y: %d ", e.x, e.y);
+
+	m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+	return true;
+
 }
+
+
+//_float2 CUI_Inventory::SlotToPos(int col, int row)
+//{
+//	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
+//
+//	_float2 slotSize = { layout.m_SlotSize, layout.m_SlotSize };
+//	_float2 spacing = layout.m_Spacing;
+//
+//	float totalWidth = (layout.m_Col * slotSize.x) +
+//		((layout.m_Col - 1) * spacing.x);
+//
+//	float totalHeight = (layout.m_Row * slotSize.y) +
+//		((layout.m_Row - 1) * spacing.y);
+//
+//	_float2 startPos = {
+//		-(totalWidth / 2.f) + (slotSize.x / 2.f) + layout.m_Offset.x,
+//		(totalHeight / 2.f) - (slotSize.y / 2.f) + layout.m_Offset.y
+//	};
+//
+//	float posX = startPos.x + (slotSize.x + spacing.x) * col;
+//	float posY = startPos.y - (slotSize.y + spacing.y) * row;
+//
+//	return { posX, posY };
+//}
 _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
 {
-	
-	_float minX = FLT_MAX, minY = FLT_MAX;
-    _float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
-    // 아이템이 점유한 모든 칸을 돌면서 실제 슬롯들의 위치를 수집
-    for (auto& OccCell : item.CurBase) 
-    {
-		_uint col = Get_LayoutDesc().m_Col+1;
+	_float minX = FLT_MAX, minY = FLT_MAX;
+   _float maxX = -FLT_MAX, maxY = -FLT_MAX;
+
+   // 아이템이 점유한 모든 칸을 돌면서 실제 슬롯들의 위치를 수집
+   for (auto& OccCell : item.CurBase) 
+   {
+	//   int index = OccCell.dy * m_w + OccCell.dx;
+	//_uint col = Get_LayoutDesc().m_Col;
+
+	//int x = OccCell.dx - 1;
+	//int y = OccCell.dy - 1;
+	//
+	//int index = y * col + x;
+		_uint col = Get_LayoutDesc().m_Col;
 		int index = OccCell.dy * col + OccCell.dx;
-    
+   
 		_float2 slotPos = m_Slot[index]->GetUITransform()->Get_AnchoredPos();
 
 		minX = min(minX, slotPos.x);
 		maxX = max(maxX, slotPos.x);
 		minY = min(minY, slotPos.y);
 		maxY = max(maxY, slotPos.y);
-    }
+   }
 
-    // 4. 수집된 슬롯 좌표들의 정중앙을 구함
-    _float2 result = {
-        (minX + maxX) * 0.5f,
-        (minY + maxY) * 0.5f
-    };
+   // 4. 수집된 슬롯 좌표들의 정중앙을 구함
+   _float2 center = {
+       (minX + maxX) * 0.5f,
+       (minY + maxY) * 0.5f
+   };
+	//_float2 size = Get_LayoutDesc().m_SlotSize;
+	center.x += (Get_LayoutDesc().m_SlotSize) * 0.5f;
+	center.y -= Get_LayoutDesc().m_SlotSize * 0.5f;
 
-    return result;
+   return center;
+//	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
+//
+//	_float2 slotSize = m_Slot[0]->GetUITransform()->Get_FinalSize();
+//
+//	float totalWidth = (layout.m_Col * slotSize.x) +
+//		((layout.m_Col - 1) * layout.m_Spacing.x);
+//
+//	float totalHeight = (layout.m_Row * slotSize.y) +
+//		((layout.m_Row - 1) * layout.m_Spacing.y);
+//
+//	_float2 startPos = {
+//		-(totalWidth / 2.f) + (slotSize.x / 2.f) + layout.m_Offset.x,
+//		(totalHeight / 2.f) - (slotSize.y / 2.f) + layout.m_Offset.y
+//	};
+//
+//	float minX = FLT_MAX, minY = FLT_MAX;
+//	float maxX = -FLT_MAX, maxY = -FLT_MAX;
+//
+//	for (auto& OccCell : item.CurBase)
+//	{
+//		_uint col = Get_LayoutDesc().m_Col;
+//		int index = OccCell.dy * col + OccCell.dx;
+//
+//		_float2 slotPos = m_Slot[index]->GetUITransform()->Get_AnchoredPos();
+//
+//		minX = min(minX, slotPos.x);
+//		maxX = max(maxX, slotPos.x);
+//		minY = min(minY, slotPos.y);
+//		maxY = max(maxY, slotPos.y);
+//	}
+//
+//	_float2 center = {
+//	(minX + maxX) * 0.5f,
+//	(minY + maxY) * 0.5f
+//	};
+//
+//	
+//	return center;
 }
 
 
@@ -345,12 +435,13 @@ void CUI_Inventory::Render_Item()
 
 				UI->GetUITransform()->SetAnchoredPos(vAnchoredPos);
 				UI->GetUITransform()->SetSizeDelta(
-					{ slotSize.x * def.ItemShape.Width+ layout.m_Offset.x * (def.ItemShape.Width-1),
-					slotSize.y* def.ItemShape.Height + layout.m_Offset.y* (def.ItemShape.Height - 1)
+					{ slotSize.x * def.ItemShape.Width+ layout.m_Spacing.x * (def.ItemShape.Width-1),
+					slotSize.y* def.ItemShape.Height + layout.m_Spacing.y* (def.ItemShape.Height - 1)
 			});
 						// 회전
 					UI->GetUITransform()->SetRotation(items[i].Rotation * 90.f);
 				UI->Set_Transparent(false);
+				UI->GetUITransform()->SetPivot({ 0.5f, 0.5f });
 				break;
 			}
 		}

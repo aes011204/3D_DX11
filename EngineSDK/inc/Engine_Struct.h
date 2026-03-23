@@ -30,6 +30,21 @@ namespace Engine
         };
 	}VTXTEX;
 
+    typedef struct tagVertexCube
+    {
+        XMFLOAT3			vPosition;
+        XMFLOAT3			vTexcoord;
+
+        static const _uint iNumElements = { 2 };
+
+        static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+        {
+            {"POSITION", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"TEXCOORD", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0  }
+        };
+    }VTXCUBE;
+
+
     typedef struct tagVertexPositionNormalTexcoord
     {
         XMFLOAT3			vPosition;
@@ -147,7 +162,7 @@ namespace Engine
 
     struct LAYOUT_DESC
     {
-        int m_Raw = { 5 };
+        int m_Row = { 5 };
         int m_Col = { 5 };
         float m_SlotSize = { 20.f };
         _float2 m_Spacing = {0.f, 0.f };

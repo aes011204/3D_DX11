@@ -24,8 +24,16 @@ public:
 
 
 public:
+    _bool Get_IsDark() { return m_bUseDark; }
+    void Set_UseDark(_bool useDark) { m_bUseDark = useDark; }
+    void Set_Dark01(_float dark01) { m_Dark = dark01; }
 
-    void Set_NotUseDark() { m_bUseDark = false; }
+    void Set_UseColorMix(_bool useColorMix) { m_bUseColorMix = useColorMix; }
+    void Set_Color(_float3 color) { m_Color = color; }
+
+    void Set_UseColorFlat(_bool useColorFlat) { m_bUseColorFlat = useColorFlat; }
+    //void Set_ColorFlat(_float colorFlat) { m_Dark = colorFlat; }
+
     void Set_Transparent(_bool isTransparent) { m_IsTransparent = isTransparent; }
     _bool Get_Transparent() { return m_IsTransparent; }
 
@@ -56,10 +64,16 @@ protected:
 protected:
 
     _uint m_PassIndex = { 0 };
+
+private:
     bool m_bUseDark = true;
     float m_Dark = {}; //0~1
 
-private:
+    bool m_bUseColorMix = true;
+    bool m_bUseColorFlat = true;
+    _float3 m_Color = {}; //0~11
+
+
     bool m_IsTransparent = { false };
 
     bool m_bUseNineSlice = false;

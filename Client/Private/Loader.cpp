@@ -11,6 +11,8 @@
 #include "Assimp_Model.h"
 #include "Body_Player.h"
 #include "Monster_Anim.h"
+#include "Sky.h"
+#include "VIBuffer_Cube.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: m_pDevice(pDevice), m_pContext(pContext),
@@ -139,6 +141,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
+	/* Prototype_Component_Texture_Sky */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Sky"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
+	{
+		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
+		return E_FAIL;
+	}
 
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
@@ -168,6 +177,14 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	//	MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
 	//	return E_FAIL;
 	//}
+
+		/* Prototype_Component_Shader_VtxCube */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxCube"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxCube");
+		return E_FAIL;
+	}
 
 	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
 
@@ -239,6 +256,16 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
+
+	/* Prototype_Component_VIBuffer_Cube */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Cube"),
+		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Cube");
+		return E_FAIL;
+	}
+
+
 	/* Prototype_GameObject_Monster */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster"),
 		CMonster::Create(m_pDevice, m_pContext))))
@@ -269,6 +296,16 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		CBody_Player::Create(m_pDevice, m_pContext))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Body_Player");
+		return E_FAIL;
+	}
+
+
+
+	/* Prototype_GameObject_Sky */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sky"),
+		CSky::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Sky");
 		return E_FAIL;
 	}
 

@@ -56,6 +56,7 @@ public:
     _float2 Get_SizeDelta() { return m_SizeDelta; }
     _float2 Get_LocalScale() { return m_LocalScale; }
     _float2 Get_AnchorPoint() { return m_AnchorPoint; }
+    _float Get_Rotation() { return m_RotationDegreeView; }
     _float2 Get_AnchoredPos() { return m_AnchoredPos; }
  
     void UpdateLayoutIfDirty();

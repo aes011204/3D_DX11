@@ -181,7 +181,7 @@ void CUIPanel::Save_ToJson(nlohmann::json& j)
         {
             nlohmann::json jLayout;
             jLayout["Col"] = m_LayoutDesc.m_Col;
-            jLayout["Raw"] = m_LayoutDesc.m_Raw;
+            jLayout["Raw"] = m_LayoutDesc.m_Row;
             jLayout["SlotSize"] = m_LayoutDesc.m_SlotSize;
             jLayout["Padding"] = { m_LayoutDesc.m_Padding.x,m_LayoutDesc.m_Padding.y };
             jLayout["Spacing"] = { m_LayoutDesc.m_Spacing.x, m_LayoutDesc.m_Spacing.y };
@@ -243,7 +243,7 @@ void CUIPanel::OnGui()
     if (m_IsUseLayout == true)
     {
         // 행과 열 (Step 버튼으로 조절 가능하게)
-        ImGui::InputInt("Rows", &m_LayoutDesc.m_Raw);
+        ImGui::InputInt("Rows", &m_LayoutDesc.m_Row);
         ImGui::InputInt("Columns", &m_LayoutDesc.m_Col);
 
         ImGui::Separator(); // 구분선
@@ -330,7 +330,7 @@ void CUIPanel::Layout()
 
         _float2 slotSize = child->GetUITransform()->Get_FinalSize();
     float totalWidth = (m_LayoutDesc.m_Col * slotSize.x) + ((m_LayoutDesc.m_Col - 1) * m_LayoutDesc.m_Spacing.x);
-    float totalHeight = (m_LayoutDesc.m_Raw * slotSize.y) + ((m_LayoutDesc.m_Raw - 1) * m_LayoutDesc.m_Spacing.y);
+    float totalHeight = (m_LayoutDesc.m_Row * slotSize.y) + ((m_LayoutDesc.m_Row - 1) * m_LayoutDesc.m_Spacing.y);
 
     _float2 startPos = { -(totalWidth / 2) + (slotSize.x / 2)+m_LayoutDesc.m_Offset.x, (totalHeight / 2) - (slotSize.y / 2)+ m_LayoutDesc.m_Offset.y };
 
@@ -345,9 +345,9 @@ void CUIPanel::Layout()
         child->GetUITransform()->SetAnchoredPos({ posX, posY });
 
 
-        shared_ptr<CUISlot> tmp = dynamic_pointer_cast<CUISlot>(child);
-        if(tmp)
-            tmp->SetGridIndex({ (float)Col, (float)Raw });
+      //  shared_ptr<CUISlot> tmp = dynamic_pointer_cast<CUISlot>(child);
+      //  if(tmp)
+      //      tmp->SetGridIndex({ (float)Col, (float)Raw });
 
         index++;
 

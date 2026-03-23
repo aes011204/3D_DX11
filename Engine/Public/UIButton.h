@@ -15,7 +15,7 @@ public:
         function<void(CUIButton*)> OverlapStartEvent = { nullptr };
         function<void(CUIButton*)> OverlapEndEvent = { nullptr };
 
-        _uint Index = {};
+        _uint TypeIndex = {};
     };
 protected:
     CUIButton(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

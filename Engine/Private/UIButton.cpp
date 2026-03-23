@@ -20,7 +20,7 @@ HRESULT CUIButton::OnInit(void* pArg)
     m_ClickEvent = pDesc->ClickEvent;
     m_OverlapStartEvent = pDesc->OverlapStartEvent;
     m_OverlapEndEvent = pDesc->OverlapEndEvent;
-    m_TypeIndex = pDesc->Index;
+    m_TypeIndex = pDesc->TypeIndex;
    // m_TextureComLevel = pDesc->TextureComLevel;
 
 
@@ -60,7 +60,7 @@ void CUIButton::OnDisabled()
 
 void CUIButton::OnUpdate(const _float& timeDelta)
 {
-   
+    _bool bUseDark = Get_IsDark();
 
     ProcessInput();
 
@@ -68,23 +68,24 @@ void CUIButton::OnUpdate(const _float& timeDelta)
     {
     case BUTTON_STATE::CLICK:
         
-        m_Dark = 0.f;
+        Set_Dark01 ( 0.f);
 
         break;
     case BUTTON_STATE::SELECT:
-        if(m_bUseDark)
-        m_Dark = 0.f;
+        if (bUseDark)
+            Set_Dark01(0.f);
 
         break;
     case BUTTON_STATE::HOVER:
-        if (m_bUseDark)
-        m_Dark = 0.6f;
-       
+        if (bUseDark)
+
+            Set_Dark01(0.6f);
+
         break;
     case BUTTON_STATE::NORMAL:
-        if (m_bUseDark)
-        m_Dark = 0.8;
+        if (bUseDark)
 
+            Set_Dark01(0.8f);
     	break;
     case BUTTON_STATE::DISABLE: // 상점등에서 보이는데 돈이 없어서 클릭 할수 없는 상태
         break;

@@ -1,13 +1,15 @@
 #include "Level_GamePlay.h"
 
-#include <UI.h>
-
 #include "GameInstance.h"
+#include "PlayerBoat.h"
 #include "Level_Loading.h"
 #include "Camera_Play.h"
 #include "Camera_Free.h"
 #include "DInput_Manager.h"
 #include "UI_TabContainer.h"
+#include "UI_TabContainer.h"
+#include "Inventory_Controller.h"
+#include "UI_Item.h"
 
 
 
@@ -22,6 +24,9 @@ HRESULT CLevel_GamePlay::Initialize()
 	//CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "senechangedII");
 	//CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::WARNING, "senechangedWW");
 	//CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::ERR, "senechangedEE");
+
+	
+
 	if (FAILED(Ready_Lights()))
 		return E_FAIL;
 
@@ -46,6 +51,10 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"TabContainer", false , nullptr);
 	m_TapUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"HoldItem", false, nullptr);
+	m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"HoldItem"));
+
+	m_pInvenCntl = CInventory_Controller::Create(m_pDevice, m_pContext,m_PlayerInven ,m_HoldItem);
 	return S_OK;
 }
 
@@ -65,15 +74,18 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		{
 
 			dynamic_pointer_cast<CUI_TabContainer>(m_TapUI)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE),TAB::INVEN);
+			m_HoldItem->UI_Active();
 			m_OnTab = true;
 		}
 		else // �����־��ٸ� ����
 		{
 			m_TapUI->UI_InActive();
+			m_HoldItem->UI_InActive();
+
 			m_OnTab = false;
 		}
 	}
-
+	m_pInvenCntl->Update(fTimeDelta);
 }
 
 HRESULT CLevel_GamePlay::Render()
@@ -108,6 +120,13 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _wstring& strLayerTag)
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
+
+
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sky"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		return E_FAIL;
+
 
 	return S_OK;
 }
@@ -178,6 +197,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _wstring& strLayerTag)
 	m_pPlayer = m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_PlayerBoat"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag);
 	if (nullptr == m_pPlayer.lock())
+		return E_FAIL;
+
+
+	m_PlayerInven = dynamic_pointer_cast<CInventory>(m_pPlayer.lock()->Get_Component(L"Com_Inven"));
+	if (nullptr == m_PlayerInven.lock())
 		return E_FAIL;
 
 	return S_OK;

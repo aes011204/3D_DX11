@@ -4,6 +4,7 @@
 NS_BEGIN(Engine)
 class CUI;
 class CGameObject;
+
 NS_END
 NS_BEGIN(Client)
 
@@ -30,10 +31,12 @@ public:
 
 private:
 	_bool m_OnTab = false;
-	shared_ptr<CUI> m_TapUI ={};
+	shared_ptr<CUI> m_TapUI = {};
+	shared_ptr<class CUI_Item> m_HoldItem ={};
 
+	shared_ptr<class CInventory_Controller> m_pInvenCntl = {};
 	weak_ptr<CGameObject> m_pPlayer = {};
-
+	weak_ptr<class CInventory> m_PlayerInven = {};
 public:
 	static shared_ptr<CLevel_GamePlay> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	virtual void Free() override;

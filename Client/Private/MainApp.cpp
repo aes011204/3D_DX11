@@ -19,6 +19,7 @@
 
 #include "UI_MainMenu.h"
 #include "UI_TabContainer.h"
+#include "UI_Item.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() },
@@ -66,9 +67,13 @@ HRESULT CMainApp::Initialize()
 	if (FAILED((Ready_UI())))
 		return E_FAIL;
 
+	if (FAILED((Ready_Fonts())))
+		return E_FAIL;
+
 	/* 게임의 시작을 위해 시작이 되는 레벨 할당과 동작을 시킨다 */
 	if (FAILED(Ready_StartLevel(LEVEL::LOGO)))
 		return E_FAIL;
+
 
 
   
@@ -103,6 +108,9 @@ HRESULT CMainApp::Render()
 
 	m_pGameInstance.lock()->Draw();
 
+	m_pGameInstance.lock()->Font_Draw(TEXT("Hahmlet_SemiBold"), TEXT("니네들은 싸우지마"), _float2(100.f, 0.f));
+
+
 
 	m_pEditorInstance.lock()->Render_Editor();
 
@@ -111,7 +119,46 @@ HRESULT CMainApp::Render()
 
 	return S_OK;
 }
+HRESULT CMainApp::Ready_Fonts()
+{
+	/*MakeSpriteFont "넥슨lv1고딕 Bold" /FontSize:16 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 158ex.spritefont */
 
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Hahmlet_SemiBold"), TEXT("../Bin/Resources/Fonts/Hahmlet SemiBold.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Front_Page_Neue."), TEXT("../Bin/Resources/Fonts/Front Page Neue.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Hahmlet_ExtraBold"), TEXT("../Bin/Resources/Fonts/Hahmlet_ExtraBold.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Liberation_Sans"), TEXT("../Bin/Resources/Fonts/Liberation Sans.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC"), TEXT("../Bin/Resources/Fonts/Noto Sans CJK SC.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Poltawski_Nowy"), TEXT("../Bin/Resources/Fonts/Poltawski Nowy.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Perfect_DOS_VGA_437"), TEXT("../Bin/Resources/Fonts/Perfect DOS VGA 437.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Oswald"), TEXT("../Bin/Resources/Fonts/Oswald.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Signika"), TEXT("../Bin/Resources/Fonts/Signika.spritefont"))))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Wingdings"), TEXT("../Bin/Resources/Fonts/Wingdings.spritefont"))))
+		return E_FAIL;
+
+	//MakeSpriteFont.exe "Front Page Neue" / FontSize:16 /CharacterRegion : 0x0020 - 0x00FF / CharacterRegion : 0x3131 - 0x3163 / CharacterRegion : 0xAC00 - 0xD800 / DefaultCharacter : 0xAC00 "%USERPROFILE%\Desktop\Font_Page_Neue.spritefont"
+	/*MakeSpriteFont.exe "Front Page Neue" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Front Page Neue.spritefont"*/
+	/*MakeSpriteFont.exe "Hahmlet ExtraBold" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet_ExtraBold.spritefont"*/
+	/*MakeSpriteFont.exe "Hahmlet SemiBold" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet SemiBold.spritefont"*/
+	/*MakeSpriteFont.exe "Liberation Sans" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Liberation Sans.spritefont"*/
+	/*MakeSpriteFont.exe "Noto Sans CJK SC" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Noto Sans CJK SC.spritefont"*/
+	/*MakeSpriteFont.exe "Poltawski Nowy" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Poltawski Nowy.spritefont"*/
+	/*MakeSpriteFont.exe "Perfect DOS VGA 437" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Perfect DOS VGA 437.spritefont"*/
+	/*MakeSpriteFont.exe "Oswald" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Oswald.spritefont"*/
+	/*MakeSpriteFont.exe "Signika" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Signika.spritefont"*/
+	/*MakeSpriteFont.exe "Wingdings" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Wingdings.spritefont"*/
+
+
+	return S_OK;
+}
 HRESULT CMainApp::Ready_StartLevel(LEVEL eStartLevelID)
 {
 	if (eStartLevelID == LEVEL::LOADING)
@@ -395,10 +442,18 @@ HRESULT CMainApp::Ready_UI()
 	shared_ptr<CUI_TabContainer> TabContainer = CUI_TabContainer::Create(m_pDevice, m_pContext);
 	if (TabContainer == nullptr)
 		return E_FAIL;
-
-
 	TabContainer->Initialize(&pDescTap);
 	m_pGameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);
+
+
+
+	CUI_Item::ITEM_DESC pDescitem = {};
+	//CUI_Item::ITEM_DESC pDescitem = {};
+	shared_ptr<CUI_Item>  holdItem =CUI_Item::Create(m_pDevice, m_pContext);
+	if (holdItem == nullptr)
+		return E_FAIL;
+	holdItem->Initialize(&pDescitem);
+	m_pGameInstance.lock()->UI_InsertToPool(L"HoldItem", holdItem);
 
 	return S_OK;
 }
@@ -418,7 +473,7 @@ void CMainApp::Free()
 {
 	__super::Free();
 
-	CInventory_Controller::DestroyInstance();
+	//CInventory_Controller::DestroyInstance();
 	CItemDB::DestroyInstance();
 
 	m_pContext->ClearState();

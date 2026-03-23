@@ -10,6 +10,7 @@ public:
     struct SLOT_DESC : public CUIButton::UIBUTTON_DESC
     {
         _uint slotType = {};
+        _uint Index = {};
     };
 private:
     explicit CUISlot(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -18,6 +19,8 @@ public:
     virtual ~CUISlot()= default;
 
 public:
+   void Change_Color(_fvector color, bool bUseDark, bool bUseColorMix, bool bUseColorFlat);
+
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;
     void OnActive()override;
@@ -28,8 +31,10 @@ public:
     HRESULT OnRender()override;
     void OnClear()override;
 
-    void SetGridIndex(_float2 _GridIndex) { m_GridIndex = _GridIndex; }
-    _float2 GetGridIndex() { return m_GridIndex; }
+    //void SetGridIndex(_float2 _GridIndex) { m_GridIndex = _GridIndex; }
+    void SetGridIndex(_uint _GridIndex) { m_GridIndex = _GridIndex; }
+    //_float2 GetGridIndex() { return m_GridIndex; }
+    _uint GetGridIndex() { return m_GridIndex; }
 
     bool IsAcceptable(_uint itemType)
     {
@@ -44,7 +49,8 @@ public:
 private:
     _uint m_slotType;// 클라에서 enum으로 해서 (uint)로 해서 전달
 
-    _float2 m_GridIndex = {};
+    //_float2 m_GridIndex = {};
+    _uint m_GridIndex = {};
     bool m_Occupied = false;
     //패널이 bool m_OccupiedTable[Rows][Cols] 같은 2차원 배열을 따로 들고 관리하는 방법도 있음
     shared_ptr<CUI> m_OccupiedItem = nullptr;
