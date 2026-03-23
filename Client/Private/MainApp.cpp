@@ -103,7 +103,7 @@ HRESULT CMainApp::Render()
 	//if (FAILED(m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd))) // 이거 Clear_Buffers() 내부로 넣을수 있지만 일단 이렇게
 	//	return E_FAIL;
 
-
+<<<<<<< HEAD
 	//_float4 vClearColor = { 0.f,0.f, 1.f,1.f };
 	//if (FAILED(m_pGameInstance.lock()->Clear_Buffers(&vClearColor)))
 	//	return E_FAIL;
@@ -134,6 +134,8 @@ HRESULT CMainApp::Render()
 
 	// 2. 백버퍼로 전환
 	m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
+=======
+>>>>>>> parent of 4c0021f (backup)
 
 	// 3. 백버퍼 Clear (필수)
 	_float4 clear = { 1,0,0,1 };
