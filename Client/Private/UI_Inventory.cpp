@@ -328,6 +328,8 @@ _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
 	_float minX = FLT_MAX, minY = FLT_MAX;
    _float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
+	   _uint col = m_InvenPanel->Get_LayoutDesc().m_Col;
+	   _uint row = m_InvenPanel->Get_LayoutDesc().m_Row;
    // 아이템이 점유한 모든 칸을 돌면서 실제 슬롯들의 위치를 수집
    for (auto& OccCell : item.CurBase) 
    {
@@ -338,7 +340,6 @@ _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
 	//int y = OccCell.dy - 1;
 	//
 	//int index = y * col + x;
-		_uint col = Get_LayoutDesc().m_Col;
 		int index = OccCell.dy * col + OccCell.dx;
    
 		_float2 slotPos = m_Slot[index]->GetUITransform()->Get_AnchoredPos();
@@ -354,9 +355,9 @@ _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
        (minX + maxX) * 0.5f,
        (minY + maxY) * 0.5f
    };
-	//_float2 size = Get_LayoutDesc().m_SlotSize;
-	center.x += (Get_LayoutDesc().m_SlotSize) * 0.5f;
-	center.y -= Get_LayoutDesc().m_SlotSize * 0.5f;
+	////_float2 size = Get_LayoutDesc().m_SlotSize;
+	//center.x += (m_InvenPanel->Get_LayoutDesc().m_SlotSize) * 0.5f;
+	//center.y -= m_InvenPanel->Get_LayoutDesc().m_SlotSize * 0.5f;
 
    return center;
 //	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();

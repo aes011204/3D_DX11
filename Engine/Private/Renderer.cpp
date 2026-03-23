@@ -45,6 +45,11 @@ void CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<CEntity> pG
 
 void CRenderer::Draw()
 {
+	float blendFactor[4] = { 0.f, 0.f, 0.f, 0.f };
+	m_pContext->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
+	m_pContext->OMSetDepthStencilState(nullptr, 0);
+	m_pContext->RSSetState(nullptr);
+
 	Render_Priority();
 
 	Render_NonBlend();
@@ -89,12 +94,13 @@ void CRenderer::Render_Blend()
 
 void CRenderer::Render_UI()
 {
-
+	
 	for (auto& pRenderObject : m_RenderObject[ETOI(RENDERGROUP::UI)])
 	{
 		if(pRenderObject != nullptr)
 			pRenderObject->Render();
 	}
+
 
 	m_RenderObject[ETOI(RENDERGROUP::UI)].clear();
 }

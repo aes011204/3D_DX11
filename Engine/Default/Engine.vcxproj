@@ -122,7 +122,8 @@
     </Link>
     <PostBuildEvent>
       <Command>robocopy "$(SolutionDir)Engine\Bin" "$(SolutionDir)Client\Bin" "Engine.dll" /XO /NJH /NJS
-robocopy "$(SolutionDir)Engine\Bin" "$(SolutionDir)Client\Bin" "Engine.dll" /XO /NJH /NJS
+robocopy "$(SolutionDir)Engine\Bin" "$(SolutionDir)EngineSDK\lib" "Engine.lib" /XO /NJH /NJS
+robocopy "$(SolutionDir)Engine\Bin\ShaderFiles" "$(SolutionDir)Client\Bin\ShaderFiles" *.* /IS /NJH /NJS
 robocopy "$(SolutionDir)Engine\Public" "$(SolutionDir)EngineSDK\inc" *.* /S /XO /NJH /NJS
 if %ERRORLEVEL% LEQ 4 exit 0</Command>
     </PostBuildEvent>
@@ -297,6 +298,9 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Rect.cpp" />
     <ClCompile Include="..\Private\VIBuffer_Terrain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

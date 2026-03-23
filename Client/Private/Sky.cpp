@@ -33,8 +33,8 @@ void CSky::Priority_Update(_float fTimeDelta)
 
 void CSky::Update(_float fTimeDelta)
 {
-	//m_pTransformCom->Set_Position(
-	//	XMLoadFloat4(m_pGameInstance->Get_CamPosition());
+	m_pTransformCom->Set_Position(
+		XMLoadFloat4(m_pGameInstance.lock()->Get_CamPositon()));
 }
 
 void CSky::Late_Update(_float fTimeDelta)

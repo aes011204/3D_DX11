@@ -20,7 +20,9 @@ void CUI_Item::HoldItem(Item_Inst HoldItem)
 		m_bIsHold = true; 
 		m_HoldItem = HoldItem; 
 		Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
-		Set_Transparent(false); 
+		Set_Transparent(false);
+		m_Children[0]->UI_Active();
+
 	
 }
 void CUI_Item::ReleaseItem()
@@ -31,6 +33,7 @@ void CUI_Item::ReleaseItem()
 	m_HoldItem = NoInst;
 	//Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
 	Set_Transparent(true);
+	m_Children[0]->UI_InActive();
 }
 
 HRESULT CUI_Item::OnInit(void* pArg)
@@ -38,6 +41,9 @@ HRESULT CUI_Item::OnInit(void* pArg)
 	CUI_Item::ITEM_DESC pDesc{};
 
 	pDesc.IsTransparent = true;
+
+	Set_Zorder(5);
+
 
 	{
 	CUIImage::UIIMAGE_DESC selectImage{};
@@ -53,7 +59,7 @@ HRESULT CUI_Item::OnInit(void* pArg)
 	wstring NameTag1 = L"SELECT" ;
 	Add_Child(Select, NameTag1, false);
 	//
-	Select->Set_Zorder(2);
+	Select->Set_Zorder(6);
 	
 	}
 

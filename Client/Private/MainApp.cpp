@@ -105,6 +105,7 @@ HRESULT CMainApp::Render()
 	if (FAILED(m_pGameInstance.lock()->Clear_Buffers(&vClearColor)))
 		return E_FAIL;
 
+	m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
 
 	m_pGameInstance.lock()->Draw();
 
@@ -396,12 +397,12 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	//{
 	  // lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩 중 입니다."));
 	   /* Prototype_Component_Texture_BackGround */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
-	{
-		MSG_BOX("Faild to Add_Prototype : CTexture");
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : CTexture");
+	//	return E_FAIL;
+	//}
 
 
 	

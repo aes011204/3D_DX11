@@ -70,7 +70,7 @@ private:
     void OnFail();
 
 private:
-
+    weak_ptr<class CGameInstance> m_pGameInstance = {};
     unordered_map<wstring, shared_ptr<CUI>> m_UIPool = {}; // 만들어진 UI를 소유하고 있는 창고(풀)
 
     vector<shared_ptr<CUI>> m_UI[ETOI(UI_LAYER::END)] = {};

@@ -70,6 +70,9 @@
     <Filter Include="01.Utility\03.GameObjects\00.ContainerObject">
       <UniqueIdentifier>{54508225-6141-4b8a-b119-82d9afa2e8b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.ShaderFiles">
+      <UniqueIdentifier>{4f1eaf64-f2fa-42b4-ab00-b55d8500d74b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -426,5 +429,10 @@
     <ClInclude Include="..\Public\Font_Manager.h" />
     <ClInclude Include="..\Public\CustomFont.h" />
     <ClInclude Include="..\Public\VIBuffer_Cube.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">
+      <Filter>02.ShaderFiles</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -51,8 +51,8 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"TabContainer", false , nullptr);
 	m_TapUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 
-	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"HoldItem", false, nullptr);
-	m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"HoldItem"));
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"HoldItem", false, nullptr);
+ 	m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
 
 	m_pInvenCntl = CInventory_Controller::Create(m_pDevice, m_pContext,m_PlayerInven ,m_HoldItem);
 	return S_OK;
