@@ -196,14 +196,14 @@ void CUI::Load_FromJson(nlohmann::json& j)
 			string childTagStr = jChild["UIChildrenTag"];
 			_wstring childTagW = S2W(childTagStr);
 
-			// 내 자식 맵(m_mapChildren)에서 태그로 찾음
+			// 내 자식 맵에서 태그로 찾음
 			auto it = m_mapChildren.find(childTagW);
 			if (it != m_mapChildren.end())
 			{
 				auto pChild = it->second.lock();
 				if (pChild)
 				{
-					// 자식도 똑같이 이 함수를 타게 함 (재귀)
+					// 자식도 똑같이 이 함수를 타게 함
 					pChild->Load_FromJson(jChild);
 				}
 			}

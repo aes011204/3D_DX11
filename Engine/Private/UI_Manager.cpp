@@ -1,9 +1,9 @@
 #include "UI_Manager.h"
 #include "UI.h"
-#include "UICanvas.h"
+#include "GameInstance.h"
 #include "Engine_Helper.h"
 
-CUI_Manager::CUI_Manager()
+CUI_Manager::CUI_Manager() : m_pGameInstance(CGameInstance::GetInstance())
 {
 }
 CUI_Manager::~CUI_Manager()
@@ -66,6 +66,24 @@ void CUI_Manager::Late_Update(float m_fDeltaTime)
 		}
 
 	}
+
+	for (auto& pUI : m_UI[ETOI(UI_LAYER::HUD)])
+	{
+		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
+	}
+
+	
+	for (auto& pUI : m_UI[ETOI(UI_LAYER::WINDOW)])
+	{
+		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
+	}
+
+	
+	for (auto& pUI : m_UI[ETOI(UI_LAYER::OVERRIDE)])
+	{
+		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
+	}
+
 }
 
 void CUI_Manager::Render()
@@ -160,7 +178,7 @@ shared_ptr<CUI> CUI_Manager::Find_UI_InCurLevel(UI_LAYER layer, wstring type)
 	// 넣고 바로 찾으면 널임 담 프레임에 들어감 대기열에 들어가니까 , 근데 지금 내구조에서 여기 대기열 필요 없음 나중에 고치든가 해야겠음
 	auto pUIPair = FindUIOnPool(type);
 
-	if (layer == UI_LAYER::HUD || layer == UI_LAYER::WINDOW)
+	if (layer == UI_LAYER::HUD || layer == UI_LAYER::WINDOW|| layer == UI_LAYER::OVERRIDE )
 	{
 		for (auto& it : m_UI[ETOI(layer)])
 		{

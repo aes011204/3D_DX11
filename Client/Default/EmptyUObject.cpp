@@ -62,7 +62,7 @@ void CEmptyUObject::Update(_float fTimeDelta)
 void CEmptyUObject::Late_Update(_float fTimeDelta)
 {
 	int a = 1;
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	//m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CEmptyUObject::Render()

@@ -151,11 +151,11 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
     int overlapID = {};
     int absenceNum = {};
     _uint ID_First = {};
-
-    for (int i = 0;i < def.ItemShape.Occ[itemInst.Rotation].size(); i++)
+    _uint rot = itemInst.Rotation % 4;
+    for (int i = 0;i < def.ItemShape.Occ[rot].size(); i++)
     {
-        _int fx = def.ItemShape.Occ[itemInst.Rotation][i].dx + BaseX;
-        _int fy = def.ItemShape.Occ[itemInst.Rotation][i].dy + BaseY;
+        _int fx = def.ItemShape.Occ[rot][i].dx + BaseX;
+        _int fy = def.ItemShape.Occ[rot][i].dy + BaseY;
         // finalCells.push_back({ fx,fy });
 
         if (fx < 0 || fx >= m_w || fy < 0 || fy >= m_h) {
@@ -199,7 +199,7 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
         }
     }
 
-	if(absenceNum == def.ItemShape.Occ[itemInst.Rotation].size())
+	if(absenceNum == def.ItemShape.Occ[rot].size())
 	{
         // ÇØ´ç Ä­ ÀüºÎ ºóÄ­ÀÌ¸é - ±×¸°
         color = PLACE_COLOR::GREEN;
@@ -330,16 +330,22 @@ void CInventory::OnGui()
 
 void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)
 {
+    itemInst.BaseXY = _float2{ static_cast<_float>(BaseX), static_cast<_float>(BaseY) };
+
+    itemInst.CurBase.clear();
+
     // ÀÎ¹ê¿¡ ³Ö±â
 	m_Inventory.push_back(itemInst);
     Item_Inst& stored = m_Inventory.back();
         // ÀÎ¹ê½½·Ô¿¡ ³Ö±â
     const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
+    _uint rot = itemInst.Rotation % 4;
 
-    for (int i = 0;i < def.ItemShape.Occ[itemInst.Rotation].size(); i++)
+
+    for (int i = 0;i < def.ItemShape.Occ[rot].size(); i++)
     {
-        _uint fx = (def.ItemShape.Occ[itemInst.Rotation][i].dx) + BaseX;
-        _uint fy = (def.ItemShape.Occ[itemInst.Rotation][i].dy) + BaseY;
+        _uint fx = (def.ItemShape.Occ[rot][i].dx) + BaseX;
+        _uint fy = (def.ItemShape.Occ[rot][i].dy) + BaseY;
         // finalCells.push_back({ fx,fy });
 
       // ¶ôÀÌ¶û °ãÄ¡´ÂÁö, ¹Ø¾ÆÀÌÅÛ ÇÏ³ª¶û °ãÄ¡´ÂÁö , ¹Ù·Î ³õÀ» ¼ö ÀÖ´ÂÁö

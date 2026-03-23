@@ -48,13 +48,13 @@ HRESULT CLevel_Logo::Render()
 
 HRESULT CLevel_Logo::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	if(nullptr==
+	/*if(nullptr==
 	m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::LOGO), TEXT("Prototype_GameObject_BackGround"),
 		ETOI(LEVEL::LOGO), strLayerTag))
 	{
 		return E_FAIL;
 	}
-
+*/
 
 
 	return S_OK;
