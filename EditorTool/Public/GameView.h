@@ -15,13 +15,14 @@ public:
     void Render() override;
     void Update(float fTimeDelta)override;
     bool Resize(UINT width, UINT height);
-    void CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV);
+    //void CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV);
 
     ID3D11ShaderResourceView* GetSRV() const { return m_pSRV.Get(); }
 
+    void BeginRender();
+    void DrawToBackBuffer();
 private:
     bool CreateRT(UINT width, UINT height);
-
     HRESULT Initialize(const ENGINE_DESC& EngineDesc, ComPtr<ID3D11Device> pDevice,
         ComPtr<ID3D11DeviceContext> pContext);
 
@@ -30,6 +31,9 @@ private:
 
     ComPtr<ID3D11Device>        m_pDevice;
     ComPtr<ID3D11DeviceContext> m_pContext;
+
+    ComPtr<ID3D11RenderTargetView> m_pRTV;
+    ComPtr<ID3D11DepthStencilView> m_pDSV;
 
     ComPtr<ID3D11Texture2D>          m_pTexture; // 캡처 대상 텍스처
     ComPtr<ID3D11ShaderResourceView> m_pSRV;     // ImGui Image용

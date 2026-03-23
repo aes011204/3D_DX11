@@ -117,6 +117,21 @@ HRESULT CGraphic_Device::Bind_BackBufferRenderTarget(HWND hWnd)
 	// RTV/DSV ¹ÙÀÎµù
 	ID3D11RenderTargetView* rtvs[] = { m_pBackBufferRTV.Get() };
 	m_pDeviceContext->OMSetRenderTargets(1, rtvs, m_pDepthStencilView.Get());
+
+	RECT rc;
+	GetClientRect(hWnd, &rc);
+
+	D3D11_VIEWPORT vp{};
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	vp.Width = (float)(rc.right - rc.left);
+	vp.Height = (float)(rc.bottom - rc.top);
+	vp.MinDepth = 0.f;
+	vp.MaxDepth = 1.f;
+
+	m_pDeviceContext->RSSetViewports(1, &vp);
+
+
 	return S_OK;
 }
 

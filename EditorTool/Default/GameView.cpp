@@ -22,16 +22,19 @@ bool CGameView::CreateRT(UINT width, UINT height)
 
 	m_pTexture.Reset();
 	m_pSRV.Reset();
+	m_pRTV.Reset();
+	m_pDSV.Reset();
 
+	//  Color Texture (RT용)
 	D3D11_TEXTURE2D_DESC desc{};
 	desc.Width = width;
 	desc.Height = height;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // 너 swapchain 포맷과 동일
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	desc.SampleDesc.Count = 1;
 	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 
 	if (FAILED(m_pDevice->CreateTexture2D(&desc, nullptr, m_pTexture.ReleaseAndGetAddressOf())))
 		return false;
@@ -39,12 +42,32 @@ bool CGameView::CreateRT(UINT width, UINT height)
 	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture.Get(), nullptr, m_pSRV.ReleaseAndGetAddressOf())))
 		return false;
 
+	if (FAILED(m_pDevice->CreateRenderTargetView(m_pTexture.Get(), nullptr, m_pRTV.GetAddressOf())))
+		return false;
+
+	//  DepthStencil
+	D3D11_TEXTURE2D_DESC depthDesc{};
+	depthDesc.Width = width;
+	depthDesc.Height = height;
+	depthDesc.MipLevels = 1;
+	depthDesc.ArraySize = 1;
+	depthDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthDesc.SampleDesc.Count = 1;
+	depthDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+	ComPtr<ID3D11Texture2D> depthTex;
+	if (FAILED(m_pDevice->CreateTexture2D(&depthDesc, nullptr, &depthTex)))
+		return false;
+
+	if (FAILED(m_pDevice->CreateDepthStencilView(depthTex.Get(), nullptr, &m_pDSV)))
+		return false;
+
 	m_Width = width;
 	m_Height = height;
 
-
-
 	return true;
+
 }
 
 HRESULT CGameView::Initialize(const ENGINE_DESC& EngineDesc, ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -61,7 +84,25 @@ HRESULT CGameView::Initialize(const ENGINE_DESC& EngineDesc, ComPtr<ID3D11Device
 
 	return S_OK;
 }
+void CGameView::BeginRender()
+{
 
+	ID3D11RenderTargetView* rtvs[] = { m_pRTV.Get() };
+	m_pContext->OMSetRenderTargets(1, rtvs, m_pDSV.Get()); //
+
+	D3D11_VIEWPORT vp{};
+	vp.Width = (float)m_Width;
+	vp.Height = (float)m_Height;
+	vp.MinDepth = 0.f;
+	vp.MaxDepth = 1.f;
+
+	m_pContext->RSSetViewports(1, &vp);
+
+	float clear[4] = { 0,0,0,1 };
+
+	m_pContext->ClearRenderTargetView(m_pRTV.Get(), clear);
+	m_pContext->ClearDepthStencilView(m_pDSV.Get(), D3D11_CLEAR_DEPTH, 1.f, 0);
+}
 bool CGameView::Resize(UINT width, UINT height)
 {
 	if (width < 16) width = 16;
@@ -73,37 +114,37 @@ bool CGameView::Resize(UINT width, UINT height)
 	return CreateRT(width, height);
 }
 
-void CGameView::CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV)
-{
-	if (!m_pContext || !backBufferRTV || !m_pTexture) return;
-
-	ComPtr<ID3D11Resource> srcRes;
-	backBufferRTV->GetResource(srcRes.GetAddressOf());
-	if (!srcRes) return;
-
-	ComPtr<ID3D11Texture2D> srcTex;
-	srcRes.As(&srcTex);
-	if (!srcTex) return;
-
-	D3D11_TEXTURE2D_DESC srcDesc{};
-	srcTex->GetDesc(&srcDesc);
-
-	UINT copyW = min(m_Width, srcDesc.Width);
-	UINT copyH = min(m_Height, srcDesc.Height);
-
-	D3D11_BOX box{};
-	box.left = 0; box.top = 0; box.front = 0;
-	box.right = copyW;
-	box.bottom = copyH;
-	box.back = 1;
-
-	m_pContext->CopySubresourceRegion(
-		m_pTexture.Get(), 0,
-		0, 0, 0,
-		srcTex.Get(), 0,
-		&box
-	);
-}
+//void CGameView::CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV)
+//{
+//	if (!m_pContext || !backBufferRTV || !m_pTexture) return;
+//
+//	ComPtr<ID3D11Resource> srcRes;
+//	backBufferRTV->GetResource(srcRes.GetAddressOf());
+//	if (!srcRes) return;
+//
+//	ComPtr<ID3D11Texture2D> srcTex;
+//	srcRes.As(&srcTex);
+//	if (!srcTex) return;
+//
+//	D3D11_TEXTURE2D_DESC srcDesc{};
+//	srcTex->GetDesc(&srcDesc);
+//
+//	UINT copyW = min(m_Width, srcDesc.Width);
+//	UINT copyH = min(m_Height, srcDesc.Height);
+//
+//	D3D11_BOX box{};
+//	box.left = 0; box.top = 0; box.front = 0;
+//	box.right = copyW;
+//	box.bottom = copyH;
+//	box.back = 1;
+//
+//	m_pContext->CopySubresourceRegion(
+//		m_pTexture.Get(), 0,
+//		0, 0, 0,
+//		srcTex.Get(), 0,
+//		&box
+//	);
+//}
 
 void CGameView::Render()
 {

@@ -144,7 +144,7 @@ void CGameInstance::Draw()
 
 	m_pLevel_Manager->Render();
 
-	m_UI_Manager->Render();
+	//m_UI_Manager->Render();
 
 }
 

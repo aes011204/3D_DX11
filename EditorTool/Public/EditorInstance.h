@@ -37,6 +37,7 @@ public:
 
 	//Engine::CEventBus* GetEventBus() { return &m_EditorBus; }
 
+	void BeginRender();
 private:
 	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 
