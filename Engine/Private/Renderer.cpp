@@ -45,14 +45,12 @@ void CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<CEntity> pG
 
 void CRenderer::Draw()
 {
-<<<<<<< HEAD
+
 	/*float blendFactor[4] = { 0.f, 0.f, 0.f, 0.f };
 	m_pContext->OMSetBlendState(nullptr, blendFactor, 0xffffffff);
 	m_pContext->OMSetDepthStencilState(nullptr, 0);
 	m_pContext->RSSetState(nullptr);*/
 
-=======
->>>>>>> parent of 4c0021f (backup)
 	Render_Priority();
 
 	Render_NonBlend();
