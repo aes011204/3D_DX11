@@ -24,12 +24,12 @@ HRESULT Editor::CEditorInstance::Initialize_Editor(const ENGINE_DESC& EngineDesc
 	m_pImgui_Manager = CImguiManager::Create();
 	m_pImgui_Manager->Initialize(EngineDesc.hWnd,pDevice, pContext);
 
-	m_pGameView = CGameView::Create(EngineDesc, pDevice, pContext);
-	if (!m_pGameView)
-		return E_FAIL;
-
 	m_pWin_Manager = CWin_Mananger::Create();
 	if (!m_pWin_Manager)
+		return E_FAIL;
+
+	m_pGameView = CGameView::Create(EngineDesc, pDevice, pContext);
+	if (!m_pGameView)
 		return E_FAIL;
 
 	m_pSelection = CSelection::Create();
@@ -62,19 +62,22 @@ void Editor::CEditorInstance::Update_Editor(float fTimeDelta)
 
 void Editor::CEditorInstance::Render_Editor()
 {
-
-	// 3? ImGui 시작
 	m_pImgui_Manager->Begin();
 
-	// 4? GameView 출력 (SRV 보여주기)
 	if (m_pGameView)
 		m_pGameView->Render();
 
-	// 5 다른 에디터 UI
+	auto* gd = CGameInstance::GetInstance()->Get_GraphicDevice();
+	if (gd && m_pGameView)
+
+		m_pGameView->CaptureFromBackBuffer(gd->GetBackBufferRTV());
+
 	if (m_pWin_Manager)
 		m_pWin_Manager->Render();
 
-	// 6? ImGui 렌더 + Present는 밖에서
+
+
+
 	m_pImgui_Manager->Render();
 }
 
@@ -103,12 +106,6 @@ ImGuiContext* CEditorInstance::GetContext()
 shared_ptr<CEntity> CEditorInstance::GetCurSelect() const
 {
 	return m_pSelection->GetEntity();
-}
-
-void CEditorInstance::BeginRender()
-{
-
-	m_pGameView->BeginRender();
 }
 
 void CEditorInstance::Free()

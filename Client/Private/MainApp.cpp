@@ -16,7 +16,6 @@
 #include "Inventory_Controller.h"
 #include "ItemDB.h"
 #include "Texture.h"
-#include "Graphic_Device.h"
 
 #include "UI_MainMenu.h"
 #include "UI_TabContainer.h"
@@ -99,66 +98,26 @@ int CMainApp::Update(_float fTimeDelta)
 HRESULT CMainApp::Render()
 {
 
+	if (FAILED(m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd))) // 이거 Clear_Buffers() 내부로 넣을수 있지만 일단 이렇게
+		return E_FAIL;
 
-	//if (FAILED(m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd))) // 이거 Clear_Buffers() 내부로 넣을수 있지만 일단 이렇게
-	//	return E_FAIL;
+	_float4 vClearColor = { 0.f,0.f, 1.f,1.f };
+	if (FAILED(m_pGameInstance.lock()->Clear_Buffers(&vClearColor)))
+		return E_FAIL;
 
-	//_float4 vClearColor = { 0.f,0.f, 1.f,1.f };
-	//if (FAILED(m_pGameInstance.lock()->Clear_Buffers(&vClearColor)))
-	//	return E_FAIL;
-	//
-	//m_pEditorInstance.lock()->BeginRender();
-	//m_pGameInstance.lock()->Draw();
-
-	//if (FAILED(m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd)))
-	//	return E_FAIL;
-
-	//m_pContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
-	//m_pContext->OMSetDepthStencilState(nullptr, 0);
-
-	//D3D11_VIEWPORT vp = { 0,0, g_iWinSizeX, g_iWinSizeY, 0,1 };
-	//m_pContext->RSSetViewports(1, &vp);
-
-	////m_pGameInstance.lock()->Font_Draw(TEXT("Hahmlet_SemiBold"), TEXT("니네들은 싸우지마"), _float2(100.f, 0.f));
-
-
-	//m_pEditorInstance.lock()->Render_Editor();
-
-
-	//m_pGameInstance.lock()->Present();
-
-	//return S_OK;
-
-	// 1. GameView RT에 렌더
-
-	// 2. 백버퍼로 전환
 	m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
 
-	// 3. 백버퍼 Clear (필수)
-	_float4 clear = { 1,0,0,1 };
-	m_pGameInstance.lock()->Clear_Buffers(&clear);
-
-	auto* gd = CGameInstance::GetInstance()->Get_GraphicDevice();
-
-	m_pEditorInstance.lock()->BeginRender(); // GameView RT bind
 	m_pGameInstance.lock()->Draw();
 
-	float clear_1[4] = { 0.1f, 0.1f, 0.1f, 1.f };
-	gd->Clear_BackBuffer_View((_float4*)clear_1);
-	gd->Clear_DepthStencil_View();
+	m_pGameInstance.lock()->Font_Draw(TEXT("Hahmlet_SemiBold"), TEXT("니네들은 싸우지마"), _float2(100.f, 0.f));
 
-	// 2? 다시 BackBuffer로 복귀
-	m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
 
-	float clear_2[4] = { 0.1f, 0.1f, 0.1f, 1.f };
-	gd->Clear_BackBuffer_View((_float4*)clear_2);
-	gd->Clear_DepthStencil_View();
 
-	// 5. ImGui
 	m_pEditorInstance.lock()->Render_Editor();
 
-	// 6. Present
+
 	m_pGameInstance.lock()->Present();
+
 	return S_OK;
 }
 HRESULT CMainApp::Ready_Fonts()
