@@ -1,4 +1,3 @@
-#include "Engine_Shader_Defines.hlsli"
 
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 //texture2D g_Texture;
@@ -132,9 +131,7 @@ technique11 DefaultTechnique
 {
     pass DefaultTechnique
     {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default,0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(Depth_Enable, 0);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();

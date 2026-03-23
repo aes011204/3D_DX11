@@ -51,7 +51,7 @@ HRESULT CUICanvas::Initialize(void* pArg)
 void CUICanvas::OnUpdate(const _float& timeDelta)
 {
    // m_bInteractable = false;
-    //m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI_WINDOW, static_pointer_cast<CEntity>(shared_from_this()));
+    m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 //void CUICanvas::ResizeCanvasSize(_uint width, _uint height)

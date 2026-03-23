@@ -1,4 +1,3 @@
-#include "Engine_Shader_Defines.hlsli"
 
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 texture2D g_Texture;
@@ -13,7 +12,11 @@ float2 g_TexCustomSize;
 //}
 float g_Dark = 0.f;
 
-
+DepthStencilState UI_Depth_Disable
+{
+    DepthEnable = FALSE;
+    DepthWriteMask = ZERO;
+};
 
 sampler DefaultSampler = sampler_state
 {
@@ -63,19 +66,12 @@ PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
     
+    //Out.vColor = float4(In.vTexcoord.y, In.vTexcoord.y, In.vTexcoord.y, 1.f);
     Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    Out.vColor.rgb *= lerp(1.0, 0.f, g_Dark);
-    //Out.vColor.a = 0.2;
+    //Out.vColor.gb = Out.vColor.r;
 
-    //if (vColor.a >= 1.0f)
-    //{
-    //    Out.vColor = float4(0.f, 0.f, 1.f, 1.f);
-    //}
-    //else
-    //{
-    //    // 3. 알파가 조금이라도 있으면(투명하면) '빨간색'을 출력합니다.
-    //    Out.vColor = float4(1.f, 0.f, 0.f, 1.f);
-    //}
+    Out.vColor.rgb *= lerp(1.0, 0.f, g_Dark);
+
     return Out;
 }
 
@@ -89,7 +85,6 @@ PS_OUT PS_NINESLICE(PS_IN In)
     
     Out.vColor = g_Texture.Sample(DefaultSampler, uv);
     Out.vColor.rgb *= lerp(1.0, 0.f, g_Dark);
-    //Out.vColor.a = 0.2;
     return Out;
 }
 
@@ -155,18 +150,14 @@ technique11 DefaultTechnique
 {
     pass DefaultTechnique
     {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_Default, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(UI_Depth_Disable, 0);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN();
     }
     pass NineSlice
     {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetDepthStencilState(UI_Depth_Disable, 0);
 
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_NINESLICE();

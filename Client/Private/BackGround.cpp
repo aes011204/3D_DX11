@@ -69,7 +69,7 @@ void CBackGround::Update(_float fTimeDelta)
 void CBackGround::Late_Update(_float fTimeDelta)
 {
 	int a = 1;
-	//m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI_WINDOW, static_pointer_cast<CEntity>(shared_from_this()));
+	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CBackGround::Render()

@@ -1,4 +1,3 @@
-#include "Engine_Shader_Defines.hlsli"
 
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 textureCUBE g_Texture;
@@ -66,15 +65,16 @@ PS_OUT PS_MAIN(PS_IN In)
 }
 
 
+RasterizerState RS_Sky
+{
+    CullMode = None;
+};
 
 // 이 코드는 가능하면 젤 밑으로
 technique11 DefaultTechnique
 {
     pass DefaultTechnique
     {
-        SetRasterizerState(RS_Cull_CW);
-        SetDepthStencilState(DSS_None,0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 
 
         VertexShader = compile vs_5_0 VS_MAIN();

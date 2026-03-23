@@ -43,7 +43,8 @@ public:
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 
-	const LAYOUT_DESC& Get_LayoutDesc() { return m_LayoutDesc; }
+
+    LAYOUT_DESC Get_LayoutDesc() { return m_LayoutDesc; }
 
     /// <IMGUI>
     virtual void OnGui() override;
@@ -52,7 +53,7 @@ public:
 public:
     void Layout();
     HRESULT Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect);
-    void Change_LayoutRawCol(_uint col, _uint row) { Layout(); m_IsUseLayout = true; m_LayoutDesc.m_Col = col; m_LayoutDesc.m_Row = row;   }
+    void Change_LayoutRawCol(_uint col, _uint row) { m_LayoutDesc.m_Col = col; m_LayoutDesc.m_Row = row; Layout(); }
 private:
     // 내부 계산 용
     int index = 0;

@@ -50,14 +50,14 @@ public:
 
 
 
-    const wstring& GetUIKey() const { return m_UIKey; }
-    void SetUIKey(const wstring& key) { m_UIKey = key; }
+    // const wstring& GetUIKey() const { return m_UIKey; }
+    //void SetUIKey(const wstring& key) { m_UIKey = key; }
 
     virtual void OnGui() override;
 private:
 
     void DrawUITree(const shared_ptr<Engine::CUI>& ui);
-    wstring m_UIKey;
+   // wstring m_UIKey;
     shared_ptr<CUI> m_pSelectedObject;
 
     ///IMGUI///
@@ -70,7 +70,7 @@ private:
     void OnFail();
 
 private:
-    weak_ptr<class CGameInstance> m_pGameInstance = {};
+
     unordered_map<wstring, shared_ptr<CUI>> m_UIPool = {}; // 만들어진 UI를 소유하고 있는 창고(풀)
 
     vector<shared_ptr<CUI>> m_UI[ETOI(UI_LAYER::END)] = {};
