@@ -89,14 +89,14 @@ void CUI_Manager::Late_Update(float m_fDeltaTime)
 void CUI_Manager::Render()
 {
 	//¼ø¼­(OVERRIDE -> WINDOW -> STACK -> HUD)
-	for (int i = 0; i < ETOI(UI_LAYER::END); i++)
-	{
-		for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
-		{
-			(*it)->Render();
-		}
-
-	}
+	//for (int i = 0; i < ETOI(UI_LAYER::END); i++)
+	//{
+	//	for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
+	//	{
+	//		(*it)->Render();
+	//	}
+	//
+	//}
 }
 
 void CUI_Manager::OnFail()

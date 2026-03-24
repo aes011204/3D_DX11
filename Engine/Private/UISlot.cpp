@@ -9,6 +9,11 @@ CUISlot::CUISlot(const CUISlot& prototype) : CUIButton(prototype)
 {
 }
 
+void CUISlot::Change_Color(_fvector color, bool bUseDark, bool bUseColorMix, bool bUseColorFlat)
+{
+
+}
+
 HRESULT CUISlot::OnInit(void* pArg)
 {
 	SLOT_DESC* pDesc = static_cast<SLOT_DESC*>(pArg);

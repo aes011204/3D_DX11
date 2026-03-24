@@ -29,10 +29,10 @@ public:
     void Set_Dark01(_float dark01) { m_Dark = dark01; }
 
     void Set_UseColorMix(_bool useColorMix) { m_bUseColorMix = useColorMix; }
-    void Set_Color(_float3 color) { m_Color = color; }
+    void Set_ColorMix(_float4 color) { m_Color = color; }
 
     void Set_UseColorFlat(_bool useColorFlat) { m_bUseColorFlat = useColorFlat; }
-    //void Set_ColorFlat(_float colorFlat) { m_Dark = colorFlat; }
+    void Set_ColorFlat(_float4 colorFlat) { m_ColorFlat = colorFlat; }
 
     void Set_Transparent(_bool isTransparent) { m_IsTransparent = isTransparent; }
     _bool Get_Transparent() { return m_IsTransparent; }
@@ -71,8 +71,8 @@ private:
 
     bool m_bUseColorMix = true;
     bool m_bUseColorFlat = true;
-    _float3 m_Color = {}; //0~11
-
+    _float4 m_Color = {}; //0~11
+    _float4 m_ColorFlat = {};
 
     bool m_IsTransparent = { false };
 

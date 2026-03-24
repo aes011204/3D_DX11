@@ -123,6 +123,7 @@ namespace Client
 
 namespace Client
 {
+    enum class PLACE_COLOR { RED, ORANGE, GREEN ,END};
     /// ½½·Ô
     struct Slot
     {
@@ -130,9 +131,9 @@ namespace Client
         SLOT_TYPE slotType = SLOT_TYPE::ANY;
         _bool IsLock = { false };
         _bool IsBroken = { false };
+        PLACE_COLOR Slot_Color = PLACE_COLOR::END;
     };
 
-    enum class PLACE_COLOR { RED, ORANGE, GREEN ,END};
 }
 
 

@@ -62,9 +62,9 @@ BlendState BS_AlphaBlend
     DestBlend[0] = Inv_Src_Alpha;
     BlendOp[0] = Add;
 
-    //SrcBlendAlpha[0] = One;
-    //DestBlendAlpha[0] = Zero;
-    //BlendOpAlpha[0] = Add;
-    //
-    //RenderTargetWriteMask[0] = 0x0F;
+    SrcBlendAlpha[0] = One;
+    DestBlendAlpha[0] = Inv_Src_Alpha;
+    BlendOpAlpha[0] = Add;
+    
+    RenderTargetWriteMask[0] = 0x0F;
 };

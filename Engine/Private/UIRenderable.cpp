@@ -160,11 +160,25 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 
 	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
 		return E_FAIL;
+
 	if (m_bUseDark == true)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_Dark", &m_Dark, sizeof(_float))))
 			return E_FAIL;
 	}
+
+	if (m_bUseColorFlat == true)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorFlat", &m_ColorFlat, sizeof(_float4))))
+			return E_FAIL;
+	}
+
+	if (m_bUseColorMix == true)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorMix", &m_Color, sizeof(_float4))))
+			return E_FAIL;
+	}
+
 	if (m_PassIndex == 1)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_TexOriginalSize", &m_SliceDesc.TexOriginalSize, sizeof(_float2))))

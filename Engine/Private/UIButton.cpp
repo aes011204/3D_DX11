@@ -64,10 +64,13 @@ void CUIButton::OnUpdate(const _float& timeDelta)
 
     ProcessInput();
 
+
+    if(m_bButtonState== true)
+    {
     switch (m_UIState)
     {
     case BUTTON_STATE::CLICK:
-        
+        if (bUseDark)
         Set_Dark01 ( 0.f);
 
         break;
@@ -78,18 +81,18 @@ void CUIButton::OnUpdate(const _float& timeDelta)
         break;
     case BUTTON_STATE::HOVER:
         if (bUseDark)
-
             Set_Dark01(0.6f);
 
         break;
     case BUTTON_STATE::NORMAL:
         if (bUseDark)
-
             Set_Dark01(0.8f);
     	break;
     case BUTTON_STATE::DISABLE: // 상점등에서 보이는데 돈이 없어서 클릭 할수 없는 상태
         break;
 
+    }
+	    
     }
     __super::OnUpdate(timeDelta);
 }

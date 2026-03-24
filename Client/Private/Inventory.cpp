@@ -484,6 +484,61 @@ void CInventory::Upgrade_Boat( _uint index)
 
 }
 
+void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_COLOR color)
+{
+    //const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
+    //_bool hasOverlap = false;
+    //int overlapID = {};
+    //int absenceNum = {};
+    //_uint ID_First = {};
+    //_uint rot = itemInst.Rotation % 4;
+
+  
+   
+    const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
+    _uint rot = itemInst.Rotation % 4;
+
+
+
+    for(auto& slot : m_InvenSlot)
+    {
+        slot.Slot_Color = PLACE_COLOR::END;
+    }
+
+    for (int i = 0; i < def.ItemShape.Occ[rot].size(); i++)
+    {
+        _uint fx = (def.ItemShape.Occ[rot][i].dx) + BaseX;
+        _uint fy = (def.ItemShape.Occ[rot][i].dy) + BaseY;
+
+        switch (color)
+        {
+        case PLACE_COLOR::GREEN:
+
+        {
+        Slot& slot = m_InvenSlot[fy * m_w + fx];
+        slot.Slot_Color = PLACE_COLOR::GREEN;
+        }
+            break;
+        case PLACE_COLOR::ORANGE:
+        {
+            Slot& slot = m_InvenSlot[fy * m_w + fx];
+            slot.Slot_Color = PLACE_COLOR::ORANGE;
+        }
+        break;
+     
+        case PLACE_COLOR::RED:
+        {
+            Slot& slot = m_InvenSlot[fy * m_w + fx];
+            slot.Slot_Color = PLACE_COLOR::RED;
+        }
+            break;
+        }
+    }
+  
+
+
+}
+
 shared_ptr<CInventory> CInventory::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
     shared_ptr<CInventory> pInstance ( new CInventory(pDevice, pContext), [](CInventory* p) {p->Free(); delete p; });

@@ -25,6 +25,8 @@ public:
 
     void ChangeState(BUTTON_STATE next);
     _uint Get_TypeIndex();
+
+    void Set_ButtonState(_bool useButtonState) { m_bButtonState = useButtonState; };
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;
@@ -54,7 +56,7 @@ private:
     function<void(CUIButton*)> m_OverlapStartEvent = { nullptr };
     function<void(CUIButton*)> m_OverlapEndEvent = {nullptr};
 
-
+    _bool  m_bButtonState = true;
 protected:
   /*  shared_ptr<class CShader> m_pShaderCom = { nullptr };
     shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };

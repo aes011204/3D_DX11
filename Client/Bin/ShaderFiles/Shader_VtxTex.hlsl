@@ -14,6 +14,9 @@ float2 g_TexCustomSize;
 float g_Dark = 0.f;
 
 
+float4 g_ColorFlat = { 0.f, 0.f, 0.f, 0.f };
+float4 g_ColorMix = { 0.f, 0.f, 0.f, 0.f };
+
 
 sampler DefaultSampler = sampler_state
 {
@@ -63,8 +66,18 @@ PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
     
-    Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
-    Out.vColor.rgb *= lerp(1.0, 0.f, g_Dark);
+    //Out.vColor = g_Texture.Sample(DefaultSampler, In.vTexcoord);
+    float4 vTextureColor = g_Texture.Sample(DefaultSampler,In.vTexcoord);
+    float4 vFinalRGBA = vTextureColor.rgba;
+
+    vFinalRGBA = lerp(vFinalRGBA, g_ColorFlat.rgba, g_ColorFlat.a);
+    float3 vFinalRGB = vFinalRGBA.rgb;
+    vFinalRGB *= lerp(1.0, 0.f, g_Dark);
+    vFinalRGB = lerp(vFinalRGB, g_ColorMix.rgb, g_ColorMix.a);
+    Out.vColor = float4(vFinalRGB, vFinalRGBA.a);
+
+
+    return Out;
     //Out.vColor.a = 0.2;
 
     //if (vColor.a >= 1.0f)
@@ -86,10 +99,16 @@ PS_OUT PS_NINESLICE(PS_IN In)
     PS_OUT Out;
     
     float2 uv = UV9Slice(In.vTexcoord);
-    
-    Out.vColor = g_Texture.Sample(DefaultSampler, uv);
-    Out.vColor.rgb *= lerp(1.0, 0.f, g_Dark);
-    //Out.vColor.a = 0.2;
+
+    float4 vTextureColor = g_Texture.Sample(DefaultSampler, uv);
+    float3 vFinalRGB = vTextureColor.rgb;
+
+    vFinalRGB = lerp(vFinalRGB, g_ColorFlat.rgb, g_ColorFlat.a);
+    vFinalRGB *= lerp(1.0, 0.f, g_Dark);
+    vFinalRGB = lerp(vFinalRGB, g_ColorMix.rgb, g_ColorMix.a);
+    Out.vColor = float4(vFinalRGB, vTextureColor.a);
+
+
     return Out;
 }
 

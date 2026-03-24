@@ -327,6 +327,30 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	/* Prototype_Component_Texture_EngineEquipmentIcon */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_EngineEquipmentIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/EngineEquipmentIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_FishingEquipmentIcon*/
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingEquipmentIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/FishingEquipmentIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_LightEquipmentIcon*/
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LightEquipmentIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/LightEquipmentIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
 	/* Prototype_Component_Texture_PlayerInventoryBackground */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PlayerInventoryBackground"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PlayerInventoryBackground.png"), 1))))
@@ -334,6 +358,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
+
 
 	// Ã¢°í //
 	/* Prototype_Component_Texture_StorageInventoryBackground */

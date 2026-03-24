@@ -16,10 +16,10 @@ private:
     explicit CUISlot(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     explicit CUISlot(const CUISlot& prototype);
 public:
-    virtual ~CUISlot() = default;
+    virtual ~CUISlot()= default;
 
 public:
-    void Change_Color(_fvector color, bool bUseDark, bool bUseColorMix, bool bUseColorFlat);
+   void Change_Color(_fvector color, bool bUseDark, bool bUseColorMix, bool bUseColorFlat);
 
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;

@@ -140,7 +140,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		//ButDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
 		//ButDesc.vPivot = Vector2{ 0.5f, 0.5f };
 		//ButDesc.vScale = Vector2{ 1.3f, 1.0f };
-		ButDesc.typeIndex = ETOI(eTab);
+		ButDesc.TypeIndex = ETOI(eTab);
 		ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
 		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc.ClickEvent = [this](CUIButton* pThis)

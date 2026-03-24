@@ -22,7 +22,7 @@ void CUI_Item::HoldItem(Item_Inst HoldItem)
 		Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
 		Set_Transparent(false);
 		m_Children[0]->UI_Active();
-
+		static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(false);
 	
 }
 void CUI_Item::ReleaseItem()
@@ -34,6 +34,7 @@ void CUI_Item::ReleaseItem()
 	//Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
 	Set_Transparent(true);
 	m_Children[0]->UI_InActive();
+	static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(true);
 }
 
 HRESULT CUI_Item::OnInit(void* pArg)
@@ -42,7 +43,7 @@ HRESULT CUI_Item::OnInit(void* pArg)
 
 	pDesc.IsTransparent = true;
 
-	Set_Zorder(5);
+	Set_Zorder(1);
 
 
 	{
@@ -51,11 +52,12 @@ HRESULT CUI_Item::OnInit(void* pArg)
 	selectImage.TextureProtoName = L"Prototype_Component_Texture_Select";
 	selectImage.PxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
 	selectImage.bUseNineSlice = true;
+
 	//selectImage.bSetParentSize = true;
 	shared_ptr<CUIImage> Select = CUIImage::Create(m_pDevice, m_pContext);
 	Select->Initialize(&selectImage);
 	Select->UI_InActive();
-	
+	Select->Set_Transparent(true);
 	wstring NameTag1 = L"SELECT" ;
 	Add_Child(Select, NameTag1, false);
 	//
@@ -63,7 +65,7 @@ HRESULT CUI_Item::OnInit(void* pArg)
 	
 	}
 
-
+	Set_Interactive(false);
 	__super::OnInit(&pDesc);
 
 
@@ -73,6 +75,7 @@ HRESULT CUI_Item::OnInit(void* pArg)
 void CUI_Item::OnActive()
 {
 	__super::OnActive();
+
 }
 
 void CUI_Item::OnInActive()
@@ -91,7 +94,7 @@ void CUI_Item::OnUpdate(const _float& timeDelta)
 	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
 	_float2 screen = m_pGameInstance.lock()->Get_WinSize().Size();
 	m_pUITransformCom->SetAnchoredPos({ musPos.x-screen.x *0.5f, musPos.y-screen.y*0.5f});
-	m_pUITransformCom->SetRotation(m_HoldItem.Rotation * 90.f);
+	m_pUITransformCom->SetRotation(m_HoldItem.Rotation * -90.f);
 	//m_Children[0]->GetUITransform()->SetRotation(m_HoldItem.Rotation * 90.f);
 	_float2 sizeD = m_Children[0]->GetUITransform()->Get_SizeDelta();
 

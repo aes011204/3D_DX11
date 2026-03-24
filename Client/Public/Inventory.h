@@ -53,7 +53,7 @@ public:// 아이템 넣고 뺴기
     _int CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY,PLACE_COLOR& color);
     Item_Inst TryMove_Item(_uint BaseX, _uint BaseY);
     void Upgrade_Boat(_uint index);
-
+    void SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_COLOR color);
     void ThrowAwayFrom_Inven(_uint BaseX, _uint BaseY);// 이거는 칸으로 
     Item_Inst RemoveFrom_Inven(int inst_id);// 이거는 아이디로
 
