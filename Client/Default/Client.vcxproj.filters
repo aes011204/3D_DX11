@@ -154,14 +154,19 @@
     <ClInclude Include="..\Public\RotationModifier.h">
       <Filter>97.Modifier</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_Controller.h" />
     <ClInclude Include="..\Public\UI_NPC.h">
       <Filter>03.UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\FadeModifier.h">
       <Filter>97.Modifier</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\TransformModifier.h" />
+    <ClInclude Include="..\Public\ItemInfo.h" />
+    <ClInclude Include="..\Public\UI_Controller.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TransformModifier.h">
+      <Filter>97.Modifier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -271,14 +276,19 @@
     <ClCompile Include="..\Private\RotationModifier.cpp">
       <Filter>97.Modifier</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_Controller.cpp" />
     <ClCompile Include="..\Private\UI_NPC.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\FadeModifier.cpp">
       <Filter>97.Modifier</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\TransformModifier.cpp" />
+    <ClCompile Include="..\Private\ItemInfo.cpp" />
+    <ClCompile Include="..\Private\UI_Controller.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TransformModifier.cpp">
+      <Filter>97.Modifier</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

@@ -1,11 +1,13 @@
 #pragma once
 #include "Base.h"
+NS_BEGIN(Engine)
 class CTimeOfDay :
     public CBase
 {
 private:
     CTimeOfDay();
-    virtual ~CTimeOfDay() = default;
+public:
+    virtual ~CTimeOfDay()override;
 
 public:
     HRESULT Initialize();
@@ -30,9 +32,10 @@ private:
     _bool IsNight = { false };
 
 public:
-    static CTimeOfDay* Create();
+    static unique_ptr<CTimeOfDay> Create();
     void Free()override;
 
 
 };
 
+NS_END

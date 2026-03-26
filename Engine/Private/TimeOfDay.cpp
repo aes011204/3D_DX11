@@ -4,6 +4,11 @@ CTimeOfDay::CTimeOfDay()
 {
 }
 
+CTimeOfDay::~CTimeOfDay()
+{
+	Free();
+}
+
 HRESULT CTimeOfDay::Initialize()
 {
 	return S_OK;
@@ -38,9 +43,9 @@ void CTimeOfDay::ComputeTime(_uint& iDay,_float& fHour, _float& fMinute, _float&
 	fSecond = fmod(fmod(m_Second , 3600.f) , 60.f);
 }
 
-CTimeOfDay* CTimeOfDay::Create()
+unique_ptr<CTimeOfDay> CTimeOfDay::Create()
 {
-	CTimeOfDay* pInstance = new CTimeOfDay();
+	unique_ptr<CTimeOfDay> pInstance(new CTimeOfDay());
 
 	if (FAILED(pInstance->Initialize()))
 	{

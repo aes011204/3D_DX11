@@ -18,6 +18,9 @@ HRESULT CUIText::OnInit(void* pArg)
 	m_strText = pDesc->strText;
 	m_FontAline = pDesc->fontaline;
 
+
+	m_bInteractable = false;
+
 	return CUI::OnInit(pDesc);
 }
 

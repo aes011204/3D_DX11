@@ -218,6 +218,6 @@ namespace Client
 
     enum class NPC {MAYOR, SHIPWRIGHT, FISHMONGER, TRADER, END};
 
-  
+    enum class LOCATIONSTATE {SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP ,END };
 
 }

@@ -1,4 +1,7 @@
 #include "UI_MainMenu.h"
+
+#include "UIText.h"
+
 #include "UIButton.h"
 #include "UICanvas.h"
 #include "UIPanel.h"
@@ -30,6 +33,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 
 	// 람다 제외 전부 데이터로 수정 가능
 	{
+		wstring name = {};
 		LEVEL eLevel = {};
 		for (_uint i = 0; i < 3;i++)
 		{
@@ -37,12 +41,17 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			{
 			case 0:
 				eLevel = LEVEL::GAMEPLAY;
+				name = L"새 게임";
 				break;
 			case 1:
 				eLevel = LEVEL::END;
+				name = L"설정";
+
 				break;
 			case 2:
 				eLevel = LEVEL::EDITOR;
+				name = L"에디터";
+
 				break;
 
 			}
@@ -59,7 +68,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			pDesc.OverlapStartEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			for (auto& it : ch)
 			{
-				if (!it) continue;
+				if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
 				it->UI_Active();
 				auto pTransform = dynamic_cast<CUITransform*>(it->Get_Component(g_strUITransformTag).get());
 				if (pTransform) {
@@ -73,7 +82,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			for (auto& it : ch)
 			{
-				if (!it) continue;
+				if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
 				it->UI_InActive();
 				it->m_behavior.clear();
 			}
@@ -84,6 +93,21 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			};
 			shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
 			pChild->Initialize(&pDesc);
+
+
+			{
+				CUIText::TEXT_DESC text_Name = {};
+				text_Name.strFontTag = L"Noto_Sans_CJK_SC_24";
+				text_Name.strText = name;
+				shared_ptr<CUIText> Text_Name = CUIText::Create(m_pDevice, m_pContext);
+				Text_Name->Initialize(&text_Name);
+
+				pChild->Add_Child(Text_Name, L"text_Name_" + S2W(string(magic_enum::enum_name(eLevel))), false);
+			}
+
+
+
+
 
 			wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eLevel)));
 
@@ -98,6 +122,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			selectImage.TextureProtoName = L"Prototype_Component_Texture_Select";
 			selectImage.PxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
 			selectImage.bUseNineSlice = true;
+			//selectImage. = true;
 			shared_ptr<CUIImage> Select = CUIImage::Create(m_pDevice, m_pContext);
 			Select->Initialize(&selectImage);
 			Select->UI_InActive();

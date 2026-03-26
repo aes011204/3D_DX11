@@ -116,6 +116,9 @@ public:/*For.Font_Manager*/
 	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
 	void Font_Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor = { 1.f,1.f,1.f,1.f });
 	_float2 Measure_String(const _wstring& strFontTag, const _tchar* pText);
+
+	public:/*For.TimeOfDay*/
+		void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
@@ -131,6 +134,7 @@ private:
 	unique_ptr<class CCamera_Manager> m_pCamera_Manager = { nullptr };
 	unique_ptr<class CPicking_Manager> m_pPicking_Manager = { nullptr };
 	unique_ptr<class CFont_Manager> m_pFont_Manager = { nullptr };
+	unique_ptr<class CTimeOfDay> m_pTimeOfDay = { nullptr };
 
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 

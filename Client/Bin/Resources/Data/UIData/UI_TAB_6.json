@@ -158,7 +158,44 @@
         {
             "Children": [
                 {
-                    "Children": [],
+                    "Children": [
+                        {
+                            "Children": [],
+                            "Components": [
+                                {
+                                    "AnchorPoint": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "AnchoredPos": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "ComProtoLevel": 0,
+                                    "ComProtoTag": "",
+                                    "ComponentTag": "Com_UITransform",
+                                    "LocalScale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "Pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "RotationRadian": 0.0,
+                                    "SetParentSize": false,
+                                    "SizeDelta": [
+                                        100.0,
+                                        100.0
+                                    ]
+                                }
+                            ],
+                            "LayoutTarget": false,
+                            "UIChildrenTag": "Text_ETC",
+                            "X": 0.0,
+                            "Y": 0.0
+                        }
+                    ],
                     "Components": [
                         {
                             "ComProtoLevel": 0,
@@ -217,7 +254,45 @@
                     "ZOrder": 2
                 },
                 {
-                    "Children": [],
+                    "Children": [
+                        {
+                            "Children": [],
+                            "Components": [
+                                {
+                                    "AnchorPoint": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "AnchoredPos": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "ComProtoLevel": 0,
+                                    "ComProtoTag": "",
+                                    "ComponentTag": "Com_UITransform",
+                                    "LocalScale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "Pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "RotationRadian": 0.0,
+                                    "SetParentSize": false,
+                                    "SizeDelta": [
+                                        100.0,
+                                        100.0
+                                    ]
+                                }
+                            ],
+                            "LayoutTarget": false,
+                            "UIChildrenTag": "Text_INVEN",
+                            "X": 0.0,
+                            "Y": 0.0,
+                            "ZOrder": 2
+                        }
+                    ],
                     "Components": [
                         {
                             "ComProtoLevel": 0,
@@ -276,7 +351,44 @@
                     "ZOrder": 2
                 },
                 {
-                    "Children": [],
+                    "Children": [
+                        {
+                            "Children": [],
+                            "Components": [
+                                {
+                                    "AnchorPoint": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "AnchoredPos": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "ComProtoLevel": 0,
+                                    "ComProtoTag": "",
+                                    "ComponentTag": "Com_UITransform",
+                                    "LocalScale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "Pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "RotationRadian": 0.0,
+                                    "SetParentSize": false,
+                                    "SizeDelta": [
+                                        100.0,
+                                        100.0
+                                    ]
+                                }
+                            ],
+                            "LayoutTarget": false,
+                            "UIChildrenTag": "Text_STORAGE",
+                            "X": 0.0,
+                            "Y": 0.0
+                        }
+                    ],
                     "Components": [
                         {
                             "ComProtoLevel": 0,
@@ -8877,6 +8989,42 @@
                             "X": 0.0,
                             "Y": 0.0,
                             "ZOrder": 2
+                        },
+                        {
+                            "Children": [],
+                            "Components": [
+                                {
+                                    "AnchorPoint": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "AnchoredPos": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "ComProtoLevel": 0,
+                                    "ComProtoTag": "",
+                                    "ComponentTag": "Com_UITransform",
+                                    "LocalScale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "Pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "RotationRadian": 0.0,
+                                    "SetParentSize": false,
+                                    "SizeDelta": [
+                                        100.0,
+                                        100.0
+                                    ]
+                                }
+                            ],
+                            "LayoutTarget": false,
+                            "UIChildrenTag": "text_Name_EDITOR",
+                            "X": 0.0,
+                            "Y": 0.0
                         }
                     ],
                     "Components": [
@@ -8903,8 +9051,8 @@
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
                             "LocalScale": [
-                                2.0,
-                                1.100000023841858
+                                2.4000000953674316,
+                                1.2999999523162842
                             ],
                             "Pivot": [
                                 0.5,
@@ -8996,6 +9144,42 @@
                             "X": 0.0,
                             "Y": 0.0,
                             "ZOrder": 2
+                        },
+                        {
+                            "Children": [],
+                            "Components": [
+                                {
+                                    "AnchorPoint": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "AnchoredPos": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "ComProtoLevel": 0,
+                                    "ComProtoTag": "",
+                                    "ComponentTag": "Com_UITransform",
+                                    "LocalScale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "Pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "RotationRadian": 0.0,
+                                    "SetParentSize": false,
+                                    "SizeDelta": [
+                                        100.0,
+                                        100.0
+                                    ]
+                                }
+                            ],
+                            "LayoutTarget": false,
+                            "UIChildrenTag": "text_Name_END",
+                            "X": 0.0,
+                            "Y": 0.0
                         }
                     ],
                     "Components": [
@@ -9022,8 +9206,8 @@
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
                             "LocalScale": [
-                                2.0,
-                                1.100000023841858
+                                2.4000000953674316,
+                                1.3000000715255737
                             ],
                             "Pivot": [
                                 0.5,
@@ -9115,6 +9299,42 @@
                             "X": 0.0,
                             "Y": 0.0,
                             "ZOrder": 2
+                        },
+                        {
+                            "Children": [],
+                            "Components": [
+                                {
+                                    "AnchorPoint": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "AnchoredPos": [
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "ComProtoLevel": 0,
+                                    "ComProtoTag": "",
+                                    "ComponentTag": "Com_UITransform",
+                                    "LocalScale": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "Pivot": [
+                                        0.5,
+                                        0.5
+                                    ],
+                                    "RotationRadian": 0.0,
+                                    "SetParentSize": false,
+                                    "SizeDelta": [
+                                        100.0,
+                                        100.0
+                                    ]
+                                }
+                            ],
+                            "LayoutTarget": false,
+                            "UIChildrenTag": "text_Name_GAMEPLAY",
+                            "X": 0.0,
+                            "Y": 0.0
                         }
                     ],
                     "Components": [
@@ -9141,8 +9361,8 @@
                             "ComProtoTag": "",
                             "ComponentTag": "Com_UITransform",
                             "LocalScale": [
-                                2.0,
-                                1.100000023841858
+                                2.4000000953674316,
+                                1.2999999523162842
                             ],
                             "Pivot": [
                                 0.5,

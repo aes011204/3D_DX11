@@ -3,8 +3,15 @@
 
 #include "UIPanel.h"
 #include "Client_Define.h"
+
+namespace Engine
+{
+	class CUIText;
+}
+
 NS_BEGIN(Client)
-class CUI_Top final :
+
+	class CUI_Top final :
     public CUIPanel
 {
 public:
@@ -31,7 +38,11 @@ public:
 public:
 
 private:
+    shared_ptr<CUIText> m_DayText = {};
+    shared_ptr<CUIText> m_TimeText = {};
 
+    _uint preDay = {};
+    _float preMin = {};
 public:
     static shared_ptr<CUI_Top> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;

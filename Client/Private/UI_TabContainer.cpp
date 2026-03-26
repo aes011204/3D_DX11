@@ -166,13 +166,35 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		button->Set_Zorder(2);
 		button->UI_InActive();
 
+		{
+			wstring name = {};
+			switch (eTab)
+			{
+			case TAB::INVEN:
+				name = L"화물";
+				break;
+			case TAB::STORAGE:
+				name = L"창고";
+				break;
+			case TAB::ETC:
+				name = L"기타";
+				break;
+			}
+
+			CUIText::TEXT_DESC text_Desc = {};
+			text_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
+			text_Desc.strText = name;
+			shared_ptr<CUIText> Text_storage = CUIText::Create(m_pDevice, m_pContext);
+			Text_storage->Initialize(&text_Desc);
+			button->Add_Child(Text_storage, L"Text_"+S2W(string(magic_enum::enum_name(eTab))), false);
+		}
+
 		//Add_Child(pChild, NameTag, false);
 		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
 		Add_Layout_Child(button, NameTag, false);
 		m_ButtonContents[ETOI(eTab)] = button;
 
 	}
-
 
 	//for (_uint i = 0; i < 3; i++)
 	{
@@ -185,9 +207,8 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 
 		shared_ptr<CUI_Inventory> pInven = CUI_Inventory::Create(m_pDevice, m_pContext);
 		pInven->Initialize(&InvenDesc);
-
+		
 		wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-
 		Add_Child(pInven, NameTag, false);
 		m_TabContents[ETOI(eTab)] = pInven;
 		pInven->UI_InActive();
@@ -203,8 +224,10 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
 			pStorage->Initialize(&StorageDesc);
 
-			wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
+			
 
+
+			wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
 			Add_Child(pStorage, NameTag, false);
 			m_TabContents[ETOI(eTab)] = pStorage;
 			pStorage->UI_InActive();
@@ -221,7 +244,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		{
 			CUIText::TEXT_DESC MoneyTexDesc = {};
 			MoneyTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
-			MoneyTexDesc.strText = L"일단 돈";
+			MoneyTexDesc.strText = L"$0";
 			MoneyTexDesc.fontaline = CUIText::FONTALINE::RIGHT;
 			shared_ptr<CUIText> MoneyTex = CUIText::Create(m_pDevice, m_pContext);
 			MoneyTex->Initialize(&MoneyTexDesc);

@@ -16,9 +16,7 @@
 #include "Camera_Manager.h"
 #include "Picking_Manager.h"
 #include "Font_Manager.h"
-
-//#include "../../EditorTool/Public/ImguiManager.h"
-
+#include "TimeOfDay.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -100,7 +98,11 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 
 
 	m_pFont_Manager = CFont_Manager::Create(ppDevice.Get(), ppContext.Get());
-	if (nullptr == m_pPicking_Manager)
+	if (nullptr == m_pFont_Manager)
+		return E_FAIL;
+
+	m_pTimeOfDay = CTimeOfDay::Create();
+	if (nullptr == m_pTimeOfDay)
 		return E_FAIL;
 
 	return S_OK;
@@ -118,6 +120,8 @@ void CGameInstance::SetImguiContext(ImGuiContext* imgContext)
 void CGameInstance::Update_Engine(float fTimeDelta)
 {
 	m_pDInput_Manager->Update_InputDev();
+
+	m_pTimeOfDay->Update(fTimeDelta);
 
 	m_pObject_Manager->Priority_Update(fTimeDelta);
 
@@ -448,6 +452,11 @@ _float2 CGameInstance::Measure_String(const _wstring& strFontTag, const _tchar* 
 {
 	return m_pFont_Manager->Measure_String(strFontTag, pText);
 
+}
+
+void CGameInstance::ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond)
+{
+	m_pTimeOfDay->ComputeTime(iDay, fHour, fMinute, fSecond);
 }
 
 
