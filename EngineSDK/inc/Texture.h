@@ -20,6 +20,7 @@ public:
 	HRESULT Bind_ShaderResourceView(shared_ptr<class CShader> pShaderCom, const char* pConstantName, _uint iIndex);
 
 	_float2 Get_SizeFromSRV(_uint index);
+	_uint Get_NumSRVs() {return m_iNumSRVs;};
 private:
 
 private:

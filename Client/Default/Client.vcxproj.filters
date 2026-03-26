@@ -28,9 +28,6 @@
     <Filter Include="02.GameObject">
       <UniqueIdentifier>{6b36b92d-3b68-4ca7-81b5-82692c29b66f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="NewFilter1">
-      <UniqueIdentifier>{be9a5c72-e373-465f-b58b-780088cd71e0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="03.UI">
       <UniqueIdentifier>{9cf26258-9eff-4548-a171-3458c4f0b643}</UniqueIdentifier>
     </Filter>
@@ -39,6 +36,9 @@
     </Filter>
     <Filter Include="02.GameObject\99.Etc">
       <UniqueIdentifier>{066ce912-d58e-4e7e-8c11-9068d1fd6917}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="97.Modifier">
+      <UniqueIdentifier>{be9a5c72-e373-465f-b58b-780088cd71e0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -87,7 +87,6 @@
     <ClInclude Include="..\Public\Level_Editor.h">
       <Filter>01.Levels</Filter>
     </ClInclude>
-    <ClInclude Include="CScaleModifier.h" />
     <ClInclude Include="..\Public\CLient_Helper.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
@@ -118,7 +117,6 @@
     <ClInclude Include="..\Public\UI_TabContainer.h">
       <Filter>03.UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_Item.h" />
     <ClInclude Include="..\Public\PlayerBoat.h">
       <Filter>02.GameObject\00.Player</Filter>
     </ClInclude>
@@ -138,6 +136,32 @@
     <ClInclude Include="..\Public\Inventory_Controller.h">
       <Filter>02.GameObject\99.Etc</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_Item.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_HUD.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Skill.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Top.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="CScaleModifier.h">
+      <Filter>97.Modifier</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\RotationModifier.h">
+      <Filter>97.Modifier</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_Controller.h" />
+    <ClInclude Include="..\Public\UI_NPC.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\FadeModifier.h">
+      <Filter>97.Modifier</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\TransformModifier.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -183,7 +207,6 @@
     <ClCompile Include="..\Private\Level_Editor.cpp">
       <Filter>01.Levels</Filter>
     </ClCompile>
-    <ClCompile Include="CScaleModifier.cpp" />
     <ClCompile Include="..\Private\BackGround.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
@@ -211,7 +234,6 @@
     <ClCompile Include="..\Private\UI_TabContainer.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_Item.cpp" />
     <ClCompile Include="..\Private\PlayerBoat.cpp">
       <Filter>02.GameObject\00.Player</Filter>
     </ClCompile>
@@ -231,6 +253,32 @@
     <ClCompile Include="..\Private\Inventory_Controller.cpp">
       <Filter>02.GameObject\99.Etc</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\UI_HUD.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Item.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Top.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Skill.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="CScaleModifier.cpp">
+      <Filter>97.Modifier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\RotationModifier.cpp">
+      <Filter>97.Modifier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_Controller.cpp" />
+    <ClCompile Include="..\Private\UI_NPC.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\FadeModifier.cpp">
+      <Filter>97.Modifier</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\TransformModifier.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

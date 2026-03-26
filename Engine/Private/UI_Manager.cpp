@@ -175,7 +175,7 @@ void CUI_Manager::Pop(UI_LAYER layer, wstring type)
 
 shared_ptr<CUI> CUI_Manager::Find_UI_InCurLevel(UI_LAYER layer, wstring type)
 {
-	// 넣고 바로 찾으면 널임 담 프레임에 들어감 대기열에 들어가니까 , 근데 지금 내구조에서 여기 대기열 필요 없음 나중에 고치든가 해야겠음
+	
 	auto pUIPair = FindUIOnPool(type);
 
 	if (layer == UI_LAYER::HUD || layer == UI_LAYER::WINDOW|| layer == UI_LAYER::OVERRIDE )
@@ -196,15 +196,26 @@ shared_ptr<CUI> CUI_Manager::Find_UI_InCurLevel(UI_LAYER layer, wstring type)
 void CUI_Manager::Detach_All()
 {
 	//띄어져 있는 레이어에서제거
-	for(int i =0; i < ETOI(UI_LAYER::END); i++)
+	for (int i = 0; i < ETOI(UI_LAYER::END); i++)
 	{
-		while (!m_UI[i].empty())
+		// 반복자를 이용해 처음부터 끝까지 순회합니다.
+		for (auto it = m_UI[i].begin(); it != m_UI[i].end(); )
 		{
-			// 여기서 레이어에서 삭제하기
+			// (가정) 해당 UI의 태그를 가져와서 비교합니다.
+			if ((*it)->Get_NO_DETACH() == false)
+			{
+				// 1. 여기서 레이어에서 삭제하기 전 필요한 처리 (Release, InActive 등)
+				// (*it)->UI_InActive(); 
 
-			m_UI[i].pop_back();
+				// 2. 컨테이너에서 삭제하고, 다음 요소를 가리키는 반복자를 받아옵니다.
+				it = m_UI[i].erase(it);
+			}
+			else
+			{
+				// 살려둘 태그라면 지우지 않고 다음 녀석으로 넘어갑니다.
+				++it;
+			}
 		}
-		
 	}
 }
 

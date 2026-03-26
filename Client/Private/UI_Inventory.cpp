@@ -1,4 +1,7 @@
 #include "UI_Inventory.h"
+
+#include "UIText.h"
+
 #include "UIImage.h"
 #include "UISlot.h"
 #include "Inventory_Controller.h"
@@ -31,7 +34,19 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 				Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
 		});
 
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ShipStats>([this](const Evt_ShipStats& e)
+		{
 
+			//wstring strInf_0 = format(L"어선 속도 : {}kn", e.BoatSpeed);
+			//wstring strInfo_1 = format(L"낚시 속도 : {}%", e.FishingSpeed);
+			//wstring strInfo_2 = format(L"등불 : {}ln", e.Light);
+
+			wstring strInfo = format(L"어선 속도 : {}kn\n낚시 속도 : {}%\n등불 : {}lm",
+				e.BoatSpeed, e.FishingSpeed, e.Light);
+			
+			wstring strInfo_2 = format(L"잡을수 있는 어종 :\n {}", 0);
+			this->m_TextInfo->Set_Text(strInfo);
+		});
 
 
 
@@ -161,7 +176,28 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 	wstring NameTag = L"INVEN_BACK";
 
+	{
+		CUIText::TEXT_DESC InfoTexDesc = {};
+		InfoTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
+		InfoTexDesc.strText = format(L"어선 속도 : {}kn\n낚시 속도 : {}%\n등불 : {}lm",
+			0, 0, 0);
+		InfoTexDesc.fontaline = CUIText::FONTALINE::LEFT;
+		shared_ptr<CUIText>InfoTex = CUIText::Create(m_pDevice, m_pContext);
+		InfoTex->Initialize(&InfoTexDesc);
+		pChild->Add_Child(InfoTex, L"InfoTex", false);
+		m_TextInfo = InfoTex;
 
+
+		CUIText::TEXT_DESC InfoTexDesc_1 = {};
+		InfoTexDesc_1.strFontTag = L"Noto_Sans_CJK_SC";
+		InfoTexDesc_1.strText = format(L"잡을수 있는 어종 :\n {}kn",0);
+		InfoTexDesc_1.fontaline = CUIText::FONTALINE::LEFT;
+		shared_ptr<CUIText> InfoTex_1 = CUIText::Create(m_pDevice, m_pContext);
+		InfoTex_1->Initialize(&InfoTexDesc_1);
+		pChild->Add_Child(InfoTex_1, L"InfoTex_1", false);
+		//m_TextInfo = InfoTex_1;
+
+	}
 
 	Add_Child(pChild, NameTag, false);
 
@@ -366,7 +402,7 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 	for (auto& slot : m_Slot)
 	{
-		if (true == slot->GetUITransform()->GetWorldRect().Contains(musPos.x, musPos.y))
+		if (true == slot->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 		{
 			//_float2 index2d = {};
 			_uint index = slot->GetGridIndex();

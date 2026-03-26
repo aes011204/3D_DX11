@@ -58,6 +58,7 @@ public:// 아이템 넣고 뺴기
     Item_Inst RemoveFrom_Inven(int inst_id);// 이거는 아이디로
 
     void OnGui() override;
+    void CalculateEquip();// 장비 인포 배에 업뎃
 private:
     void PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY);
 

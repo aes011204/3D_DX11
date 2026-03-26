@@ -60,12 +60,18 @@ void CPlayerBoat::Priority_Update(_float fTimeDelta)
 
 void CPlayerBoat::Update(_float fTimeDelta)
 {
+	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
+	//Å×½ºÆ®
+	if (dinput->KeyPress(DIK_P))
+	{
+		Add_Money(m_Money++);
+	}
+
 	//m_pTransformCom->Get_WorldMatrix();
 	//
 
 	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
 
-	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 
 
 	if (dinput->KeyPress(DIK_UP))
@@ -261,6 +267,32 @@ HRESULT CPlayerBoat::Ready_PartObjects()
 
 
 	return S_OK;
+}
+
+void CPlayerBoat::Add_Money(_int money)
+{
+	{
+		m_Money += money;
+
+		Evt_AddMoney e = {};
+		e.money = m_Money;
+		m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+	}
+}
+
+void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask)
+{
+	{
+		Evt_ShipStats e = {};
+		e.BoatSpeed = m_BoatSpeed = boatSpeed;
+		e.FishingSpeed = m_FishingSpeed = fishingSpeed;
+		e.Light = m_Light = light;
+		e.SeaMask = m_SeaMask = seaMask;
+
+		
+		m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+
+	}
 }
 
 shared_ptr<CPlayerBoat> CPlayerBoat::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

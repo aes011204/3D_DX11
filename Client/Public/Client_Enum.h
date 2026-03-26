@@ -200,4 +200,24 @@ namespace Client
         _uint y = {};
     };
 
+    struct Evt_ShipStats
+    {
+        _uint BoatSpeed = {};
+        _uint FishingSpeed = {};
+        _uint Light = {};
+        SEA_MASK SeaMask = {};
+    };
+
+    
+    struct Evt_AddMoney
+    {
+        _float money={};
+    };
+
+    enum class HUD { SKILL, COMPASS , TOP, BOAT, ETC, END };
+
+    enum class NPC {MAYOR, SHIPWRIGHT, FISHMONGER, TRADER, END};
+
+  
+
 }

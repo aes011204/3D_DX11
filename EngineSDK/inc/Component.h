@@ -21,6 +21,8 @@ public:
     virtual HRESULT Initialize(void* pArg);
 
     HRESULT Set_Owner(shared_ptr<CEntity> pOwner);
+    shared_ptr<CUI> Get_UOwner() { return m_pUOwner.lock(); }
+    shared_ptr<CGameObject> Get_GOwner() { return m_pGOwner.lock(); }
 
     virtual void Save_ToJson(nlohmann::json& j) {};
 

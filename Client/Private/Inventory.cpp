@@ -4,7 +4,7 @@
 #include "EventBus.h"
 
 #include "ItemDB.h"
-
+#include "PlayerBoat.h"
 
 
 static _uint Num = {1};
@@ -138,7 +138,10 @@ Item_Inst CInventory::AddItem(Item_Inst itemInst, _int BaseX, _int BaseY)
 
         }
     }
-            
+         if(itemInst.ItemType == ITEM_TYPE::EQUIP)
+         {
+             CalculateEquip();
+         }
 
     // √ ∑œ
 }
@@ -326,6 +329,63 @@ void CInventory::OnGui()
         }
     
    
+}
+
+void CInventory::CalculateEquip()
+{
+    _uint EngineSpeed = {};
+    _uint LightIntensity = {};
+    _uint FishingSpeed = {};
+    SEA_MASK SeaMask = {};
+
+    auto DB = CItemDB::GetInstance();
+    for(_uint i =0; i< m_Inventory.size();i++)
+    {
+	    if(m_Inventory[i].ItemType==ITEM_TYPE::EQUIP)
+	    {
+           Item_Def def =  DB->GetItemByID(m_Inventory[i].ItemInst_ID);
+
+           if (Equip_Def* pEquip = get_if<Equip_Def>(&def.TypeDef))
+           {
+               int cost = pEquip->Cost;
+               _uint installTime = pEquip->InstallTime;
+               EQUIP_TYPE EquipType = pEquip -> EquipType;
+
+               if (Equip_Engine* Engine = get_if<Equip_Engine>(&pEquip->EquipType_Effect))
+               {
+                   EngineSpeed += Engine->Speed_Kn;
+               }
+               else if (Equip_Light* Light = get_if<Equip_Light>(&pEquip->EquipType_Effect))
+               {
+                   LightIntensity += Light->Lumen;
+               }
+               else if (Equip_Rod* Rod = get_if<Equip_Rod>(&pEquip->EquipType_Effect))
+               {
+                   FishingSpeed += Rod->Speed_Per;
+                   SeaMask |= Rod->SeaType_Mask;
+
+               }
+             /*  else if (Equip_Net* Net = get_if<Equip_Net>(&pEquip->EquipType_Effect))
+               {
+
+               }
+               else if (Equip_CrapPot* CrapPot = get_if<Equip_CrapPot>(&pEquip->EquipType_Effect))
+               {
+
+               }*/
+           }
+           
+	    }
+    }
+    auto player = dynamic_pointer_cast<CPlayerBoat>(Get_GOwner());
+    if(player!=nullptr)
+	{
+	    
+    player->Set_ShipStats(EngineSpeed, LightIntensity, FishingSpeed, SeaMask);
+   /* player->Set_Light(LightIntensity);
+    player->Set_FishingSpeed(FishingSpeed);
+    player->Set_SeaMask(SeaMask);*/
+    }
 }
 
 void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)

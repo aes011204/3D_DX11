@@ -50,8 +50,8 @@
                     "choice": {
                         "leftText": "수락",
                         "rightText": "수락",
-                        "leftNextId": "",
-                        "rightNextId": ""
+                        "leftNextId": 5,
+                        "rightNextId": 5
                     }
                 },
                 {
@@ -111,7 +111,7 @@
                 {
                     "lineIndex": 0,
                     "speaker": "조선공",
-                    "text": "당신이 새로 온 어부인가 보군. 작업장에서 그쪽 선박을 손봐줄 수 있어. 각종 장비도 팔아",
+                    "text": "당신이 새로 온 어부인가 보군. 작업장에서 그쪽 선박을 손봐줄 수 있어. 각종 장비도 팔고",
                     "hasChoices": false
                 },
                 {
@@ -180,12 +180,12 @@
                     "text": "내가 말하는 곳으로 가보세 이 지역을 탈출하는 방법을 알수 있을걸세",
                     "hasChoices": false
                 },
-                {
-                    "lineIndex": 1,
-                    "speaker": "라타우",
-                    "text": "가능하면 배는 좀 튼튼하게 만들고 가는걸 추천하겠네",
-                    "hasChoices": false
-                }
+              {
+                "lineIndex": 1,
+                "speaker": "시장",
+                "text": "가능하면 배는 좀 튼튼하게 만들고 가는걸 추천하겠네",
+                "hasChoices": false
+              }
                
             ]
         }

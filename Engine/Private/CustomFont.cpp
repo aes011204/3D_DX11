@@ -38,6 +38,18 @@ shared_ptr<CCustomFont> CCustomFont::Create(ComPtr<ID3D11Device> pDevice, ComPtr
 
 }
 
+_float2 CCustomFont::Measure_String(const _tchar* pText)
+{
+    
+    XMVECTOR vSize = m_pFont->MeasureString(pText);
+
+    _float2 vResult;
+    XMStoreFloat2(&vResult, vSize);
+
+ 
+    return vResult;
+}
+
 void CCustomFont::Free()
 {
     __super::Free();

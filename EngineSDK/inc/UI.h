@@ -17,6 +17,7 @@ public:
         struct UI_DESC : public CUITransform::UITRANSFORM_DESC
     {
             _uint ZOrder = {1};
+            _bool NoDISTACH = false;
     };
 protected:
     CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -48,6 +49,7 @@ public:
     weak_ptr<CUI> Find_Children(_wstring strTag);
     const map<_wstring, weak_ptr<CUI>>& Get_mapChildren() const { return m_mapChildren; }
 
+    _bool Get_NO_DETACH() { return m_NO_DESTACH; }
 
     void Set_Interactive(_bool b) { m_bInteractable = b; }
 
@@ -55,7 +57,13 @@ public:
     void Load_FromJson(nlohmann::json& j)override;
 
     UI_STATE Get_UIState() { return m_UIState; }
-    void Set_ActiveForCustom() { m_bEnabled = true; m_bVisible = true; }; // 특이한 경우만 쓰기 커스텀UI_Active();만들떄만 
+    void Set_ActiveForCustom() { m_UIState = UI_STATE::ACTIVE; m_bEnabled = true; m_bVisible = true; /*m_bRenderReady = false;*/
+    //if (m_pUITransformCom)
+    //    m_pUITransformCom->UpdateLayoutIfDirty();
+
+    //m_bInteractable = true;
+   // OnActive();
+    }; // 특이한 경우만 쓰기 커스텀UI_Active();만들떄만 
 /// <IMGUI>
     const vector<shared_ptr<CUI>>& GetChildren() const { return m_Children; }
     void OnGui() override;
@@ -103,7 +111,7 @@ private:
     bool m_bEnabled = { true }; // “위에 다른 팝업이 떠서 아래 UI가 조금 보이긴 하지만 update는 안하는 상태”
     bool m_bVisible = { true }; // 렌더 여부
 
-
+    bool m_NO_DESTACH = { false };
 protected:
 
     bool m_bHovered = { false };

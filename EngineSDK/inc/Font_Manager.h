@@ -11,7 +11,7 @@ public:
 public:
 	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
 	void Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor);
-
+	_float2 Measure_String(const _wstring& strFontTag, const _tchar* pText);
 private:
 	ComPtr<ID3D11Device> m_pDevice = {  };
 	ComPtr<ID3D11DeviceContext> m_pContext = {  };

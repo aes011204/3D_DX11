@@ -45,12 +45,12 @@ public:
     void SetSizeDelta(Vector2 _SizeDelta) { m_SizeDelta = _SizeDelta; MarkDirtyRecursive(); }
     void SetAnchoredPos(Vector2 _AnchoredPos) { m_AnchoredPos = _AnchoredPos; MarkDirtyRecursive(); }
     void SetLocalScale(Vector2 _localScale) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
-    void SetRotation(_float _fDegree) { m_RotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
+    void SetRotation(_float _fDegree) { m_RotationDegreeView = _fDegree; m_RotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
    // void SetTurn(_float fTimeDelta) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
 
 
 
-    Rect GetWorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }
+    Rect Get_WorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }
     XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_WorldMatrix); }
     _float2 Get_FinalSize() { return _float2(m_SizeDelta * m_LocalScale); }
     _float2 Get_SizeDelta() { return m_SizeDelta; }

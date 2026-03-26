@@ -6,11 +6,12 @@
 #include "Camera_Play.h"
 #include "Camera_Free.h"
 #include "DInput_Manager.h"
+#include "FadeModifier.h"
 #include "UI_TabContainer.h"
 #include "UI_TabContainer.h"
 #include "Inventory_Controller.h"
 #include "UI_Item.h"
-
+#include "UI_NPC.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -55,17 +56,34 @@ HRESULT CLevel_GamePlay::Post_Initialize()
  	m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
 
 	m_pInvenCntl = CInventory_Controller::Create(m_pDevice, m_pContext,m_PlayerInven ,m_HoldItem);
+
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::HUD, L"HUD", true, nullptr);
+
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"NPC_Panel", false, nullptr);
+	m_pNPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
 	return S_OK;
 }
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
-
 	if (GetKeyState(VK_NUMPAD1) & 0x8000)
 	{
 		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::LOGO))))
 			return;
 	}
+
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
+	{
+		CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
+			make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
+		//for (auto& pChild : CUI_Controller::GetInstance()->Get_LoadingUI()->GetChildren())
+		//{
+		//	pChild->m_behavior.push_back(
+		//		make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
+		//}
+
+	}
+
 
 	// �ϴ� ���� �ΰ� ���߿� �������� UIHander, UIController �� �̵�
 	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) // �ϴ� Ű�� ������ ��
@@ -86,6 +104,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		}
 	}
 	m_pInvenCntl->Update(fTimeDelta);
+
+	// 일단 테스트
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_M))
+	{
+		
+		auto ui = dynamic_pointer_cast<CUI_NPC>(m_pNPC);
+		ui->UI_NPCActive(NPC::MAYOR, true, true);
+
+	}
+
+
 }
 
 HRESULT CLevel_GamePlay::Render()

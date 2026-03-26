@@ -3,6 +3,10 @@
 #include "GameInstance.h"
 #include "Client_Enum.h"
 #include "Engine_Helper.h"
+#include "FadeModifier.h"
+#include "UI_Controller.h"
+#include "DInput_Manager.h"
+#include "UI.h"
 
 #include "Level_Loading.h"
 
@@ -18,18 +22,31 @@ HRESULT CLevel_Logo::Initialize()
 	auto name_view = magic_enum::enum_name(EUI::Test);
 	_wstring Wname = S2W(string(name_view));
 
+
+
 	return S_OK;
 }
 
 HRESULT CLevel_Logo::Post_Initialize()
 {
-	
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MainMenu",true, nullptr);
 	return S_OK;
 }
 
 void CLevel_Logo::Update(_float fTimeDelta)
 {
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
+	{
+		CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
+			make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
+		//for (auto& pChild : CUI_Controller::GetInstance()->Get_LoadingUI()->GetChildren())
+		//{
+		//	pChild->m_behavior.push_back(
+		//		make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
+		//}
+
+	}
+
 	if(GetKeyState(VK_SPACE) & 0x8000)
 	{
 		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))

@@ -1,0 +1,140 @@
+#include "UI_Controller.h"
+
+#include "RotationModifier.h"
+#include "UI_HUD.h"
+
+#include "UI_MainMenu.h"
+#include "UI_TabContainer.h"
+#include "UI_Item.h"
+#include "UIText.h"
+#include "UI_NPC.h"
+
+IMPLEMENT_SINGLETON(CUI_Controller)
+
+CUI_Controller::CUI_Controller()
+
+{
+}
+
+CUI_Controller::~CUI_Controller()
+{
+	//Free();
+}
+
+HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+{
+	m_pGameInstance = CGameInstance::GetInstance();
+	m_pDevice = pDevice;
+	m_pContext = pContext;
+
+	Ready_UI();
+
+	return S_OK;
+}
+
+void CUI_Controller::Update(float TimeDelta)
+{
+}
+
+HRESULT CUI_Controller::Ready_UI()
+{
+
+
+	{
+
+		CUIPanel::UIPANEL_DESC LoadingDesc;
+		LoadingDesc.IsFullScreen = true;
+		LoadingDesc.TextureProtoName = L"Prototype_Component_Texture_Black";
+		LoadingDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		LoadingDesc.IsFullScreen = true;
+		LoadingDesc.NoDISTACH = true;
+		shared_ptr<CUIPanel> pInstance = CUIPanel::Create(m_pDevice, m_pContext);
+		pInstance->Initialize(&LoadingDesc);
+
+		CUIImage::UIIMAGE_DESC LoadingIconDesc;
+		LoadingIconDesc.vPivot = _float2{ 1.f,0.f };
+		LoadingIconDesc.vAnchorPoint = _float2{ 1.f,0.f };
+		LoadingIconDesc.vAnchoredPos = _float2{ -40.f,40.f };
+		LoadingIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		LoadingIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		LoadingIconDesc.TextureProtoName = L"Prototype_Component_Texture_LoadingIcon";
+		shared_ptr<CUIImage> pIcon = CUIImage::Create(m_pDevice, m_pContext);
+		pIcon->Initialize(&LoadingIconDesc);
+		pIcon->m_behavior.push_back(make_shared<CRotationModifier>(200.f));
+		pInstance->Add_Child(pIcon, L"ICON_LOADING", false);
+
+
+		CUIText::TEXT_DESC TextDesc;
+		//TextDesc.TextColor = _float4{ 1.f,0.f };
+		TextDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
+		TextDesc.strText = L"심해로부터";
+		TextDesc.fontaline = CUIText::FONTALINE::DEFAULT;
+
+		shared_ptr<CUIText> text = CUIText::Create(m_pDevice, m_pContext);
+		text->Initialize(&TextDesc);
+		pInstance->Add_Child(text, L"text", false);
+
+
+		m_pGameInstance.lock()->UI_InsertToPool(L"Loading", pInstance);
+
+		/// 저장 해 두기 모든 레벨에서 필요 할예정
+		
+		m_Loading = pInstance;
+
+	}
+
+
+	CUI_MainMenu::MAINMENU_DESC pDescPanel;
+	pDescPanel.IsFullScreen = true;
+	pDescPanel.IsTransparent = true;
+
+	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_pDevice, m_pContext);
+	pInstance->Initialize(&pDescPanel);
+	m_pGameInstance.lock()->UI_InsertToPool(L"MainMenu", pInstance);
+	///
+	///
+	///
+	CUI_TabContainer::TABCONTAINER_DESC pDescTap = {};
+	shared_ptr<CUI_TabContainer> TabContainer = CUI_TabContainer::Create(m_pDevice, m_pContext);
+	if (TabContainer == nullptr)
+		return E_FAIL;
+	TabContainer->Initialize(&pDescTap);
+	m_pGameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);
+
+
+
+	CUI_Item::ITEM_DESC pDescitem = {};
+	//CUI_Item::ITEM_DESC pDescitem = {};
+	shared_ptr<CUI_Item>  holdItem = CUI_Item::Create(m_pDevice, m_pContext);
+	if (holdItem == nullptr)
+		return E_FAIL;
+	holdItem->Initialize(&pDescitem);
+	m_pGameInstance.lock()->UI_InsertToPool(L"HoldItem", holdItem);
+
+	////////////HUD///////////////
+	CUI_HUD::HUD_DESC pDescHUD;
+	pDescHUD.IsFullScreen = true;
+	pDescHUD.IsTransparent = true;
+
+	shared_ptr<CUI_HUD> HUD = CUI_HUD::Create(m_pDevice, m_pContext);
+	HUD->Initialize(&pDescHUD);
+	m_pGameInstance.lock()->UI_InsertToPool(L"HUD", HUD);
+
+
+	/////////////NPC//////////////
+	
+	CUI_NPC::NPC_DESC pNPCDesc;
+	pNPCDesc.IsFullScreen = true;
+	pNPCDesc.IsTransparent = true;
+
+	shared_ptr<CUI_NPC> NPC = CUI_NPC::Create(m_pDevice, m_pContext);
+	NPC->Initialize(&pNPCDesc);
+	m_pGameInstance.lock()->UI_InsertToPool(L"NPC_Panel", NPC);
+	return S_OK;
+}
+
+
+void CUI_Controller::Free()
+{
+	CBase::Free();
+}

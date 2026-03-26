@@ -14,6 +14,8 @@ private:
 public:
 	HRESULT Initialize(const _tchar* pFontFilePath);
 	void Draw(const _tchar* pText, const _float2& vPosition, _fvector vColor);
+
+	_float2 Measure_String(const _tchar* pText);
 private:
 	ComPtr<ID3D11Device> m_pDevice = {};
 	ComPtr<ID3D11DeviceContext> m_pContext = { };

@@ -66,6 +66,7 @@ using namespace Microsoft::WRL;
 //
 #include <fstream>
 #include <iomanip>
+#include <format>
 
 #include "DirectXTK/SimpleMath.h"
 using namespace DirectX::SimpleMath;

@@ -139,28 +139,33 @@ void CInventory_Controller::Update(float TimeDelta)
 
 
 	}
-	if (dInput->KeyDown(DIK_F)/*dInput->MouseDown(DIMB::RBUTTON)*/ /* + ui 가 우클릭은 반환*/)
-	{
-		//회전
-		_uint rot = m_UIHoldItem->Get_HoldItem().Rotation;
-		m_UIHoldItem->Set_Rotation(++rot);
-	}
-	if (dInput->KeyDown(DIK_Z)/* + 일정 시간 이상 누르고 있을떄 */)
-	{
-		//들고 있는거 버리기
-		//Item_Inst NoInst = {};
-		//m_HoldItem = NoInst;
 
-		Is_Dragging = false;
-		m_UIHoldItem->ReleaseItem();
-	}
-	if (m_bIsOnSlot == false && Is_Dragging == true)
+	if (Is_Dragging == true)
 	{
-		
 
-		for(auto& slot : m_PlayerInven.lock()->Get_Invenslot())
+		if (dInput->MouseDown(DIMB::RBUTTON)/*dInput->MouseDown(DIMB::RBUTTON)*/ /* + ui 가 우클릭은 반환*/)
 		{
-			slot.Slot_Color = PLACE_COLOR::END;
+			//회전
+			_uint rot = m_UIHoldItem->Get_HoldItem().Rotation;
+			m_UIHoldItem->Set_Rotation(++rot);
+		}
+		if (dInput->KeyDown(DIK_Z)/* + 일정 시간 이상 누르고 있을떄 */)
+		{
+			//들고 있는거 버리기
+			//Item_Inst NoInst = {};
+			//m_HoldItem = NoInst;
+
+			Is_Dragging = false;
+			m_UIHoldItem->ReleaseItem();
+		}
+		if (m_bIsOnSlot == false)
+		{
+
+
+			for (auto& slot : m_PlayerInven.lock()->Get_Invenslot())
+			{
+				slot.Slot_Color = PLACE_COLOR::END;
+			}
 		}
 	}
 

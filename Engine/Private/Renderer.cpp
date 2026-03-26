@@ -121,8 +121,6 @@ void CRenderer::Free()
 	__super::Free();
 
 
-	
-
 	for(int i =0; i < ETOI(RENDERGROUP::END); i++)
 	{
 		//for (auto& it : m_RenderObject[i])

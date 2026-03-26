@@ -144,7 +144,7 @@ void CUIButton::ProcessInput()
    /* m_bHovered = false;
 
     Vector2 mousePos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
-    if (true == m_pUITransformCom->GetWorldRect().Contains(mousePos.x, mousePos.y))
+    if (true == m_pUITransformCom->Get_WorldRect().Contains(mousePos.x, mousePos.y))
     {
         m_bHovered = true;
     }*/

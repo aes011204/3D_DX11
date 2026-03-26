@@ -21,7 +21,7 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 
 
 
-	///// ¿ŒπÍ ΩΩ∑‘ ∆–≥Œ /////
+	///// √¢∞Ì ΩΩ∑‘ ∆–≥Œ /////
 	CUIPanel::UIPANEL_DESC Panel_Inven = {};
 	Panel_Inven.TextureProtoName = L"Prototype_Component_Texture_StorageInventoryBackground";
 	Panel_Inven.TextureComLevel = ETOI(LEVEL::STATIC);

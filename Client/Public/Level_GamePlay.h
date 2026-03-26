@@ -33,6 +33,7 @@ private:
 	_bool m_OnTab = false;
 	shared_ptr<CUI> m_TapUI = {};
 	shared_ptr<class CUI_Item> m_HoldItem ={};
+	shared_ptr<CUI>  m_pNPC = {};
 
 	shared_ptr<class CInventory_Controller> m_pInvenCntl = {};
 	weak_ptr<CGameObject> m_pPlayer = {};

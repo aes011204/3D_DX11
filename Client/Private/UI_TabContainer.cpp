@@ -1,9 +1,13 @@
 #include "UI_TabContainer.h"
 
+#include <UIText.h>
+
 #include "UIButton.h"
+
 #include "UI_Inventory.h"
 #include "UI_Storage.h"
 #include "UIImage.h"
+#include "EventBus.h"
 
 
 CUI_TabContainer::CUI_TabContainer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -70,7 +74,7 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 		numPanel++;
 	}
 	m_Line->UI_Active();
-
+	m_TextIMG->UI_Active();
 
 	Change_LayoutRawCol( numPanel,1);
 
@@ -79,10 +83,10 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 	Set_ActiveForCustom();
 
 	m_bRenderReady = false;
-
+	
 	if (m_pUITransformCom)
 		m_pUITransformCom->UpdateLayoutIfDirty();
-
+	
 	//m_bInteractable = true;
 	OnActive();
 
@@ -101,6 +105,16 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 
 HRESULT CUI_TabContainer::OnInit(void* pArg)
 {
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_AddMoney>([this](const Evt_AddMoney& e)
+		{
+			
+			wstring strMoney = format(L"${:.2f}", e.money);
+			//wstring strM = L"$";
+			this->m_TextFont->Set_Text(/*strM +*/ strMoney);
+		});
+
+
+
 	HRESULT hr = E_FAIL;
 	TABCONTAINER_DESC* TABpDesc = static_cast<TABCONTAINER_DESC*>(pArg);
 	//TABCONTAINER_DESC pDesc = {};
@@ -196,6 +210,28 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 			pStorage->UI_InActive();
 		}
 
+		///µ∑///
+
+	{
+		CUIImage::UIIMAGE_DESC moneyDesc = {};
+		moneyDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		moneyDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
+		shared_ptr<CUIImage> money = CUIImage::Create(m_pDevice, m_pContext);
+		money->Initialize(&moneyDesc);
+		{
+			CUIText::TEXT_DESC MoneyTexDesc = {};
+			MoneyTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
+			MoneyTexDesc.strText = L"¿œ¥‹ µ∑";
+			MoneyTexDesc.fontaline = CUIText::FONTALINE::RIGHT;
+			shared_ptr<CUIText> MoneyTex = CUIText::Create(m_pDevice, m_pContext);
+			MoneyTex->Initialize(&MoneyTexDesc);
+			money->Add_Child(MoneyTex, L"MoneyTex", false);
+			m_TextFont = MoneyTex;
+		}
+		Add_Child(money, L"MONEY", false);
+		m_TextIMG = money;
+	}
+
 	return hr;
 }
 
@@ -244,14 +280,13 @@ void CUI_TabContainer::OnUpdate(const _float& timeDelta)
 
 		m_vecAni = Vector2{ lerp(m_vecAni.x, 0.f, t),0.f };
 		GetUITransform()->SetAnchoredPos(m_vecAni);
-		LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
+		//LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
 
 		if (t >= 1.f) {
 			m_bStart = false;
 			m_TimeAcc = 0;
 		}
 	}
-
 
 	CUIPanel::OnUpdate(timeDelta);
 }

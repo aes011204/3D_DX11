@@ -33,9 +33,15 @@ public:
 protected:
     HRESULT Ready_Components();
     HRESULT Ready_PartObjects();
-private:
-
-
+public:
+    //_float Get_Money() { return m_Money; }
+    void Add_Money(_int money);
+   /* void Set_BoatSpeed(_uint speed) { m_BoatSpeed = speed; }
+    void Set_FishingSpeed(_uint speed) { m_FishingSpeed = speed; }
+    void Set_Light(_uint light) { m_Light = light; }
+    void Set_SeaMask(SEA_MASK mask) { m_SeaMask = mask; }*/
+    void Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask);
+    
 private:
 
     //shared_ptr<CShader> m_pShaderCom = { nullptr };
@@ -43,6 +49,15 @@ private:
     //shared_ptr<CTexture> m_pTextureCom = { nullptr };
 
     shared_ptr<class CInventory> m_pInvenCom = { nullptr };
+
+
+
+private:
+    _float m_Money = {};
+   _uint m_BoatSpeed = {};
+   _uint m_FishingSpeed = {};
+   _uint m_Light = {};
+    SEA_MASK m_SeaMask = {};
 
 public:
     static shared_ptr<CPlayerBoat> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

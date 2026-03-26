@@ -444,6 +444,11 @@ void CGameInstance::Font_Draw(const _wstring& strFontTag, const _tchar* pText, c
 	m_pFont_Manager->Draw(strFontTag, pText, vPosition, vColor);
 }
 
+_float2 CGameInstance::Measure_String(const _wstring& strFontTag, const _tchar* pText)
+{
+	return m_pFont_Manager->Measure_String(strFontTag, pText);
+
+}
 
 
 void CGameInstance::Free()

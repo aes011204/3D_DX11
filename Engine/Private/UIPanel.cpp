@@ -28,7 +28,7 @@ HRESULT CUIPanel::OnInit(void* pArg)
     m_IsFullScreen = pDesc->IsFullScreen;
     m_IsUseLayout = pDesc->IsUseLayout;
 
-
+    __super::OnInit(pDesc);
 
    // m_IsUseLayout = pDesc->IsUseLayout;
 
@@ -50,8 +50,8 @@ HRESULT CUIPanel::OnInit(void* pArg)
         m_pUITransformCom->SetLocalScale(Vector2(1.f,1.f));
     }
 
-    // 이건 부모가 CUI라서 할필요 없는데 그냥 ㄱㄱ
-    return __super::OnInit(pDesc);
+    return S_OK;
+
 }
 
 void CUIPanel::OnActive()

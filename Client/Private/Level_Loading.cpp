@@ -13,8 +13,12 @@
 #include "UIButton.h"
 #include "Client_Enum.h"
 #include "Client_Helper.h"
+#include "FadeModifier.h"
+#include "DInput_Manager.h"
 #include "UITransform.h"
+#include "UI.h"
 #include "GameInstance.h"
+
 //
 
 CLevel_Loading::CLevel_Loading(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -44,17 +48,29 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 
 HRESULT CLevel_Loading::Post_Initialize()
 {
-	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Loading", true, nullptr);
-	//m_TapUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
-
+	shared_ptr<CUI> lodingUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"Loading");
+	if(lodingUI == nullptr)
+	{
+		m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"Loading", true, nullptr);
+	}
+	else
+	{
+		lodingUI->UI_Active();
+	}
 
 	return S_OK;
 }
 
 void CLevel_Loading::Update(_float fTimeDelta)
 {
-	if( m_pLoader->Is_Finished() == true && GetKeyState(VK_RETURN) & 0x8000)
+	//
+	//m_LoadingUI->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT))
+	//&& GetKeyState(VK_RETURN) & 0x8000
+
+	if( m_pLoader->Is_Finished() == true)
 	{
+
+
 		shared_ptr<CLevel> pNextLevel = { nullptr };
 
 
@@ -89,6 +105,8 @@ void CLevel_Loading::Update(_float fTimeDelta)
 
 		return;
 	}
+
+	
 
 }
 

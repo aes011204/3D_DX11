@@ -40,7 +40,7 @@ private:
 	HRESULT Ready_StartLevel(LEVEL eStartLevelID);
 	HRESULT Ready_Prototype_For_Static_Level();
 
-	HRESULT Ready_UI();
+	//HRESULT Ready_UI();
 	shared_ptr<class CInventory_Controller> m_Contr = {};
 private:
 	weak_ptr<CGameInstance> m_pGameInstance = {};

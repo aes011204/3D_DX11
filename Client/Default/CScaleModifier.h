@@ -1,6 +1,6 @@
 #pragma once
-#include "Client_Define.h"
 #include "IModifier.h"
+#include "Client_Define.h"
 NS_BEGIN(Engine)
 class CUITransform;
 NS_END
@@ -20,6 +20,7 @@ public:
 
 	void OnDisappear(float fDeltaTime, CUI* pOwner) override;
 
+	virtual bool IsFinished() {  return false; };
 
 private:
 	CUITransform* m_pOwnerTransform = {nullptr};

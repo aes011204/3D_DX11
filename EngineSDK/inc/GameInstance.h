@@ -115,7 +115,7 @@ public:/*For.Camera_Manager*/
 public:/*For.Font_Manager*/
 	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
 	void Font_Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor = { 1.f,1.f,1.f,1.f });
-
+	_float2 Measure_String(const _wstring& strFontTag, const _tchar* pText);
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };

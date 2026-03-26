@@ -24,7 +24,7 @@ HRESULT CUIRenderable::OnInit(void* pArg)
 
 		_uint m_TexProtoLevel = pDesc->TextureComLevel;
 		_wstring m_TexProtoName = pDesc->TextureProtoName;
-
+		m_TexIndex = pDesc->TextureIndex;
 		if (FAILED(Ready_Components(m_TexProtoLevel, m_TexProtoName)))
 			return E_FAIL;
 
@@ -112,21 +112,32 @@ HRESULT CUIRenderable::OnRender()
 	return S_OK;
 }
 
-HRESULT CUIRenderable::Change_Texture(shared_ptr<CTexture> texture)
+HRESULT CUIRenderable::Change_Texture(shared_ptr<CTexture> texture, _uint TexIndex)
 {
 	//if(protoName != m_TexProtoName)
 	//{
 
 	m_pTextureCom = texture;
-
+	m_TexIndex = TexIndex;
 	if (m_pTextureCom && m_pUITransformCom) {
 
-		m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(0) / 3.f) * 2.f);
+		m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(TexIndex) / 3.f) * 2.f);
 	}
 	return S_OK;
 	//}
 
 }
+
+HRESULT CUIRenderable::Set_TextureIndex(_uint index)
+{
+	if (index >= m_pTextureCom->Get_NumSRVs())
+		return E_FAIL;
+
+
+	m_TexIndex = index;
+	return S_OK;
+}
+
 HRESULT CUIRenderable::Ready_Components(_uint Level, _wstring protoName)
 {
 	if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
@@ -141,7 +152,7 @@ HRESULT CUIRenderable::Ready_Components(_uint Level, _wstring protoName)
 			return E_FAIL;
 		if (m_pTextureCom && m_pUITransformCom) {
 
-			m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(0) / 3.f) * 2.f);
+			m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(m_TexIndex) / 3.f) * 2.f);
 		}
 	}
 	return S_OK;
@@ -158,7 +169,7 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 	if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ProjMatrix", D3DTS::PROJ)))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
+	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", m_TexIndex)))
 		return E_FAIL;
 
 	if (m_bUseDark == true)
@@ -178,6 +189,10 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorMix", &m_Color, sizeof(_float4))))
 			return E_FAIL;
 	}
+
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_Alpha, sizeof(_float))))
+			return E_FAIL;
+
 
 	if (m_PassIndex == 1)
 	{
@@ -200,9 +215,12 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 void CUIRenderable::RebindCom()
 {
 	// 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
 	m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 	m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+	
+	
+	
 }
 void CUIRenderable::OnClear()
 {

@@ -1,6 +1,9 @@
 #pragma once
+#include <UIText.h>
+
 #include "UIPanel.h"
 #include "Client_Define.h"
+#include "PlayerBoat.h"
 //오른쪽에서 나오는 효과있음
 // 엔진 루프용 m_Children과는 별개로, 내가 직접 '조종'할 녀석들만 포인터로 보관
 // 버튼은 상태를 바꿀 일이 거의 없으니 굳이 안 들고 있어도 되지만, 
@@ -48,6 +51,8 @@ private:
 	TAB m_Active = TAB::NONE;
 
 	shared_ptr<CUIImage> m_Line = {};
+	shared_ptr<CUIImage> m_TextIMG = {};
+	shared_ptr<CUIText> m_TextFont = {};
 
 	shared_ptr<CUIButton> m_ButtonContents[32] = {};
 	shared_ptr<CUIPanel> m_TabContents[32] = {};
@@ -57,6 +62,10 @@ private:
 	_bool m_bStart = false;
 	float m_TimeAcc = {};
 	float m_fDuration = {};
+
+
+	weak_ptr<CPlayerBoat> m_PlayerBoat = {  };
+
 public:
 	static shared_ptr<CUI_TabContainer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	void Free() override;

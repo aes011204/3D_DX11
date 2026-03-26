@@ -10,6 +10,7 @@
 NS_BEGIN(Engine)
 class CUIImage;
 class CUISlot;
+class CUIText;
 NS_END
 
 NS_BEGIN(Client)
@@ -51,7 +52,7 @@ public:
 
 private:
     weak_ptr<class CInventory> m_Inven = {};
-
+    shared_ptr<CUIText>m_TextInfo = {};
 
     shared_ptr<CUIPanel> m_InvenPanel = { nullptr };
     vector<shared_ptr<CUIImage>> m_ItemUI = {};

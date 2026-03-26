@@ -19,6 +19,8 @@ public:
 	virtual void Tick(float fDeltaTime, class CUI* pOwner) = 0;
 	virtual void OnAppear(float fDeltaTime, class CUI* pOwner) = 0;
 	virtual void OnDisappear(float fDeltaTime, class CUI* pOwner) = 0;
+
+	virtual bool IsFinished() = 0;
 };
 
 NS_END

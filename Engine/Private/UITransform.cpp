@@ -130,7 +130,7 @@ void CUITransform::OnGui()
         // Local Scale 
         if (ImGui::DragFloat2("Scale", (float*)&m_LocalScale, 0.01f, 0.0f, 10.0f))
             bChanged = true;
-        ImGui::Separator();
+      /*  ImGui::Separator();
         if (ImGui::DragFloat("Rotation (Rad)", &m_RotationRadian, 0.01f, -6.28f, 6.28f))
         {
             bChanged = true;
@@ -140,11 +140,11 @@ void CUITransform::OnGui()
         {
             m_RotationRadian = XMConvertToRadians(m_RotationDegreeView);
             bChanged = true;
-        }
+        }*/
 
         
         ImGui::TextDisabled("World Rect Info");
-        Rect world = GetWorldRect(); 
+        Rect world = Get_WorldRect(); 
         ImGui::Text("LT: (%.1f, %.1f)", world.x, world.y);
         ImGui::Text("Size: (%.1f, %.1f)", world.w - world.x, world.h - world.y);
 
@@ -203,7 +203,7 @@ Rect CUITransform::GetParent_WorldRect()
     if (m_Parent.lock())
     {
         m_Parent.lock()->UpdateLayoutIfDirty();
-        return m_Parent.lock()->GetWorldRect();
+        return m_Parent.lock()->Get_WorldRect();
     }
 
     // 부모가 없을경우 캔버스 기준

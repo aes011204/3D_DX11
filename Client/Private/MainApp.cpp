@@ -15,11 +15,15 @@
 #include "Engine_Struct.h"
 #include "Inventory_Controller.h"
 #include "ItemDB.h"
+#include "RotationModifier.h"
 #include "Texture.h"
+#include "UI_HUD.h"
 
 #include "UI_MainMenu.h"
 #include "UI_TabContainer.h"
 #include "UI_Item.h"
+#include "UIText.h"
+#include "UI_Controller.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() },
@@ -63,9 +67,8 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_Prototype_For_Static_Level()))
 		return E_FAIL;
 
-
-	if (FAILED((Ready_UI())))
-		return E_FAIL;
+	// UI Pool 채우기 / ready_UI 역할
+	CUI_Controller::GetInstance()->Initialize(m_pDevice, m_pContext);
 
 	if (FAILED((Ready_Fonts())))
 		return E_FAIL;
@@ -108,9 +111,7 @@ HRESULT CMainApp::Render()
 	m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
 
 	m_pGameInstance.lock()->Draw();
-
-	m_pGameInstance.lock()->Font_Draw(TEXT("Hahmlet_SemiBold"), TEXT("니네들은 싸우지마"), _float2(100.f, 0.f));
-
+	
 
 
 	m_pEditorInstance.lock()->Render_Editor();
@@ -126,36 +127,31 @@ HRESULT CMainApp::Ready_Fonts()
 
 	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Hahmlet_SemiBold"), TEXT("../Bin/Resources/Fonts/Hahmlet SemiBold.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Front_Page_Neue."), TEXT("../Bin/Resources/Fonts/Front Page Neue.spritefont"))))
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Front_Page_Neue"), TEXT("../Bin/Resources/Fonts/Front Page Neue.spritefont"))))
 		return E_FAIL;
 	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Hahmlet_ExtraBold"), TEXT("../Bin/Resources/Fonts/Hahmlet_ExtraBold.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Liberation_Sans"), TEXT("../Bin/Resources/Fonts/Liberation Sans.spritefont"))))
-		return E_FAIL;
 	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC"), TEXT("../Bin/Resources/Fonts/Noto Sans CJK SC.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Poltawski_Nowy"), TEXT("../Bin/Resources/Fonts/Poltawski Nowy.spritefont"))))
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC_32"), TEXT("../Bin/Resources/Fonts/Noto_Sans_CJK_SC_32.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Perfect_DOS_VGA_437"), TEXT("../Bin/Resources/Fonts/Perfect DOS VGA 437.spritefont"))))
-		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Oswald"), TEXT("../Bin/Resources/Fonts/Oswald.spritefont"))))
-		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Signika"), TEXT("../Bin/Resources/Fonts/Signika.spritefont"))))
-		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Wingdings"), TEXT("../Bin/Resources/Fonts/Wingdings.spritefont"))))
+	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC_24"), TEXT("../Bin/Resources/Fonts/Noto_Sans_CJK_SC_24.spritefont"))))
 		return E_FAIL;
 
-	//MakeSpriteFont.exe "Front Page Neue" / FontSize:16 /CharacterRegion : 0x0020 - 0x00FF / CharacterRegion : 0x3131 - 0x3163 / CharacterRegion : 0xAC00 - 0xD800 / DefaultCharacter : 0xAC00 "%USERPROFILE%\Desktop\Font_Page_Neue.spritefont"
-	/*MakeSpriteFont.exe "Front Page Neue" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Front Page Neue.spritefont"*/
-	/*MakeSpriteFont.exe "Hahmlet ExtraBold" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet_ExtraBold.spritefont"*/
-	/*MakeSpriteFont.exe "Hahmlet SemiBold" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet SemiBold.spritefont"*/
-	/*MakeSpriteFont.exe "Liberation Sans" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Liberation Sans.spritefont"*/
-	/*MakeSpriteFont.exe "Noto Sans CJK SC" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Noto Sans CJK SC.spritefont"*/
-	/*MakeSpriteFont.exe "Poltawski Nowy" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Poltawski Nowy.spritefont"*/
-	/*MakeSpriteFont.exe "Perfect DOS VGA 437" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Perfect DOS VGA 437.spritefont"*/
-	/*MakeSpriteFont.exe "Oswald" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Oswald.spritefont"*/
-	/*MakeSpriteFont.exe "Signika" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Signika.spritefont"*/
-	/*MakeSpriteFont.exe "Wingdings" /FontSize:16 /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Wingdings.spritefont"*/
+	/*C:\Users\aes01>C:\MakeSpriteFont.exe "Noto Sans CJK SC" "Noto_Sans_CJK_SC_24.spritefont" /FontSize:24 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD7A3 /DefaultCharacter:0xAC00
+Importing Noto Sans CJK SC*/
+
+	//MakeSpriteFont.exe "Front Page Neue" / FontSize:16 /FastPack /CharacterRegion : 0x0020 - 0x00FF / CharacterRegion : 0x3131 - 0x3163 / CharacterRegion : 0xAC00 - 0xD800 / DefaultCharacter : 0xAC00 "%USERPROFILE%\Desktop\Font_Page_Neue.spritefont"
+	/*MakeSpriteFont.exe "Front Page Neue" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Front Page Neue.spritefont"*/
+	/*MakeSpriteFont.exe "Hahmlet ExtraBold" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet_ExtraBold.spritefont"*/
+	/*MakeSpriteFont.exe "Hahmlet SemiBold" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet SemiBold.spritefont"*/
+	/*MakeSpriteFont.exe "Liberation Sans" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Liberation Sans.spritefont"*/
+	/*MakeSpriteFont.exe "Noto Sans CJK SC" /FontSize:32 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Noto_Sans_CJK_SC_32.spritefont"*/
+	/*MakeSpriteFont.exe "Poltawski Nowy" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Poltawski Nowy.spritefont"*/
+	/*MakeSpriteFont.exe "Perfect DOS VGA 437" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Perfect DOS VGA 437.spritefont"*/
+	/*MakeSpriteFont.exe "Oswald" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Oswald.spritefont"*/
+	/*MakeSpriteFont.exe "Signika" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Signika.spritefont"*/
+	/*MakeSpriteFont.exe "Wingdings" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Wingdings.spritefont"*/
 
 
 	return S_OK;
@@ -415,6 +411,180 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	//Prototype_Component_Texture_LoadingIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LoadingIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/EngineIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : LoadingIcon");
+		return E_FAIL;
+	}
+
+
+	///////////////////////HUD//////////////////////////////
+
+	//Prototype_Component_Texture_Compass
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Compass"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/Compass.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_CompassRing
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_CompassRing"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/CompassRing.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+
+	//Prototype_Component_Texture_TimeOfDayPointer
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TimeOfDayPointer"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/TimeOfDayPointer.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+
+	//Prototype_Component_Texture_TimeOfDayWheel
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TimeOfDayWheel"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/TimeOfDayWheel.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+
+	//Prototype_Component_Texture_HorizontalUITray
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_HorizontalUITray"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/HorizontalUITray.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_Speaker_Button_Default
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Speaker_Button_Default"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/Speaker_Button_Default.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_ActionButtonMain
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_ActionButtonMain"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/ActionButtonMain_%d.png"), 3))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	///////////////////////NPC UI//////////////////////////////
+
+	//Prototype_Component_Texture_TitleBackground
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TitleBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/TitleBackground.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_DialogBox
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DialogBox"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/DialogBox_%d.png"), 2))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_Fishmonger
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Fishmonger"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_Fishmonger_Background
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Fishmonger_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_Mayor
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Mayor"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_Mayor_Background
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Mayor_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_Shipwright
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shipwright"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Shipwright.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Shipwright_Background
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shipwright_Background"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Shipwright_Background.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	////////////////////////ICON///////////////////////////
+
+	//Prototype_Component_Texture_ShipIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_ShipIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/ShipIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	//Prototype_Component_Texture_LightsIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LightsIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/LightsActionIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	//Prototype_Component_RadialMenuIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_RadialMenuIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/RadialMenuIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	//Prototype_Component_FogHornActionIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_FogHornActionIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/FogHornActionIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	////////////////////////KEY///////////////////////////
+	//Prototype_Component_Texture_HorizontalUITray
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_KEY"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Key/keyboard_Icon_%d.png"),216 ))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
 
 
 	/////////////////////////TEST//////////////////////////
@@ -439,50 +609,88 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	return S_OK;
 }
 
-HRESULT CMainApp::Ready_UI()
-{
-
-
-	{
-		CUIPanel::UIPANEL_DESC LoadingDesc;
-		LoadingDesc.IsFullScreen = true;
-		LoadingDesc.TextureProtoName = L"Prototype_Component_Texture_Black";
-		LoadingDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		shared_ptr<CUIPanel> pInstance = CUIPanel::Create(m_pDevice, m_pContext);
-		pInstance->Initialize(&LoadingDesc);
-		m_pGameInstance.lock()->UI_InsertToPool(L"Loading", pInstance);
-	}
-
-
-	CUI_MainMenu::MAINMENU_DESC pDescPanel;
-	pDescPanel.IsFullScreen = true;
-	pDescPanel.IsTransparent = true;
-
-	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_pDevice, m_pContext);
-	pInstance->Initialize(&pDescPanel);
-	m_pGameInstance.lock()->UI_InsertToPool(L"MainMenu", pInstance);
-	///
-	///
-	///
-	CUI_TabContainer::TABCONTAINER_DESC pDescTap = {};
-	shared_ptr<CUI_TabContainer> TabContainer = CUI_TabContainer::Create(m_pDevice, m_pContext);
-	if (TabContainer == nullptr)
-		return E_FAIL;
-	TabContainer->Initialize(&pDescTap);
-	m_pGameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);
-
-
-
-	CUI_Item::ITEM_DESC pDescitem = {};
-	//CUI_Item::ITEM_DESC pDescitem = {};
-	shared_ptr<CUI_Item>  holdItem =CUI_Item::Create(m_pDevice, m_pContext);
-	if (holdItem == nullptr)
-		return E_FAIL;
-	holdItem->Initialize(&pDescitem);
-	m_pGameInstance.lock()->UI_InsertToPool(L"HoldItem", holdItem);
-
-	return S_OK;
-}
+//HRESULT CMainApp::Ready_UI()
+//{
+//
+//
+//	{
+//
+//		CUIPanel::UIPANEL_DESC LoadingDesc;
+//		LoadingDesc.IsFullScreen = true;
+//		LoadingDesc.TextureProtoName = L"Prototype_Component_Texture_Black";
+//		LoadingDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+//		LoadingDesc.IsFullScreen = true;
+//		shared_ptr<CUIPanel> pInstance = CUIPanel::Create(m_pDevice, m_pContext);
+//		pInstance->Initialize(&LoadingDesc);
+//
+//		CUIImage::UIIMAGE_DESC LoadingIconDesc;
+//		LoadingIconDesc.vPivot = _float2{1.f,0.f};
+//		LoadingIconDesc.vAnchorPoint = _float2{ 1.f,0.f };
+//		LoadingIconDesc.vAnchoredPos = _float2{ -40.f,40.f };
+//		LoadingIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+//		LoadingIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+//		LoadingIconDesc.TextureProtoName = L"Prototype_Component_Texture_LoadingIcon";
+//		shared_ptr<CUIImage> pIcon = CUIImage::Create(m_pDevice, m_pContext);
+//		pIcon->Initialize(&LoadingIconDesc);
+//		pIcon->m_behavior.push_back(make_shared<CRotationModifier>(200.f));
+//		pInstance->Add_Child(pIcon, L"ICON_LOADING",false);
+//
+//
+//		CUIText::TEXT_DESC TextDesc;
+//		//TextDesc.TextColor = _float4{ 1.f,0.f };
+//		TextDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
+//		TextDesc.strText = L"심해로부터";
+//		
+//		shared_ptr<CUIText> text = CUIText::Create(m_pDevice, m_pContext);
+//		text->Initialize(&TextDesc);
+//		pInstance->Add_Child(text, L"text", false);
+//
+//
+//		m_pGameInstance.lock()->UI_InsertToPool(L"Loading", pInstance);
+//
+//		
+//	}
+//
+//
+//	CUI_MainMenu::MAINMENU_DESC pDescPanel;
+//	pDescPanel.IsFullScreen = true;
+//	pDescPanel.IsTransparent = true;
+//
+//	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_pDevice, m_pContext);
+//	pInstance->Initialize(&pDescPanel);
+//	m_pGameInstance.lock()->UI_InsertToPool(L"MainMenu", pInstance);
+//	///
+//	///
+//	///
+//	CUI_TabContainer::TABCONTAINER_DESC pDescTap = {};
+//	shared_ptr<CUI_TabContainer> TabContainer = CUI_TabContainer::Create(m_pDevice, m_pContext);
+//	if (TabContainer == nullptr)
+//		return E_FAIL;
+//	TabContainer->Initialize(&pDescTap);
+//	m_pGameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);
+//
+//
+//
+//	CUI_Item::ITEM_DESC pDescitem = {};
+//	//CUI_Item::ITEM_DESC pDescitem = {};
+//	shared_ptr<CUI_Item>  holdItem =CUI_Item::Create(m_pDevice, m_pContext);
+//	if (holdItem == nullptr)
+//		return E_FAIL;
+//	holdItem->Initialize(&pDescitem);
+//	m_pGameInstance.lock()->UI_InsertToPool(L"HoldItem", holdItem);
+//
+//	////////////HUD///////////////
+//	CUI_HUD::HUD_DESC pDescHUD;
+//	pDescHUD.IsFullScreen = true;
+//	pDescHUD.IsTransparent = true;
+//
+//	shared_ptr<CUI_HUD> HUD = CUI_HUD::Create(m_pDevice, m_pContext);
+//	HUD->Initialize(&pDescHUD);
+//	m_pGameInstance.lock()->UI_InsertToPool(L"HUD", HUD);
+//
+//
+//	return S_OK;
+//}
 
 unique_ptr<CMainApp> CMainApp::Create()
 {

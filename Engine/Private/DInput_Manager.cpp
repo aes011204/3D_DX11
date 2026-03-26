@@ -93,7 +93,7 @@ unique_ptr<CDInput_Manager> CDInput_Manager::Create(HINSTANCE hInst, HWND hWnd)
     unique_ptr<CDInput_Manager> pInstance(new CDInput_Manager());
     if (FAILED(pInstance->Initialize(hInst, hWnd)))
     {
-        MSG_BOX("failed prototype: CUITransform");
+        MSG_BOX("failed prototype: CDInput_Manager");
     }
     return pInstance;
 }

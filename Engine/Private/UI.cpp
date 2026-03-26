@@ -31,6 +31,7 @@ HRESULT CUI::Initialize(void* pArg)
 	UI_DESC* pDesc = static_cast<UI_DESC*>(pArg);
 
 	Set_Zorder(pDesc->ZOrder);
+	m_NO_DESTACH = pDesc->NoDISTACH;
 
 	if (m_bInitialized == true)
 		return S_OK;
@@ -238,7 +239,7 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 		if (bMouseHold == false && m_bInteractable == true)
 		{
 			Vector2 mousePos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
-			if (true == m_pUITransformCom->GetWorldRect().Contains(mousePos.x, mousePos.y))
+			if (true == m_pUITransformCom->Get_WorldRect().Contains(mousePos.x, mousePos.y))
 			{
 				m_bHovered = true;
 				bMouseHold = true;
@@ -253,11 +254,7 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 		OnUpdate(fTimeDelta);
 
 
-		for (auto& it : m_behavior)
-		{
-			it->Tick(fTimeDelta, this);
-		}
-
+	
 		if (!m_bRenderReady)
 			m_bRenderReady = true;
 
@@ -297,6 +294,23 @@ void CUI::Late_Update(_float fTimeDelta)
 
 			}
 		}
+
+		for (auto it = m_behavior.begin(); it != m_behavior.end(); )
+		{
+			(*it)->Tick(fTimeDelta, this);
+
+			
+			if ((*it)->IsFinished() == true)
+			{
+				it = m_behavior.erase(it);
+			}
+			else
+			{
+				it++;
+			}
+		}
+
+
 	}
 }
 

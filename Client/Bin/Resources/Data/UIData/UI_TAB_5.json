@@ -36,8 +36,8 @@
                     "RotationRadian": 0.0,
                     "SetParentSize": false,
                     "SizeDelta": [
-                        4010.666748046875,
-                        2677.333251953125
+                        1920,
+                        1080
                     ]
                 },
                 {
@@ -8641,7 +8641,7 @@
                             "ComponentTag": "Com_UITransform",
                             "LocalScale": [
                                 2.0,
-                                1.2999999523162842
+                                1.1
                             ],
                             "Pivot": [
                                 0.5,
@@ -8760,7 +8760,7 @@
                             "ComponentTag": "Com_UITransform",
                             "LocalScale": [
                                 2.0,
-                                1.2999999523162842
+                                1.1
                             ],
                             "Pivot": [
                                 0.5,
@@ -8879,7 +8879,7 @@
                             "ComponentTag": "Com_UITransform",
                             "LocalScale": [
                                 2.0,
-                                1.2999999523162842
+                                1.1
                             ],
                             "Pivot": [
                                 0.5,

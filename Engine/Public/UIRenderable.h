@@ -10,6 +10,7 @@ public:
     {
         _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";
+        _uint TextureIndex = 0;
 
         _float4 PxSliceLRTB = {};
         bool bUseNineSlice = false;
@@ -31,6 +32,8 @@ public:
     void Set_UseColorMix(_bool useColorMix) { m_bUseColorMix = useColorMix; }
     void Set_ColorMix(_float4 color) { m_Color = color; }
 
+    void Set_Alpha(_float alpha) { m_Alpha = alpha; }
+
     void Set_UseColorFlat(_bool useColorFlat) { m_bUseColorFlat = useColorFlat; }
     void Set_ColorFlat(_float4 colorFlat) { m_ColorFlat = colorFlat; }
 
@@ -38,9 +41,9 @@ public:
     _bool Get_Transparent() { return m_IsTransparent; }
 
     //이건
-    HRESULT Change_Texture(shared_ptr<CTexture> texture);
+    HRESULT Change_Texture(shared_ptr<CTexture> texture, _uint TexIndex = 0);
    
-
+    HRESULT Set_TextureIndex(_uint index);
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;
@@ -74,7 +77,9 @@ private:
     _float4 m_Color = {}; //0~11
     _float4 m_ColorFlat = {};
 
-    bool m_IsTransparent = { false };
+    _float m_Alpha = 1.f;
+
+    bool m_IsTransparent = { false }; // 렌더 유무
 
     bool m_bUseNineSlice = false;
     NINESLICE_DESC m_SliceDesc = {};
@@ -82,7 +87,7 @@ private:
 
     _uint m_TexProtoLevel = {};
     _wstring m_TexProtoName = L"";
-
+    _uint m_TexIndex = 0;
 
 
     shared_ptr<class CShader> m_pShaderCom = { nullptr };
