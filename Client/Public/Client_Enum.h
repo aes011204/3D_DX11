@@ -80,7 +80,7 @@ namespace Client
     struct Trinket_Def { float Cost = { 0 }; };
 
 
-    struct Fish_Inst { FRESHNESS freshness = FRESHNESS::END; ID_uint mutation_ID = { ID_Absence }; };
+    struct Fish_Inst { FRESHNESS freshness = FRESHNESS::END; ID_uint mutation_ID = { ID_Absence }; _float size = {}; };
     struct Equip_Inst { bool IsBroken = false; };
 
     /// 아이템 인스턴스 
@@ -89,6 +89,7 @@ namespace Client
         ID_uint ItemDef_ID = { ID_Absence }; 
         ID_uint ItemInst_ID = { ID_Absence };
         ITEM_TYPE ItemType = ITEM_TYPE::END; // 이건 그냥 캐싱용으로 두자
+       
 
         _float2 BaseXY = {};
 
@@ -117,7 +118,74 @@ namespace Client
         variant<monostate, Fish_Def, Equip_Def, Material_Def, Trinket_Def>  TypeDef;
 
 	};
+    
+    static wstring freshToWstr(FRESHNESS freshness)
+    {
 
+        switch (freshness) {
+        case FRESHNESS::FRESH: return L"신선한";
+        case FRESHNESS::ROTTING: return L"퀴퀴함";
+        case FRESHNESS::INFECTED: return  L"감염된";
+        }
+    }
+    static const wstring GetSeaTypeName(SEA_TYPE Type)
+    {
+        switch (Type)
+        {
+        case SEA_TYPE::COASTAL:
+            return L"COASTAL";
+        case SEA_TYPE::SHALLOW:
+            return L"SHALLOW";
+        case SEA_TYPE::OCEANIC:
+            return L"OCEANIC";
+        case SEA_TYPE::ABYSSAL:
+            return L"ABYSSAL";
+        case SEA_TYPE::HADAL:
+            return L"HADAL";
+        case SEA_TYPE::MANGROVE:
+            return L"MANGROVE";
+        case SEA_TYPE::VOLCANIC:
+            return L"VOLCANIC";
+        case SEA_TYPE::ICE:
+            return L"ICE";
+        case SEA_TYPE::CRAB:
+            return L"CRAB";
+        case SEA_TYPE::END:
+            return L"END";
+        default:
+            return L"UNKNOWN";
+        }
+    }
+
+    static wstring OcceanToWstr(SEA_MASK sea)
+    {
+        wstring result = L"";
+
+        for (_uint i = 0; i < ETOI(SEA_TYPE::END); ++i)
+        {
+            SEA_MASK typeMask = 1u << i;
+
+            if (sea & typeMask)
+            {
+                if (!result.empty())
+                    result += L" | ";
+
+                result += GetSeaTypeName(static_cast<SEA_TYPE>(i));
+            }
+        }
+        return result;
+    }
+
+    static wstring GetBroken(_bool IsBroken)
+    {
+
+        switch (IsBroken)
+    	{
+        case true: return L"사용 불가";
+        case false: return L"사용가능";
+       
+        }
+    }
 }
 
 

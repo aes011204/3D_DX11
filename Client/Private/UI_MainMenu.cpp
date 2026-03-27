@@ -74,9 +74,9 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 				if (pTransform) {
 					pTransform->SetLocalScale({ 3.f, 1.8f });
 				}
-				_float2 tmp = { 3.f, 1.8f };
+				_float2 tmp = { 4.f, 2.5f };
 				it->m_bIsDirtyCom = true;
-				it->m_behavior.push_back((make_shared<CScaleModifier>(0.1f, 2.f, 0.f, tmp)));
+				//it->m_behavior.push_back((make_shared<CScaleModifier>(0.1f, 2.f, 0.f, tmp)));
 			}
 				};
 			pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();

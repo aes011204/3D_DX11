@@ -355,6 +355,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	////////tooltip////////
+
+	/* Prototype_Component_Texture_PopupBackground */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PopupBackground"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PopupBackground.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CTexture");
+		return E_FAIL;
+	}
+
 
 	// Ã¢°í //
 	/* Prototype_Component_Texture_StorageInventoryBackground */
