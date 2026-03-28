@@ -395,10 +395,14 @@ void CUI_Inventory::OnClear()
 _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 {
 	Evt_MouseToIndex_Data e = {};
+	e.IsOnSlot = false; // ±âº» false
 
 	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
 
 	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+
+
+	
 
 	for (auto& slot : m_Slot)
 	{
@@ -416,13 +420,13 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 			break;
 		}
-		else
-		{
-			
-			e.IsOnSlot = false;
-			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+		//else
+		//{
+		//	
+		//	e.IsOnSlot = false;
+		//	//m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
 
-		}
+		//}
 
 	}
 	//return false;

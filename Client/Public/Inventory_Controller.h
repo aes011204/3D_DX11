@@ -43,9 +43,13 @@ private:
     //Item_Inst m_HoldItem = {};
     vector<_float2> m_OffSet = {};
     /*_float m_Rotaion = {};*/ // 이거 인스턴스 안에 있음
-    bool Is_Dragging = false;
 
+    _uint m_prevItemInstId = {};//툴팁용 체크
+    //bool prevMouseOnSlot = { false };
+    bool Is_Dragging = false;
+    bool m_PrevDragging = false;
     _uint m_SlotX, m_SlotY = {};
+    _uint m_PrevSlotX, m_PrevSlotY = {};
     _bool m_bIsOnSlot = { false };
 
     // 상점 등등을 위한 인밴 데이터도 필요함

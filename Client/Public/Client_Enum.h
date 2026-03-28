@@ -10,6 +10,8 @@ namespace Engine
 
 namespace Client
 {
+	enum class LOCATIONSTATE;
+
 	// ¾ÆÀÌÅÛ °ü·Ã 
 	enum class ITEM_TYPE { FISH, EQUIP, MATERIAL, PURSUIT, TRINKET, END };
 	enum class TIME { DAY, NIGHT, END };
@@ -126,6 +128,7 @@ namespace Client
         case FRESHNESS::FRESH: return L"½Å¼±ÇÑ";
         case FRESHNESS::ROTTING: return L"ÄûÄûÇÔ";
         case FRESHNESS::INFECTED: return  L"°¨¿°µÈ";
+        default: return L"UNKNOWN";
         }
     }
     static const wstring GetSeaTypeName(SEA_TYPE Type)
@@ -275,11 +278,18 @@ namespace Client
         _uint Light = {};
         SEA_MASK SeaMask = {};
     };
-
     
     struct Evt_AddMoney
     {
         _float money={};
+    };
+
+
+    struct Evt_ToolTip
+    {
+        _bool isHold = {};
+        Item_Inst itemInst = {};
+        LOCATIONSTATE locationState = {};
     };
 
     enum class HUD { SKILL, COMPASS , TOP, BOAT, ETC, END };

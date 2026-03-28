@@ -40,18 +40,23 @@ public:
 	void OnClear()override;
 
 public:
-	void Active_ButtonInfo(BUTTONINFO btnInfo, _float cost);
+	_float Active_ButtonInfo(BUTTONINFO btnInfo, _float2 AnchoredPos, _float cost = 0.f, _float2 Pivot = {0.5f, 0.5f});
 	void GetButtonInfo(_uint buttonInfo, _uint& Texindex, wstring& str, _float extraInfo);
 private:
 	shared_ptr<CUIText> m_NameText = {};
 	shared_ptr<CUIText> m_LeftText = {};
 	shared_ptr<CUIText> m_RightText = {};
 	shared_ptr<CUIText> m_DetailText = {};
+	shared_ptr<CUIImage> m_LineImg = {};
 
 	vector<shared_ptr<CUIImage>> m_vecIcon;
 	shared_ptr<CUIText> m_ButtonInfoText = {};
 
 	_float2 m_Targetsize = {};
+
+	_float m_NamePadding = {5.f};
+	_float m_PaddingX = {5.f};
+	_float m_PaddingY = {5.f};
 public:
 	static shared_ptr<CItemInfo> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	void Free() override;

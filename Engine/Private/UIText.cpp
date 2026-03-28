@@ -19,13 +19,20 @@ HRESULT CUIText::OnInit(void* pArg)
 	m_FontAline = pDesc->fontaline;
 
 
+
 	m_bInteractable = false;
 
 	return CUI::OnInit(pDesc);
+
 }
 
 void CUIText::OnActive()
 {
+
+		/*m_TextSize = m_pGameInstance.lock()->Measure_String(m_strFontTag, m_strText.c_str());*/
+		GetUITransform()->SetSizeDelta(m_TextSize);
+
+
 	CUI::OnActive();
 }
 
@@ -41,6 +48,11 @@ void CUIText::OnDisabled()
 
 void CUIText::OnUpdate(const _float& timeDelta)
 {
+	if(m_IsChangeText==true)
+	{
+	m_TextSize = m_pGameInstance.lock()->Measure_String(m_strFontTag, m_strText.c_str());
+	GetUITransform()->SetSizeDelta(m_TextSize);
+	}
 	CUI::OnUpdate(timeDelta);
 }
 
@@ -54,35 +66,56 @@ HRESULT CUIText::OnRender()
 	HRESULT hr = CUI::OnRender();
 	if (m_strText.empty() == false)
 	{
+		//Rect rc = m_pUITransformCom->Get_WorldRect();
+		//float CenterX = rc.Left() + (rc.Right() - rc.Left()) * 0.5f;
+		//float CenterY = rc.Top() + (rc.Bottom() - rc.Top()) * 0.5f;
+
+		//Rect canvas = m_pGameInstance.lock()->Get_WinSize();
+		//float screenHeight = canvas.Bottom();
+
+		//
+		//_float2 DrawPos;
+
+		//DrawPos.x = rc.Left();
+		//DrawPos.y = screenHeight - CenterY - (m_TextSize.y * 0.5f);
+		//m_pGameInstance.lock()->Font_Draw(
+		//	m_strFontTag,
+		//	m_strText.c_str(),
+		//	DrawPos,
+		//	XMLoadFloat4(&m_vTextColor));
+
 		Rect rc = m_pUITransformCom->Get_WorldRect();
-		float CenterX = rc.Left() + (rc.Right() - rc.Left()) * 0.5f;
+
 		float CenterY = rc.Top() + (rc.Bottom() - rc.Top()) * 0.5f;
 
-		Rect canvas = m_pGameInstance.lock()->Get_WinSize();
-		float screenHeight = canvas.Bottom();
+		float screenHeight = m_pGameInstance.lock()->Get_WinSize().Bottom();
 
-		_float2 TextSize = m_pGameInstance.lock()->Measure_String(m_strFontTag, m_strText.c_str());
 		_float2 DrawPos;
+		DrawPos.x = rc.Left(); 
+		DrawPos.y = screenHeight - CenterY - (m_TextSize.y * 0.5f);
 
-
-		
-
-		switch (m_FontAline)
+		m_pGameInstance.lock()->Font_Draw(
+			m_strFontTag,
+			m_strText.c_str(),
+			DrawPos,
+			XMLoadFloat4(&m_vTextColor)
+		);
+		/*switch (m_FontAline)
 		{
 		case FONTALINE::CENTER:
-			DrawPos.x = CenterX - (TextSize.x * 0.5f);
-			DrawPos.y = screenHeight - CenterY - (TextSize.y * 0.5f);
+			DrawPos.x = CenterX - (m_TextSize.x * 0.5f);
+			DrawPos.y = screenHeight - CenterY - (m_TextSize.y * 0.5f);
 			m_pGameInstance.lock()->Font_Draw(m_strFontTag, m_strText.c_str(), DrawPos, XMLoadFloat4(&m_vTextColor));
 			break;
 
 		case FONTALINE::RIGHT:
-			DrawPos.x = rc.Right() - TextSize.x;
-			DrawPos.y = screenHeight - CenterY - (TextSize.y * 0.5f);
+			DrawPos.x = rc.Right() - m_TextSize.x;
+			DrawPos.y = screenHeight - CenterY - (m_TextSize.y * 0.5f);
 			m_pGameInstance.lock()->Font_Draw(m_strFontTag, m_strText.c_str(), DrawPos, XMLoadFloat4(&m_vTextColor));
 			break;
 		case FONTALINE::LEFT:
-			DrawPos.x = rc.Right();
-			DrawPos.y = screenHeight - CenterY - (TextSize.y * 0.5f);
+			DrawPos.x = rc.Left();
+			DrawPos.y = screenHeight - CenterY - (m_TextSize.y * 0.5f);
 			m_pGameInstance.lock()->Font_Draw(m_strFontTag, m_strText.c_str(), DrawPos, XMLoadFloat4(&m_vTextColor));
 			break;
 		case FONTALINE::DEFAULT:
@@ -90,7 +123,7 @@ HRESULT CUIText::OnRender()
 			break;
 
 		
-		}
+		}*/
 
 	}
 

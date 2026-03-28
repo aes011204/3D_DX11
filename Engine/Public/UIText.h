@@ -39,7 +39,10 @@ public:
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 
-    void Set_Text(const _wstring& text) { m_strText = text; }
+    _float2 Get_TextSize() { return m_TextSize; }
+
+    void Set_Text(const _wstring& text) {m_strText = text; m_IsChangeText = true; m_TextSize = m_pGameInstance.lock()->Measure_String(m_strFontTag, m_strText.c_str());
+    }
     void Set_TextColor(const _float4 TextColor) { m_vTextColor = TextColor; }
     /// <IMGUI>
     virtual void OnGui() override;
@@ -53,6 +56,8 @@ private:
     _float4 m_vTextColor = { 1.f, 1.f, 1.f, 1.f }; // ±âº» Èò»ö
     //_bool m_bCenter = true;
     FONTALINE m_FontAline = FONTALINE::END;
+    _float2 m_TextSize = {};
+    _bool m_IsChangeText = {true};
 protected:
 
 public:

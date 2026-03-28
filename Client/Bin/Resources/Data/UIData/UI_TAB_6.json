@@ -281,8 +281,8 @@
                                     "RotationRadian": 0.0,
                                     "SetParentSize": false,
                                     "SizeDelta": [
-                                        100.0,
-                                        100.0
+                                        61.0,
+                                        46.33599853515625
                                     ]
                                 }
                             ],
@@ -378,8 +378,8 @@
                                     "RotationRadian": 0.0,
                                     "SetParentSize": false,
                                     "SizeDelta": [
-                                        100.0,
-                                        100.0
+                                        62.0,
+                                        46.33599853515625
                                     ]
                                 }
                             ],
@@ -476,8 +476,8 @@
                                             "RotationRadian": 0.0,
                                             "SetParentSize": false,
                                             "SizeDelta": [
-                                                100.0,
-                                                100.0
+                                                136.0,
+                                                92.67200469970703
                                             ]
                                         }
                                     ],
@@ -512,8 +512,8 @@
                                             "RotationRadian": 0.0,
                                             "SetParentSize": false,
                                             "SizeDelta": [
-                                                100.0,
-                                                100.0
+                                                156.0,
+                                                61.78133773803711
                                             ]
                                         }
                                     ],
@@ -5402,8 +5402,8 @@
                                     "RotationRadian": 0.0,
                                     "SetParentSize": false,
                                     "SizeDelta": [
-                                        100.0,
-                                        100.0
+                                        26.0,
+                                        30.890668869018555
                                     ]
                                 }
                             ],
@@ -9580,8 +9580,8 @@
                         0.5
                     ],
                     "AnchoredPos": [
-                        -970.0,
-                        -550.0
+                        116.427001953125,
+                        -103.87799072265625
                     ],
                     "ComProtoLevel": 0,
                     "ComProtoTag": "",
@@ -10347,7 +10347,80 @@
                             "Y": 0.0
                         },
                         {
-                            "Children": [],
+                            "Children": [
+                                {
+                                    "Children": [],
+                                    "Components": [
+                                        {
+                                            "AnchorPoint": [
+                                                0.5,
+                                                1.0
+                                            ],
+                                            "AnchoredPos": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "",
+                                            "ComponentTag": "Com_UITransform",
+                                            "LocalScale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "Pivot": [
+                                                0.5,
+                                                0.0
+                                            ],
+                                            "RotationRadian": 0.0,
+                                            "SetParentSize": false,
+                                            "SizeDelta": [
+                                                127.0,
+                                                30.890668869018555
+                                            ]
+                                        }
+                                    ],
+                                    "LayoutTarget": false,
+                                    "UIChildrenTag": "Text_Day",
+                                    "X": 0.0,
+                                    "Y": 0.0
+                                },
+                                {
+                                    "Children": [],
+                                    "Components": [
+                                        {
+                                            "AnchorPoint": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "AnchoredPos": [
+                                                0.0,
+                                                2.0
+                                            ],
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "",
+                                            "ComponentTag": "Com_UITransform",
+                                            "LocalScale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "Pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "RotationRadian": 0.0,
+                                            "SetParentSize": false,
+                                            "SizeDelta": [
+                                                84.0,
+                                                46.33599853515625
+                                            ]
+                                        }
+                                    ],
+                                    "LayoutTarget": false,
+                                    "UIChildrenTag": "Text_Time",
+                                    "X": 0.0,
+                                    "Y": 0.0
+                                }
+                            ],
                             "Components": [
                                 {
                                     "ComProtoLevel": 0,

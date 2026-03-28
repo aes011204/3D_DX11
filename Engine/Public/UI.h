@@ -57,7 +57,7 @@ public:
     void Load_FromJson(nlohmann::json& j)override;
 
     UI_STATE Get_UIState() { return m_UIState; }
-    void Set_ActiveForCustom() { m_bEnabled = true; m_bVisible = true; }; // 특이한 경우만 쓰기 커스텀UI_Active();만들떄만 
+    void Set_ActiveForCustom() { m_UIState = UI_STATE::ACTIVE; m_bEnabled = true; m_bVisible = true; }; // 특이한 경우만 쓰기 커스텀UI_Active();만들떄만 
 /// <IMGUI>
     const vector<shared_ptr<CUI>>& GetChildren() const { return m_Children; }
     void OnGui() override;

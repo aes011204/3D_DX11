@@ -89,8 +89,25 @@ Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, int rot)
 
     newInst.Rotation = rot;
 
-    // variant의 index나 type에 따라 분기 처리
-    //Init_TypeSpecificData(def, newInst);
+ 
+
+    switch (def.ItemType)
+    {
+    case ITEM_TYPE::FISH:
+        newInst.TypeDef = Fish_Inst{ FRESHNESS::END, ID_Absence, 999 };;
+
+        break;
+
+    case ITEM_TYPE::EQUIP:
+
+        newInst.TypeDef = Equip_Inst{ false };
+        break;
+
+    case ITEM_TYPE::MATERIAL:
+        break;
+
+    }
+
 
     return newInst;
 }
@@ -249,6 +266,33 @@ Item_Inst CInventory::RemoveFrom_Inven(int inst_id)
 
 
     return inst;
+}
+
+Item_Inst CInventory::Peek_Itme(_uint MusX, _uint MusY)
+{
+    if(MusX >= m_w|| MusY >= m_h)
+    {
+        Item_Inst emptyItem = {};
+        emptyItem.ItemInst_ID = ID_Absence;
+        return emptyItem;
+    }
+
+    _uint SlotIndex = MusY * m_w + MusX;
+
+    Slot& CurrentSlot = m_InvenSlot[SlotIndex];
+
+    if(CurrentSlot.ItemInst_ID != ID_Absence)
+    {
+	    for( auto& item : m_Inventory)
+	    {
+            if (item.ItemInst_ID == CurrentSlot.ItemInst_ID)
+                return item;
+	    }
+    }
+
+    Item_Inst emptyItem = {};
+    emptyItem.ItemInst_ID = ID_Absence;
+    return emptyItem;
 }
 
 void CInventory::OnGui()
@@ -553,6 +597,7 @@ void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY,
     //_uint ID_First = {};
     //_uint rot = itemInst.Rotation % 4;
 
+    
   
    
     const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
@@ -567,8 +612,18 @@ void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY,
 
     for (int i = 0; i < def.ItemShape.Occ[rot].size(); i++)
     {
+
         _uint fx = (def.ItemShape.Occ[rot][i].dx) + BaseX;
         _uint fy = (def.ItemShape.Occ[rot][i].dy) + BaseY;
+
+        if (fx < 0 || fx >= (int)m_w || fy < 0 || fy >= (int)m_h)
+        {
+        //TODO::나간것도 빨간색
+            color = PLACE_COLOR::RED;
+        	continue;;
+	        
+        }
+
 
         switch (color)
         {

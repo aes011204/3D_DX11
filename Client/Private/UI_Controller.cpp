@@ -1,5 +1,6 @@
 #include "UI_Controller.h"
 
+#include "ItemInfo.h"
 #include "RotationModifier.h"
 #include "UI_HUD.h"
 
@@ -130,6 +131,20 @@ HRESULT CUI_Controller::Ready_UI()
 	shared_ptr<CUI_NPC> NPC = CUI_NPC::Create(m_pDevice, m_pContext);
 	NPC->Initialize(&pNPCDesc);
 	m_pGameInstance.lock()->UI_InsertToPool(L"NPC_Panel", NPC);
+
+
+	/////////////tooltip//////////////
+
+	CItemInfo::ITEMINFO_DESC pInfoDesc;
+
+
+	shared_ptr<CItemInfo> tooltip = CItemInfo::Create(m_pDevice, m_pContext);
+	tooltip->Initialize(&pInfoDesc);
+	m_pGameInstance.lock()->UI_InsertToPool(L"ToolTip", tooltip);
+	
+
+
+
 	return S_OK;
 }
 

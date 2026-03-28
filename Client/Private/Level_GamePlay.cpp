@@ -61,6 +61,8 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"NPC_Panel", false, nullptr);
 	m_pNPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
+
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"ToolTip", false, nullptr);
 	return S_OK;
 }
 

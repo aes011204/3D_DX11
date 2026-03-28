@@ -16,7 +16,9 @@ CUI_Item::CUI_Item(const CUI_Item& prototype)
 
 void CUI_Item::HoldItem(Item_Inst HoldItem)
 {
-	
+	if (HoldItem.ItemInst_ID == ID_Absence)
+		return;
+
 		m_bIsHold = true; 
 		m_HoldItem = HoldItem; 
 		Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
