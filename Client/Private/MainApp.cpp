@@ -219,6 +219,23 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_VtxTex.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
 		return E_FAIL;
 
+	/* Prototype_Component_Shader_VtxCube */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxCube"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxCube");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Shader_Sea */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_Sea"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_Sea.hlsl"), VTXPOS::Elements, VTXPOS::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_sea");
+		return E_FAIL;
+	}
+
+
 	////////////////////////COMPONENT////////////////////////
 
 	/* Prototype_Component_Inven */

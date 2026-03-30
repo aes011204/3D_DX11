@@ -11,6 +11,8 @@
 #include "Assimp_Model.h"
 #include "Body_Player.h"
 #include "Monster_Anim.h"
+#include "Sea.h"
+#include "VIBuffer_Sea.h"
 #include "Sky.h"
 #include "VIBuffer_Cube.h"
 
@@ -135,7 +137,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩 중 입니다."));
 	/* Prototype_Component_Texture_Terrain */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Tile0.dds"), 1))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_RGB.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
 		return E_FAIL;
@@ -178,13 +180,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	//	return E_FAIL;
 	//}
 
-		/* Prototype_Component_Shader_VtxCube */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxCube"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Shader_VtxCube");
-		return E_FAIL;
-	}
+	
 
 	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
 
@@ -192,11 +188,20 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	lstrcpy(m_szLoadingText, TEXT("모델를 로딩 중 입니다."));
 	/* Prototype_Component_VIBuffer_Terrain */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Height.bmp")))))
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_1500.raw")))))
 	{
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Terrain");
 		return E_FAIL;
 	}
+
+	/* Prototype_Component_VIBuffer_Sea */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Sea"),
+		CVIBuffer_Sea::Create(m_pDevice, m_pContext,128,4))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Sea");
+		return E_FAIL;
+	}
+
 
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
 
@@ -256,6 +261,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
+	/* Prototype_GameObject_Sea */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sea"),
+		CSea::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype :GameObject_Sea");
+		return E_FAIL;
+	}
 
 	/* Prototype_Component_VIBuffer_Cube */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Cube"),

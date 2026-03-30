@@ -27,6 +27,7 @@ public:
 
 	HRESULT Ready_Layer_Monster(const _wstring& strLayerTag);
 	HRESULT Ready_Layer_Player(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Wave(const _wstring& strLayerTag);
 
 
 private:

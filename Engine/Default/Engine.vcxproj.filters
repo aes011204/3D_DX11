@@ -73,6 +73,9 @@
     <Filter Include="02.ShaderFiles">
       <UniqueIdentifier>{4f1eaf64-f2fa-42b4-ab00-b55d8500d74b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="01.Utility\07.Font">
+      <UniqueIdentifier>{90124dc4-7a22-413b-a46e-9bfb99109dcb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\Base.cpp">
@@ -108,7 +111,6 @@
     <ClCompile Include="..\Private\GameObject.cpp">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\Private\Layer.cpp">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClCompile>
@@ -164,8 +166,6 @@
       <Filter>01.Utility\05.UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\IModifier.cpp" />
-    <ClCompile Include="..\Private\UIObject.cpp" />
-    <ClCompile Include="..\Private\PipeLine.cpp" />
     <ClCompile Include="..\Private\Light.cpp">
       <Filter>01.Utility\06.Lights</Filter>
     </ClCompile>
@@ -184,7 +184,6 @@
     <ClCompile Include="..\Private\DInput_Manager.cpp">
       <Filter>00.System\02.Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UIRenderable.cpp" />
     <ClCompile Include="..\Private\Camera_Manager.cpp">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClCompile>
@@ -237,9 +236,30 @@
     <ClCompile Include="..\Private\PartObject.cpp">
       <Filter>01.Utility\03.GameObjects\00.ContainerObject</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Font_Manager.cpp" />
-    <ClCompile Include="..\Private\CustomFont.cpp" />
-    <ClCompile Include="..\Private\VIBuffer_Cube.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Cube.cpp">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PipeLine.cpp">
+      <Filter>01.Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIRenderable.cpp">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UIObject.cpp">
+      <Filter>01.Utility\03.GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Renderer.cpp">
+      <Filter>01.Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Sea.cpp">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\CustomFont.cpp">
+      <Filter>01.Utility\07.Font</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Font_Manager.cpp">
+      <Filter>01.Utility\07.Font</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -293,7 +313,6 @@
     <ClInclude Include="..\Public\GameObject.h">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\Public\Layer.h">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClInclude>
@@ -345,13 +364,10 @@
     </ClInclude>
     <ClInclude Include="..\Public\Log_Manager.h" />
     <ClInclude Include="..\Public\Data_Manager.h" />
-    <ClInclude Include="..\Public\Event_Struct.h" />
     <ClInclude Include="..\Public\UICanvas.h">
       <Filter>01.Utility\05.UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\IModifier.h" />
-    <ClInclude Include="..\Public\UIObject.h" />
-    <ClInclude Include="..\Public\PipeLine.h" />
     <ClInclude Include="..\Public\Camera.h">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClInclude>
@@ -373,7 +389,6 @@
     <ClInclude Include="..\Public\DInput_Manager.h">
       <Filter>00.System\02.Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\public\UIRenderable.h" />
     <ClInclude Include="..\Public\Camera_Free.h">
       <Filter>01.Utility\03.GameObjects</Filter>
     </ClInclude>
@@ -383,7 +398,6 @@
     <ClInclude Include="..\Public\Engine_Helper.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Converter_Struct.h" />
     <ClInclude Include="..\Public\Assimp_Bone.h">
       <Filter>01.Utility\04.Components\Model\Assimp</Filter>
     </ClInclude>
@@ -426,9 +440,36 @@
     <ClInclude Include="..\Public\PartObject.h">
       <Filter>01.Utility\03.GameObjects\00.ContainerObject</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Font_Manager.h" />
-    <ClInclude Include="..\Public\CustomFont.h" />
-    <ClInclude Include="..\Public\VIBuffer_Cube.h" />
+    <ClInclude Include="..\Public\VIBuffer_Cube.h">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PipeLine.h">
+      <Filter>01.Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Event_Struct.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\UIRenderable.h">
+      <Filter>01.Utility\05.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UIObject.h">
+      <Filter>01.Utility\03.GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Renderer.h">
+      <Filter>01.Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Sea.h">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\CustomFont.h">
+      <Filter>01.Utility\07.Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Font_Manager.h">
+      <Filter>01.Utility\07.Font</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Converter_Struct.h">
+      <Filter>99.Defines</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

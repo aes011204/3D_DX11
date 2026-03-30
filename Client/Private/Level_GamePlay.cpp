@@ -44,6 +44,9 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Wave(TEXT("Layer_Wave"))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -236,6 +239,15 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _wstring& strLayerTag)
 		return E_FAIL;
 
 	return S_OK;
+
+}
+
+HRESULT CLevel_GamePlay::Ready_Layer_Wave(const _wstring& strLayerTag)
+{
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sea"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		return E_FAIL;
 
 }
 

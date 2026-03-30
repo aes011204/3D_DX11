@@ -421,7 +421,7 @@ void CItemInfo::OnUpdate(const _float& timeDelta)
 
 void CItemInfo::OnLateUpdate()
 {
-	GetUITransform()->SetAnchoredPos({0.f,m_pGameInstance.lock()->Get_MousePos().y-500.f/*- m_pGameInstance.lock()->Get_WinSize().Right()*/});
+	GetUITransform()->SetAnchoredPos({0.f,m_pGameInstance.lock()->Get_MousePos().y- (m_pGameInstance.lock()->Get_WinSize().Bottom()/2)});
 
 	CUIPanel::OnLateUpdate();
 }

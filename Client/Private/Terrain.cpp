@@ -36,7 +36,9 @@ HRESULT CTerrain::Initialize(void* pArg)
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+	_float3 pos = { 0.f, -100.f, 0.f };
 
+	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
 
 	return S_OK;
 }
@@ -128,6 +130,16 @@ HRESULT CTerrain::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &desc->vSpecular, sizeof(_float4))))
 		return E_FAIL;
 
+	//////////////////
+	_float4 vSandColor  = _float4(0.482f, 0.482f, 0.418f, 1.f);
+	_float4 vAlgaeColor = _float4(0.422f, 0.433f, 0.321f, 1.f);
+	_float4 vRockColor = _float4(0.283f, 0.283f, 0.283f, 1.f);
+	//_float fTiling = 80.f; 
+
+	m_pShaderCom->Bind_RawValue("g_vSandColor", &vSandColor, sizeof(_float4));
+	m_pShaderCom->Bind_RawValue("g_vAlgaeColor", &vAlgaeColor, sizeof(_float4));
+	m_pShaderCom->Bind_RawValue("g_vRockColor", &vRockColor, sizeof(_float4));
+	//m_pShaderCom->Bind_RawValue("g_fTiling", &fTiling, sizeof(_float));
 
 	return S_OK;
 }

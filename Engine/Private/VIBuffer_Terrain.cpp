@@ -15,29 +15,45 @@ CVIBuffer_Terrain::CVIBuffer_Terrain(const CVIBuffer_Terrain& Prototype)
 }
 
 HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath)
-
-
  {
+
+	wstring strPath = pHeightMapFilePath;
+	wstring strExt = strPath.substr(strPath.find_last_of(L".") + 1);
+
 	_ulong dwByte = {};
 	HANDLE hFile = CreateFile(pHeightMapFilePath, GENERIC_READ, 0, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-
+	unsigned short* pRawPixels = nullptr; // RAW용 (16bit)
+	_uint* pBmpPixels = nullptr;         // BMP용 (32bit)
 	if (hFile == INVALID_HANDLE_VALUE)
 		return E_FAIL;
 
-	BITMAPFILEHEADER fh = {};
-	ReadFile(hFile, &fh, sizeof(fh), &dwByte, nullptr);
+	if (strExt == L"raw" || strExt == L"RAW")
+	{
+		//헤더 없음 1500x1500 으로 뽑음
+		m_iNumVerticesX = 1500;
+		m_iNumVerticesZ = 1500;
+		m_iNumVertices = m_iNumVerticesX * m_iNumVerticesZ;
 
-	BITMAPINFOHEADER ih = {};
-	ReadFile(hFile, &ih, sizeof(ih), &dwByte, nullptr);
+		pRawPixels = new unsigned short[m_iNumVertices];
+		ReadFile(hFile, pRawPixels, sizeof(unsigned short) * m_iNumVertices, &dwByte, nullptr);
 
-	m_iNumVerticesX = ih.biWidth;
-	m_iNumVerticesZ = ih.biHeight;
-	m_iNumVertices = m_iNumVerticesX * m_iNumVerticesZ;
+	}
+	if(strExt == L"bmp"|| strExt == L"BMP")
+	{
+		BITMAPFILEHEADER fh = {};
+		ReadFile(hFile, &fh, sizeof(fh), &dwByte, nullptr);
 
-	// 해당 비트맵 파일이 rgba 8 비트씩 32비트 픽셀하나당 이므로 _uint
-	_uint* pPixels = new _uint[m_iNumVertices];
-	ReadFile(hFile, pPixels, sizeof(_uint) * m_iNumVertices, &dwByte, nullptr);
+		BITMAPINFOHEADER ih = {};
+		ReadFile(hFile, &ih, sizeof(ih), &dwByte, nullptr);
 
+		m_iNumVerticesX = ih.biWidth;
+		m_iNumVerticesZ = ih.biHeight;
+		m_iNumVertices = m_iNumVerticesX * m_iNumVerticesZ;
+
+		// 해당 비트맵 파일이 rgba 8 비트씩 32비트 픽셀하나당 이므로 _uint
+		pBmpPixels = new _uint[m_iNumVertices];
+		ReadFile(hFile, pBmpPixels, sizeof(_uint) * m_iNumVertices, &dwByte, nullptr);
+	}
 //----------하이트맵 읽기 끝
 
 	m_iNumVertexBuffers = 1; // 버택스 버퍼가 몇갠지 사각형그리는 거니까 1개
@@ -67,9 +83,16 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 		{
 			size_t iIndex = i * m_iNumVerticesX + j;
 
-			float t = pPixels[iIndex] & 0x000000ff;
+			float fHeight = 0.f;
+
+			if (pRawPixels) // RAW일 때 높이 계산 (16비트)
+				fHeight = (pRawPixels[iIndex] / 65535.0f) * 99.8f;
+			else if (pBmpPixels) // BMP일 때 높이 계산 (8비트)
+				fHeight = (pBmpPixels[iIndex] & 0x000000ff) / 10.f;
+
+			
 			//정점 사이의 인터벌은 무조건 1
-			pVertices[iIndex].vPosition = _float3(j, (pPixels[iIndex] & 0x000000ff )/10.f, i);
+			pVertices[iIndex].vPosition = _float3(j, fHeight, i);
 			pVertices[iIndex].vNormal = _float3(0.f, 0.f, 0.f);
 			pVertices[iIndex].vTexcoord = _float2(j / (m_iNumVerticesX - 1.f), i / (m_iNumVerticesZ - 1.f));
 		
@@ -160,8 +183,10 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 	if (FAILED(m_pDevice->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_pIB)))
 		return E_FAIL;
 
-
-	Safe_Delete_Array(pPixels);
+	if(pRawPixels)
+	Safe_Delete_Array(pRawPixels);
+	if (pBmpPixels)
+	Safe_Delete_Array(pBmpPixels);
 	Safe_Delete_Array(pVertices);
 	Safe_Delete_Array(pIndices);
 
