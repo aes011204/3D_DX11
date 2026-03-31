@@ -14,6 +14,7 @@
 #include "Camera_Free.h"
 #include "Engine_Struct.h"
 #include "Inventory_Controller.h"
+#include "Island.h"
 #include "ItemDB.h"
 #include "RotationModifier.h"
 #include "Texture.h"
@@ -235,6 +236,13 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	/* Prototype_Component_Shader_VtxMesh_CustomTexture */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh_CustomTexture"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMeshCustomTexture.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
+		return E_FAIL;
+	}
 
 	////////////////////////COMPONENT////////////////////////
 
@@ -626,10 +634,23 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	//	return E_FAIL;
 	//}
 
+	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
+	/* Prototype_Component_Model_Island */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) /** XMMatrixRotationY(XMConvertToRadians(180.f))*/;
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/GreaterMarrow.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
 
-	
-
-
+	/* Prototype_GameObject_Island */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Island"),
+		CIsland::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Island");
+		return E_FAIL;
+	}
 
 
 

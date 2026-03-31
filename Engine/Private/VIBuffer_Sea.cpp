@@ -1,5 +1,6 @@
 #include "VIBuffer_Sea.h"
 
+#include "GameInstance.h"
 #include "Shader.h"
 
 CVIBuffer_Sea::CVIBuffer_Sea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, _uint gridSize, _uint NumLevel)
@@ -234,6 +235,18 @@ HRESULT CVIBuffer_Sea::Render(shared_ptr<CShader> ShaderCom)
 
 
 	return S_OK;
+}
+
+_float3 CVIBuffer_Sea::Snaping(float PosY)
+{
+	_float3 result = {};
+	const _float4* camPos = m_pGameInstance.lock()->Get_CamPositon();
+
+	result.x = floor(camPos->x / 1.f) * 1.f;
+	result.z = floor(camPos->z / 1.f) * 1.f;
+	result.y = PosY;
+
+	return result;
 }
 
 shared_ptr<CVIBuffer_Sea> CVIBuffer_Sea::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, _uint NumVerticesX, _uint NumVerticesZ/* const _tchar* pHeightMapFilePath*/)

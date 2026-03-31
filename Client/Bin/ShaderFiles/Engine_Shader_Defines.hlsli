@@ -1,6 +1,6 @@
 
 #define PI 3.14159265359f
-#define PI2 6.28318530718f  //
+#define PI2 6.28318530718f  
 //technique11 DefaultTechnique
 //{
 //    pass DefaultTechnique

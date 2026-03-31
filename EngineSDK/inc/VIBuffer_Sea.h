@@ -21,6 +21,7 @@ public:
 	virtual HRESULT Render(shared_ptr<CShader> ShaderCom);
 	
 	_float3* Get_VtxPos() { return m_VtxPos; };
+	_float3 Snaping(float PosY);
 private:
 	
 	_uint m_iNumRingIndices = {};
@@ -30,6 +31,8 @@ private:
 	_uint m_GridSize = { 64 };// 무조건 2의 제곱
 
 	_float3* m_VtxPos = {};
+
+
 public:
 	static shared_ptr<CVIBuffer_Sea> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext,
 		_uint gridSize, _uint NumLevel);

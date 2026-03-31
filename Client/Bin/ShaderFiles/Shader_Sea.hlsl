@@ -7,9 +7,24 @@ vector g_vCamPosition;
 
 float g_Scale; // 64,128 등의 사이즈
 
+
+
+// 나중에  cBuffer(b0) 등으로 묶으면 더 빠름 한번에 보내는거기 떄문
+
+struct Wave_Desc
+{
+    float2 g_Dir;
+    float g_WaveHeight;
+    float g_WaveLength;
+    float g_Speed;
+
+    float3 Padding; // 4의 배수로 
+};
+
+Wave_Desc g_Waves[10];
+int g_WaveCount;
 float g_Time;
-
-
+float g_depthMask01;
 
 // 재질 정보
 texture2D g_DiffuseTexture;
@@ -72,7 +87,7 @@ VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
 
-    float4x4 matWV, matWVP;
+   
 
     float3 scaledPos = In.vPosition;
     scaledPos.x *= g_Scale;
@@ -90,23 +105,41 @@ VS_OUT VS_MAIN(VS_IN In)
 
     float2 finalXZ = lerp(scaledPos.xz, connectXZ, alpha);
 
-    float3 pos = float3(finalXZ.x, scaledPos.y, finalXZ.y);
+    float3 pos = float3(finalXZ.x, scaledPos.y, finalXZ.y); // pos  로컬 좌표
 
-    float2 dir1 = float2(1.f, 1.f);
-    float2 dir2 = float2(0.f,-0.46f);
-    float2 dir3 = float2(-1.f, .3f);
+   // float2 dir1 = float2(1.f, 1.f);
+   // float2 dir2 = float2(0.f,-0.46f);
+   // float2 dir3 = float2(-1.f, .3f);
+    //offset += Calculate_GerstnerWave_Overlap(pos, Dir1, .43f, 17.f, 2.5f, g_Time);
+    //offset += Calculate_GerstnerWave_Overlap(pos, Dir2, 0.21f, 7.4f, 1.8f, g_Time);
+    //offset += Calculate_GerstnerWave_Overlap(pos, Dir3, 0.08f, 2.7f, 1.f, g_Time);
 
-    float3 offset = float3(0, 0, 0);
-    offset += Calculate_GerstnerWave_Overlap(pos, dir1, .43f, 17.f, 2.5f, g_Time);
-    offset += Calculate_GerstnerWave_Overlap(pos, dir2, 0.21f, 7.4f, 1.8f, g_Time);
-    offset += Calculate_GerstnerWave_Overlap(pos, dir3, 0.08f, 2.7f, 1.f, g_Time);
+    float4 worldPos = mul(float4(pos, 1.f), g_WorldMatrix);
 
-    float3 wavefinal = pos + offset;
+    float cellsize = 1.f;
+    float3 snapedPos;
+    snapedPos.x = floor(worldPos.x / cellsize) * cellsize;
+    snapedPos.z = floor(worldPos.z / cellsize) * cellsize;
+   
 
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
+    worldPos.xz = snapedPos.xz;
 
-    Out.vPosition = mul(float4(wavefinal, 1.f), matWVP);
+
+	float3 offset = float3(0, 0, 0);
+    for (int i = 0; i < g_WaveCount;i++)
+    {
+        offset += Calculate_GerstnerWave_Overlap
+    	(worldPos, g_Waves[i].g_Dir, g_Waves[i].g_WaveHeight, g_Waves[i].g_WaveLength, g_Waves[i].g_Speed, g_Time);
+	    
+    }
+
+
+    float3 wavefinal = worldPos + offset;
+
+    float4x4 matVP = mul(g_ViewMatrix, g_ProjMatrix);
+   // matWVP = mul(matWV, g_ProjMatrix);
+
+    Out.vPosition = mul(float4(wavefinal, 1.f), matVP);
    // Out.vTexcoord = In.vTexcoord;
    // Out.vNormal = normalize(mul(float4(In.vNormal, 0.f),g_WorldMatrix)); //받아온 노말은 지역이라 월드좌표로 차원맞춰줘야함. 노말라이즈는 픽셀 쉐이더 에서 하는것보다 여기서 하는게 성능상 이점
    // Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix); // 나중 계산을 위해 z 나누기, 뷰,투영 없는 거 저장 
