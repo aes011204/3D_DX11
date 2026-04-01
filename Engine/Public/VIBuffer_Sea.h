@@ -5,7 +5,7 @@ NS_BEGIN(Engine)
 
 class CShader;
 
-	class ENGINE_DLL CVIBuffer_Sea :
+class ENGINE_DLL CVIBuffer_Sea :
 	public CVIBuffer
 {
 protected:
@@ -19,15 +19,15 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Bind_Resources();
 	virtual HRESULT Render(shared_ptr<CShader> ShaderCom);
-	
+
 	_float3* Get_VtxPos() { return m_VtxPos; };
 	_float3 Snaping(float PosY);
 private:
-	
+
 	_uint m_iNumRingIndices = {};
 	_uint m_iNumCenterIndices = {};
 
-	_uint m_NumLevel = {4};
+	_uint m_NumLevel = { 4 };
 	_uint m_GridSize = { 64 };// 무조건 2의 제곱
 
 	_float3* m_VtxPos = {};

@@ -16,6 +16,7 @@
 #include "Camera_Manager.h"
 #include "Picking_Manager.h"
 #include "Font_Manager.h"
+#include "Collison_Manager.h"
 #include "TimeOfDay.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
@@ -103,6 +104,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 
 	m_pTimeOfDay = CTimeOfDay::Create();
 	if (nullptr == m_pTimeOfDay)
+		return E_FAIL;
+
+	m_pCollision_Manager = CCollision_Manager::Create(ppDevice.Get(), ppContext.Get());
+	if (nullptr == m_pCollision_Manager)
 		return E_FAIL;
 
 	return S_OK;
@@ -362,7 +367,7 @@ bool CGameInstance::Save(SAVETYPE eDATATYPE, const string& fileName)
 
 }
 
-const _float4x4* CGameInstance::Get_Transfrom(D3DTS eTransformState) const
+const _float4x4* CGameInstance::Get_Transform(D3DTS eTransformState) const
 {
 	return m_pPipeLine->Get_Transfrom(eTransformState);
 }
@@ -457,6 +462,11 @@ _float2 CGameInstance::Measure_String(const _wstring& strFontTag, const _tchar* 
 void CGameInstance::ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond)
 {
 	m_pTimeOfDay->ComputeTime(iDay, fHour, fMinute, fSecond);
+}
+
+void CGameInstance::Add_Collider(shared_ptr<CCollider> coll)
+{
+	m_pCollision_Manager->Add_Collider(coll);
 }
 
 

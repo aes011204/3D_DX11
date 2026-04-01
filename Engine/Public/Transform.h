@@ -88,7 +88,7 @@ public:
     _vector Get_Position() { return XMLoadFloat3(&m_vPosition); }
     void Set_Position(_fvector vPos) { XMStoreFloat3(&m_vPosition, vPos); m_bIsDirty = true; }
 
-    _vector Get_Quaternion() { return XMLoadFloat4(&m_vRotationQuat); }
+    _vector Get_Quaternion() { return XMLoadFloat4(&m_vRotationQuat);}
     void Set_Quaternion(_fvector vQuat)
 	{
     	XMStoreFloat4(&m_vRotationQuat, vQuat);

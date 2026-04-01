@@ -31,6 +31,8 @@ protected:
     ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
     weak_ptr<class CGameInstance> m_pGameInstance = {};
 
+
+    _bool m_isCloned = { false };
 protected:
     weak_ptr<CGameObject> m_pGOwner = {};
     CTransform* m_pGOwnerTransform = {nullptr};

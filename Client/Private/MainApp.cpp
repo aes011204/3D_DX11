@@ -25,6 +25,7 @@
 #include "UI_Item.h"
 #include "UIText.h"
 #include "UI_Controller.h"
+#include "Sea_Manager.h"
 
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() },
@@ -70,6 +71,12 @@ HRESULT CMainApp::Initialize()
 
 	// UI Pool 채우기 / ready_UI 역할
 	CUI_Controller::GetInstance()->Initialize(m_pDevice, m_pContext);
+	auto SeaManager =CSea_Manager::GetInstance();
+	if(SeaManager != nullptr)
+	{
+		SeaManager->Initialize();
+		m_pGameInstance.lock()->Push_ManagerClass(L"Sea_Manager", SeaManager.get());
+	}
 
 	if (FAILED((Ready_Fonts())))
 		return E_FAIL;
@@ -93,8 +100,10 @@ int CMainApp::Update(_float fTimeDelta)
 {
 
 	m_pGameInstance.lock()->Update_Engine(fTimeDelta);
-
+	CSea_Manager::GetInstance()->Update(fTimeDelta);
 	m_pEditorInstance.lock()->Update_Editor(fTimeDelta);
+
+
 
 	return 0;
 }

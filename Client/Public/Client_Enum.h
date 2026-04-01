@@ -298,4 +298,15 @@ namespace Client
 
     enum class LOCATIONSTATE {SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP ,END };
 
+
+    struct Wave_Desc
+    {
+        _float2 dir = {};
+        float waveHeight = {};
+        float waveLength = {};
+        float speed = {};
+
+        _float3 Padding = {}; // 4의 배수로 
+    };
+
 }

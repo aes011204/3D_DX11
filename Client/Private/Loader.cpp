@@ -12,6 +12,7 @@
 #include "Body_Player.h"
 #include "Monster_Anim.h"
 #include "Sea.h"
+#include "Collider.h"
 #include "VIBuffer_Sea.h"
 #include "Sky.h"
 #include "VIBuffer_Cube.h"
@@ -320,6 +321,33 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		MSG_BOX("Faild to Add_Prototype : GameObject_Sky");
 		return E_FAIL;
 	}
+
+
+
+	lstrcpy(m_szLoadingText, TEXT("충돌체를 로딩 중 입니다."));
+	/* Prototype_Component_Collider_AABB */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"),
+		CCollider::Create(m_pDevice, m_pContext, COLLIDER::AABB))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_AABB");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Collider_OBB */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"),
+		CCollider::Create(m_pDevice, m_pContext, COLLIDER::OBB))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_OBB");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Collider_Sphere*/
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
+		CCollider::Create(m_pDevice, m_pContext, COLLIDER::SPHERE))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_Sphere");
+		return E_FAIL;
+	}
+
+
 
 	lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
 

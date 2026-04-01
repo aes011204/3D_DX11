@@ -26,6 +26,8 @@ public:
     virtual void RebindCom();
     HRESULT Bind_ShaderResources();
 
+    virtual void Save_ToJson(nlohmann::json& j) override;
+    virtual void Load_FromJson(nlohmann::json& j) override;
 protected:
     HRESULT Ready_Components();
 private:

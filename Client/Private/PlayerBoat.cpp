@@ -1,20 +1,25 @@
+
 #include "PlayerBoat.h"
+#include "Collider.h"
 
 #include "Body_Player.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "DInput_Manager.h"
+#include "Inventory.h"
 #include "GameInstance.h"
 #include "EventBus.h"
-#include "Inventory.h"
+#include "Sea_Manager.h"
 
 CPlayerBoat::CPlayerBoat(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CContainerObject{ pDevice ,pContext }
+	: CContainerObject{ pDevice ,pContext }, m_pSea_Manager(CSea_Manager::GetInstance())
+
 {
 }
 
 CPlayerBoat::CPlayerBoat(const CPlayerBoat& prototype)
-	: CContainerObject{ prototype }
+	: CContainerObject{ prototype }, m_pSea_Manager(CSea_Manager::GetInstance())
+
 {
 }
 
@@ -25,6 +30,7 @@ HRESULT CPlayerBoat::Initialize_Prototype()
 
 HRESULT CPlayerBoat::Initialize(void* pArg)
 {
+	//m_pSea_Manager = CSea_Manager::GetInstance();
 
 	PLAYERBOAT_DESC pDesc = {};
 	pDesc.fSpeedPerSec = 10.f;
@@ -49,6 +55,8 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenPlayerInit_Data>(e);
 	}
+
+
 
 	return S_OK;
 }
@@ -93,31 +101,45 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	{
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
 	}
+	auto Sea = m_pSea_Manager.lock();
 
 	// 임시코드 ///////////////// 3점 -> 4점으로 수정예정 + 코드 정리
 	//
 	_vector CurPos = m_pTransformCom->Get_Position();
 
 	//중점으로 y 위치
-	{
+	//{
 	_float fFinalPosY= {};
-	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fFinalPosY);
-	_float3 fianlPos = { XMVectorGetX(CurPos), fFinalPosY, XMVectorGetZ(CurPos) };
+	
+	//m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fFinalPosY);
+	_float3 fianlPos = { XMVectorGetX(CurPos), Sea->Get_GlobalY(), XMVectorGetZ(CurPos) };
 	m_pTransformCom->Set_Position(XMLoadFloat3( &fianlPos));
-		
-	}
+	//	
+	//}
+
 
 	// 4점 으로 기울기 + 보간
 	{
-		_float3 FRBL[4] = { { 0.f,  0.f,0.5f }, { 1.f,0.f,0.f} , { 0.f, 0.f,-0.5f }, { -1.f, 0.f, 0.f, } };
-		_vector Pos[4];
+		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
+		_float3 FRBL[4] = {};
+		XMStoreFloat3(&FRBL[0],XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.5f);
+		XMStoreFloat3(&FRBL[1],XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT)) * 0.5f);
+		XMStoreFloat3(&FRBL[2],XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * -1.5f);
+		XMStoreFloat3(&FRBL[3],XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT)) * -0.5f);
+
+		_float3 Pos[4];
+		Pos[0] = fianlPos + FRBL[0];
+		Pos[1] = fianlPos + FRBL[1];
+		Pos[2] = fianlPos + FRBL[2];
+		Pos[3] = fianlPos + FRBL[3];
+
 		_float3 fianlPosFRBL[4];
 		for(_uint i =0; i < 4; i++)
 		{
-			Pos[i] = CurPos + XMLoadFloat3(&FRBL[i]) ;
-			_float fOut1 = {};
-			m_pGameInstance.lock()->Compute_HeightOnTerrain(Pos[i], &fOut1);
-			fianlPosFRBL[i] = { XMVectorGetX( Pos[i]), fOut1, XMVectorGetZ(Pos[i])};
+
+			_float fOut1 = Sea->Calculate_GerstnerWave_Overlap(Pos[i]);
+
+			fianlPosFRBL[i] = { Pos[i].x, fOut1, Pos[i].z};
 		}
 
 		_vector forwordDir = XMLoadFloat3(&fianlPosFRBL[0]) - XMLoadFloat3(&fianlPosFRBL[2]);
@@ -156,6 +178,10 @@ void CPlayerBoat::Update(_float fTimeDelta)
 
 	m_pTransformCom->Update_WorldMatrix();
 
+
+	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+
+
 	__super::Update(fTimeDelta);
 
 	//m_pModelCom->Play_Animation(fTimeDelta);
@@ -164,11 +190,19 @@ void CPlayerBoat::Update(_float fTimeDelta)
 void CPlayerBoat::Late_Update(_float fTimeDelta)
 {
 	__super::Late_Update(fTimeDelta);
-	//m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CPlayerBoat::Render()
 {
+	int i = 0;
+#ifdef _DEBUG
+	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+		return S_OK;
+	m_pColliderCom->Render();
+	
+#endif
+
 	//if (FAILED(Bind_ShaderResources()))
 	//	return E_FAIL;
 
@@ -251,6 +285,13 @@ HRESULT CPlayerBoat::Ready_Components()
 	CInventory::INVEN_DESC inven_desc = {};
 	inven_desc.invenType = INVENTYPE::PLAYER;
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Inven"), &m_pInvenCom, &inven_desc)))
+		return E_FAIL;
+
+	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
+	OBBDesc.vExtents = _float3(0.5f, 0.6f, 1.5f);
+	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
+	OBBDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
 		return E_FAIL;
 
 	return S_OK;

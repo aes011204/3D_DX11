@@ -40,13 +40,13 @@ void CBody_Player::Priority_Update(_float fTimeDelta)
 
 void CBody_Player::Update(_float fTimeDelta)
 {
-	
-	m_pTransformCom->Update_WorldMatrix();
-  	Update_CombinedWorldMatirix(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix()));
 }
 
 void CBody_Player::Late_Update(_float fTimeDelta)
 {
+	
+	m_pTransformCom->Update_WorldMatrix();
+  	Update_CombinedWorldMatirix(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix()));
 	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 
 }

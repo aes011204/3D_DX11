@@ -8,9 +8,12 @@
 
 #include "DirectXTK/DDSTextureLoader.h"
 #include "DirectXTK/WICTextureLoader.h"
+#include "DirectXTK/PrimitiveBatch.h"
+#include "DirectXTK/Effects.h"
+#include "DirectXTK/VertexTypes.h"
 #include "DirectXTK/SpriteBatch.h"
 #include "DirectXTK/SpriteFont.h"
-
+#include "DirectXTK/ScreenGrab.h"
 
 using namespace DirectX; 
 // 네임스페이스 선언을 전에 하지 않으면 에러남 / 이건 위에 #include <DirectXMath.h> 있어서 ㄱㅊ 
@@ -90,6 +93,7 @@ namespace Engine
 {
 	static const wstring g_strTransformTag = TEXT("Com_Transform");
 	static const wstring g_strUITransformTag = TEXT("Com_UITransform");
+
 }
 
 using namespace Engine;

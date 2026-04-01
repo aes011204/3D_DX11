@@ -30,6 +30,9 @@ public:
 
 	void SetImguiContext(ImGuiContext* imgContext);
 
+	bool m_bDebug = {true};
+	bool Get_IsDebug() { return m_bDebug; };
+
 public:  /* For.Graphic_Device */
 	HRESULT Clear_Buffers(const _float4* pClearColor);
 	HRESULT Bind_BackBufferRenderTarget(HWND hwnd);
@@ -93,7 +96,7 @@ public:/*For.Data_Manager*/
 	bool Save(SAVETYPE eDATATYPE, const string& fileName);
 
 public:/*For.PipeLine*/
-	const _float4x4* Get_Transfrom(D3DTS eTransformState) const;
+	const _float4x4* Get_Transform(D3DTS eTransformState) const;
 	const _float4x4* Get_InverseTransfrom(D3DTS eTransformState) const;
 	const _float4* Get_CamPositon() const;
 	void Set_Transform(D3DTS eTransformState, _fmatrix TransformStateMatrix);

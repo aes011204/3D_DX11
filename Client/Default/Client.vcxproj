@@ -166,6 +166,7 @@
     <ClInclude Include="..\Public\PlayerBoat.h" />
     <ClInclude Include="..\Public\RotationModifier.h" />
     <ClInclude Include="..\Public\Sea.h" />
+    <ClInclude Include="..\Public\Sea_Manager.h" />
     <ClInclude Include="..\Public\Sky.h" />
     <ClInclude Include="..\Public\Terrain.h" />
     <ClInclude Include="..\Public\TransformModifier.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="..\Private\PlayerBoat.cpp" />
     <ClCompile Include="..\Private\RotationModifier.cpp" />
     <ClCompile Include="..\Private\Sea.cpp" />
+    <ClCompile Include="..\Private\Sea_Manager.cpp" />
     <ClCompile Include="..\Private\Sky.cpp" />
     <ClCompile Include="..\Private\Terrain.cpp" />
     <ClCompile Include="..\Private\TransformModifier.cpp" />

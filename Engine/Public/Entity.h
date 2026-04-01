@@ -38,7 +38,8 @@ public:
 
 	HRESULT Remove_Component(const _wstring& strComponentTag);
 
-	virtual void Load_FromJson(nlohmann::json& j) ;
+	virtual void Load_FromJson(nlohmann::json& j);
+	//virtual void Save_FromJson(nlohmann::json& j) {} ;
 
 	_bool IsSavableClass() { return m_bIsSavableClass; }
 	void Set_SaveType(SAVETYPE SaveType) { m_eSaveType = SaveType; }

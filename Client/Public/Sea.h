@@ -15,15 +15,7 @@ class CSea final:
     public CGameObject
 {
 public:
-    struct Wave_Desc
-    {
-        _float2 dir={};
-        float waveHeight={};
-        float waveLength={};
-        float speed={};
-
-        _float3 Padding={}; // 4의 배수로 
-    };
+    
 
 public:
     struct SEA_DESC final : public CGameObject::GAMEOBJECT_DESC
@@ -42,6 +34,7 @@ public:
     virtual void Priority_Update(_float fTimeDelta) override;
     virtual void Update(_float fTimeDelta) override;
     virtual void Late_Update(_float fTimeDelta) override;
+    float Calculate_GerstnerWave_Overlap(_float3 Pos);
     virtual HRESULT Render() override;
 
     virtual void OnGui() override;
@@ -56,10 +49,11 @@ private:
     shared_ptr<CTexture> m_pTextureCom = { nullptr };
 
 
-    float m_AccTime = {};
+   weak_ptr<class CSea_Manager> m_SeaManager = {};
+ /*   float m_AccTime = {};
     int m_WaveCount = {};
     Wave_Desc m_waveDesc[10] = {};
-    float m_depthMask01 = {1};
+    float m_depthMask01 = {1};*/
 public:
     static shared_ptr<CSea> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     shared_ptr<CGameObject> Clone(void* pArg) override;

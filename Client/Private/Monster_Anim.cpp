@@ -1,6 +1,7 @@
 #include "Monster_Anim.h"
 #include "GameInstance.h"
 #include "Model.h"
+#include "Collider.h"
 //#include "Assimp_Model.h"
 
 CMonster_Anim::CMonster_Anim(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -38,6 +39,9 @@ void CMonster_Anim::Priority_Update(_float fTimeDelta)
 void CMonster_Anim::Update(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
+
+
+m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 }
 
 void CMonster_Anim::Late_Update(_float fTimeDelta)
@@ -47,6 +51,16 @@ void CMonster_Anim::Late_Update(_float fTimeDelta)
 
 HRESULT CMonster_Anim::Render()
 {
+
+#ifdef _DEBUG
+	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+		return S_OK;
+	m_pColliderCom->Render();
+
+#endif
+
+
+
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
@@ -131,10 +145,13 @@ HRESULT CMonster_Anim::Ready_Components()
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona_Anim"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
-	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
-	//	return E_FAIL;
 
-
+	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
+	OBBDesc.vExtents = _float3(1.f, 1.f, 1.f);
+	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
+	OBBDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
+		return E_FAIL;
 	return S_OK;
 }
 

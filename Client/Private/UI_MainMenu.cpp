@@ -75,7 +75,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 					pTransform->SetLocalScale({ 3.f, 1.8f });
 				}
 				_float2 tmp = { 3.7f, 2.2f };
-				it->m_bIsDirtyCom = true;
+				//it->m_bIsDirtyCom = true;
 				it->m_behavior.push_back((make_shared<CScaleModifier>(0.1f, 2.f, 0.f, tmp)));
 			}
 				};

@@ -56,4 +56,7 @@ void CCustomFont::Free()
 
     m_pBatch.reset();
     m_pFont.reset();
+
+    m_pDevice.Reset();
+    m_pContext.Reset();
 }

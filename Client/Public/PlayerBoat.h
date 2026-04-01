@@ -1,7 +1,12 @@
 #pragma once
 #include "ContainerObject.h"
 #include "Client_Define.h"
+
 NS_BEGIN(Engine)
+class CCollider;
+NS_END
+
+NS_BEGIN(Client)
 class CPlayerBoat :
     public CContainerObject
 {
@@ -43,14 +48,14 @@ public:
     void Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask);
     
 private:
+    weak_ptr<class CSea_Manager> m_pSea_Manager = {};
 
     //shared_ptr<CShader> m_pShaderCom = { nullptr };
     //shared_ptr<CModel> m_pModelCom = { nullptr };
     //shared_ptr<CTexture> m_pTextureCom = { nullptr };
 
     shared_ptr<class CInventory> m_pInvenCom = { nullptr };
-
-
+    shared_ptr< CCollider> m_pColliderCom = { nullptr };
 
 private:
     _float m_Money = {};

@@ -204,6 +204,8 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 			jObj["ObjName"] = W2S(pObj->Get_Name());   // "Player", "Enemy1" µî
 
 
+			pObj->Save_ToJson(jObj);
+
 			nlohmann::json jComponentArray = nlohmann::json::array();
 
 			for (auto& pair : pObj->Get_ComponentMap())

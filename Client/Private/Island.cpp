@@ -150,6 +150,38 @@ HRESULT CIsland::Bind_ShaderResources()
 	return S_OK;
 }
 
+void CIsland::Save_ToJson(nlohmann::json& j)
+{
+	CGameObject::Save_ToJson(j);
+
+	j["ColorLamp1"] = m_ColorLamp1;
+	j["ColorLamp2"] = m_ColorLamp2;
+
+	j["SandColor"] = { m_SandColor.x, m_SandColor.y, m_SandColor.z, m_SandColor.w };
+	j["RockColor"] = { m_RockColor.x, m_RockColor.y, m_RockColor.z, m_RockColor.w };
+	j["GrassColor"] = { m_GrassColor.x, m_GrassColor.y, m_GrassColor.z, m_GrassColor.w };
+
+}
+
+void CIsland::Load_FromJson(nlohmann::json& j)
+{
+	CGameObject::Load_FromJson(j);
+
+	m_ColorLamp1 = j["ColorLamp1"];
+	m_ColorLamp2 = j["ColorLamp2"];
+	
+	auto sand = j["SandColor"];
+	m_SandColor = { sand[0], sand[1], sand[2], sand[3] };
+	
+	auto rock = j["RockColor"];
+	m_RockColor = { rock[0], rock[1], rock[2], rock[3] };
+	
+	auto grass = j["GrassColor"];
+	m_GrassColor = { grass[0], grass[1], grass[2], grass[3] };
+
+
+}
+
 HRESULT CIsland::Ready_Components()
 {
 	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"),

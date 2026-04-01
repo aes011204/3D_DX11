@@ -8,16 +8,17 @@
 #include "Event_Struct.h"
 #include "Terrain.h"
 #include "VIBuffer_Sea.h"
+#include "Sea_Manager.h"
 
 
 
 CSea::CSea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CGameObject(pDevice, pContext)
+	:CGameObject(pDevice, pContext), m_SeaManager(CSea_Manager::GetInstance())
 {
 }
 
 CSea::CSea(const CSea& prototype)
-	:CGameObject(prototype)
+	:CGameObject(prototype), m_SeaManager(CSea_Manager::GetInstance())
 
 {
 
@@ -41,24 +42,7 @@ HRESULT CSea::Initialize(void* pArg)
    //offset += Calculate_GerstnerWave_Overlap(pos, Dir2, 0.21f, 7.4f, 1.8f, g_Time);
    //offset += Calculate_GerstnerWave_Overlap(pos, Dir3, 0.08f, 2.7f, 1.f, g_Time);
 
-
-	m_WaveCount = 3;
-
-	m_waveDesc[0].dir = _float2(1.f, 1.f);
-	m_waveDesc[0].waveHeight = .43f;
-	m_waveDesc[0].waveLength = 17.f;
-	m_waveDesc[0].speed = 2.5f;
-
-	m_waveDesc[1].dir = _float2(0.f, -0.46f);
-	m_waveDesc[1].waveHeight = 0.21f;
-	m_waveDesc[1].waveLength = 7.4f;
-	m_waveDesc[1].speed = 1.8f;
-
-	m_waveDesc[2].dir = _float2(-1.f, .3f);
-	m_waveDesc[2].waveHeight = 0.08f;
-	m_waveDesc[2].waveLength = 2.7f;
-	m_waveDesc[2].speed = 1.f;
-
+	
 
 
 
@@ -80,15 +64,13 @@ void CSea::Priority_Update(_float fTimeDelta)
 void CSea::Update(_float fTimeDelta)
 {
 	// 스냅핑
-	_float3 snapedPos = m_pVIBufferComCashing->Snaping(XMVectorGetY(m_pTransformCom->Get_Position()));
+	_float3 snapedPos = m_pVIBufferComCashing->Snaping((m_SeaManager.lock()->Get_GlobalY()));
 	m_pTransformCom->Set_Position(XMLoadFloat3(&snapedPos));
 
 
 	//m_fX += 10.f * fTimeDelta;
 	//__super::Update_Transform();
 	int a = 1;
-
-	m_AccTime += fTimeDelta;
 
 }
 
@@ -97,6 +79,9 @@ void CSea::Late_Update(_float fTimeDelta)
 	int a = 1;
 	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CSea>(shared_from_this()));
 }
+
+
+
 
 HRESULT CSea::Render()
 {
@@ -137,6 +122,12 @@ HRESULT CSea::Ready_Components()
 
 HRESULT CSea::Bind_ShaderResources()
 {
+	auto Sea = m_SeaManager.lock();
+	_float fTime = Sea->Get_AccTime();
+	int WaveCount = Sea->Get_WaveCount();
+	float depthMask01 = Sea->Get_DepthMask01();
+	const Wave_Desc* waveDesc = Sea->Get_WaveDescArray();
+
 	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
@@ -154,7 +145,7 @@ HRESULT CSea::Bind_ShaderResources()
 		return E_FAIL;
 
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Time", &m_AccTime, sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Time", &fTime, sizeof(_float))))
 		return E_FAIL;
 
 
@@ -172,11 +163,11 @@ HRESULT CSea::Bind_ShaderResources()
 		return E_FAIL;
 
 	///////Wave///////
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WaveCount", &m_WaveCount, sizeof(int))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_WaveCount", &WaveCount, sizeof(int))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Waves", &m_waveDesc, sizeof(Wave_Desc)*10)))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Waves", waveDesc, sizeof(Wave_Desc)*10)))
 		return E_FAIL; // 고정 배열 10
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_depthMask01", &m_depthMask01, sizeof(int))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_depthMask01", &depthMask01, sizeof(int))))
 		return E_FAIL;
 
 	return S_OK;

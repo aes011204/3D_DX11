@@ -27,6 +27,9 @@ namespace Engine
 
 	enum class MODEL { NONANIM, ANIM, END };
 
+	enum class COLLIDER { AABB, OBB, SPHERE, END };
+
+
 	//// Dynamic 컴포넌트 경우 매 프레임마다 갱신해야하는 컴포넌트 집단
 	//enum COMPONENTID { ID_DYNAMIC, ID_STATIC, ID_END };
 
@@ -41,6 +44,16 @@ namespace Engine
 	//enum MOUSEMOVESTATE {	DIMS_X, DIMS_Y, DIMS_Z, DIMS_END };
 
 
+	enum class COLLISION_LAYER
+	{
+		PLAYER,
+		MONSTER,
+		TERRAIN,
+		TRIGGER,
+		ITEM,
+		UI,
+		END
+	};
 
 	enum class BUTTON_STATE
 	{

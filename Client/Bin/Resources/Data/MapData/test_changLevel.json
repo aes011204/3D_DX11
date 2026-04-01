@@ -2,6 +2,8 @@
     "Level": 4,
     "WorldGameObject": [
         {
+            "ColorLamp1": -6.199999809265137,
+            "ColorLamp2": 0.8429999947547913,
             "Components": [
                 {
                     "ComProtoLevel": 0,
@@ -37,10 +39,28 @@
                     "Type": "Transform"
                 }
             ],
+            "GrassColor": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ],
             "LayerName": "Static",
             "ObjName": "Island",
             "ProtoSavedLevel": 0,
-            "ProtoSavedTag": "Prototype_GameObject_Island"
+            "ProtoSavedTag": "Prototype_GameObject_Island",
+            "RockColor": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "SandColor": [
+                1.0,
+                0.0,
+                0.0,
+                1.0
+            ]
         },
         {
             "Components": [

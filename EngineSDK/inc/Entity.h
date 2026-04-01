@@ -38,7 +38,8 @@ public:
 
 	HRESULT Remove_Component(const _wstring& strComponentTag);
 
-	virtual void Load_FromJson(nlohmann::json& j) ;
+	virtual void Load_FromJson(nlohmann::json& j);
+	//virtual void Save_FromJson(nlohmann::json& j) {} ;
 
 	_bool IsSavableClass() { return m_bIsSavableClass; }
 	void Set_SaveType(SAVETYPE SaveType) { m_eSaveType = SaveType; }
@@ -51,7 +52,7 @@ public:
 
 /// <IMGUI>
 
-    map<const _wstring, class shared_ptr<CComponent> >& Get_ComponentMap() {return m_Components;};
+    map<const _wstring, class shared_ptr<CComponent> >& const Get_ComponentMap() {return m_Components;};
 /// </summary>
 protected:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };
@@ -103,9 +104,9 @@ public:
 		return S_OK;
 	};
 
-	_bool m_bIsDirtyCom = {true};// 처음은 해야하니까
 protected:
 
+	_bool m_bIsDirtyCom = {true};// 처음은 해야하니까
     map<const _wstring, class shared_ptr<CComponent> > m_Components;
 
 	_bool m_bIsSavableClass = { false };
