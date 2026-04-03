@@ -9,6 +9,7 @@
 #include "UI_Item.h"
 #include "UIText.h"
 #include "UI_NPC.h"
+#include "UI_MiniGame.h"
 
 IMPLEMENT_SINGLETON(CUI_Controller)
 
@@ -143,6 +144,14 @@ HRESULT CUI_Controller::Ready_UI()
 	m_pGameInstance.lock()->UI_InsertToPool(L"ToolTip", tooltip);
 	
 
+	/////////////tooltip//////////////
+
+	CUI_MiniGame::MINIGAEMEPANEL_DESC pMiniGameDesc;
+
+
+	shared_ptr<CUI_MiniGame> MiniGame = CUI_MiniGame::Create(m_pDevice, m_pContext);
+	MiniGame->Initialize(&pMiniGameDesc);
+	m_pGameInstance.lock()->UI_InsertToPool(L"MiniGame", MiniGame);
 
 
 	return S_OK;

@@ -16,57 +16,65 @@
         {
             "dialogueId": "Mayer_start",
             "speaker": "시장",
-            "lines": [
-                {
-                    "lineIndex": 0,
-                    "speaker": "시장",
-                    "text": "큰골마을에 온 걸 환영하네! 첫인상이 꽤나 요란하시군. 뾰족한 바위들과는 벌써 인사를 나눈것 같구먼.",
-                    "hasChoices": false,
-                    "leftPadding": 150.0
-                },
-                {
-                    "lineIndex": 1,
-                    "speaker": "시장",
-                    "text": "자네 어선은 손 쓰기 어려울 정도로 망가졌네. 하지만 주민 몇 명을 시켜서 물건들은 오래된 선박에 옮겨두었으니 걱정 말게.",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 2,
-                    "speaker": "시장",
-                    "text": "자네 어선은 수리해서 쓰기 어려울 정도로 망가졌네, 대신 사용할수 있는 선박 하나를 자네에게 팔지, 완전히 자네의 소유로 말이야",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 3,
-                    "speaker": "시장",
-                    "text": "지금 자네 수중에 자금이 충분치 않다는 걸 아네. 그래서 일단은 대출을 해줄까하는데, 괜찮은 조건으로 해주지",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 4,
-                    "speaker": "시장",
-                    "text": "자네가 빛을 다 갚을떄까지 생선판매액은 빛을 변제하는데 쓰일걸세. 어떤가",
-                    "hasChoices": true,
-                    "choice": {
-                        "leftText": "수락",
-                        "rightText": "수락",
-                        "leftNextId": 5,
-                        "rightNextId": 5
-                    }
-                },
-                {
-                    "lineIndex": 5,
-                    "speaker": "시장",
-                    "text": "그럼 이제 나가서 고기 좀 잡아올수 있겠나? 자네도 적응을 좀 해야하니 오늘 화물칸을 다 채울수 있을지 시험해 보게.",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 6,
-                    "speaker": "시장",
-                    "text": "아 참 해가 지고 안개가 몰려올떄는 조심하길 바라네, 시간을 잘 확인하는게 좋을 거야. 금세 지나가거든",
-                    "hasChoices": false
-                }
-            ]
+          "lines": [
+            {
+              "lineIndex": 0,
+              "speaker": "시장",
+              "text": "큰골마을에 온 걸 환영하네! 첫인상이 꽤나 요란하시군. 뾰족한 바위들과는 벌써 인사를 나눈것 같구먼.",
+              "hasChoices": false,
+              "leftPadding": 150.0
+            },
+            {
+              "lineIndex": 1,
+              "speaker": "시장",
+              "text": "자네 어선은 손 쓰기 어려울 정도로 망가졌네. 하지만 주민 몇 명을 시켜서 물건들은 오래된 선박에 옮겨두었으니 걱정 말게.",
+              "hasChoices": false
+            },
+            {
+              "lineIndex": 2,
+              "speaker": "시장",
+              "text": "자네 어선은 수리해서 쓰기 어려울 정도로 망가졌네, 대신 사용할수 있는 선박 하나를 자네에게 팔지, 완전히 자네의 소유로 말이야",
+              "hasChoices": false
+            },
+            {
+              "lineIndex": 3,
+              "speaker": "시장",
+              "text": "지금 자네 수중에 자금이 충분치 않다는 걸 아네. 그래서 일단은 대출을 해줄까하는데, 괜찮은 조건으로 해주지",
+              "hasChoices": false
+            },
+            {
+              "lineIndex": 4,
+              "speaker": "시장",
+              "text": "자네가 빛을 다 갚을떄까지 생선판매액은 빛을 변제하는데 쓰일걸세. 어떤가",
+              "hasChoices": true,
+              "choice": {
+                "leftText": "수락",
+                "rightText": "거절",
+                "leftNextId": 6,
+                "rightNextId": 5
+              }
+            },
+            {
+              "lineIndex": 5,
+              "speaker": "시장",
+              "text": " 그런 선택지는 없단다",
+              "hasChoices": false,
+              "nextID" :  4
+            },
+            {
+              "lineIndex": 6,
+              "speaker": "시장",
+              "text": "그럼 이제 나가서 고기 좀 잡아올수 있겠나? 자네도 적응을 좀 해야하니 오늘 화물칸을 다 채울수 있을지 시험해 보게.",
+              "hasChoices": false
+
+            },
+            {
+              "lineIndex": 7,
+              "speaker": "시장",
+              "text": "아 참 해가 지고 안개가 몰려올떄는 조심하길 바라네, 시간을 잘 확인하는게 좋을 거야. 금세 지나가거든",
+              "hasChoices": false
+            }
+          ]
         },
         {
             "dialogueId": "FishStore_First",

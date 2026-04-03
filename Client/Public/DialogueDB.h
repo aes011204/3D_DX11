@@ -16,11 +16,11 @@ public:
     HRESULT     Ready_DialogueDB();
     HRESULT     Load_DialogueData(const string& fileName);
 
-    Dialogue*   GetDialogueById(const string& dialogueId);
+    shared_ptr<Dialogue>   GetDialogueById(const string& dialogueId);
     wstring     Utf8ToWstring(const string& str);
 
 private:
-    vector<Dialogue>            m_Dialogues;
+    vector< shared_ptr<Dialogue>>            m_Dialogues;
     unordered_map<string, _int> m_DialogueIndex;
 
 private:

@@ -40,10 +40,7 @@ public:
 
 	HRESULT Play_Animation(_float fTimeDelta);
 
-	void Set_Animation(_uint iIndex, _bool isLoop) {
-		m_iCurrentAnimIndex = iIndex;
-		m_isAnimLoop = isLoop;
-	}
+	void Set_Animation(_uint iIndex, _bool isLoop);
 
 	public:
 	size_t Get_NumMeshes() { return m_Meshes.size(); }
@@ -71,6 +68,16 @@ private:
 	_uint m_iCurrentAnimIndex = {};
 	_uint m_iNumAnimations = {};
 	vector<shared_ptr<class CAnimation>> m_Animations;
+
+
+
+	public:
+		const _bool Get_IsFinishAnim() { return m_isFinish; }
+
+	private:
+		_bool m_isFinish = false;
+
+
 public:
 	static shared_ptr<CModel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
 	virtual shared_ptr<CComponent> Clone(void* pArg);

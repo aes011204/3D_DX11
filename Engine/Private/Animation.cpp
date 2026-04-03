@@ -46,7 +46,13 @@ _bool CAnimation::Update_TransformationMatrices(_float fTimeDelta, const vector<
 	if (m_fCurrentTrackPosition >= m_fDuration)
 	{
 		if (false == isLoop)
+		{
+			for (size_t i = 0; i < m_iNumChannels; i++)
+			{
+				m_Channels[i]->Update_TransformationMatrix(&m_CurrentKeyFrameIndices[i], m_fCurrentTrackPosition, Bones);
+			}
 			return true;
+		}
 
 		m_fCurrentTrackPosition = 0.f;
 	}

@@ -26,7 +26,12 @@ HRESULT CMonster::Initialize(void* pArg)
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
-	m_pModelCom->Set_Animation(0, true);
+
+
+	m_AnimIndex = 1;
+	m_pModelCom->Set_Animation(m_AnimIndex, true);
+	m_State = STATE::IDLE;
+
 	return S_OK;
 }
 
@@ -39,6 +44,24 @@ void CMonster::Update(_float fTimeDelta)
 	m_pModelCom->Play_Animation(fTimeDelta);
 
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+
+	if(m_pModelCom->Get_IsFinishAnim() == true)
+	{
+		int i = 0;
+	}
+
+	if(m_State == ATTACK && m_pModelCom->Get_IsFinishAnim()==true)
+	{
+		m_AnimIndex = 2;
+		m_pModelCom->Set_Animation(m_AnimIndex, false);
+		m_State = STATE::RELEASE;
+	}
+	else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
+	{
+		m_AnimIndex = 1;
+		m_pModelCom->Set_Animation(m_AnimIndex, true);
+		m_State = STATE::IDLE;
+	}
 
 }
 
@@ -80,6 +103,33 @@ HRESULT CMonster::Render()
 
 
 	return S_OK;
+}
+
+void CMonster::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+	if(m_State != STATE::ATTACK)
+	{
+	m_AnimIndex = 0;
+
+	m_pModelCom->Set_Animation(m_AnimIndex, false);
+	m_State = ATTACK;
+		
+	}
+
+	int i = 0;
+
+}
+void CMonster::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+	int i = 0;
+
+	
+}
+
+void CMonster::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+	int i = 0;
+
 }
 
 void CMonster::OnGui()
@@ -136,15 +186,16 @@ HRESULT CMonster::Ready_Components()
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
-		return E_FAIL;
 
 	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
 	OBBDesc.vExtents = _float3(2.f, 1.f, 2.f);
 	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
 	OBBDesc.vCenter = _float3(0.f, 0.f, 5.f);
+	OBBDesc.MyLayer = COLLISION_LAYER::TRIGGER;
+	OBBDesc.OtherMask = COLLISION_LAYER::PLAYER;
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
 		return E_FAIL;
+	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
 
 	return S_OK;
 }

@@ -9,6 +9,9 @@ public:
     struct BOUNDING_DESC
     {
         _float3 vCenter;
+
+		COLLISION_MASK MyLayer = {0};
+		COLLISION_MASK OtherMask = {0};
     };
 
 

@@ -6,7 +6,9 @@ NS_BEGIN(Client)
 class CUI_MiniGame :
     public CUIPanel
 {
-    struct MINIGAME_DESC : public CUIPanel::UIPANEL_DESC
+public:
+    enum MINIGAME {BASIC_CIRCLE, END};
+    struct MINIGAEMEPANEL_DESC : public CUIPanel::UIPANEL_DESC
     {
 
     };
@@ -17,6 +19,8 @@ public:
     ~CUI_MiniGame() = default;
 
 public:
+
+    void UI_PanelActive(MINIGAME MiniGameState);
 
     HRESULT OnInit(void* pArg) override;
     void OnActive()override;

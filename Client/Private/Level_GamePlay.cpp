@@ -66,6 +66,7 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pNPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"ToolTip", false, nullptr);
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MiniGame", true, nullptr);
 	return S_OK;
 }
 
@@ -115,7 +116,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	{
 		
 		auto ui = dynamic_pointer_cast<CUI_NPC>(m_pNPC);
-		ui->UI_NPCActive(NPC::MAYOR, true, true);
+		ui->UI_NPCActive(NPC::MAYOR, true, true, "Mayer_start");
 
 	}
 

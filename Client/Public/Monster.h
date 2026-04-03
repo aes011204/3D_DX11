@@ -12,6 +12,9 @@ NS_BEGIN(Client)
 	class CMonster :
     public CGameObject
 {
+public:
+    enum STATE{ATTACK, IDLE, RELEASE, END};
+
 private:
     CMonster(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     CMonster(const CMonster& prototype);
@@ -26,6 +29,10 @@ public:
     virtual void Late_Update(_float fTimeDelta) override;
     virtual HRESULT Render() override;
 
+    virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
+    virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
+    virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
+
     virtual void OnGui() override;
 
     virtual void RebindCom();
@@ -35,7 +42,8 @@ protected:
     HRESULT Ready_Components();
 private:
 
-
+    _uint m_AnimIndex = {};
+    STATE m_State = {};
 private:
 
     shared_ptr<CShader> m_pShaderCom = { nullptr };

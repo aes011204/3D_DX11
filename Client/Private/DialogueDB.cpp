@@ -60,26 +60,38 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
     {
         Dialogue dialogue;
         dialogue.dialogueId = node["dialogueId"];
-        dialogue.speaker = node.value("speaker", "");
+        dialogue.speaker = Utf8ToWstring(node.value("speaker", ""));
 
         // 라인 파싱
         for (auto& lineNode : node["lines"])
         {
             DialogueLine line;
             line.lineIndex = lineNode["lineIndex"];
-            line.speaker = lineNode.value("speaker", dialogue.speaker);
-            line.text = lineNode["text"];
+            string defaultSpeaker = node.value("speaker", "");
+            line.speaker = Utf8ToWstring(lineNode.value("speaker", defaultSpeaker));
+            line.text = Utf8ToWstring(lineNode["text"]);
+        
             line.hasChoices = lineNode.value("hasChoices", false);
-
+            if (lineNode.contains("nextID"))
+            {
+                // 2. 값도 lineNode에서 가져와야 함
+                line.NextID = lineNode["nextID"].get<_int>();
+            }
+            else
+            {
+                // 3. nextID가 없을 때만 안전하게 +1
+                line.NextID = line.lineIndex + 1;
+            }
             // 선택지 파싱 (좌/우 2개)
             if (line.hasChoices && lineNode.contains("choice"))
             {
                 auto& choiceNode = lineNode["choice"];
 
-                line.choice.leftText = choiceNode["leftText"];
-                line.choice.rightText = choiceNode["rightText"];
-                line.choice.leftNextId = choiceNode.value("leftNextId", "");
-                line.choice.rightNextId = choiceNode.value("rightNextId", "");
+                line.choice.leftText = Utf8ToWstring(choiceNode["leftText"]);
+                line.choice.rightText = Utf8ToWstring(choiceNode["rightText"]);
+                line.choice.leftNextId = choiceNode.value("leftNextId", 0);
+                line.choice.rightNextId = choiceNode.value("rightNextId", 0);
+
             }
 
             line.leftPadding = lineNode.value("leftPadding", 0.f);
@@ -89,19 +101,19 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
         }
 
         m_DialogueIndex[dialogue.dialogueId] = m_Dialogues.size();
-        m_Dialogues.push_back(dialogue);
+        m_Dialogues.push_back(make_shared<Dialogue>(dialogue));
     }
 
     return S_OK;
 }
 
-Dialogue* CDialogueDB::GetDialogueById(const string& dialogueId)
+shared_ptr<Dialogue> CDialogueDB::GetDialogueById(const string& dialogueId)
 {
     auto it = m_DialogueIndex.find(dialogueId);
     if (it == m_DialogueIndex.end())
         return nullptr;
 
-    return &m_Dialogues[it->second];
+    return m_Dialogues[it->second];
 }
 
 wstring CDialogueDB::Utf8ToWstring(const string& str)

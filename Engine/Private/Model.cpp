@@ -215,11 +215,14 @@ HRESULT CModel::Ready_Animations(ifstream& InFile)
 	return S_OK;
 }
 
+
 HRESULT CModel::Play_Animation(_float fTimeDelta)
 {
+
+
 	// 현제 애니메이션에 맞는 상태대로 뼈의 Transformation을 갱신해준다
-	_bool       isFinish = { false };
-	isFinish = m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_Bones, m_isAnimLoop);
+	m_isFinish = { false };
+	m_isFinish = m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_Bones, m_isAnimLoop);
 
 
 	// 모든뼈를 순회하면 CombinedTransformation을 셋팅 해준다
@@ -230,6 +233,15 @@ HRESULT CModel::Play_Animation(_float fTimeDelta)
 	}
 
 	return S_OK;
+}
+
+void CModel::Set_Animation(_uint iIndex, _bool isLoop)
+{
+	m_iCurrentAnimIndex = iIndex;
+	m_isAnimLoop = isLoop;
+	if(m_isAnimLoop==false)
+	m_Animations[m_iCurrentAnimIndex]->ReStart();
+
 }
 
 _int CModel::Get_BoneIndex(const _char* pBoneName)

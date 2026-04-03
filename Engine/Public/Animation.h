@@ -18,6 +18,12 @@ public:
 
     _bool Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<class CBone>>& Bones, _bool isLoop);
 
+    void ReStart() { m_fCurrentTrackPosition = 0.f;
+    	for (auto& iIndex : m_CurrentKeyFrameIndices)
+    {
+        iIndex = 0;
+    }
+    }
 
 public:
  

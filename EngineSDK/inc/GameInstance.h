@@ -122,6 +122,10 @@ public:/*For.Font_Manager*/
 
 	public:/*For.TimeOfDay*/
 		void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
+	public:/*For.Collison_Mgr*/
+		void Add_Collider(shared_ptr<class CCollider> coll);
+
+
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
@@ -138,6 +142,7 @@ private:
 	unique_ptr<class CPicking_Manager> m_pPicking_Manager = { nullptr };
 	unique_ptr<class CFont_Manager> m_pFont_Manager = { nullptr };
 	unique_ptr<class CTimeOfDay> m_pTimeOfDay = { nullptr };
+	unique_ptr<class CCollision_Manager> m_pCollision_Manager = { nullptr };
 
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 

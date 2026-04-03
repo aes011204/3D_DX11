@@ -7,6 +7,8 @@ CBounding::CBounding(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> p
 
 HRESULT CBounding::Initialize(BOUNDING_DESC* pDesc)
 {
+	auto pBoundingDesc = static_cast<BOUNDING_DESC*>(pDesc);
+
 	return S_OK;
 }
 

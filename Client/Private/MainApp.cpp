@@ -12,18 +12,12 @@
 #include "EmptyGObject.h"
 #include "Camera_Play.h"
 #include "Camera_Free.h"
+#include "DialogueDB.h"
 #include "Engine_Struct.h"
-#include "Inventory_Controller.h"
 #include "Island.h"
 #include "ItemDB.h"
-#include "RotationModifier.h"
 #include "Texture.h"
-#include "UI_HUD.h"
 
-#include "UI_MainMenu.h"
-#include "UI_TabContainer.h"
-#include "UI_Item.h"
-#include "UIText.h"
 #include "UI_Controller.h"
 #include "Sea_Manager.h"
 
@@ -90,7 +84,7 @@ HRESULT CMainApp::Initialize()
   
 	//아이템은 아이템 UI 다 프로토 타입 만든후 사용
 	CItemDB ::GetInstance()->Initialize();
-	//CDialogueDB::GetInstance()->Ready_DialogueDB();
+	CDialogueDB::GetInstance()->Ready_DialogueDB();
 
 
 	return S_OK;
@@ -630,7 +624,49 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
-
+	////////////////////////MINIGAME///////////////////////////
+	//Prototype_Component_Texture_MinigamePanel
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MinigamePanel"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/MinigamePanel.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	//Prototype_Component_Texture_FishingUIBorders
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUIBorders"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/FishingUIBorders.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	//Prototype_Component_Texture_FishingUICircle
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUICircle"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/FishingUICircle.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	//Prototype_Component_Texture_FishingUISpinner
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUISpinner"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/FishingUISpinner.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	//Prototype_Component_Texture_FishingFishIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingFishIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/FishingFishIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	//Prototype_Component_Texture_CrabPotDepthBar
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_CrabPotDepthBar"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/CrabPotDepthBar.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
 	/////////////////////////TEST//////////////////////////
 
 	//{

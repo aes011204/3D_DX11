@@ -44,16 +44,19 @@ namespace Engine
 	//enum MOUSEMOVESTATE {	DIMS_X, DIMS_Y, DIMS_Z, DIMS_END };
 
 
-	enum class COLLISION_LAYER
+	enum COLLISION_LAYER
 	{
-		PLAYER,
-		MONSTER,
-		TERRAIN,
-		TRIGGER,
-		ITEM,
-		UI,
-		END
+		NONE = 0,
+		PLAYER = 1 << 0, 
+		MONSTER = 1 << 1 ,
+		TERRAIN = 1 << 2,
+		TRIGGER = 1 << 3,
+		ITEM = 1 << 4,
+		UI = 1 << 5,
+		ALL= 0xffffffff,
+		END 
 	};
+	using COLLISION_MASK = unsigned __int32;
 
 	enum class BUTTON_STATE
 	{

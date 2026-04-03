@@ -106,15 +106,73 @@ void CUITransform::OnGui()
 
 
         bool bChanged = false;
+        bool bPopPivotColor = false;
+        bool bPopColor = false;
+        if (m_bKeepSizeRatio)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.4f, 0.8f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.5f, 0.9f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.6f, 1.0f, 1.0f));
+            bPopColor = true;
+        }
+
+        // 2. 토글 버튼
+        if (ImGui::Button(m_bKeepSizeRatio ? "Ratio: Locked" : "Ratio: Unlocked", ImVec2(-1, 0)))
+        {
+            m_bKeepSizeRatio = !m_bKeepSizeRatio;
+        }
+
+        // 3. 색상 복구 (Pop) - 반드시 Push한 만큼만 정확히!
+        if (bPopColor)
+        {
+            ImGui::PopStyleColor(3);
+        }
+
+        if (m_bFreePivot)
+        {
+            // 활성화 시 노란색이나 주황색 계열로 강조 (주의 표시)
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.4f, 0.1f, 1.0f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.5f, 0.2f, 1.0f));
+            bPopPivotColor = true;
+        }
+
+        if (ImGui::Button(m_bFreePivot ? "Pivot: Free (Unlocked)" : "Pivot: Standard (0-1)"))
+        {
+            m_bFreePivot = !m_bFreePivot;
+        }
+
+        if (bPopPivotColor) ImGui::PopStyleColor(2);
 
         // Anchored Position
         if (ImGui::DragFloat2("Pos (Anchored)", (float*)&m_AnchoredPos, 0.1f))
             bChanged = true;
 
-        // UI의 크기
+        //// UI의 크기
+        //if (ImGui::DragFloat2("Size", (float*)&m_SizeDelta, 0.1f))
+        //    bChanged = true;
+
+        _float2 vPrevSize = m_SizeDelta; // 이전 사이즈 저장
+
         if (ImGui::DragFloat2("Size", (float*)&m_SizeDelta, 0.1f))
+        {
             bChanged = true;
 
+            // 비율 유지가 켜져 있고, 사이즈가 0이 아닐 때
+            if (m_bKeepSizeRatio && vPrevSize.x != 0.f && vPrevSize.y != 0.f)
+            {
+                // 어느 축이 변했는지 확인하여 비율 계산
+                if (m_SizeDelta.x != vPrevSize.x) // X가 변했다면
+                {
+                    float fRatio = vPrevSize.y / vPrevSize.x;
+                    m_SizeDelta.y = m_SizeDelta.x * fRatio;
+                }
+                else if (m_SizeDelta.y != vPrevSize.y) // Y가 변했다면
+                {
+                    float fRatio = vPrevSize.x / vPrevSize.y;
+                    m_SizeDelta.x = m_SizeDelta.y * fRatio;
+                }
+            }
+        }
         ImGui::Separator();
 
         // 0.0 ~ 1.0 비율
@@ -122,8 +180,24 @@ void CUITransform::OnGui()
             bChanged = true;
 
         // 0.0 ~ 1.0 비율
-        if (ImGui::SliderFloat2("Pivot", (float*)&m_Pivot, 0.0f, 1.0f))
-            bChanged = true;
+        if (m_bFreePivot)
+        {
+            // 범위 제한 없는 드래그 (0.01f 속도로 미세 조절)
+            if (ImGui::DragFloat2("Pivot (Free)", (float*)&m_Pivot, 0.01f))
+            {
+                MarkDirtyRecursive();
+                bChanged = true;
+            }
+        }
+        else
+        {
+            // 표준 0.0 ~ 1.0 슬라이더
+            if (ImGui::SliderFloat2("Pivot (Fixed)", (float*)&m_Pivot, 0.0f, 1.0f))
+            {
+                MarkDirtyRecursive();
+                bChanged = true;
+            }
+        }
 
         ImGui::Separator();
 
@@ -141,7 +215,12 @@ void CUITransform::OnGui()
             m_RotationRadian = XMConvertToRadians(m_RotationDegreeView);
             bChanged = true;
         }*/
-
+        if (ImGui::DragFloat("Rotation Degree", &m_RotationDegreeView, 0.5f))
+        {
+            m_RotationRadian = XMConvertToRadians(m_RotationDegreeView);
+            MarkDirtyRecursive();
+            bChanged = true;
+        }
         
         ImGui::TextDisabled("World Rect Info");
         Rect world = Get_WorldRect(); 
@@ -270,17 +349,19 @@ void CUITransform::Computing_WorldRect()
     };
 
     XMMATRIX S = XMMatrixScaling(size.x, size.y, 1.f);
+    XMMATRIX matPivot = XMMatrixTranslation(pivotOffset.x, pivotOffset.y, 0.f);
     XMMATRIX R = XMMatrixRotationZ(m_RotationRadian);
-    XMMATRIX T = XMMatrixTranslation(
+   /* XMMATRIX T = XMMatrixTranslation(
         pivotWorld.x + pivotOffset.x,
         renderY + pivotOffset.y,
-        0.f
+        0.f*/
+    XMMATRIX T = XMMatrixTranslation(pivotWorld.x, pivotWorld.y, 0.f
     );
 
     //XMMATRIX Par = GetParent_Mat();
 
     //  핵심
-    XMStoreFloat4x4(&m_WorldMatrix, S * R * T );
+    XMStoreFloat4x4(&m_WorldMatrix, S *matPivot * R * T );
 
     
 }

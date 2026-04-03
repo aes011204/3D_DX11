@@ -22,6 +22,10 @@ public:
 	virtual void Update(_fmatrix WorldMatrix) override ;
 	virtual _bool Intersect(shared_ptr<CBounding> pTarget) override;
 
+	const shared_ptr<BoundingBox> Get_Desc() const {
+		return m_pDesc;
+	}
+
 #ifdef _DEBUG
 public:
 	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch, _fvector vColor);

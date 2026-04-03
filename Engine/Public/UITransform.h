@@ -103,6 +103,8 @@ private:
 
     _bool m_bSetParentSize = { false };
 
+    bool m_bKeepSizeRatio = false;
+    bool m_bFreePivot = false;
     // °á°ú
     Rect m_WorldRect = {};
     bool m_Dirty = true;

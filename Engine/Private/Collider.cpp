@@ -60,6 +60,11 @@ HRESULT CCollider::Initialize(void* pArg)
 		break;
 	}
 
+	m_MyLayer = pDesc->MyLayer;
+	m_OtherMask = pDesc->OtherMask;
+	//if (m_MyLayer != 0)
+	//	m_pGameInstance.lock()->Add_Collider(static_pointer_cast<CCollider>(shared_from_this()));
+
 	return S_OK;
 }
 
@@ -74,6 +79,12 @@ _bool CCollider::Intersect(shared_ptr<CCollider> pTarget)
 	return m_pBounding->Intersect(pTarget->m_pBounding);
 
 }
+bool CCollider::Is_Overlap(shared_ptr<CCollider> other) 
+{
+	return m_overlapColl.contains(other);
+}
+
+
 #ifdef _DEBUG
 HRESULT CCollider::Render()
 {

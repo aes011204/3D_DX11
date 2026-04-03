@@ -1,4 +1,7 @@
 #include "Bounding_Sphere.h"
+
+#include "Bounding_AABB.h"
+#include "Bounding_OBB.h"
 #include "DebugDraw.h"
 CBounding_Sphere::CBounding_Sphere(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CBounding(pDevice, pContext)
@@ -23,21 +26,28 @@ void CBounding_Sphere::Update(_fmatrix WorldMatrix)
 
 _bool CBounding_Sphere::Intersect(shared_ptr<CBounding>  pTarget)
 {
-	/*const _char* pName = typeid(*pTarget).name();
+	_bool isCollision = { false };
+	const _char* pName = typeid(*pTarget).name();
 
-	if(false ==strcmp("class Engine::CBounding_Sphere", pName))
+	if(false ==strcmp("class Engine::CBounding_AABB", pName))
 	{
-		
+		auto pAABB = dynamic_pointer_cast<CBounding_AABB>(pTarget);
+		isCollision = m_pDesc->Intersects(*pAABB->Get_Desc());
+	
 	}
 	else if(false == strcmp("class Engine::CBounding_OBB", pName))
 	{
-		
+		auto pOBB = dynamic_pointer_cast<CBounding_OBB>(pTarget);
+		isCollision = m_pDesc->Intersects(*pOBB->Get_Desc());
+
+
 	}
 	else
 	{
-		
-	}*/
-	return _bool();
+		auto pSphere = dynamic_pointer_cast<CBounding_Sphere>(pTarget);
+		isCollision = m_pDesc->Intersects(*pSphere->Get_Desc());
+	}
+	return isCollision;
 }
 
 #ifdef _DEBUG

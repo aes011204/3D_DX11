@@ -45,7 +45,7 @@ using namespace DirectX;
 #include <string>
 #include <unordered_map>
 #include <ctime>
-
+#include <set>
 // DInput
 
 #define DIRECTINPUT_VERSION	0x0800

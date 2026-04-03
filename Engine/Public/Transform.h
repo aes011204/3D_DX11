@@ -95,10 +95,10 @@ public:
 
         _float4 q = {};
         XMStoreFloat4(&q, vQuat);
-        m_vRotationDegree = QuaternionToEuler(q);
+        //m_vRotationDegree = QuaternionToEuler(q);
     	m_bIsDirty = true;
 	}
-    _float3 Get_RotationDegree() { return m_vRotationDegree; };
+    _float3 Get_RotationDegree() { return QuaternionToEuler(m_vRotationQuat); };
     void Set_RotationDegree(_float3 vRotation)
     {
         m_vRotationDegree = vRotation;
