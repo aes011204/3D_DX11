@@ -20,6 +20,7 @@ public:
     wstring     Utf8ToWstring(const string& str);
 
 private:
+    weak_ptr<CGameInstance> m_pGameInstance = {};
     vector< shared_ptr<Dialogue>>            m_Dialogues;
     unordered_map<string, _int> m_DialogueIndex;
 

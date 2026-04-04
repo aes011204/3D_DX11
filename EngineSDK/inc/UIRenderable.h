@@ -1,16 +1,27 @@
 #pragma once
 #include "UI.h"
 
+
 NS_BEGIN(Engine)
 class ENGINE_DLL  CUIRenderable :
     public CUI
 {
 public:
+
+    enum class UIShaderType
+    {
+        Default,
+        Radial,
+        Prograss,
+    };
+
     struct RENDERABLE_DESC : public CUI::UI_DESC
     {
         _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";
         _uint TextureIndex = 0;
+
+        UIShaderType shaderType = UIShaderType::Default;
 
         _float4 PxSliceLRTB = {};
         bool bUseNineSlice = false;
@@ -40,10 +51,20 @@ public:
     void Set_Transparent(_bool isTransparent) { m_IsTransparent = isTransparent; }
     _bool Get_Transparent() { return m_IsTransparent; }
 
+    ////////////////////////
+    const _float4& Get_BaseColor() const { return m_BaseColor; }
+    void Set_BaseColor(const _float4& vBaseColor) { m_BaseColor = vBaseColor; }
+    const _float4& Get_ZoneColor() const { return m_ZoneColor; }
+    void Set_ZoneColor(const _float4& vZoneColor) { m_ZoneColor = vZoneColor; }
+
+
     //이건
     HRESULT Change_Texture(shared_ptr<CTexture> texture, _uint TexIndex = 0);
    
     HRESULT Set_TextureIndex(_uint index);
+
+
+
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;
@@ -57,6 +78,8 @@ protected:
 
     HRESULT Ready_Components(_uint Level, _wstring protoName);
     HRESULT Bind_ShaderResources() override;
+    HRESULT Bind_ShaderResources_Default();
+    HRESULT Bind_ShaderResources_Radius();
     virtual void RebindCom() override;
 
     void Save_ToJson(nlohmann::json& j)override;
@@ -69,6 +92,10 @@ protected:
     _uint m_PassIndex = { 0 };
 
 private:
+
+    UIShaderType m_ShaderType = UIShaderType::Default;
+
+    // Default 
     bool m_bUseDark = true;
     float m_Dark = {}; //0~1
 
@@ -77,13 +104,20 @@ private:
     _float4 m_Color = {}; //0~11
     _float4 m_ColorFlat = {};
 
-    _float m_Alpha = 1.f;
+    //Radial
+    bool m_bUseRadial = false;
+    _float4 m_BaseColor = {};
+    _float4 m_ZoneColor = {};
+
+	//
 
     bool m_IsTransparent = { false }; // 렌더 유무
 
     bool m_bUseNineSlice = false;
     NINESLICE_DESC m_SliceDesc = {};
 
+    // 공통
+    _float m_Alpha = 1.f;
 
     _uint m_TexProtoLevel = {};
     _wstring m_TexProtoName = L"";

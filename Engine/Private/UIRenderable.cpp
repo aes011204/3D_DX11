@@ -22,11 +22,20 @@ HRESULT CUIRenderable::OnInit(void* pArg)
 	m_bUseDark = pDesc->bUseDark;
 	m_bUseNineSlice = pDesc->bUseNineSlice;
 
-		_uint m_TexProtoLevel = pDesc->TextureComLevel;
-		_wstring m_TexProtoName = pDesc->TextureProtoName;
-		m_TexIndex = pDesc->TextureIndex;
-		if (FAILED(Ready_Components(m_TexProtoLevel, m_TexProtoName)))
-			return E_FAIL;
+	m_TexProtoLevel = pDesc->TextureComLevel;
+	 m_TexProtoName = pDesc->TextureProtoName;
+	m_TexIndex = pDesc->TextureIndex;
+
+	m_ShaderType = pDesc->shaderType;
+	if(m_ShaderType == UIShaderType::Radial)
+	{
+		m_bUseRadial = true;
+		
+	}
+
+
+	if (FAILED(Ready_Components(m_TexProtoLevel, m_TexProtoName)))
+		return E_FAIL;
 
 	if (m_IsTransparent == false)
 	{
@@ -35,7 +44,6 @@ HRESULT CUIRenderable::OnInit(void* pArg)
 		m_SliceDesc.UISize = _float2(1.f, 1.f);// 어짜피 트렌스폼이 정함 최종 ui 사이즈
 		m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
 	}
-
 
 
 
@@ -142,8 +150,21 @@ HRESULT CUIRenderable::Ready_Components(_uint Level, _wstring protoName)
 {
 	if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
-		return E_FAIL;
+
+	if (m_ShaderType == UIShaderType::Radial)
+	{
+		if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxDonut"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+			return E_FAIL;
+	}
+	else if (m_ShaderType == UIShaderType::Default)
+	{
+
+		if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+			return E_FAIL;
+
+	}
+
+
 
 
 	if (m_IsTransparent == false)
@@ -172,6 +193,28 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", m_TexIndex)))
 		return E_FAIL;
 
+
+	switch (m_ShaderType)
+	{
+	case UIShaderType::Default:
+		if (FAILED(Bind_ShaderResources_Default()))
+			return E_FAIL;
+		break;
+	case UIShaderType::Radial:
+		if (FAILED(Bind_ShaderResources_Radius()))
+			return E_FAIL;
+
+		break;
+	}
+
+
+
+	return S_OK;
+}
+
+
+HRESULT CUIRenderable::Bind_ShaderResources_Default()
+{
 	if (m_bUseDark == true)
 	{
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_Dark", &m_Dark, sizeof(_float))))
@@ -190,8 +233,8 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 			return E_FAIL;
 	}
 
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_Alpha, sizeof(_float))))
-			return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_Alpha, sizeof(_float))))
+		return E_FAIL;
 
 
 	if (m_PassIndex == 1)
@@ -206,21 +249,36 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 			return E_FAIL;
 
 	}
+	return S_OK;
+}
+
+HRESULT CUIRenderable::Bind_ShaderResources_Radius()
+{
+
+	if (m_bUseRadial == false)
+		return S_OK;
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_BaseColor", &m_BaseColor, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_ZoonColor", &m_ZoneColor, sizeof(_float4))))
+		return E_FAIL;
 
 
 
 	return S_OK;
+
 }
+
 
 void CUIRenderable::RebindCom()
 {
 	// 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
 	m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 	m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	
-	
-	
+	//m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+
+
+
 }
 void CUIRenderable::OnClear()
 {

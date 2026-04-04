@@ -43,6 +43,7 @@ public:
 public:
     shared_ptr<CUIImage> m_Dialogue = { nullptr };
     shared_ptr<CUIImage> m_NpcImg = { nullptr };
+    shared_ptr<CUIImage> m_BackImg = { nullptr };
     shared_ptr<CUIText> m_Name_Text = { nullptr };
     shared_ptr<CUIText> m_Dialogue_Text = { nullptr };
 
@@ -51,7 +52,7 @@ public:
     shared_ptr<CUIText> m_Up_Text = { nullptr };
     shared_ptr<CUIText> m_Down_Text = { nullptr };
 private:
-    Dialogue* m_CashingDialogue = nullptr;
+    shared_ptr<Dialogue> m_CashingDialogue = { nullptr };
     _uint m_CurIndex = { 0 };
     _bool m_bFIn = false;
 

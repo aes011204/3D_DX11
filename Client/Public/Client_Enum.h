@@ -242,7 +242,8 @@ namespace Client
     {
         string dialogueId;               // 대화 ID ("boss1_intro", "boss1_battle")
         wstring speaker;                  // 말하는 놈
-
+        shared_ptr<Engine::CTexture> Texture_Back_Path = nullptr;
+        shared_ptr<Engine::CTexture> Texture_Char_Path = nullptr;
         vector<DialogueLine> lines;      // 대사 라인들
     };
 
@@ -308,6 +309,16 @@ namespace Client
         float speed = {};
 
         _float3 Padding = {}; // 4의 배수로 
+    };
+
+    struct Zone
+    {
+        // 0~1
+        float start;
+        float end;
+        float padding1;
+        float padding2;
+
     };
 
 }

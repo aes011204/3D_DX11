@@ -1,201 +1,217 @@
 {
-    "dialogues": [
-        {
+  "dialogues": [
+    {
 
-            "dialogueId": "Start",
-            "speaker": "",
-            "lines": [
-                {
-                    "lineIndex": 0,
-                    "speaker": "",
-                    "text": "아침 햇살이 눈꺼풀 사이로 스면듭니다. 힘들게 몸을 일으켜 누어보니, 당신은 전날밤 무너진 두부에 누어있습니다. 바닥은 차갑게 젖어 있습니다.",
-                    "hasChoices": false
-                }
-            ]
-        },
+      "dialogueId": "Start",
+      "speaker": "",
+      "lines": [
         {
-            "dialogueId": "Mayer_start",
-            "speaker": "시장",
-          "lines": [
-            {
-              "lineIndex": 0,
-              "speaker": "시장",
-              "text": "큰골마을에 온 걸 환영하네! 첫인상이 꽤나 요란하시군. 뾰족한 바위들과는 벌써 인사를 나눈것 같구먼.",
-              "hasChoices": false,
-              "leftPadding": 150.0
-            },
-            {
-              "lineIndex": 1,
-              "speaker": "시장",
-              "text": "자네 어선은 손 쓰기 어려울 정도로 망가졌네. 하지만 주민 몇 명을 시켜서 물건들은 오래된 선박에 옮겨두었으니 걱정 말게.",
-              "hasChoices": false
-            },
-            {
-              "lineIndex": 2,
-              "speaker": "시장",
-              "text": "자네 어선은 수리해서 쓰기 어려울 정도로 망가졌네, 대신 사용할수 있는 선박 하나를 자네에게 팔지, 완전히 자네의 소유로 말이야",
-              "hasChoices": false
-            },
-            {
-              "lineIndex": 3,
-              "speaker": "시장",
-              "text": "지금 자네 수중에 자금이 충분치 않다는 걸 아네. 그래서 일단은 대출을 해줄까하는데, 괜찮은 조건으로 해주지",
-              "hasChoices": false
-            },
-            {
-              "lineIndex": 4,
-              "speaker": "시장",
-              "text": "자네가 빛을 다 갚을떄까지 생선판매액은 빛을 변제하는데 쓰일걸세. 어떤가",
-              "hasChoices": true,
-              "choice": {
-                "leftText": "수락",
-                "rightText": "거절",
-                "leftNextId": 6,
-                "rightNextId": 5
-              }
-            },
-            {
-              "lineIndex": 5,
-              "speaker": "시장",
-              "text": " 그런 선택지는 없단다",
-              "hasChoices": false,
-              "nextID" :  4
-            },
-            {
-              "lineIndex": 6,
-              "speaker": "시장",
-              "text": "그럼 이제 나가서 고기 좀 잡아올수 있겠나? 자네도 적응을 좀 해야하니 오늘 화물칸을 다 채울수 있을지 시험해 보게.",
-              "hasChoices": false
-
-            },
-            {
-              "lineIndex": 7,
-              "speaker": "시장",
-              "text": "아 참 해가 지고 안개가 몰려올떄는 조심하길 바라네, 시간을 잘 확인하는게 좋을 거야. 금세 지나가거든",
-              "hasChoices": false
-            }
-          ]
-        },
-        {
-            "dialogueId": "FishStore_First",
-            "speaker": "생선 장수",
-            "lines": [
-                {
-                    "lineIndex": 0,
-                    "speaker": "생선 장수",
-                    "text": "자네가 새로 온 어부인가?",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 1,
-                    "speaker": "생선 장수",
-                    "text": "크고 신선할수록 비싼값을 쳐준다네. 어떤 어종은 그 자체로 값을 더 쳐주기도 하지",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 2,
-                    "speaker": "생선 장수",
-                    "text": "그럼 뭘잡아 왔는지 보여주게.",
-                    "hasChoices": false
-                }
-            ]
-        },
-        {
-            "dialogueId": "FishStore_Second",
-            "speaker": "생선 장수",
-            "lines": [
-                {
-                    "lineIndex": 0,
-                    "speaker": "생선 장수",
-                    "text": "그럼 뭘잡아 왔는지 보여주게.",
-                    "hasChoices": false
-                }
-            ]
-        },
-        {
-            "dialogueId": "Repair_First",
-            "speaker": "조선공",
-            "lines": [
-                {
-                    "lineIndex": 0,
-                    "speaker": "조선공",
-                    "text": "당신이 새로 온 어부인가 보군. 작업장에서 그쪽 선박을 손봐줄 수 있어. 각종 장비도 팔고",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 1,
-                    "speaker": "조선공",
-                    "text": "더 좋은 장비는 너가 연구해서 오면 내가 만들어서 설치해줄수 있어",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 2,
-                    "speaker": "조선공",
-                    "text": "모든 설치 작업에는 시간과 돈이 든다는 걸 알아둬",
-                    "hasChoices": false
-                }
-            ]
-        },
-        {
-            "dialogueId": "Repair_Second",
-            "speaker": "조선공",
-            "lines": [
-                {
-                    "lineIndex": 0,
-                    "speaker": "조선공",
-                    "text": "모든 설치 작업에는 시간과 돈이 든다는 걸 알아둬",
-                    "hasChoices": false
-                }
-            ]
-        },
-        {
-            "dialogueId": "Mayer_Second",
-            "speaker": "시장",
-            "lines": [
-                {
-                    "lineIndex": 0,
-                    "speaker": "시장",
-                    "text": "무사히 돌아 왔군, 생선은 생선장수에게 가면 팔수 있을걸세 ",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 1,
-                    "speaker": "시장",
-                    "text": "혹시 선박이 파손되었다면 조선공에게 가보게, 거기서 더 나은 장비도 구할수 있을걸세",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 2,
-                    "speaker": "시장",
-                    "text": "아, 그리고 우리 섬에서의 첫 항해 기념으로 인양 장비와 각종 선물을 준비 했다네 다음 출항 떄 새로운 기능이 있을걸세",
-                    "hasChoices": false
-                }
-            ]
-        },
-        {
-            "dialogueId": "Mayer_Quest",
-            "speaker": "시장",
-            "lines": [
-                {
-                    "lineIndex": 0,
-                    "speaker": "시장",
-                    "text": "자네, 이 지역을 빠져 나갈려고 했더군, 무시무시한 생물체가 드글드글거리지 자넨 살아돌아왔다니 첨만다행이네",
-                    "hasChoices": false
-                },
-                {
-                    "lineIndex": 0,
-                    "speaker": "시장",
-                    "text": "내가 말하는 곳으로 가보세 이 지역을 탈출하는 방법을 알수 있을걸세",
-                    "hasChoices": false
-                },
-              {
-                "lineIndex": 1,
-                "speaker": "시장",
-                "text": "가능하면 배는 좀 튼튼하게 만들고 가는걸 추천하겠네",
-                "hasChoices": false
-              }
-               
-            ]
+          "lineIndex": 0,
+          "speaker": "",
+          "text": "아침 햇살이 눈꺼풀 사이로 스면듭니다. 힘들게 몸을 일으켜 누어보니, 당신은 전날밤 무너진 두부에 누어있습니다. 바닥은 차갑게 젖어 있습니다.",
+          "hasChoices": false
         }
-    ]
+      ]
+    },
+    {
+      "dialogueId": "Mayer_start",
+      "speaker": "시장",
+      "texture_Char": "../Bin/Resources/Textures/NPC/Mayor.png",
+      "texture_Back": "../Bin/Resources/Textures/NPC/Mayor_Background.png",
+      "lines": [
+        {
+          "lineIndex": 0,
+          "speaker": "시장",
+          "text": "큰골마을에 온 걸 환영하네! 첫인상이 꽤나 요란하시군. 뾰족한 바위들과는 벌써 인사를 나눈것 같구먼.",
+          "hasChoices": false,
+          "leftPadding": 150.0
+        },
+        {
+          "lineIndex": 1,
+          "speaker": "시장",
+          "text": "자네 어선은 손 쓰기 어려울 정도로 망가졌네. 하지만 주민 몇 명을 시켜서 물건들은 오래된 선박에 옮겨두었으니 걱정 말게.",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 2,
+          "speaker": "시장",
+          "text": "자네 어선은 수리해서 쓰기 어려울 정도로 망가졌네, 대신 사용할수 있는 선박 하나를 자네에게 팔지, 완전히 자네의 소유로 말이야",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 3,
+          "speaker": "시장",
+          "text": "지금 자네 수중에 자금이 충분치 않다는 걸 아네. 그래서 일단은 대출을 해줄까하는데, 괜찮은 조건으로 해주지",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 4,
+          "speaker": "시장",
+          "text": "자네가 빛을 다 갚을떄까지 생선판매액은 빛을 변제하는데 쓰일걸세. 어떤가",
+          "hasChoices": true,
+          "choice": {
+            "leftText": "수락",
+            "rightText": "거절",
+            "leftNextId": 6,
+            "rightNextId": 5
+          }
+        },
+        {
+          "lineIndex": 5,
+          "speaker": "시장",
+          "text": " 그런 선택지는 없단다",
+          "hasChoices": false,
+          "nextID": 4
+        },
+        {
+          "lineIndex": 6,
+          "speaker": "시장",
+          "text": "그럼 이제 나가서 고기 좀 잡아올수 있겠나? 자네도 적응을 좀 해야하니 오늘 화물칸을 다 채울수 있을지 시험해 보게.",
+          "hasChoices": false
+
+        },
+        {
+          "lineIndex": 7,
+          "speaker": "시장",
+          "text": "아 참 해가 지고 안개가 몰려올떄는 조심하길 바라네, 시간을 잘 확인하는게 좋을 거야. 금세 지나가거든",
+          "hasChoices": false
+        }
+      ]
+    },
+    {
+      "dialogueId": "FishStore_First",
+      "speaker": "생선 장수",
+      "texture_Char": "../Bin/Resources/Textures/NPC/Fishmonger.png",
+      "texture_Back": "../Bin/Resources/Textures/NPC/Fishmonger_Background.png",
+      "lines": [
+        {
+          "lineIndex": 0,
+          "speaker": "생선 장수",
+          "text": "자네가 새로 온 어부인가?",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 1,
+          "speaker": "생선 장수",
+          "text": "크고 신선할수록 비싼값을 쳐준다네. 어떤 어종은 그 자체로 값을 더 쳐주기도 하지",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 2,
+          "speaker": "생선 장수",
+          "text": "그럼 뭘잡아 왔는지 보여주게.",
+          "hasChoices": false
+        }
+      ]
+    },
+    {
+      "dialogueId": "FishStore_Second",
+      "speaker": "생선 장수",
+      "texture_Char": "../Bin/Resources/Textures/NPC/Fishmonger.png",
+      "texture_Back": "../Bin/Resources/Textures/NPC/Fishmonger_Background.png",
+      "lines": [
+        {
+          "lineIndex": 0,
+          "speaker": "생선 장수",
+          "text": "그럼 뭘잡아 왔는지 보여주게.",
+          "hasChoices": false
+        }
+      ]
+    },
+    {
+      "dialogueId": "Repair_First",
+      "speaker": "조선공",
+      "texture_Char": "../Bin/Resources/Textures/NPC/Shipwright.png",
+      "texture_Back": "../Bin/Resources/Textures/NPC/Shipwright_Background.png",
+      "lines": [
+        {
+          "lineIndex": 0,
+          "speaker": "조선공",
+          "text": "당신이 새로 온 어부인가 보군. 작업장에서 그쪽 선박을 손봐줄 수 있어. 각종 장비도 팔고",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 1,
+          "speaker": "조선공",
+          "text": "더 좋은 장비는 너가 연구해서 오면 내가 만들어서 설치해줄수 있어",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 2,
+          "speaker": "조선공",
+          "text": "모든 설치 작업에는 시간과 돈이 든다는 걸 알아둬",
+          "hasChoices": false
+        }
+      ]
+    },
+    {
+      "dialogueId": "Repair_Second",
+      "speaker": "조선공",
+      "texture_Char": "../Bin/Resources/Textures/NPC/Shipwright.png",
+      "texture_Back": "../Bin/Resources/Textures/NPC/Shipwright_Background.png",
+      "lines": [
+        {
+          "lineIndex": 0,
+          "speaker": "조선공",
+          "text": "모든 설치 작업에는 시간과 돈이 든다는 걸 알아둬",
+          "hasChoices": false
+        }
+      ]
+    },
+    {
+      "dialogueId": "Mayer_Second",
+      "speaker": "시장",
+      "texture_Char": "../Bin/Resources/Textures/NPC/Mayor.png",
+      "texture_Back": "../Bin/Resources/Textures/NPC/Mayor_Background.png",
+      "lines": [
+        {
+          "lineIndex": 0,
+          "speaker": "시장",
+          "text": "무사히 돌아 왔군, 생선은 생선장수에게 가면 팔수 있을걸세 ",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 1,
+          "speaker": "시장",
+          "text": "혹시 선박이 파손되었다면 조선공에게 가보게, 거기서 더 나은 장비도 구할수 있을걸세",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 2,
+          "speaker": "시장",
+          "text": "아, 그리고 우리 섬에서의 첫 항해 기념으로 인양 장비와 각종 선물을 준비 했다네 다음 출항 떄 새로운 기능이 있을걸세",
+          "hasChoices": false
+        }
+      ]
+    },
+    {
+      "dialogueId": "Mayer_Quest",
+      "speaker": "시장",
+      "texture_Char": "../Bin/Resources/Textures/NPC/Mayor.png",
+      "texture_Back": "../Bin/Resources/Textures/NPC/Mayor_Background.png",
+      "lines": [
+        {
+          "lineIndex": 0,
+          "speaker": "시장",
+          "text": "자네, 이 지역을 빠져 나갈려고 했더군, 무시무시한 생물체가 드글드글거리지 자넨 살아돌아왔다니 첨만다행이네",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 0,
+          "speaker": "시장",
+          "text": "내가 말하는 곳으로 가보세 이 지역을 탈출하는 방법을 알수 있을걸세",
+          "hasChoices": false
+        },
+        {
+          "lineIndex": 1,
+          "speaker": "시장",
+          "text": "가능하면 배는 좀 튼튼하게 만들고 가는걸 추천하겠네",
+          "hasChoices": false
+        }
+
+      ]
+    }
+  ]
+
+
 }

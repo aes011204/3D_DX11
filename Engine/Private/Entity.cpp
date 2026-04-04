@@ -74,8 +74,20 @@ void CEntity::Load_FromJson(nlohmann::json& j)
 			{
 				MSG_BOX("fail to add Component while data load");
 			}
-		m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
-			shared_ptr<CComponent> pNewComp = nullptr;
+
+			auto it = m_Components.find(S2W(jCom["ComponentTag"]));
+
+			if (it != m_Components.end() && it->second != nullptr)
+			{
+				it->second->Load_FromJson(jCom);
+			}
+			else
+			{
+				// 디버깅용: 어떤 태그를 못 찾았는지 확인
+				string tag = jCom.value("ComponentTag", "Unknown");
+				string str = "Component Tag Not Found: " + tag;
+				LOG(LOG_LEVEL::WARNING, str.c_str());
+			}
 
 
 		}

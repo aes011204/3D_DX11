@@ -3,6 +3,7 @@
 #include <UIButton.h>
 #include <UIText.h>
 
+#include "ItemDB.h"
 #include "UIImage.h"
 
 CUI_MiniGame::CUI_MiniGame(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -14,7 +15,7 @@ CUI_MiniGame::CUI_MiniGame(const CUIPanel& prototype)
 	: CUIPanel(prototype)
 {
 }
-void CUI_MiniGame::UI_PanelActive(MINIGAME MiniGameState)
+void CUI_MiniGame::UI_PanelActive(MINIGAME MiniGameState, _uint Defid)
 {
 	////m_Children.clear();
 	//_uint numPanel = {};
@@ -31,41 +32,24 @@ void CUI_MiniGame::UI_PanelActive(MINIGAME MiniGameState)
 	//	m_TabContents[ETOI(TAB::INVEN)]->UI_InActive();
 	//	numPanel++;
 	//}
-	//if (iTabfig & ETOI(TAB::STORAGE))
-	//{
-	//	//(m_ButtonContents[ETOI(TAB::STORAGE)], L"BUTTON_STORAGE", false);
-	//	(m_ButtonContents[ETOI(TAB::STORAGE)]->UI_Active());
-	//	//Add_Child(m_TabContents[ETOI(TAB::STORAGE)], L"STORAGE", false);
-	//	m_TabContents[ETOI(TAB::STORAGE)]->UI_InActive();
-	//	numPanel++;
+	Item_Def def = CItemDB::GetInstance()->GetItemByID(Defid);
+	m_FishIcon->Change_Texture(def.pTexture);
+	m_nameTex->Set_Text(S2W(def.ItemName));
+	Set_ActiveForCustom();
 
-	//}
-	//if (iTabfig & ETOI(TAB::ETC))
-	//{
-	//	//(m_ButtonContents[ETOI(TAB::ETC)], L"BUTTON_ETC", false);
-	//	m_ButtonContents[ETOI(TAB::ETC)]->UI_Active();
-	//	//Add_Child(m_TabContents[ETOI(TAB::ETC)], L"ETC", false);
-	//	m_TabContents[ETOI(TAB::ETC)]->UI_InActive();
-	//	numPanel++;
-	//}
-	//m_Line->UI_Active();
-	//m_TextIMG->UI_Active();
+	m_bRenderReady = false;
 
-	//Change_LayoutRawCol(numPanel, 1);
+	if (m_pUITransformCom)
+		m_pUITransformCom->UpdateLayoutIfDirty();
 
-	//m_Active = Active;
+	//m_bInteractable = true;
+	OnActive();
 
-	//Set_ActiveForCustom();
-
-	//m_bRenderReady = false;
-
-	//if (m_pUITransformCom)
-	//	m_pUITransformCom->UpdateLayoutIfDirty();
-
-	////m_bInteractable = true;
-	//OnActive();
-
-
+	// 일단 이건 임시
+	for (auto& it : m_Children)
+	{
+		it->UI_Active();
+	}
 }
 
 HRESULT CUI_MiniGame::OnInit(void* pArg)
@@ -94,7 +78,6 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	CUIImage::UIIMAGE_DESC BorderDesc = {};
 	BorderDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 	BorderDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUIBorders";
-	BorderDesc.bUseNineSlice = true;
 	shared_ptr<CUIImage> Border = CUIImage::Create(m_pDevice, m_pContext);
 	Border->Initialize(&BorderDesc);
 
@@ -103,30 +86,40 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	CUIImage::UIIMAGE_DESC CircleDesc = {};
 	CircleDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 	CircleDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUICircle";
-	CircleDesc.bUseNineSlice = true;
+	CircleDesc.shaderType = CUIRenderable::UIShaderType::Radial;
 	shared_ptr<CUIImage> Circle = CUIImage::Create(m_pDevice, m_pContext);
 	Circle->Initialize(&CircleDesc);
+	Circle->Set_BaseColor(_float4{ 81 / 255.f, 50 / 255.f, 43 / 255.f, 1.f });
+	Circle->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 
 	Add_Child(Circle, L"Circle", false);
+	m_pCircle = Circle;
+	m_CircleShader = dynamic_pointer_cast<CShader>(Circle->Get_Component(L"Com_Shader"));
 
 	CUIImage::UIIMAGE_DESC SpinnerDesc = {};
 	SpinnerDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 	SpinnerDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUISpinner";
-	SpinnerDesc.bUseNineSlice = true;
 	shared_ptr<CUIImage> Spinner = CUIImage::Create(m_pDevice, m_pContext);
 	Spinner->Initialize(&SpinnerDesc);
 
 	Add_Child(Spinner, L"Spinner", false);
 
+	CUIImage::UIIMAGE_DESC FishKindIconDesc = {};
+	FishKindIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+	FishKindIconDesc.TextureProtoName = L"Prototype_Component_Texture_FishingFishIcon";
+	shared_ptr<CUIImage> FishKindIcon = CUIImage::Create(m_pDevice, m_pContext);
+	FishKindIcon->Initialize(&FishKindIconDesc);
+	FishKindIcon->Set_UseColorMix(true);
+	FishKindIcon->Set_ColorMix(_float4{ 1.f,1.f,1.f,1.f });
 
-
+	Circle->Add_Child(FishKindIcon, L"FishKindIcon", false);
+	m_FishIcon = FishKindIcon;
 
 
 
 	CUIImage::UIIMAGE_DESC DepthBarnDesc = {};
 	DepthBarnDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 	DepthBarnDesc.TextureProtoName = L"Prototype_Component_Texture_CrabPotDepthBar";
-	DepthBarnDesc.bUseNineSlice = true;
 	shared_ptr<CUIImage> DepthBar = CUIImage::Create(m_pDevice, m_pContext);
 	DepthBar->Initialize(&DepthBarnDesc);
 
@@ -135,11 +128,13 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	CUIImage::UIIMAGE_DESC FishIconDesc = {};
 	FishIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 	FishIconDesc.TextureProtoName = L"Prototype_Component_Texture_FishingFishIcon";
-	FishIconDesc.bUseNineSlice = true;
 	shared_ptr<CUIImage> FishIcon = CUIImage::Create(m_pDevice, m_pContext);
 	FishIcon->Initialize(&FishIconDesc);
 
 	DepthBar->Add_Child(FishIcon, L"FishIcon", false);
+
+
+	
 
 		/// 버튼
 		CUIButton::UIBUTTON_DESC ButDesc = {};
@@ -171,39 +166,6 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 	
 
-	
-		//TAB eTab = static_cast<TAB>(1 << 0);
-		//// 일단 테스트 인벤 3개
-		//CUI_Inventory::INVENTORY_DESC InvenDesc = {};
-		//InvenDesc.IsFullScreen = false;
-		//InvenDesc.IsTransparent = true;
-		//InvenDesc.bSetParentSize = true;
-
-		//shared_ptr<CUI_Inventory> pInven = CUI_Inventory::Create(m_pDevice, m_pContext);
-		//pInven->Initialize(&InvenDesc);
-
-		//wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-		//Add_Child(pInven, NameTag, false);
-		//m_TabContents[ETOI(eTab)] = pInven;
-		//pInven->UI_InActive();
-	
-		//TAB eTab = static_cast<TAB>(1 << 1);
-		//// 일단 테스트 인벤 3개
-		//CUI_Storage::STORAGE_DESC StorageDesc = {};
-		//StorageDesc.IsFullScreen = false;
-		//StorageDesc.IsTransparent = true;
-		//StorageDesc.bSetParentSize = true;
-
-		//shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
-		//pStorage->Initialize(&StorageDesc);
-
-
-
-
-		//wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-		//Add_Child(pStorage, NameTag, false);
-		//m_TabContents[ETOI(eTab)] = pStorage;
-		//pStorage->UI_InActive();
 
 
 	///돈///
@@ -211,22 +173,51 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	{
 		
 		{
-			CUIText::TEXT_DESC MoneyTexDesc = {};
-			MoneyTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
-			MoneyTexDesc.strText = L"$0";
-			MoneyTexDesc.fontaline = CUIText::FONTALINE::RIGHT;
-			shared_ptr<CUIText> MoneyTex = CUIText::Create(m_pDevice, m_pContext);
-			MoneyTex->Initialize(&MoneyTexDesc);
-			Add_Child(MoneyTex, L"MoneyTex", false);
-			
+			CUIText::TEXT_DESC nameDesc = {};
+			nameDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
+			nameDesc.strText = L"$0";
+			nameDesc.fontaline = CUIText::FONTALINE::RIGHT;
+			shared_ptr<CUIText> nameTex = CUIText::Create(m_pDevice, m_pContext);
+			nameTex->Initialize(&nameDesc);
+			Add_Child(nameTex, L"nameTex", false);
+			m_nameTex = nameTex;
+
 		}
 		
-		
+		{
+			CUIText::TEXT_DESC amountTexDesc = {};
+			amountTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
+			amountTexDesc.strText = L"amount";
+			amountTexDesc.fontaline = CUIText::FONTALINE::RIGHT;
+			shared_ptr<CUIText> amountTex = CUIText::Create(m_pDevice, m_pContext);
+			amountTex->Initialize(&amountTexDesc);
+			Add_Child(amountTex, L"amountTex", false);
+			m_amountTex = amountTex;
+
+		}
+		{
+			CUIText::TEXT_DESC loacationDesc = {};
+			loacationDesc.strFontTag = L"Noto_Sans_CJK_SC";
+			loacationDesc.strText = L"loaction";
+			loacationDesc.fontaline = CUIText::FONTALINE::RIGHT;
+			shared_ptr<CUIText> locationTex = CUIText::Create(m_pDevice, m_pContext);
+			locationTex->Initialize(&loacationDesc);
+			Add_Child(locationTex, L"locationTex", false);
+			m_locationTex = locationTex;
+
+		}
 	}
 
+	//////////////////////////////////////////////////
+	m_zoneCount = 3;
+	m_zones[0].start = 0.1f;
+	m_zones[0].end = 0.2f;
+	m_zones[1].start = 0.3f;
+	m_zones[1].end = 0.6f;
+	m_zones[2].start = 0.9f;
+	m_zones[2].end = .95f;
 	return hr;
 
-	return CUIPanel::OnInit(pArg);
 }
 
 void CUI_MiniGame::OnActive()
@@ -256,6 +247,14 @@ void CUI_MiniGame::OnLateUpdate()
 
 HRESULT CUI_MiniGame::OnRender()
 {
+	if(m_CircleShader!=nullptr)
+	{
+	m_CircleShader->Bind_RawValue("g_zones", m_zones, sizeof(_float4) * 8);
+	m_CircleShader->Bind_RawValue("g_zoneCount", &m_zoneCount, sizeof(float));
+		
+	}
+
+
 	return CUIPanel::OnRender();
 }
 

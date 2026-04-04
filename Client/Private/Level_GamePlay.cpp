@@ -11,6 +11,7 @@
 #include "UI_TabContainer.h"
 #include "Inventory_Controller.h"
 #include "UI_Item.h"
+#include "UI_MiniGame.h"
 #include "UI_NPC.h"
 
 
@@ -66,7 +67,11 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pNPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"ToolTip", false, nullptr);
-	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MiniGame", true, nullptr);
+
+
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MiniGame", false, nullptr);
+	m_pMiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
+
 	return S_OK;
 }
 
@@ -116,11 +121,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	{
 		
 		auto ui = dynamic_pointer_cast<CUI_NPC>(m_pNPC);
-		ui->UI_NPCActive(NPC::MAYOR, true, true, "Mayer_start");
+		ui->UI_NPCActive(NPC::MAYOR, true, true, "Repair_First");
 
 	}
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_N))
+	{
 
+		auto ui = dynamic_pointer_cast<CUI_MiniGame>(m_pMiniGame);
+		ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE,1002);
 
+	}
+	
 }
 
 HRESULT CLevel_GamePlay::Render()

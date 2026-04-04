@@ -223,6 +223,11 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_VtxTex.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
 		return E_FAIL;
 
+	/* Prototype_Component_Shader_VtxDonut */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxDonut"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_VtxDonut.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
+		return E_FAIL;
+
 	/* Prototype_Component_Shader_VtxCube */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxCube"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
@@ -537,40 +542,40 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
-	//Prototype_Component_Texture_Fishmonger
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Fishmonger"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-
-	//Prototype_Component_Texture_Fishmonger_Background
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Fishmonger_Background"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
+	////Prototype_Component_Texture_Fishmonger
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Fishmonger"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"), 1))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Texture");
+	//	return E_FAIL;
+	//}
+	//
+	////Prototype_Component_Texture_Fishmonger_Background
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Fishmonger_Background"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"), 1))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Texture");
+	//	return E_FAIL;
+	//}
 
 	//Prototype_Component_Texture_Mayor
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Mayor"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-
-	//Prototype_Component_Texture_Mayor_Background
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Mayor_Background"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Mayor"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor.png"), 1))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Texture");
+	//	return E_FAIL;
+	//}
+	//
+	////Prototype_Component_Texture_Mayor_Background
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Mayor_Background"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"), 1))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Texture");
+	//	return E_FAIL;
+	//}
 
 	//Prototype_Component_Texture_Shipwright
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shipwright"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Shipwright.png"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Shipwright.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
@@ -578,12 +583,48 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	}
 
 	//Prototype_Component_Shipwright_Background
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shipwright_Background"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Shipwright_Background.png"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Shipwright_Background.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
+
+	/////////////////////NPC_TEX///////////////////////
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+
+	//
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Mayor.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+
 
 	////////////////////////ICON///////////////////////////
 

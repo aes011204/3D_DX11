@@ -1,11 +1,13 @@
 ﻿
 
 #include "DialogueDB.h"
+#include "GameInstance.h"
 
 
 IMPLEMENT_SINGLETON(CDialogueDB)
 
-CDialogueDB::CDialogueDB()
+CDialogueDB::CDialogueDB():
+    m_pGameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -100,6 +102,36 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
             dialogue.lines.push_back(line);
         }
 
+
+        // 일단 이러면 복사된 택스쳐의 얕은 복사인데 일단 문제는 없을듯 문제 생기면 수정
+        string strBack = node.value("texture_Back", "");
+        if (strBack != "")
+        {
+            // 2. Utf8ToWstring(이미 만들어두신 함수)를 써서 변환하세요.
+            wstring wstrBack = Utf8ToWstring(strBack);
+
+            // 3. Clone 후 캐스팅
+            dialogue.Texture_Back_Path = dynamic_pointer_cast<CTexture>(
+                m_pGameInstance.lock()->Clone_Prototype(
+                    PROTOTYPE::COMPONENT,
+                    ETOI(LEVEL::STATIC),
+                    wstrBack.c_str() // c_str()로 확실히 넘기기
+                )
+            );
+        }
+
+        string strChar = node.value("texture_Char", "");
+        if (strChar != "")
+        {
+            wstring wstrChar = Utf8ToWstring(strChar);
+            dialogue.Texture_Char_Path = dynamic_pointer_cast<CTexture>(
+                m_pGameInstance.lock()->Clone_Prototype(
+                    PROTOTYPE::COMPONENT,
+                    ETOI(LEVEL::STATIC),
+                    wstrChar.c_str()
+                )
+            );
+        }
         m_DialogueIndex[dialogue.dialogueId] = m_Dialogues.size();
         m_Dialogues.push_back(make_shared<Dialogue>(dialogue));
     }

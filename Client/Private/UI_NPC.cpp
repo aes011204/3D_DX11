@@ -27,25 +27,25 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 	//Npcimage
 	{
 		CUIImage::UIIMAGE_DESC NPCBaseDesc = {};
-		NPCBaseDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		NPCBaseDesc.TextureProtoName = L"Prototype_Component_Texture_Mayor_Background";
+		//NPCBaseDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		//NPCBaseDesc.TextureProtoName = L"../Bin/Resources/Textures/NPC/Fishmonger_Background.png";
 		shared_ptr<CUIImage> NPCBase = CUIImage::Create(m_pDevice, m_pContext);
 		NPCBase->Initialize(&NPCBaseDesc);
 
 		{
 
 			CUIImage::UIIMAGE_DESC NPCDesc = {};
-			NPCDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-			NPCDesc.TextureProtoName = L"Prototype_Component_Texture_Mayor";
+			//NPCDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+			//NPCDesc.TextureProtoName = L"../Bin/Resources/Textures/NPC/Fishmonger.png";
 			shared_ptr<CUIImage> NPC = CUIImage::Create(m_pDevice, m_pContext);
 			NPC->Initialize(&NPCDesc);
 
 			NPCBase->Add_Child(NPC, L"NPC", false);
+			m_NpcImg = NPC;
 		}
 
 		Add_Child(NPCBase, L"NPC_Base", false);
-
-		m_NpcImg = NPCBase;
+		m_BackImg = NPCBase;
 	}
 
 	//dialogue
@@ -96,7 +96,7 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 	{
 		CUIButton::UIBUTTON_DESC ButDesc1 = {};
 		ButDesc1.TextureComLevel = ETOI(LEVEL::STATIC);
-		ButDesc1.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
+		ButDesc1.TextureProtoName = L"Prototype_Component_Texture_Button";
 		ButDesc1.OverlapStartEvent = [](CUIButton* pThis) {};
 		ButDesc1.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc1.ClickEvent = [this](CUIButton* pThis)
@@ -124,7 +124,7 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 	{
 		CUIButton::UIBUTTON_DESC ButDesc2 = {};
 		ButDesc2.TextureComLevel = ETOI(LEVEL::STATIC);
-		ButDesc2.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
+		ButDesc2.TextureProtoName = L"Prototype_Component_Texture_Button";
 		ButDesc2.OverlapStartEvent = [](CUIButton* pThis) {};
 		ButDesc2.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc2.ClickEvent = [this](CUIButton* pThis)
@@ -156,18 +156,49 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 }
 void CUI_NPC::UI_NPCActive(NPC npc, _bool dialogueOrSpeech, _bool NPCImg, const string& dialogueId)
 {
-
 	shared_ptr<Dialogue> dialogue = CDialogueDB::GetInstance()->GetDialogueById(dialogueId);
 
-	m_CashingDialogue = dialogue.get();
-	if (dialogue->speaker == L"")
+	if (dialogue->Texture_Char_Path == nullptr)
 	{
+		int i = 0;
+	}
+	m_CashingDialogue = dialogue;
+	if (dialogue->speaker != L"")
+	{
+		m_NpcImg->Change_Texture(dialogue->Texture_Char_Path);
+		m_BackImg->Change_Texture(dialogue->Texture_Back_Path);
 
-		//이미지텍스ㅕㅊ 바꾸기
+
+		m_NpcImg->UI_Active();
+		m_NpcImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 1.5f, true, _float4{ 0.f,0.f,0.f,0.f }));
+		// 자식도 해야함
+		//auto& npcImg = m_NpcImg->GetChildren()[0];
+		m_BackImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 2.f, true, _float4{ 0.f,0.f,0.f,0.f }));
+		m_BackImg->m_behavior.push_back(make_shared<CTransformModifier>(_float2{ -30.f,0.f }, _float2{ 0.f,0.f }, 0.f, 1.f));
+		m_BackImg->UI_Active();
+
+
+
+		//널이 아닌경우
+		m_Name_Text->Set_Text(dialogue->speaker);
+	}
+	else
+	{
+		//널인 경우
+		m_NpcImg->UI_InActive();
+		m_BackImg->UI_InActive();
 	}
 
-	m_Dialogue_Text->Set_Text(dialogue->lines[0].text);
-	m_Name_Text->Set_Text(dialogue->speaker);
+	//if (NPCImg == true)
+	//{
+	//	m_NpcImg->UI_Active();
+	//	m_NpcImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 1.5f, true, _float4{ 0.f,0.f,0.f,0.f }));
+	//	// 자식도 해야함
+	//	auto& npcImg = m_NpcImg->GetChildren()[0];
+	//	npcImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 2.f, true, _float4{ 0.f,0.f,0.f,0.f }));
+	//	npcImg->m_behavior.push_back(make_shared<CTransformModifier>(_float2{ -30.f,0.f }, _float2{ 0.f,0.f }, 0.f, 1.f));
+	//}
+	//m_Dialogue_Text->Set_Text(dialogue->lines[0].text);
 
 
 	_uint numPanel = {};
@@ -193,16 +224,6 @@ void CUI_NPC::UI_NPCActive(NPC npc, _bool dialogueOrSpeech, _bool NPCImg, const 
 	}*/
 
 	UI_DialogueActive(dialogueOrSpeech, 0);
-
-	if (NPCImg == true)
-	{
-		m_NpcImg->UI_Active();
-		m_NpcImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 1.5f, true, _float4{ 0.f,0.f,0.f,0.f }));
-		// 자식도 해야함
-		auto& npcImg = m_NpcImg->GetChildren()[0];
-		npcImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 2.f, true, _float4{ 0.f,0.f,0.f,0.f }));
-		npcImg->m_behavior.push_back(make_shared<CTransformModifier>(_float2{ -30.f,0.f }, _float2{ 0.f,0.f }, 0.f, 1.f));
-	}
 
 
 	Set_ActiveForCustom();
