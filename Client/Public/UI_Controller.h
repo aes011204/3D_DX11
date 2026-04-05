@@ -29,9 +29,12 @@ public:
 
     shared_ptr<CUI> Get_LoadingUI() { return m_Loading; };
 
+    void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl);
 private:
     shared_ptr<CUI> m_Loading = {nullptr};
 
+
+    shared_ptr<class CUI_MiniGame> m_miniGame = { nullptr };
 private:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };
     ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };

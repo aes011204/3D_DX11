@@ -93,7 +93,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			};
 			shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
 			pChild->Initialize(&pDesc);
-
+			
 
 			{
 				CUIText::TEXT_DESC text_Name = {};

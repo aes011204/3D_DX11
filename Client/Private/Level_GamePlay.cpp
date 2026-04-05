@@ -13,6 +13,7 @@
 #include "UI_Item.h"
 #include "UI_MiniGame.h"
 #include "UI_NPC.h"
+#include "UI_Village.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -72,6 +73,10 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MiniGame", false, nullptr);
 	m_pMiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
 
+	CUI_Controller::GetInstance()->Set_InvenCtrl(m_pInvenCntl);
+
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Village", false, nullptr);
+	m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 	return S_OK;
 }
 
@@ -131,7 +136,14 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE,1002);
 
 	}
-	
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_B))
+	{
+
+		auto ui = dynamic_pointer_cast<CUI_Village>(m_Village);
+		ui->UI_Active();
+
+	}
+
 }
 
 HRESULT CLevel_GamePlay::Render()

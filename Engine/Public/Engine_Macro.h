@@ -163,4 +163,7 @@ namespace Engine
 #define LOG(level, message) \
     CLog_Manager::GetInstance()->Add_Log(level, message)
 
+#define PI 3.14159265359f
+#define PI2 6.28318530718f
+
 #endif // Engine_Macro_h__

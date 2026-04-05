@@ -172,6 +172,7 @@
     <ClInclude Include="..\Public\Sea.h" />
     <ClInclude Include="..\Public\Island.h" />
     <ClInclude Include="..\Public\Sea_Manager.h" />
+    <ClInclude Include="..\Public\UI_Village.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -299,6 +300,7 @@
     <ClCompile Include="..\Private\Sea.cpp" />
     <ClCompile Include="..\Private\Island.cpp" />
     <ClCompile Include="..\Private\Sea_Manager.cpp" />
+    <ClCompile Include="..\Private\UI_Village.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

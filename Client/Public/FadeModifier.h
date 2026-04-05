@@ -12,7 +12,7 @@ public:
 	enum FADE {FADE_OUT, FADE_IN, FADE_END};
 
 public:
-	CFadeModifier( FADE fadeType, _float duration, _bool useColor, _float4 color);
+	CFadeModifier( FADE fadeType, _float duration, _bool useColor, _float4 color,bool Inactive = true);
 	virtual ~CFadeModifier();
 
 
@@ -33,10 +33,10 @@ private:
 	_bool m_useColor = {};
 	_float4 m_color = {};
 
-
-	_float  m_AccTime = {};
+	_float  m_AccTime = {0};
 	_bool   m_Finished = false;
 	_float  m_Alpha = {};
-};
 
+	bool m_Inactive = {};
+};
 NS_END

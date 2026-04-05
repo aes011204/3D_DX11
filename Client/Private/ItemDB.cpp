@@ -165,6 +165,8 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 			Clone_Prototype(PROTOTYPE::COMPONENT, ETOI(LEVEL::STATIC), S2W(item_def.TexturePath)));
 
 
+
+
 		// 마지막 vec에 넣기
 		m_vec_ItemDefs.push_back(item_def);
 		m_map_ItemID.emplace(item_def.ItemID, m_vec_ItemDefs.size() - 1);
@@ -212,6 +214,10 @@ void CItemDB::Parse_Fish_Def(Fish_Def& fish_def, const nlohmann::json& node)
 			fish_def.vec_Mutation[i].MutDesc = mut.value("MutDesc", "a");
 			fish_def.vec_Mutation[i].MutTexturePath = mut.value("MutTexturePath", "a");
 			fish_def.vec_Mutation[i].MutCost = mut.value("MutCost", 0);
+
+
+			fish_def.vec_Mutation[i].pTexture = dynamic_pointer_cast<CTexture>(m_pGameInstance.lock()->
+				Clone_Prototype(PROTOTYPE::COMPONENT, ETOI(LEVEL::STATIC), S2W(fish_def.vec_Mutation[i].MutTexturePath)));
 
 		}
 	}

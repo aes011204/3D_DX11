@@ -15,7 +15,7 @@ struct Zone
     float padding2;
 };
 Zone g_zones[8];
-float g_zoneCount;
+float g_zoneCount = 0;
 
 float4 g_BaseColor;
 float4 g_ZoonColor;
@@ -84,9 +84,10 @@ PS_OUT PS_MAIN(PS_IN In)
 
     float dist = sqrt(centerUV.x * centerUV.x + centerUV.y * centerUV.y);
 
-    float angle = atan2(centerUV.x, -centerUV.y); // -pi ~ pi 사이 
-   
-    float angle01 = (angle / PI2) + 0.5f;
+   float angle = atan2(-centerUV.x, centerUV.y); // -pi ~ pi 사이 
+   // float angle = atan2(centerUV.y, centerUV.x);
+    //float angle01 = (angle / PI2) + 0.5f;
+    float angle01 = (angle + PI) / PI2;
 
     bool InZoon = false;
     for (int i = 0; i < g_zoneCount;i++)

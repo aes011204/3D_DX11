@@ -181,6 +181,7 @@
     <ClInclude Include="..\Public\UI_MiniGame.h" />
     <ClInclude Include="..\Public\UI_TabContainer.h" />
     <ClInclude Include="..\Public\UI_Top.h" />
+    <ClInclude Include="..\Public\UI_Village.h" />
     <ClInclude Include="EmptyUObject.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="CScaleModifier.h" />
@@ -226,6 +227,7 @@
     <ClCompile Include="..\Private\UI_MiniGame.cpp" />
     <ClCompile Include="..\Private\UI_TabContainer.cpp" />
     <ClCompile Include="..\Private\UI_Top.cpp" />
+    <ClCompile Include="..\Private\UI_Village.cpp" />
     <ClCompile Include="EmptyUObject.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CScaleModifier.cpp" />

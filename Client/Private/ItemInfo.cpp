@@ -4,7 +4,7 @@
 
 #include "ItemDB.h"
 #include "UIText.h"
-#include "../../Engine/Public/EventBus.h"
+#include "EventBus.h"
 
 CItemInfo::CItemInfo(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CUIPanel(pDevice, pContext)
@@ -33,12 +33,12 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 		return;
 	}
 
-
+	float cost = {};
 
 	float fCurrentY = -m_NamePadding;
 	
 	Item_Def itemDef = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
-	switch (itemDef.ItemType)
+	switch (itemInst.ItemType)
 	{
 	case ITEM_TYPE::FISH:
 
@@ -47,15 +47,22 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 			Fish_Def* FishDef = get_if<Fish_Def>(&itemDef.TypeDef);
 
 			if (FishInst->mutation_ID == ID_Absence)
+			{
 				NameInfo = S2W(itemDef.ItemName);
+				DescInfo = S2W(itemDef.ItemDesc);
+				cost = FishDef->Cost;
+			}
 			else
+			{
 				NameInfo = S2W(FishDef->vec_Mutation[FishInst->mutation_ID].MutName);
+				DescInfo = S2W(FishDef->vec_Mutation[FishInst->mutation_ID].MutDesc);
+				cost = FishDef->vec_Mutation[FishInst->mutation_ID].MutCost;
+			}
 
 			if (isHold == true)
 				break;
 			LeftInfo = L"크기:\n상태:\n유형:";
 			RightInfo = format(L"{:.2f}cm\n{}\n{}", FishInst->size, freshToWstr(FishInst->freshness), OcceanToWstr(FishDef->SeaType_Mask));
-			DescInfo = S2W(itemDef.ItemDesc);
 		}
 		break;
 	case ITEM_TYPE::EQUIP:
@@ -71,25 +78,23 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 		{
 			LeftInfo = L"설치 시간:\n상태:\n속도:";
 			RightInfo = format(L"{}h\n{}\n+{}kn", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipEngine->Speed_Kn);
-			DescInfo = S2W(itemDef.ItemDesc);
 		}
 		else if (Equip_Light* EquipLight = get_if<Equip_Light>(&EquipDef->EquipType_Effect))
 		{
 			LeftInfo = L"설치 시간:\n상태:\n루멘:\n범위";
 			RightInfo = format(L"{}h\n{}\n+{}lm\n{}m", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipLight->Lumen, EquipLight->Range);
-			DescInfo = S2W(itemDef.ItemDesc);
 		}
 		else if (Equip_Rod* EquipRod = get_if<Equip_Rod>(&EquipDef->EquipType_Effect))
 		{
 			LeftInfo = L"설치 시간:\n상태:\n낚시 속도:\n어종";
 			RightInfo = format(L"{}h\n{}\n+{}%\n{}", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipRod->Speed_Per, OcceanToWstr(EquipRod->SeaType_Mask));
-			DescInfo = S2W(itemDef.ItemDesc);
 		}
 		else
 		{
 			//넷트랑 게통발은 패스 그거 까지 할시간 없을듯 후에 시간 남으면 추가
 		}
 		DescInfo = S2W(itemDef.ItemDesc);
+		cost = EquipDef->Cost;
 
 		break;
 	}
@@ -175,7 +180,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 			break;
 		case LOCATIONSTATE::SHOP:
 			//구매
-			sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f ,fCurrentY });
+			sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f ,fCurrentY }, cost);
 			fCurrentY -= (sizeY + m_PaddingY);
 
 		break;
@@ -189,7 +194,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY });
+			sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost * 0.8f);
 			fCurrentY -= (sizeY + m_PaddingY);
 			break;
 		}

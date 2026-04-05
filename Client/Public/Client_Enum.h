@@ -52,6 +52,7 @@ namespace Client
          ID_uint Species_ID = { ID_Absence }; ID_uint Mutation_ID = { ID_Absence };
          _string MutName = {}; _string MutDesc = {}; _string MutTexturePath = {};
          _float MutCost = { 0 };
+         shared_ptr<Engine::CTexture> pTexture = { nullptr };
      };
 
     struct Fish_Def
@@ -82,7 +83,7 @@ namespace Client
     struct Trinket_Def { float Cost = { 0 }; };
 
 
-    struct Fish_Inst { FRESHNESS freshness = FRESHNESS::END; ID_uint mutation_ID = { ID_Absence }; _float size = {}; };
+    struct Fish_Inst { FRESHNESS freshness = FRESHNESS::FRESH; ID_uint mutation_ID = { ID_Absence }; _float size = {}; };
     struct Equip_Inst { bool IsBroken = false; };
 
     /// 아이템 인스턴스 
@@ -91,7 +92,13 @@ namespace Client
         ID_uint ItemDef_ID = { ID_Absence }; 
         ID_uint ItemInst_ID = { ID_Absence };
         ITEM_TYPE ItemType = ITEM_TYPE::END; // 이건 그냥 캐싱용으로 두자
-       
+
+        bool IsMutaion = { false };
+        Mutation MutaionCashing = {};
+
+
+        shared_ptr<Engine::CTexture> pCashingTexture = nullptr;
+
 
         _float2 BaseXY = {};
 
@@ -111,7 +118,7 @@ namespace Client
 		_string ItemName = {};
 		_string ItemDesc = {};
         _string TexturePath = {};
-
+        
     	shared_ptr<Engine:: CTexture> pTexture = nullptr;
 
         Shape ItemShape = {};
@@ -286,6 +293,11 @@ namespace Client
         _float money={};
     };
 
+    struct Evt_GetFish
+    {
+        _uint DefID = { ID_Absence };
+        Fish_Inst fishInst = {};
+    };
 
     struct Evt_ToolTip
     {
@@ -298,7 +310,7 @@ namespace Client
 
     enum class NPC {MAYOR, SHIPWRIGHT, FISHMONGER, TRADER, END};
 
-    enum class LOCATIONSTATE {SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP ,END };
+    enum class LOCATIONSTATE {REPAIR_SHOP, SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP, VILLAGE ,END };
 
 
     struct Wave_Desc

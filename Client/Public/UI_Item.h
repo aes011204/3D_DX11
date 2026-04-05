@@ -28,7 +28,7 @@ public:
 public:
     void Set_Rotation(_uint rot) { m_HoldItem.Rotation = rot; };
 
-    void HoldItem(Item_Inst HoldItem);
+    void HoldItem(Item_Inst HoldItemInst);
 
     void ReleaseItem();
 

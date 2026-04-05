@@ -31,6 +31,12 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MouseToIndex_Data>([this](const Evt_MouseToIndex_Data& e) {m_SlotX = e.x; m_SlotY = e.y; m_bIsOnSlot = e.IsOnSlot; });
 
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>([this](const Evt_GetFish& e)
+	{
+			Make_Hold(m_PlayerInven.lock()->Create_ItemInstance(e.DefID, e.fishInst));
+
+	});
+
 
 	//auto tmppointer = dynamic_pointer_cast<CInventory_Controller>(shared_from_this());
 	//if(tmppointer == nullptr)
@@ -43,7 +49,14 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 	return S_OK;
 }
+void CInventory_Controller::Make_Hold(Item_Inst inst)
+{
+	
+		m_UIHoldItem->HoldItem(inst);
 
+		m_bDragging = true;
+	
+}
 void CInventory_Controller::Update(float TimeDelta)
 {
 	auto dInput = m_pGameInstance.lock()->Get_DInput_Manger();
@@ -66,7 +79,7 @@ void CInventory_Controller::Update(float TimeDelta)
 		Item_Inst tmpInst = {};
 
 
-		if (/*m_HoldItem.ItemInst_ID == ID_Absence &&*/ Is_Dragging == false /* + ui 가 클릭은 반환*/)
+		if (/*m_HoldItem.ItemInst_ID == ID_Absence &&*/ m_bDragging == false /* + ui 가 클릭은 반환*/)
 		{
 		m_PrevDragging = false; 
 			if (dInput->MouseDown(DIMB::LBUTTON) /* + ui 가 클릭은 반환*/)
@@ -82,7 +95,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			//m_HoldItem = tmpInst;
 				m_UIHoldItem->HoldItem(tmpInst);
 
-				Is_Dragging = true;
+				m_bDragging = true;
 			}
 			else if (dInput->KeyDown(DIK_Z) /* + 일정 시간 이상 누르고 있을떄*/)
 			{
@@ -106,7 +119,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			}
 			
 		}
-		else if (Is_Dragging == true && m_bIsOnSlot == true)
+		else if (m_bDragging == true && m_bIsOnSlot == true)
 		{
 
 			// 잡고있는 아이템이 있는경우
@@ -127,7 +140,7 @@ void CInventory_Controller::Update(float TimeDelta)
 					tmpInst = Inven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
 					//m_HoldItem = tmpInst;// 이건 빈 인스턴스
 					m_UIHoldItem->ReleaseItem();
-					Is_Dragging = false;
+					m_bDragging = false;
 					break;
 				case PLACE_COLOR::ORANGE:
 					tmpInst = Inven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
@@ -138,12 +151,12 @@ void CInventory_Controller::Update(float TimeDelta)
 
 				//m_HoldItem = tmpInst;
 					m_UIHoldItem->HoldItem(tmpInst);
-					Is_Dragging = true;
+					m_bDragging = true;
 					break;
 				case PLACE_COLOR::RED:
 					// 레드 일때 애니메이션 뭐 그런거 할거 있음 여기
 					// 홀드 아이템은 그대로
-					Is_Dragging = true;
+					m_bDragging = true;
 
 					break;
 				}
@@ -166,7 +179,7 @@ void CInventory_Controller::Update(float TimeDelta)
 		//if (prevMouseOnSlot == true)
 		//{
 			//if( m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY)
-			if(Is_Dragging ==false)
+			if(m_bDragging ==false)
 			{
 			Item_Inst emptyinst = {};
 
@@ -185,7 +198,7 @@ void CInventory_Controller::Update(float TimeDelta)
 		//}
 	}
 
-	if (Is_Dragging == true)
+	if (m_bDragging == true)
 	{
 		
 		if (dInput->MouseDown(DIMB::RBUTTON)/*dInput->MouseDown(DIMB::RBUTTON)*/ /* + ui 가 우클릭은 반환*/)
@@ -200,7 +213,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			//Item_Inst NoInst = {};
 			//m_HoldItem = NoInst;
 
-			Is_Dragging = false;
+			m_bDragging = false;
 			m_UIHoldItem->ReleaseItem();
 			//색칠한거 지워야함
 			for(auto& slot :m_PlayerInven.lock()->Get_Invenslot())
@@ -218,7 +231,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			}
 		}
 
-		if (Is_Dragging != m_PrevDragging/* m_PrevDragging != Is_Dragging*/ /*|| m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY*/)
+		if (m_bDragging != m_PrevDragging/* m_PrevDragging != m_bDragging*/ /*|| m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY*/)
 		{
 			//if (m_PrevDragging == false) // 처음 들었을 때만
 			//{
@@ -228,7 +241,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			e.locationState = LOCATIONSTATE::SEA;
 			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
-			m_PrevDragging = Is_Dragging;
+			m_PrevDragging = m_bDragging;
 			//m_PrevSlotX = m_SlotX;
 			//m_PrevSlotY = m_SlotY;
 		}

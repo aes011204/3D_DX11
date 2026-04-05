@@ -61,27 +61,29 @@ HRESULT CInventory::Initialize(void* pArg)
     //test
     //
     //
-    Item_Inst inst1 = Create_ItemInstance(1001, 3);
+    Fish_Inst instfish= {};
+    Item_Inst inst1 = Create_ItemInstance(1001, instfish, 3);
     
     inst1.BaseXY = { 2,2 };
     AddItem(inst1, 2, 2);
     
-    Item_Inst inst = Create_ItemInstance(1001, 1);
+    Item_Inst inst = Create_ItemInstance(1001, instfish, 1);
     
     inst.BaseXY = { 0,2 };
     AddItem(inst, 0, 2);
     
-    Item_Inst inst2 = Create_ItemInstance(1002, 0);
+    Item_Inst inst2 = Create_ItemInstance(1002, instfish, 0);
     
     inst2.BaseXY = { 2,0 };
     AddItem(inst2, 2, 0);
      return S_OK;
 }
-Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, int rot)
+Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, variant<monostate, Fish_Inst, Equip_Inst>  TypeDefInst, int rot )
 {
 
     const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemDefID);
 
+    
     Item_Inst newInst;
     newInst.ItemDef_ID = def.ItemID;
     newInst.ItemInst_ID = Num++/*Generate_Unique_ID()*/;
@@ -89,24 +91,38 @@ Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, int rot)
 
     newInst.Rotation = rot;
 
- 
+    newInst.TypeDef = TypeDefInst;;
+    newInst.pCashingTexture = def.pTexture;
 
-    switch (def.ItemType)
+    if (auto pFish = get_if<Fish_Inst>(&TypeDefInst))
     {
-    case ITEM_TYPE::FISH:
-        newInst.TypeDef = Fish_Inst{ FRESHNESS::END, ID_Absence, 999 };;
+        if (pFish->mutation_ID != ID_Absence)
+        {
+            Mutation mut = get<Fish_Def>(def.TypeDef).vec_Mutation[pFish->mutation_ID];
+            newInst.MutaionCashing = mut;
+            newInst.IsMutaion = true;
+            newInst.pCashingTexture = mut.pTexture;
 
-        break;
-
-    case ITEM_TYPE::EQUIP:
-
-        newInst.TypeDef = Equip_Inst{ false };
-        break;
-
-    case ITEM_TYPE::MATERIAL:
-        break;
-
+        }
     }
+
+
+    //switch (def.ItemType)
+    //{
+    //case ITEM_TYPE::FISH:
+    //    newInst.TypeDefInst = TypeDefInst;;
+    //
+    //    break;
+    //
+    //case ITEM_TYPE::EQUIP:
+    //
+    //    newInst.TypeDefInst = Equip_Inst{ false };
+    //    break;
+    //
+    //case ITEM_TYPE::MATERIAL:
+    //    break;
+    //
+    //}
 
 
     return newInst;

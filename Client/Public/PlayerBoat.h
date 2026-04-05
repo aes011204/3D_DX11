@@ -11,6 +11,7 @@ class CPlayerBoat :
     public CContainerObject
 {
 public:
+
     struct PLAYERBOAT_DESC : public CContainerObject::ContainerOBJ_DESC
     {
 
@@ -30,6 +31,10 @@ public:
     virtual void Late_Update(_float fTimeDelta) override;
     virtual HRESULT Render() override;
 
+    void Location_Sea(_float fTimeDelta, CDInput_Manager* dinput);
+
+
+
     virtual void OnGui() override;
 
     //virtual void RebindCom();
@@ -46,7 +51,6 @@ public:
     void Set_Light(_uint light) { m_Light = light; }
     void Set_SeaMask(SEA_MASK mask) { m_SeaMask = mask; }*/
     void Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask);
-    
 private:
     weak_ptr<class CSea_Manager> m_pSea_Manager = {};
 
@@ -62,7 +66,10 @@ private:
    _uint m_BoatSpeed = {};
    _uint m_FishingSpeed = {};
    _uint m_Light = {};
-    SEA_MASK m_SeaMask = {};
+    SEA_MASK m_SeaMask = {}; // d이거 왜 있음
+
+    LOCATIONSTATE m_Loacation = { LOCATIONSTATE:: SEA };
+
 
 public:
     static shared_ptr<CPlayerBoat> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

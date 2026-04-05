@@ -10,6 +10,7 @@
 #include "UIText.h"
 #include "UI_NPC.h"
 #include "UI_MiniGame.h"
+#include "UI_Village.h"
 
 IMPLEMENT_SINGLETON(CUI_Controller)
 
@@ -144,7 +145,7 @@ HRESULT CUI_Controller::Ready_UI()
 	m_pGameInstance.lock()->UI_InsertToPool(L"ToolTip", tooltip);
 	
 
-	/////////////tooltip//////////////
+	/////////////MiniGame//////////////
 
 	CUI_MiniGame::MINIGAEMEPANEL_DESC pMiniGameDesc;
 
@@ -152,9 +153,27 @@ HRESULT CUI_Controller::Ready_UI()
 	shared_ptr<CUI_MiniGame> MiniGame = CUI_MiniGame::Create(m_pDevice, m_pContext);
 	MiniGame->Initialize(&pMiniGameDesc);
 	m_pGameInstance.lock()->UI_InsertToPool(L"MiniGame", MiniGame);
+	m_miniGame = MiniGame;
+
+	/////////////Village//////////////
+
+	CUI_MainMenu::MAINMENU_DESC VillagePanel;
+	VillagePanel.IsFullScreen = true;
+	VillagePanel.IsTransparent = true;
+
+	shared_ptr<CUI_Village> Village = CUI_Village::Create(m_pDevice, m_pContext);
+	Village->Initialize(&VillagePanel);
+	m_pGameInstance.lock()->UI_InsertToPool(L"Village", Village);
 
 
 	return S_OK;
+}
+
+void CUI_Controller::Set_InvenCtrl(shared_ptr<CInventory_Controller> invenCtrl)
+{
+	{
+		m_miniGame->Set_InvenCtrl(invenCtrl);
+	}
 }
 
 

@@ -434,6 +434,24 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-1.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-1.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-2.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-2.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-3.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-3.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
 
 
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod.png"),
@@ -442,7 +460,24 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
-
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-1.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-1.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-2.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-2.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-3.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-3.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
 
 	///////////////////////LOADING//////////////////////////////
 
@@ -738,7 +773,23 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	/////////////////////////VILLAGE//////////////////////////
+	//Prototype_Component_Texture_VillageUnderBar
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_VillageUnderBar"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/DestinationPointer.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
 
+
+	//Prototype_Component_Texture_DebtBarDectorator
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DebtBarDectorator"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/DebtBarDectorator.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
 
 	return S_OK;
 }

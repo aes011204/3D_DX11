@@ -32,7 +32,7 @@ public:
 public:
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(void* pArg);
-    Item_Inst Create_ItemInstance(ID_uint itemDefID, int rot);
+    Item_Inst Create_ItemInstance(ID_uint itemDefID, variant<monostate, Fish_Inst, Equip_Inst>  TypeDefInst, int rot=0);
 
     void Update(_float fTimeDelta);
 

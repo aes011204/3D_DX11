@@ -3,8 +3,8 @@
 
 
 
-CFadeModifier::CFadeModifier(FADE fadeType, _float duration, _bool useColor, _float4 color)
-	: m_fadeType(fadeType),m_Duration(duration), m_useColor(useColor), m_color(color)
+CFadeModifier::CFadeModifier(FADE fadeType, _float duration, _bool useColor, _float4 color, _bool Inactive)
+	: m_fadeType(fadeType),m_Duration(duration), m_useColor(useColor), m_color(color), m_Inactive(Inactive), m_AccTime(0.f)
 {
 	if (m_fadeType == FADE_IN)
 		m_Alpha = 0.f;
@@ -15,8 +15,8 @@ CFadeModifier::CFadeModifier(FADE fadeType, _float duration, _bool useColor, _fl
 
 CFadeModifier::~CFadeModifier()
 {
-	if(m_This!=nullptr)
-	m_This->Set_Alpha(1);
+	//if(m_This!=nullptr)
+	//m_This->Set_Alpha(1);
 }
 
 void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
@@ -40,8 +40,11 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 	if (m_fadeType == FADE_OUT)
 	{
+	
+	
 
 		_float fRatio = m_AccTime / m_Duration;
+		LOG_F(LOG_LEVEL::INFO, "Time: %.4f / Duration: %.4f / Ratio: %.4f", m_AccTime, m_Duration, m_AccTime / m_Duration);
 
 		if (fRatio > 1) fRatio = 1.f;
 
@@ -55,12 +58,15 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		m_This->Set_Alpha(m_Alpha);
 
-		if (m_Alpha <= 0.f)
+		if (m_Alpha <= 0.01f)
 		{
-			pOwner->UI_InActive(); // UI ²ô±â
+			if(m_Inactive ==true)
+				pOwner->UI_InActive(); // UI ²ô±â
 
 			m_Finished = true;
 		}
+
+
 
 	}
 		
@@ -82,9 +88,10 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		m_This->Set_Alpha(m_Alpha);
 
-		if (m_Alpha <= 0.f)
+		if (fRatio >= 1.f)
 		{
-			pOwner->UI_InActive(); // UI ²ô±â
+
+			//pOwner->UI_InActive(); // UI ²ô±â
 
 			m_Finished = true;
 		}

@@ -9,7 +9,7 @@
 #include "Terrain.h"
 #include "VIBuffer_Sea.h"
 #include "Sea_Manager.h"
-
+#include <numbers>
 
 
 CSea::CSea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

@@ -1,7 +1,6 @@
 #include "Sea_Manager.h"
 #include <numbers>
 
-
 IMPLEMENT_SINGLETON(CSea_Manager)
 
 

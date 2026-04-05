@@ -41,6 +41,8 @@ private:
 	weak_ptr<CGameObject> m_pPlayer = {};
 	weak_ptr<class CInventory> m_PlayerInven = {};
 
+	shared_ptr<class CUI> m_Village = {};
+
 public:
 	static shared_ptr<CLevel_GamePlay> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	virtual void Free() override;

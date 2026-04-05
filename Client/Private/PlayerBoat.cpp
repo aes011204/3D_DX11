@@ -78,109 +78,18 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	//m_pTransformCom->Get_WorldMatrix();
 	//
 
-	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
-
-
-
-	if (dinput->KeyPress(DIK_UP))
+	switch(m_Loacation)
 	{
-		m_pTransformCom->Go_Forward(fTimeDelta);
+	case LOCATIONSTATE::SEA:
+		Location_Sea(fTimeDelta, dinput);
+		break;
+	case LOCATIONSTATE::VILLAGE:
+		Location_Sea(fTimeDelta, dinput);
+		break;
+	case LOCATIONSTATE::FISHING:
+		Location_Sea(fTimeDelta, dinput);
+		break;
 	}
-
-	if (dinput->KeyPress(DIK_DOWN))
-	{
-		m_pTransformCom->Go_Backward(fTimeDelta);
-	}
-
-	if (dinput->KeyPress(DIK_RIGHT))
-	{
-		m_pTransformCom->Turn(XMLoadFloat4(&upDir),fTimeDelta);
-	}
-
-	if (dinput->KeyPress(DIK_LEFT))
-	{
-		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
-	}
-	auto Sea = m_pSea_Manager.lock();
-
-	// 임시코드 ///////////////// 3점 -> 4점으로 수정예정 + 코드 정리
-	//
-	_vector CurPos = m_pTransformCom->Get_Position();
-
-	//중점으로 y 위치
-	//{
-	_float fFinalPosY= {};
-	
-	//m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fFinalPosY);
-	_float3 fianlPos = { XMVectorGetX(CurPos), Sea->Get_GlobalY(), XMVectorGetZ(CurPos) };
-	m_pTransformCom->Set_Position(XMLoadFloat3( &fianlPos));
-	//	
-	//}
-
-
-	// 4점 으로 기울기 + 보간
-	{
-		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
-		_float3 FRBL[4] = {};
-		XMStoreFloat3(&FRBL[0],XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.5f);
-		XMStoreFloat3(&FRBL[1],XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT)) * 0.5f);
-		XMStoreFloat3(&FRBL[2],XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * -1.5f);
-		XMStoreFloat3(&FRBL[3],XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT)) * -0.5f);
-
-		_float3 Pos[4];
-		Pos[0] = fianlPos + FRBL[0];
-		Pos[1] = fianlPos + FRBL[1];
-		Pos[2] = fianlPos + FRBL[2];
-		Pos[3] = fianlPos + FRBL[3];
-
-		_float3 fianlPosFRBL[4];
-		for(_uint i =0; i < 4; i++)
-		{
-
-			_float fOut1 = Sea->Calculate_GerstnerWave_Overlap(Pos[i]);
-
-			fianlPosFRBL[i] = { Pos[i].x, fOut1, Pos[i].z};
-		}
-
-		_vector forwordDir = XMLoadFloat3(&fianlPosFRBL[0]) - XMLoadFloat3(&fianlPosFRBL[2]);
-		_vector RightDir = XMLoadFloat3(&fianlPosFRBL[1]) - XMLoadFloat3(&fianlPosFRBL[3]);
-
-		forwordDir = XMVector3Normalize(forwordDir);
-		RightDir = XMVector3Normalize(RightDir);
-
-		_vector FinalUpDir = XMVector3Normalize(XMVector3Cross(forwordDir, RightDir));
-
-		_vector vOldShipForward = m_pTransformCom->Get_State(STATE::LOOK);
-
-		_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, vOldShipForward));
-
-		_vector FinalLookDir = XMVector3Normalize(XMVector3Cross(FinalRightDir, FinalUpDir));
-
-		_matrix NewRotationMatrix;
-		NewRotationMatrix.r[0] = FinalRightDir;
-		NewRotationMatrix.r[1] = FinalUpDir;
-		NewRotationMatrix.r[2] = FinalLookDir;
-		NewRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
-
-		_vector targetQuat = XMQuaternionRotationMatrix(NewRotationMatrix);
-		targetQuat = XMQuaternionNormalize(targetQuat);
-		_vector currentQuat = m_pTransformCom->Get_Quaternion();
-
-		_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 4.f*fTimeDelta);
-
-		m_pTransformCom->Set_Quaternion(smoothQuat);
-	}
-	
-
-	/*_vector CurPo3 = m_pTransformCom->Get_Position();
-	_float fOut3 = {};
-	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fOut3);*/
-
-	m_pTransformCom->Update_WorldMatrix();
-
-
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
-
 
 	__super::Update(fTimeDelta);
 
@@ -337,6 +246,111 @@ void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light
 		m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 	}
+}
+
+void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
+{
+	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
+
+	if (dinput->KeyPress(DIK_UP))
+	{
+		m_pTransformCom->Go_Forward(fTimeDelta);
+	}
+
+	if (dinput->KeyPress(DIK_DOWN))
+	{
+		m_pTransformCom->Go_Backward(fTimeDelta);
+	}
+
+	if (dinput->KeyPress(DIK_RIGHT))
+	{
+		m_pTransformCom->Turn(XMLoadFloat4(&upDir), fTimeDelta);
+	}
+
+	if (dinput->KeyPress(DIK_LEFT))
+	{
+		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
+	}
+	auto Sea = m_pSea_Manager.lock();
+
+	// 임시코드 ///////////////// 3점 -> 4점으로 수정예정 + 코드 정리
+	//
+	_vector CurPos = m_pTransformCom->Get_Position();
+
+	//중점으로 y 위치
+	//{
+	_float fFinalPosY = {};
+
+	//m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fFinalPosY);
+	_float3 fianlPos = { XMVectorGetX(CurPos), Sea->Get_GlobalY(), XMVectorGetZ(CurPos) };
+	m_pTransformCom->Set_Position(XMLoadFloat3(&fianlPos));
+	//	
+	//}
+
+
+	// 4점 으로 기울기 + 보간
+	{
+		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
+		_float3 FRBL[4] = {};
+		XMStoreFloat3(&FRBL[0], XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.5f);
+		XMStoreFloat3(&FRBL[1], XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT)) * 0.5f);
+		XMStoreFloat3(&FRBL[2], XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * -1.5f);
+		XMStoreFloat3(&FRBL[3], XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT)) * -0.5f);
+
+		_float3 Pos[4];
+		Pos[0] = fianlPos + FRBL[0];
+		Pos[1] = fianlPos + FRBL[1];
+		Pos[2] = fianlPos + FRBL[2];
+		Pos[3] = fianlPos + FRBL[3];
+
+		_float3 fianlPosFRBL[4];
+		for (_uint i = 0; i < 4; i++)
+		{
+
+			_float fOut1 = Sea->Calculate_GerstnerWave_Overlap(Pos[i]);
+
+			fianlPosFRBL[i] = { Pos[i].x, fOut1, Pos[i].z };
+		}
+
+		_vector forwordDir = XMLoadFloat3(&fianlPosFRBL[0]) - XMLoadFloat3(&fianlPosFRBL[2]);
+		_vector RightDir = XMLoadFloat3(&fianlPosFRBL[1]) - XMLoadFloat3(&fianlPosFRBL[3]);
+
+		forwordDir = XMVector3Normalize(forwordDir);
+		RightDir = XMVector3Normalize(RightDir);
+
+		_vector FinalUpDir = XMVector3Normalize(XMVector3Cross(forwordDir, RightDir));
+
+		_vector vOldShipForward = m_pTransformCom->Get_State(STATE::LOOK);
+
+		_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, vOldShipForward));
+
+		_vector FinalLookDir = XMVector3Normalize(XMVector3Cross(FinalRightDir, FinalUpDir));
+
+		_matrix NewRotationMatrix;
+		NewRotationMatrix.r[0] = FinalRightDir;
+		NewRotationMatrix.r[1] = FinalUpDir;
+		NewRotationMatrix.r[2] = FinalLookDir;
+		NewRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
+
+		_vector targetQuat = XMQuaternionRotationMatrix(NewRotationMatrix);
+		targetQuat = XMQuaternionNormalize(targetQuat);
+		_vector currentQuat = m_pTransformCom->Get_Quaternion();
+
+		_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 4.f * fTimeDelta);
+
+		m_pTransformCom->Set_Quaternion(smoothQuat);
+	}
+
+
+	/*_vector CurPo3 = m_pTransformCom->Get_Position();
+	_float fOut3 = {};
+	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fOut3);*/
+
+	m_pTransformCom->Update_WorldMatrix();
+
+
+	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+
 }
 
 shared_ptr<CPlayerBoat> CPlayerBoat::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

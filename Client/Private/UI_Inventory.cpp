@@ -576,7 +576,7 @@ void CUI_Inventory::Render_Item()
 			if (UI->Get_Transparent() == true)
 			{
 				Item_Def def = CItemDB::GetInstance()->GetItemByID(items[i].ItemDef_ID);
-				UI->Change_Texture(def.pTexture);
+				UI->Change_Texture(items[i].pCashingTexture);
 
 				_float2 vAnchoredPos = Calculate_RenderPos(items[i]);
 

@@ -25,12 +25,13 @@ public:
 public:
     HRESULT Initialize(weak_ptr<CInventory> Inven, shared_ptr<class CUI_Item> UIHoldItem);
     void Update(float TimeDelta);
+    void Make_Hold(Item_Inst inst);
 
     void Set_Inven(weak_ptr<class CInventory> inventory) { m_PlayerInven = inventory; }
 
-
+    bool Is_Dragging() { return m_bDragging; }
     //_bool PickUp_Item(Item_Inst HoldItem) {
-    //    m_HoldItem = HoldItem; Is_Dragging = true;
+    //    m_HoldItem = HoldItem; m_bDragging = true;
     //    m_Inven.lock()->RemoveFrom_Inven(m_HoldItem.ItemInst_ID);
     //}
 
@@ -46,7 +47,7 @@ private:
 
     _uint m_prevItemInstId = {};//ÅøÆÁ¿ë Ã¼Å©
     //bool prevMouseOnSlot = { false };
-    bool Is_Dragging = false;
+    bool m_bDragging = false;
     bool m_PrevDragging = false;
     _uint m_SlotX, m_SlotY = {};
     _uint m_PrevSlotX, m_PrevSlotY = {};
@@ -63,5 +64,7 @@ public:
 
     shared_ptr<CGameObject> Clone(void* pArg) { return shared_ptr<CGameObject>{}; };
 };
+
+
 
 NS_END

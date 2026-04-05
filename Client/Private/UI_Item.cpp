@@ -14,14 +14,17 @@ CUI_Item::CUI_Item(const CUI_Item& prototype)
 {
 }
 
-void CUI_Item::HoldItem(Item_Inst HoldItem)
+void CUI_Item::HoldItem(Item_Inst HoldItemInst)
 {
-	if (HoldItem.ItemInst_ID == ID_Absence)
+	if (HoldItemInst.ItemInst_ID == ID_Absence)
 		return;
 
+	//const Item_Def& def = CItemDB::GetInstance()->GetItemByID(HoldItemInst.ItemDef_ID);
+
 		m_bIsHold = true; 
-		m_HoldItem = HoldItem; 
-		Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
+		m_HoldItem = HoldItemInst;
+
+		Change_Texture(HoldItemInst.pCashingTexture);
 		Set_Transparent(false);
 		m_Children[0]->UI_Active();
 		static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(false);
