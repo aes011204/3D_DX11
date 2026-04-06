@@ -17,8 +17,7 @@ public:
     _bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
     _float Calculate_HeightOnTerrain(_fvector pPos, _fvector vPointA, _fvector vPointB, _fvector vPointC);
     _bool Compute_HeightOnTerrain(_wstring layerTag, _uint TerrainIndex, _fvector pCurPos, _float* Out);
-    _bool Compute_HeightOnTerrain(_wstring layerTag, _uint TerrainIndex, const _fvector pPos, _float3* Out);
-
+   
 
     const Ray& GetRay() const { return m_CurrentRay; }
 private:

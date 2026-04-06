@@ -128,7 +128,7 @@ const _float4x4* CBody_Player::Get_SocketBoneMatrix(const _char* pBoneName)
 HRESULT CBody_Player::Ready_Components()
 {
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"), TEXT("Com_Model"), &m_pModelCom, nullptr)))

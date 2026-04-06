@@ -39,6 +39,7 @@ private:
 	HRESULT Ready_Fonts();
 	HRESULT Ready_StartLevel(LEVEL eStartLevelID);
 	HRESULT Ready_Prototype_For_Static_Level();
+	HRESULT Ready_Menu_Prototype_For_Static_Level();
 
 	//HRESULT Ready_UI();
 	shared_ptr<class CInventory_Controller> m_Contr = {};

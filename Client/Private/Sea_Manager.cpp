@@ -1,6 +1,6 @@
 #include "Sea_Manager.h"
 #include <numbers>
-
+#include "VIBuffer_Terrain.h"
 IMPLEMENT_SINGLETON(CSea_Manager)
 
 
@@ -19,7 +19,7 @@ HRESULT CSea_Manager::Initialize(/*ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 	m_WaveCount = 3;
 
-	m_waveDesc[0].dir = _float2(1.f, 1.f);
+	m_waveDesc[0].dir = _float2(.67f, .98f);
 	m_waveDesc[0].waveHeight = .43f;
 	m_waveDesc[0].waveLength = 17.f;
 	m_waveDesc[0].speed = 2.5f;
@@ -29,7 +29,7 @@ HRESULT CSea_Manager::Initialize(/*ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 	m_waveDesc[1].waveLength = 7.4f;
 	m_waveDesc[1].speed = 1.8f;
 
-	m_waveDesc[2].dir = _float2(-1.f, .3f);
+	m_waveDesc[2].dir = _float2(-.88f, .3f);
 	m_waveDesc[2].waveHeight = 0.08f;
 	m_waveDesc[2].waveLength = 2.7f;
 	m_waveDesc[2].speed = 1.f;
@@ -46,6 +46,29 @@ void CSea_Manager::Update(float TimeDelta)
 }
 float CSea_Manager::Calculate_GerstnerWave_Overlap(_float3 Pos)
 {
+  
+
+    float relativePosX = Pos.x - TerrainPos.x;
+    float relativePosZ = Pos.z - TerrainPos.z;
+
+    _float2 UV;
+    UV.x = (relativePosX / TerrainSize) + 0.5;
+    UV.y = (-relativePosZ / TerrainSize) + 0.5;
+    UV.x = max(0.0f, min(1.0f, UV.x));
+    UV.y = max(0.0f, min(1.0f, UV.y));
+    float fX = UV.x * (terrain_buffer.lock()->Get_NumVerticeX() - 1);
+    float fZ = UV.y * (terrain_buffer.lock()->Get_NumVerticeZ() - 1);
+    
+    int iX = (int)fX;
+    int iZ = (int)fZ;
+
+    
+    int iIndex = (iZ * terrain_buffer.lock()->Get_NumVerticeX()) + iX;
+    const vector<float>& vec01 = terrain_buffer.lock()->Get_HeightData();
+    float height01 = vec01[iIndex];
+   
+
+
 	_float offsetY = {};
 	for (_uint i = 0; i < m_WaveCount; i++)
 	{
@@ -53,10 +76,10 @@ float CSea_Manager::Calculate_GerstnerWave_Overlap(_float3 Pos)
 		waveDir = XMVector2Normalize(waveDir);
 
 		float RadianWaveLength = (numbers::pi * 2) / m_waveDesc[i].waveLength;
-
-		_float dotXZ = (m_waveDesc[i].dir.x * Pos.x) + (m_waveDesc[i].dir.y * Pos.z);
+        _float2 normalizedDir = m_waveDesc[i].dir;
+		_float dotXZ = (normalizedDir.x * Pos.x) + (normalizedDir.y * Pos.z);
 		float angle = dotXZ * RadianWaveLength - (m_waveDesc[i].speed * m_AccTime);
-		float amplitude = m_waveDesc[i].waveHeight;
+		float amplitude = m_waveDesc[i].waveHeight* height01;
 
 
 		offsetY += amplitude * sin(angle);
@@ -76,6 +99,10 @@ void CSea_Manager::OnGui()
     //ImGui::SliderFloat("Depth Mask (0~1)", &m_depthMask01, 0.0f, 1.0f);
 
     ImGui::DragFloat("AccTime", &m_AccTime, 0.01f);
+
+	ImGui::ColorEdit3("Deep Sea Color", (float*)&deepColor);
+	ImGui::ColorEdit3("Shallow Sea Color", (float*)&shallowColor);
+
 
     ImGui::Separator();
 

@@ -1,6 +1,7 @@
 #include "MainApp.h"
 
 #include <UIImage.h>
+#include <VIBuffer_Cube.h>
 
 #include "GameInstance.h"
 #include "Client_Define.h"
@@ -16,11 +17,13 @@
 #include "Engine_Struct.h"
 #include "Island.h"
 #include "ItemDB.h"
+#include "Sea.h"
 #include "Texture.h"
 
 #include "UI_Controller.h"
 #include "Sea_Manager.h"
-
+#include "Sky.h"
+#include "VIBuffer_Sea.h"
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() },
 	m_pEditorInstance{ CEditorInstance::GetInstance() }
@@ -62,7 +65,8 @@ HRESULT CMainApp::Initialize()
 
 	if (FAILED(Ready_Prototype_For_Static_Level()))
 		return E_FAIL;
-
+	if (FAILED(Ready_Menu_Prototype_For_Static_Level()))
+		return E_FAIL;
 	// UI Pool 채우기 / ready_UI 역할
 	CUI_Controller::GetInstance()->Initialize(m_pDevice, m_pContext);
 	auto SeaManager =CSea_Manager::GetInstance();
@@ -195,7 +199,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	////////////////////////SHADER////////////////////////
 	///
 	/* Prototype_Component_Shader_VtxNorTex */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxNorTex"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
@@ -203,7 +207,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	}
 
 	/* Prototype_Component_Shader_VtxMesh */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
@@ -211,7 +215,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	}
 
 	/* Prototype_Component_Shader_VtxAnimMesh */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
@@ -229,7 +233,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 
 	/* Prototype_Component_Shader_VtxCube */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxCube"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxCube"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxCube");
@@ -237,7 +241,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	}
 
 	/* Prototype_Component_Shader_Sea */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_Sea"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_Sea"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_Sea.hlsl"), VTXPOS::Elements, VTXPOS::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_sea");
@@ -245,7 +249,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	}
 
 	/* Prototype_Component_Shader_VtxMesh_CustomTexture */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh_CustomTexture"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh_CustomTexture"),
 		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMeshCustomTexture.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
@@ -280,15 +284,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
-
-	/* Prototype_GameObject_CEmptyGObject */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_CEmptyGObject"),
-		CEmptyGObject::Create(m_pDevice, m_pContext))))
-	{
-		MSG_BOX("Faild to Add_Prototype : CEmptyGObject");
-		return E_FAIL;
-	}
-
+	
 
 	///////////////////UItexture/////////////////////
 
@@ -754,25 +750,6 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	//	MSG_BOX("Faild to Add_Prototype : CTexture");
 	//	return E_FAIL;
 	//}
-
-	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
-	/* Prototype_Component_Model_Island */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) /** XMMatrixRotationY(XMConvertToRadians(180.f))*/;
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/GreaterMarrow.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
-	{
-		MSG_BOX("Faild to Add_Prototype : GM_Town");
-		return E_FAIL;
-	}
-
-	/* Prototype_GameObject_Island */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Island"),
-		CIsland::Create(m_pDevice, m_pContext))))
-	{
-		MSG_BOX("Faild to Add_Prototype : GameObject_Island");
-		return E_FAIL;
-	}
-
 	/////////////////////////VILLAGE//////////////////////////
 	//Prototype_Component_Texture_VillageUnderBar
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_VillageUnderBar"),
@@ -791,7 +768,153 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	//Prototype_Component_Texture_SleepIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_SleepIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/SleepIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_UndockIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UndockIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/UndockIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_cog_icon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_cog_icon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/cog_icon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_MerchantIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MerchantIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/MerchantIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_FishIconVill
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishIconVill"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/FishIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_StorageIcon
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StorageIcon"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/StorageIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
 	return S_OK;
+}
+
+HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
+{
+	/* Prototype_Component_VIBuffer_Cube */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"),
+		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Cube");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_Sky */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
+	{
+		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_VIBuffer_Sea */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"),
+		CVIBuffer_Sea::Create(m_pDevice, m_pContext, 128, 4))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Sea");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_TerrainHeight
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_Heightmap_1500.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+
+
+	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
+	/* Prototype_Component_Model_Island */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) , XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/island.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+	///* Prototype_Component_Model_Rock0 */
+	//PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock0"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock0.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : GM_Town");
+	//	return E_FAIL;
+	//}
+	/* Prototype_Component_Model_Rock1 */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock0_1.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+	///////////////GameObject////////////////////////
+
+
+	/* Prototype_GameObject_CEmptyGObject */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_CEmptyGObject"),
+		CEmptyGObject::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : CEmptyGObject");
+		return E_FAIL;
+	}
+
+
+
+	/* Prototype_GameObject_Island */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Island"),
+		CIsland::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Island");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_Sky */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sky"),
+		CSky::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Sky");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_Sea */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sea"),
+		CSea::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype :GameObject_Sea");
+		return E_FAIL;
+	}
 }
 
 //HRESULT CMainApp::Ready_UI()

@@ -77,7 +77,7 @@ void CSea::Update(_float fTimeDelta)
 void CSea::Late_Update(_float fTimeDelta)
 {
 	int a = 1;
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CSea>(shared_from_this()));
+	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::BLEND, static_pointer_cast<CSea>(shared_from_this()));
 }
 
 
@@ -109,12 +109,12 @@ void CSea::OnGui()
 
 HRESULT CSea::Ready_Components()
 {
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Sea"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
 		return E_FAIL;
 	m_pVIBufferComCashing = dynamic_pointer_cast<CVIBuffer_Sea> (m_pVIBufferCom);
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_Sea"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_Sea"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Black"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;
@@ -125,7 +125,7 @@ HRESULT CSea::Bind_ShaderResources()
 	auto Sea = m_SeaManager.lock();
 	_float fTime = Sea->Get_AccTime();
 	int WaveCount = Sea->Get_WaveCount();
-	float depthMask01 = Sea->Get_DepthMask01();
+	//float depthMask01 = Sea->Get_DepthMask01();
 	const Wave_Desc* waveDesc = Sea->Get_WaveDescArray();
 
 	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
@@ -136,9 +136,6 @@ HRESULT CSea::Bind_ShaderResources()
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
-		return E_FAIL;
-
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
 
 	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
@@ -167,9 +164,18 @@ HRESULT CSea::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Waves", waveDesc, sizeof(Wave_Desc)*10)))
 		return E_FAIL; // 고정 배열 10
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_depthMask01", &depthMask01, sizeof(int))))
-		return E_FAIL;
+	
 
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_TerrainSize", &Sea->TerrainSize, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_TerrainPos", &Sea->TerrainPos, sizeof(_float3))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_deepColor", &Sea->deepColor, sizeof(_float3))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_shallowColor", &Sea->shallowColor, sizeof(_float3))))
+		return E_FAIL;
+	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_TerrainHeight", 0)))
+		return E_FAIL;
 	return S_OK;
 }
 

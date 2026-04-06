@@ -10,6 +10,7 @@
 #include "UI_TabContainer.h"
 #include "UI_TabContainer.h"
 #include "Inventory_Controller.h"
+#include "Sea_Manager.h"
 #include "UI_Item.h"
 #include "UI_MiniGame.h"
 #include "UI_NPC.h"
@@ -48,6 +49,9 @@ HRESULT CLevel_GamePlay::Initialize()
 
 	if (FAILED(Ready_Layer_Wave(TEXT("Layer_Wave"))))
 		return E_FAIL;
+
+	
+
 
 	return S_OK;
 }
@@ -181,7 +185,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _wstring& strLayerTag)
 
 
 
-	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sky"),
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sky"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 
@@ -269,7 +273,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _wstring& strLayerTag)
 HRESULT CLevel_GamePlay::Ready_Layer_Wave(const _wstring& strLayerTag)
 {
 
-	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sea"),
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sea"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 

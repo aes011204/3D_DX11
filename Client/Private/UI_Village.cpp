@@ -47,6 +47,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 	wstring name = {};
 	VIllAGE_LOCATION eLevel = {};
+	wstring tex = {};
 	for (_uint i = 0; i < 3; i++)
 	{
 		switch (i)
@@ -54,16 +55,17 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		case 0:
 			eLevel = VIllAGE_LOCATION::REPAIR;
 			name = L"조선공";
+			tex = L"Prototype_Component_Texture_MerchantIcon";
 			break;
 		case 1:
 			eLevel = VIllAGE_LOCATION::FISH;
 			name = L"생선장수";
-
+			tex = L"Prototype_Component_Texture_FishIconVill";
 			break;
 		case 2:
 			eLevel = VIllAGE_LOCATION::STORAGE;
 			name = L"내창고";
-
+			tex = L"Prototype_Component_Texture_StorageIcon";
 			break;
 			/*		case 3:
 						eLevel = VIllAGE_LOCATION::BOAT;
@@ -83,29 +85,32 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 
 		{
+
+
 			CUIButton::UIBUTTON_DESC pDesc = {};
 			pDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 			pDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
-			pDesc.OverlapStartEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-			for (auto& it : ch)
-			{
-				if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
-				it->UI_Active();
+			pDesc.TypeIndex = i;
+			pDesc.OverlapStartEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+			//for (auto& it : ch)
+			//{
+				//if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
+				m_Select[pThis->Get_TypeIndex()]->UI_Active();
 				//auto pTransform = dynamic_cast<CUITransform*>(it->Get_Component(g_strUITransformTag).get());
 				//if (pTransform) {
 				//	pTransform->SetLocalScale({ 3.f, 1.8f });
 				//}
 				_float2 tmp = { 4.f, 2.f };
-				it->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 1.f, 0.f, tmp)));
-			}
+				m_Select[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 1.f, 0.f, tmp)));
+			//}
 				};
-			pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-			for (auto& it : ch)
-			{
-				if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
-				it->UI_InActive();
-				it->m_behavior.clear();
-			}
+			pDesc.OverlapEndEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+			//for (auto& it : ch)
+			//{
+				//if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
+				m_Select[pThis->Get_TypeIndex()]->UI_InActive();
+				m_Select[pThis->Get_TypeIndex()]->m_behavior.clear();
+			//}
 				};
 			pDesc.ClickEvent = [this, i, eLevel](CUIButton* pThis) {
 
@@ -137,6 +142,17 @@ HRESULT CUI_Village::OnInit(void* pArg)
 				Text_Name->Initialize(&text_Name);
 
 				pBut->Add_Child(Text_Name, L"text_" + S2W(string(magic_enum::enum_name(eLevel))), false);
+
+
+				CUIImage::UIIMAGE_DESC iconImage{};
+				iconImage.TextureComLevel = ETOI(LEVEL::STATIC);
+				iconImage.TextureProtoName = tex;
+				shared_ptr<CUIImage> icon = CUIImage::Create(m_pDevice, m_pContext);
+				icon->Initialize(&iconImage);
+
+				wstring NameTag2 = L"icon_" + S2W(string(magic_enum::enum_name(eLevel)));
+				pBut->Add_Child(icon, NameTag2, false);
+
 			}
 
 		NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eLevel)));
@@ -162,7 +178,18 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 	for (_uint i = 0; i < 3; i++)
 	{
-
+		switch (i)
+		{
+		case 0:
+			tex = L"Prototype_Component_Texture_UndockIcon";
+			break;
+		case 1:
+			tex = L"Prototype_Component_Texture_SleepIcon";
+			break;
+		case 2:
+			tex = L"Prototype_Component_Texture_cog_icon";
+			break;
+		}
 
 		CUIButton::UIBUTTON_DESC pDesc = {};
 		pDesc.TextureComLevel = ETOI(LEVEL::STATIC);
@@ -213,6 +240,16 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			wstring NameTag1 = L"select_" + to_wstring(i);
 			/*BoatOP->*/underBar->Add_Child(Select, NameTag1, false);
 			m_Select_boat[i] = Select;
+
+
+			CUIImage::UIIMAGE_DESC iconImage{};
+			iconImage.TextureComLevel = ETOI(LEVEL::STATIC);
+			iconImage.TextureProtoName = tex;
+			shared_ptr<CUIImage> icon = CUIImage::Create(m_pDevice, m_pContext);
+			icon->Initialize(&iconImage);
+			
+			wstring NameTag2 = L"icon_" + to_wstring(i);
+			BoatOP->Add_Child(icon, NameTag2, false);
 		}
 	}
 
@@ -223,8 +260,15 @@ HRESULT CUI_Village::OnInit(void* pArg)
 	Title_desc.TextureProtoName = L"Prototype_Component_Texture_TitleBackground";
 	shared_ptr<CUIImage> Title = CUIImage::Create(m_pDevice, m_pContext);
 	Title->Initialize(&Title_desc);
-
 	Add_Child(Title, L"Title", false);
+
+	CUIText::TEXT_DESC textVill_Name = {};
+	textVill_Name.strFontTag = L"Noto_Sans_CJK_SC_32";
+	textVill_Name.strText = L"큰골마을";
+	shared_ptr<CUIText> TextVill = CUIText::Create(m_pDevice, m_pContext);
+	TextVill->Initialize(&textVill_Name);
+
+	Title->Add_Child(TextVill, L"text_Vill", false);
 
 
 

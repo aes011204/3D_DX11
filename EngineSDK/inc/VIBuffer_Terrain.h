@@ -18,11 +18,13 @@ public:
 	_uint Get_NumVerticeX() { return { m_iNumVerticesX }; }
 	_uint Get_NumVerticeZ() { return { m_iNumVerticesX }; }
 	_float3* Get_VtxPos() { return m_VtxPos; };
+	const vector<float>& Get_HeightData() const { return m_vecHeightData; }
 private:
 	_uint				m_iNumVerticesX = {};
 	_uint				m_iNumVerticesZ = {};
 
 	_float3* m_VtxPos = {};
+	vector<float> m_vecHeightData;
 public:
 	static shared_ptr<CVIBuffer_Terrain> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pHeightMapFilePath);
 	virtual shared_ptr<CComponent> Clone(void* pArg);

@@ -12918,7 +12918,66 @@
                 {
                     "Children": [
                         {
-                            "Children": [],
+                            "Children": [
+                                {
+                                    "Children": [],
+                                    "Components": [
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                                            "ComponentTag": "Com_Shader"
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Texture_UndockIcon",
+                                            "ComponentTag": "Com_Texture"
+                                        },
+                                        {
+                                            "AnchorPoint": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "AnchoredPos": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "",
+                                            "ComponentTag": "Com_UITransform",
+                                            "LocalScale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "Pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "RotationRadian": 0.0,
+                                            "SetParentSize": false,
+                                            "SizeDelta": [
+                                                101.26699829101563,
+                                                101.26699829101563
+                                            ]
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                                            "ComponentTag": "Com_VIBuffer"
+                                        }
+                                    ],
+                                    "LayoutTarget": false,
+                                    "PxSliceLRTB": [
+                                        85.33333587646484,
+                                        85.33333587646484,
+                                        85.33333587646484,
+                                        85.33333587646484
+                                    ],
+                                    "UIChildrenTag": "icon_0",
+                                    "UseNineSlice": false,
+                                    "X": 0.0,
+                                    "Y": 0.0
+                                }
+                            ],
                             "Components": [
                                 {
                                     "ComProtoLevel": 0,
@@ -12976,7 +13035,66 @@
                             "Y": 0.0
                         },
                         {
-                            "Children": [],
+                            "Children": [
+                                {
+                                    "Children": [],
+                                    "Components": [
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                                            "ComponentTag": "Com_Shader"
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Texture_SleepIcon",
+                                            "ComponentTag": "Com_Texture"
+                                        },
+                                        {
+                                            "AnchorPoint": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "AnchoredPos": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "",
+                                            "ComponentTag": "Com_UITransform",
+                                            "LocalScale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "Pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "RotationRadian": 0.0,
+                                            "SetParentSize": false,
+                                            "SizeDelta": [
+                                                110.86699676513672,
+                                                110.86699676513672
+                                            ]
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                                            "ComponentTag": "Com_VIBuffer"
+                                        }
+                                    ],
+                                    "LayoutTarget": false,
+                                    "PxSliceLRTB": [
+                                        85.33333587646484,
+                                        85.33333587646484,
+                                        85.33333587646484,
+                                        85.33333587646484
+                                    ],
+                                    "UIChildrenTag": "icon_1",
+                                    "UseNineSlice": false,
+                                    "X": 0.0,
+                                    "Y": 0.0
+                                }
+                            ],
                             "Components": [
                                 {
                                     "ComProtoLevel": 0,
@@ -13034,7 +13152,66 @@
                             "Y": 0.0
                         },
                         {
-                            "Children": [],
+                            "Children": [
+                                {
+                                    "Children": [],
+                                    "Components": [
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                                            "ComponentTag": "Com_Shader"
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Texture_cog_icon",
+                                            "ComponentTag": "Com_Texture"
+                                        },
+                                        {
+                                            "AnchorPoint": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "AnchoredPos": [
+                                                0.0,
+                                                0.0
+                                            ],
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "",
+                                            "ComponentTag": "Com_UITransform",
+                                            "LocalScale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "Pivot": [
+                                                0.5,
+                                                0.5
+                                            ],
+                                            "RotationRadian": 0.0,
+                                            "SetParentSize": false,
+                                            "SizeDelta": [
+                                                85.66699981689453,
+                                                85.66699981689453
+                                            ]
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                                            "ComponentTag": "Com_VIBuffer"
+                                        }
+                                    ],
+                                    "LayoutTarget": false,
+                                    "PxSliceLRTB": [
+                                        85.33333587646484,
+                                        85.33333587646484,
+                                        85.33333587646484,
+                                        85.33333587646484
+                                    ],
+                                    "UIChildrenTag": "icon_2",
+                                    "UseNineSlice": false,
+                                    "X": 0.0,
+                                    "Y": 0.0
+                                }
+                            ],
                             "Components": [
                                 {
                                     "ComProtoLevel": 0,
@@ -13117,8 +13294,8 @@
                                     "ComProtoTag": "",
                                     "ComponentTag": "Com_UITransform",
                                     "LocalScale": [
-                                        1.2860612869262695,
-                                        3.5860612392425537
+                                        1.3478699922561646,
+                                        3.647869825363159
                                     ],
                                     "Pivot": [
                                         0.0,
@@ -13148,7 +13325,7 @@
                             "UseNineSlice": true,
                             "X": 0.0,
                             "Y": 0.0,
-                            "ZOrder": 4
+                            "ZOrder": 2
                         },
                         {
                             "Children": [],
@@ -13176,8 +13353,8 @@
                                     "ComProtoTag": "",
                                     "ComponentTag": "Com_UITransform",
                                     "LocalScale": [
-                                        1.3499397039413452,
-                                        3.64993953704834
+                                        1.3078093528747559,
+                                        3.60780930519104
                                     ],
                                     "Pivot": [
                                         0.5,
@@ -13207,7 +13384,7 @@
                             "UseNineSlice": true,
                             "X": 0.0,
                             "Y": 0.0,
-                            "ZOrder": 4
+                            "ZOrder": 2
                         },
                         {
                             "Children": [],
@@ -13235,8 +13412,8 @@
                                     "ComProtoTag": "",
                                     "ComponentTag": "Com_UITransform",
                                     "LocalScale": [
-                                        1.2975956201553345,
-                                        3.597595691680908
+                                        1.3039214611053467,
+                                        3.603921413421631
                                     ],
                                     "Pivot": [
                                         1.0,
@@ -13266,7 +13443,7 @@
                             "UseNineSlice": true,
                             "X": 0.0,
                             "Y": 0.0,
-                            "ZOrder": 4
+                            "ZOrder": 2
                         }
                     ],
                     "Components": [
@@ -13355,8 +13532,8 @@
                                             "ComProtoTag": "",
                                             "ComponentTag": "Com_UITransform",
                                             "LocalScale": [
-                                                4.049454212188721,
-                                                2.0494544506073
+                                                4.049056053161621,
+                                                2.049056053161621
                                             ],
                                             "Pivot": [
                                                 0.5,
@@ -13384,6 +13561,64 @@
                                     ],
                                     "UIChildrenTag": "Select_FISH",
                                     "UseNineSlice": true,
+                                    "X": 0.0,
+                                    "Y": 0.0
+                                },
+                                {
+                                    "Children": [],
+                                    "Components": [
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                                            "ComponentTag": "Com_Shader"
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Texture_FishIconVill",
+                                            "ComponentTag": "Com_Texture"
+                                        },
+                                        {
+                                            "AnchorPoint": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "AnchoredPos": [
+                                                58.20000076293945,
+                                                0.0
+                                            ],
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "",
+                                            "ComponentTag": "Com_UITransform",
+                                            "LocalScale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "Pivot": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "RotationRadian": 0.0,
+                                            "SetParentSize": false,
+                                            "SizeDelta": [
+                                                41.0,
+                                                30.587295532226563
+                                            ]
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                                            "ComponentTag": "Com_VIBuffer"
+                                        }
+                                    ],
+                                    "LayoutTarget": false,
+                                    "PxSliceLRTB": [
+                                        42.0,
+                                        42.0,
+                                        31.33333396911621,
+                                        31.33333396911621
+                                    ],
+                                    "UIChildrenTag": "icon_FISH",
+                                    "UseNineSlice": false,
                                     "X": 0.0,
                                     "Y": 0.0
                                 },
@@ -13567,8 +13802,8 @@
                                             "ComProtoTag": "",
                                             "ComponentTag": "Com_UITransform",
                                             "LocalScale": [
-                                                4.020111560821533,
-                                                2.0201117992401123
+                                                4.047652721405029,
+                                                2.0476527214050293
                                             ],
                                             "Pivot": [
                                                 0.5,
@@ -13596,6 +13831,64 @@
                                     ],
                                     "UIChildrenTag": "Select_REPAIR",
                                     "UseNineSlice": true,
+                                    "X": 0.0,
+                                    "Y": 0.0
+                                },
+                                {
+                                    "Children": [],
+                                    "Components": [
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                                            "ComponentTag": "Com_Shader"
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Texture_MerchantIcon",
+                                            "ComponentTag": "Com_Texture"
+                                        },
+                                        {
+                                            "AnchorPoint": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "AnchoredPos": [
+                                                58.0,
+                                                0.0
+                                            ],
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "",
+                                            "ComponentTag": "Com_UITransform",
+                                            "LocalScale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "Pivot": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "RotationRadian": 0.0,
+                                            "SetParentSize": false,
+                                            "SizeDelta": [
+                                                38.867000579833984,
+                                                38.867000579833984
+                                            ]
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                                            "ComponentTag": "Com_VIBuffer"
+                                        }
+                                    ],
+                                    "LayoutTarget": false,
+                                    "PxSliceLRTB": [
+                                        39.33333206176758,
+                                        39.33333206176758,
+                                        39.33333206176758,
+                                        39.33333206176758
+                                    ],
+                                    "UIChildrenTag": "icon_REPAIR",
+                                    "UseNineSlice": false,
                                     "X": 0.0,
                                     "Y": 0.0
                                 },
@@ -13779,8 +14072,8 @@
                                             "ComProtoTag": "",
                                             "ComponentTag": "Com_UITransform",
                                             "LocalScale": [
-                                                4.0245819091796875,
-                                                2.0245816707611084
+                                                3.975863456726074,
+                                                1.9758633375167847
                                             ],
                                             "Pivot": [
                                                 0.5,
@@ -13808,6 +14101,64 @@
                                     ],
                                     "UIChildrenTag": "Select_STORAGE",
                                     "UseNineSlice": true,
+                                    "X": 0.0,
+                                    "Y": 0.0
+                                },
+                                {
+                                    "Children": [],
+                                    "Components": [
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Shader_VtxTex",
+                                            "ComponentTag": "Com_Shader"
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_Texture_StorageIcon",
+                                            "ComponentTag": "Com_Texture"
+                                        },
+                                        {
+                                            "AnchorPoint": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "AnchoredPos": [
+                                                58.099998474121094,
+                                                0.0
+                                            ],
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "",
+                                            "ComponentTag": "Com_UITransform",
+                                            "LocalScale": [
+                                                1.0,
+                                                1.0
+                                            ],
+                                            "Pivot": [
+                                                0.0,
+                                                0.5
+                                            ],
+                                            "RotationRadian": 0.0,
+                                            "SetParentSize": false,
+                                            "SizeDelta": [
+                                                36.96699905395508,
+                                                36.96699905395508
+                                            ]
+                                        },
+                                        {
+                                            "ComProtoLevel": 0,
+                                            "ComProtoTag": "Prototype_Component_VIBuffer_Rect",
+                                            "ComponentTag": "Com_VIBuffer"
+                                        }
+                                    ],
+                                    "LayoutTarget": false,
+                                    "PxSliceLRTB": [
+                                        35.33333206176758,
+                                        35.33333206176758,
+                                        35.33333206176758,
+                                        35.33333206176758
+                                    ],
+                                    "UIChildrenTag": "icon_STORAGE",
+                                    "UseNineSlice": false,
                                     "X": 0.0,
                                     "Y": 0.0
                                 },

@@ -67,55 +67,100 @@ void CManagerWin::Render()
 			}
 		}
 	}
+	//if (m_PickMode == true)
+	//{
+	//	
+	//	_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
+	//	_float3 Out = {};
+
+	//	if (CGameInstance::GetInstance()->Picking_Terrain(L"Layer_BackGround", 0, &Out))
+	//	{
+	//		LOG_F(LOG_LEVEL::INFO, "x: %.2f  y: %.2f  z: %.2f", Out.x, Out.y, Out.z);
+
+	//		if (m_pPreview == nullptr)
+	//		{
+	//		m_pPreview = (CGameInstance::GetInstance()->Add_GameObject(m_iSelectedLevel, m_strSelectedTag, iCurrentLevel, L"Static"));
+	//		if (nullptr == m_pPreview)
+	//		{
+	//			MSG_BOX("Failed to Add GameObject to Layer");
+	//		}
+	//		
+
+	//		}
+	//		Out.y += 0.1f;
+	//		if (m_pPreview)
+	//		{
+	//			auto transform = dynamic_pointer_cast<CTransform>(m_pPreview->Get_Component(g_strTransformTag));
+	//			if (transform != nullptr)
+	//			{
+	//			_vector vec4 = XMVectorSetW(XMLoadFloat3(&Out), 1.f);
+	//			transform->Set_Position( vec4);
+
+	//			}
+
+	//		}
+
+	//		// 만일 마우스 클릭을하면 끝
+	//		if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON))
+	//		{
+
+	//			m_PickMode = false;
+	//			m_pPreview = nullptr;
+	//		}
+
+	//	}
+	//	if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::RBUTTON))
+	//	{
+	//		m_PickMode = false;
+	//		m_pPreview = nullptr;
+	//	}
+	//}
 	if (m_PickMode == true)
 	{
-		
 		_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
-		_float3 Out = {};
 
-		if (CGameInstance::GetInstance()->Picking_Terrain(L"Layer_BackGround", 0, &Out))
+		if (m_pPreview == nullptr)
 		{
-			LOG_F(LOG_LEVEL::INFO, "x: %.2f  y: %.2f  z: %.2f", Out.x, Out.y, Out.z);
+			m_pPreview = CGameInstance::GetInstance()->Add_GameObject(
+				m_iSelectedLevel,
+				m_strSelectedTag,
+				iCurrentLevel,
+				L"Static"
+			);
 
-			if (m_pPreview == nullptr)
-			{
-			m_pPreview = (CGameInstance::GetInstance()->Add_GameObject(m_iSelectedLevel, m_strSelectedTag, iCurrentLevel, L"Static"));
 			if (nullptr == m_pPreview)
 			{
 				MSG_BOX("Failed to Add GameObject to Layer");
 			}
-			
-
-			}
-			Out.y += 0.1f;
-			if (m_pPreview)
+			else
 			{
-				auto transform = dynamic_pointer_cast<CTransform>(m_pPreview->Get_Component(g_strTransformTag));
-				if (transform != nullptr)
+				
+				auto transform = dynamic_pointer_cast<CTransform>(
+					m_pPreview->Get_Component(g_strTransformTag)
+				);
+
+				if (transform)
 				{
-				_vector vec4 = XMVectorSetW(XMLoadFloat3(&Out), 1.f);
-				transform->Set_Position( vec4);
-
+					_vector vec = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+					transform->Set_Position(vec);
 				}
-
 			}
-
-			// 만일 마우스 클릭을하면 끝
-			if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON))
-			{
-
-				m_PickMode = false;
-				m_pPreview = nullptr;
-			}
-
 		}
-		if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::RBUTTON))
+
+		
+		//if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON))
+		//{
+			m_PickMode = false;
+			m_pPreview = nullptr;
+	/*	}*/
+
+		
+		/*if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::RBUTTON))
 		{
 			m_PickMode = false;
 			m_pPreview = nullptr;
-		}
+		}*/
 	}
-
 	ImGui::End();
 }
 

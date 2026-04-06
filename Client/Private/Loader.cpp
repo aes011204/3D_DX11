@@ -144,13 +144,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
-	/* Prototype_Component_Texture_Sky */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Sky"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
-	{
-		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
-		return E_FAIL;
-	}
+	///* Prototype_Component_Texture_Sky */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Sky"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : BackGround Texture");
+	//	return E_FAIL;
+	//}
 
 
 	lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
@@ -195,13 +195,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
-	/* Prototype_Component_VIBuffer_Sea */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Sea"),
-		CVIBuffer_Sea::Create(m_pDevice, m_pContext,128,4))))
-	{
-		MSG_BOX("Faild to Add_Prototype : VIBuffer_Sea");
-		return E_FAIL;
-	}
+	///* Prototype_Component_VIBuffer_Sea */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Sea"),
+	//	CVIBuffer_Sea::Create(m_pDevice, m_pContext,128,4))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : VIBuffer_Sea");
+	//	return E_FAIL;
+	//}
 
 
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
@@ -262,21 +262,21 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
-	/* Prototype_GameObject_Sea */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sea"),
-		CSea::Create(m_pDevice, m_pContext))))
-	{
-		MSG_BOX("Faild to Add_Prototype :GameObject_Sea");
-		return E_FAIL;
-	}
+	///* Prototype_GameObject_Sea */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sea"),
+	//	CSea::Create(m_pDevice, m_pContext))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype :GameObject_Sea");
+	//	return E_FAIL;
+	//}
 
-	/* Prototype_Component_VIBuffer_Cube */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Cube"),
-		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
-	{
-		MSG_BOX("Faild to Add_Prototype : VIBuffer_Cube");
-		return E_FAIL;
-	}
+	///* Prototype_Component_VIBuffer_Cube */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Cube"),
+	//	CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : VIBuffer_Cube");
+	//	return E_FAIL;
+	//}
 
 
 	/* Prototype_GameObject_Monster */
@@ -314,13 +314,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 
-	/* Prototype_GameObject_Sky */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sky"),
-		CSky::Create(m_pDevice, m_pContext))))
-	{
-		MSG_BOX("Faild to Add_Prototype : GameObject_Sky");
-		return E_FAIL;
-	}
+	///* Prototype_GameObject_Sky */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sky"),
+	//	CSky::Create(m_pDevice, m_pContext))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : GameObject_Sky");
+	//	return E_FAIL;
+	//}
 
 
 

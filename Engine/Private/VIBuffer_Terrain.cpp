@@ -12,6 +12,7 @@ CVIBuffer_Terrain::CVIBuffer_Terrain(const CVIBuffer_Terrain& Prototype)
 {
 	m_VtxPos = new _float3[m_iNumVertices];
 	memcpy(m_VtxPos, Prototype.m_VtxPos, sizeof(_float3) * m_iNumVertices);
+	m_vecHeightData = Prototype.m_vecHeightData;
 }
 
 HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath)
@@ -84,6 +85,14 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 			size_t iIndex = i * m_iNumVerticesX + j;
 
 			float fHeight = 0.f;
+
+			float fHeightRatio = 0.0f; // 0.0 ~ 1.0 비율만 담을 임시 변수
+
+			if (pRawPixels)
+			{
+				fHeightRatio = pRawPixels[iIndex] / 65535.0f;
+			}
+			m_vecHeightData.push_back(fHeightRatio);
 
 			if (pRawPixels) // RAW일 때 높이 계산 (16비트)
 				fHeight = (pRawPixels[iIndex] / 65535.0f) * 99.8f;
@@ -192,7 +201,7 @@ HRESULT CVIBuffer_Terrain::Initialize_Prototype(const _tchar* pHeightMapFilePath
 
 	CloseHandle(hFile);
 
-
+	
 	return S_OK;
 
 }
@@ -230,5 +239,6 @@ void CVIBuffer_Terrain::Free()
 
 	__super::Free();
 	delete[] m_VtxPos;
+	m_vecHeightData.clear();
 
 }
