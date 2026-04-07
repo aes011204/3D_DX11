@@ -93,122 +93,128 @@ float3 Calculate_GerstnerWave_Overlap(float3 Pos, float2 waveDir, float waveHeig
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
-    //
-    //// 매쉬 배수
-    //float3 scaledPos = In.vPosition;
-    //scaledPos.x *= g_Scale;
-    //scaledPos.z *= g_Scale;
-    //
-    ////모핑
-    //float nextScale = g_Scale * 2.0f;
-    //float2 connectXZ;
-    //
-    //connectXZ.x = floor((scaledPos.x / nextScale) + 0.5f) * nextScale; 
-    //connectXZ.y = floor((scaledPos.z / nextScale) + 0.5f) * nextScale;
-    //// nextScale나눠서 1 단위로 만들고 0.5+후 소숫점 무시 후 다시 곱해서 원래 사이즈로 복구
-    //
-    //float maxPoint = max(abs(In.vPosition.x), abs(In.vPosition.z));
-    //float alpha = saturate((maxPoint - 48.0f) / 8.f); //saturate : 0-1 사이의 값만 남김
-    //// 이 수치는 바다 크기에 따라 다르게 줘야함0.75
-    //float2 finalXZ = lerp(scaledPos.xz, connectXZ, alpha);
-    //
-    //float3 pos = float3(finalXZ.x, scaledPos.y, finalXZ.y); // pos  로컬 좌표
-    /////스냅핑
-    //float4x4 snappedWorld = g_WorldMatrix;
-    //float cellsize = 1.f;
-    //snappedWorld._41 = floor(snappedWorld._41 / cellsize) * cellsize;
-    //snappedWorld._43 = floor(snappedWorld._43 / cellsize) * cellsize;
-    //
-    //float4 worldPos = mul(float4(pos, 1.f), snappedWorld);
-    //
-    //Out.vWorldPos = worldPos;
-    //
-// U//V 하이트 매ㅐㅂ
-    //    // Terrain
-   //// g_TerrainPos;
-    //float relativePosX = worldPos.x - g_TerrainPos.x;
-    //float relativePosZ = worldPos.z - g_TerrainPos.z;
-    //
+    
+    // 매쉬 배수
+    float3 scaledPos = In.vPosition;
+    scaledPos.x *= g_Scale;
+    scaledPos.z *= g_Scale;
+    
+    //모핑
+    float nextScale = g_Scale * 2.0f;
+    float2 connectXZ;
+    
+    connectXZ.x = floor((scaledPos.x / nextScale) + 0.5f) * nextScale;
+    connectXZ.y = floor((scaledPos.z / nextScale) + 0.5f) * nextScale;
+    // nextScale나눠서 1 단위로 만들고 0.5+후 소숫점 무시 후 다시 곱해서 원래 사이즈로 복구
+    
+    float maxPoint = max(abs(In.vPosition.x), abs(In.vPosition.z));
+    float alpha = saturate((maxPoint - 48.0f) / 8.f); //saturate : 0-1 사이의 값만 남김
+    // 이 수치는 바다 크기에 따라 다르게 줘야함0.75
+    float2 finalXZ = lerp(scaledPos.xz, connectXZ, alpha);
+    
+    float3 pos = float3(finalXZ.x, scaledPos.y, finalXZ.y); // pos  로컬 좌표
+    ///스냅핑
+    float4x4 snappedWorld = g_WorldMatrix;
+    float cellsize = 1.f;
+    snappedWorld._41 = floor(snappedWorld._41 / cellsize) * cellsize;
+    snappedWorld._43 = floor(snappedWorld._43 / cellsize) * cellsize;
+    
+    float4 worldPos = mul(float4(pos, 1.f), snappedWorld);
+    
+    Out.vWorldPos = worldPos;
+    
+// UV 하이트 매ㅐㅂ
+        // Terrain
+   // g_TerrainPos;
+    float relativePosX = worldPos.x - g_TerrainPos.x;
+    float relativePosZ = worldPos.z - g_TerrainPos.z;
+    
     //float2 UV;
     //UV.x = (relativePosX / g_TerrainSize) + 0.5;
     //UV.y = (-relativePosZ / g_TerrainSize) + 0.5;
     //Out.height01 = g_TerrainHeight.SampleLevel(DefaultSampler, UV, 0).r;
-    //
-    //
-	//float3 offset = float3(0, 0, 0);
-	//float3 pZ = float3(0, 0, 0);
-    //float3 pX = float3(0, 0, 0);
-    //
-    //for (int i = 0; i < g_WaveCount;i++)
-    //{
-    //    offset += Calculate_GerstnerWave_Overlap
-    //	(worldPos, g_Waves[i].g_Dir, g_Waves[i].g_WaveHeight * Out.height01, g_Waves[i].g_WaveLength, g_Waves[i].g_Speed, g_Time);
-    //
-    //	pZ += Calculate_GerstnerWave_Overlap
-    //	(worldPos + float4(0.f, 0.f, 0.1f, 0.f), g_Waves[i].g_Dir, g_Waves[i].g_WaveHeight * Out.height01, g_Waves[i].g_WaveLength, g_Waves[i].g_Speed, g_Time);
-    //    pX += Calculate_GerstnerWave_Overlap
-    //	(worldPos + float4(0.1f, 0.f, 0.f, 0.f), g_Waves[i].g_Dir, g_Waves[i].g_WaveHeight * Out.height01, g_Waves[i].g_WaveLength, g_Waves[i].g_Speed, g_Time);
-	//    
-    //}
-    //
-    //
-    //float3 wavefinal = worldPos + offset;
-    //
-    //float4x4 matVP = mul(g_ViewMatrix, g_ProjMatrix);
-   //// matWVP = mul(matWV, g_ProjMatrix);
-    //
-    //Out.vPosition = mul(float4(wavefinal, 1.f), matVP);
-    //     // Out.vTexcoord = In.vTexcoord;
-    //     // Out.vNormal = normalize(mul(float4(In.vNormal, 0.f),g_WorldMatrix)); //받아온 노말은 지역이라 월드좌표로 차원맞춰줘야함. 노말라이즈는 픽셀 쉐이더 에서 하는것보다 여기서 하는게 성능상 이점
-    //     // Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix); // 나중 계산을 위해 z 나누기, 뷰,투영 없는 거 저장 
-    //
-    //float3 look = (worldPos + float3(0.0f, 0.0f, 0.1f) + pZ) - wavefinal;
-    //
-    //float3 right = (worldPos + float3(0.1f, 0.0f, 0.f) + pX) - wavefinal;
-    //
-    //Out.vNormal = float4(normalize(cross(look, right)),1.f);
-    
-    // 1. 스케일
-    float3 scaledPos = In.vPosition;
-    scaledPos.x *= g_Scale;
-    scaledPos.z *= g_Scale;
-
-    // 2. 모핑
-    float nextScale = g_Scale * 2.0f;
-    float2 connectXZ = floor((scaledPos.xz / nextScale) + 0.5f) * nextScale;
-    float maxPoint = max(abs(In.vPosition.x), abs(In.vPosition.z));
-    float alpha = saturate((maxPoint - 48.0f) / 8.f);
-    float2 finalXZ = lerp(scaledPos.xz, connectXZ, alpha);
-
-    // 3. 월드 좌표
-    float4x4 snappedWorld = g_WorldMatrix;
-    snappedWorld._41 = floor(g_WorldMatrix._41);
-    snappedWorld._43 = floor(g_WorldMatrix._43);
-
-    float4 worldPos = mul(float4(finalXZ.x, scaledPos.y, finalXZ.y, 1.0f), snappedWorld);
-
-    //  4. UV 계산 (수정됨)
     float2 UV;
     UV.x = (worldPos.x - g_TerrainPos.x) / g_TerrainSize;
-    UV.y = 1.0f - ((worldPos.z - g_TerrainPos.z) / g_TerrainSize);
-    float h01 = g_TerrainHeight.SampleLevel(DefaultSampler, UV, 0).r;
-
-
-    // 6. 높이 적용
-    float3 wavefinal = worldPos.xyz;
-    wavefinal.y += h01 * 100.0f - 100.0f;
-
-    // 7. 출력
+    UV.y = 1.0f -((worldPos.z - g_TerrainPos.z) / g_TerrainSize);
+    UV = saturate(UV);
+    Out.height01 = min(1.f - g_TerrainHeight.SampleLevel(DefaultSampler, UV, 0).r, 0.2f);
+    
+    float3 offset = float3(0, 0, 0);
+    float3 pZ = float3(0, 0, 0);
+    float3 pX = float3(0, 0, 0);
+    
+    for (int i = 0; i < g_WaveCount; i++)
+    {
+        offset += Calculate_GerstnerWave_Overlap
+    	(worldPos, g_Waves[i].g_Dir, g_Waves[i].g_WaveHeight * Out.height01, g_Waves[i].g_WaveLength, g_Waves[i].g_Speed, g_Time);
+    
+        pZ += Calculate_GerstnerWave_Overlap
+    	(worldPos + float4(0.f, 0.f, 0.1f, 0.f), g_Waves[i].g_Dir, g_Waves[i].g_WaveHeight * Out.height01, g_Waves[i].g_WaveLength, g_Waves[i].g_Speed, g_Time);
+        pX += Calculate_GerstnerWave_Overlap
+    	(worldPos + float4(0.1f, 0.f, 0.f, 0.f), g_Waves[i].g_Dir, g_Waves[i].g_WaveHeight * Out.height01, g_Waves[i].g_WaveLength, g_Waves[i].g_Speed, g_Time);
+	    
+    }
+    
+    
+    float3 wavefinal = worldPos + offset;
+    
     float4x4 matVP = mul(g_ViewMatrix, g_ProjMatrix);
-    Out.vPosition = mul(float4(wavefinal, 1.0f), matVP);
+   // matWVP = mul(matWV, g_ProjMatrix);
+    
+    Out.vPosition = mul(float4(wavefinal, 1.f), matVP);
+         // Out.vTexcoord = In.vTexcoord;
+         // Out.vNormal = normalize(mul(float4(In.vNormal, 0.f),g_WorldMatrix)); //받아온 노말은 지역이라 월드좌표로 차원맞춰줘야함. 노말라이즈는 픽셀 쉐이더 에서 하는것보다 여기서 하는게 성능상 이점
+         // Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix); // 나중 계산을 위해 z 나누기, 뷰,투영 없는 거 저장 
+    
+    float3 look = (worldPos + float3(0.0f, 0.0f, 0.1f) + pZ) - wavefinal;
+    
+    float3 right = (worldPos + float3(0.1f, 0.0f, 0.f) + pX) - wavefinal;
+    
+    Out.vNormal = float4(normalize(cross(look, right)), 1.f);
 
-    //  중요 수정
-    Out.vWorldPos = float4(wavefinal, 1.0f);
-
-    Out.height01 = h01;
-
-    // 일단 노말 고정 (디버그용)
-    Out.vNormal = float4(0.0f, 1.0f, 0.0f, 0.0f);
+   
+    ////////////////////////////////////////////////////////////////////////////////
+   // // 1. 스케일
+   // float3 scaledPos = In.vPosition;
+   // scaledPos.x *= g_Scale;
+   // scaledPos.z *= g_Scale;
+   // 
+   // // 2. 모핑
+   // float nextScale = g_Scale * 2.0f;
+   // float2 connectXZ = floor((scaledPos.xz / nextScale) + 0.5f) * nextScale;
+   // float maxPoint = max(abs(In.vPosition.x), abs(In.vPosition.z));
+   // float alpha = saturate((maxPoint - 48.0f) / 8.f);
+   // float2 finalXZ = lerp(scaledPos.xz, connectXZ, alpha);
+   // 
+   // // 3. 월드 좌표
+   // float4x4 snappedWorld = g_WorldMatrix;
+   // snappedWorld._41 = floor(g_WorldMatrix._41);
+   // snappedWorld._43 = floor(g_WorldMatrix._43);
+   // 
+   // float4 worldPos = mul(float4(finalXZ.x, scaledPos.y, finalXZ.y, 1.0f), snappedWorld);
+   // 
+   // //  4. UV 계산 (수정됨)
+   // float2 UV;
+   // UV.x = (worldPos.x - g_TerrainPos.x) / g_TerrainSize;
+   // UV.y = 1.0f - ((worldPos.z - g_TerrainPos.z) / g_TerrainSize);
+   // float h01 = g_TerrainHeight.SampleLevel(DefaultSampler, UV, 0).r;
+   // 
+   // 
+   // // 6. 높이 적용
+   // float3 wavefinal = worldPos.xyz;
+   // wavefinal.y += h01 * 100.0f - 100.0f;
+   // 
+   // // 7. 출력
+   // float4x4 matVP = mul(g_ViewMatrix, g_ProjMatrix);
+   // Out.vPosition = mul(float4(wavefinal, 1.0f), matVP);
+   // 
+   // //  중요 수정
+   // Out.vWorldPos = float4(wavefinal, 1.0f);
+   // 
+   // Out.height01 = h01;
+   // 
+   // // 일단 노말 고정 (디버그용)
+   // Out.vNormal = float4(0.0f, 1.0f, 0.0f, 0.0f);
 
 
     return Out;
@@ -251,6 +257,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
     float finalAlpha = saturate(Alpha + vSpecularColor.x + fresnel);
     Out.vColor = float4(finalRGB, finalAlpha);
+    //Out.vColor = float4(In.height01.xxx, 1);
     return Out;
 }
 
@@ -316,7 +323,7 @@ technique11 DefaultTechnique
 {
     pass DefaultTechnique
     {
-        SetRasterizerState(RS_WireFrame);
+        SetRasterizerState(RS_Default);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

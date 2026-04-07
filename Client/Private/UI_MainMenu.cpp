@@ -11,6 +11,7 @@
 #include "GameInstance.h"
 #include "Level_Loading.h"
 #include "Engine_Helper.h"
+#include "FadeModifier.h"
 
 CUI_MainMenu::CUI_MainMenu(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
     :CUIPanel(pDevice, pContext)
@@ -78,6 +79,8 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 				//it->m_bIsDirtyCom = true;
 				it->m_behavior.push_back((make_shared<CScaleModifier>(0.1f, 2.f, 0.f, tmp)));
 			}
+			CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
+				make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .1f, false, _float4{ 0.f,0.f,0.f,0.f }));
 				};
 			pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			for (auto& it : ch)

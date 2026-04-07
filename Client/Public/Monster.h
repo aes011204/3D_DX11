@@ -40,6 +40,16 @@ public:
 
 protected:
     HRESULT Ready_Components();
+
+    // 손에 콜라이더
+    const _float4x4* m_pSocketMatrix_RightHand = { nullptr };
+    const _float4x4* m_pSocketMatrix_LefttHand = { nullptr };
+
+    XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
+    {
+        return ChildrenMatrix * XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix());
+    }
+
 private:
 
     _uint m_AnimIndex = {};
@@ -50,7 +60,11 @@ private:
     shared_ptr<CModel> m_pModelCom = { nullptr }; 
     shared_ptr<CTexture> m_pTextureCom = { nullptr };
     shared_ptr<CCollider> m_pColliderCom = { nullptr };
+
+    shared_ptr<CCollider> m_Hand_Collider_1 = { nullptr };
+    shared_ptr<CCollider> m_Hand_Collider_2 = { nullptr };
 public:
+
     static shared_ptr<CMonster> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     shared_ptr<CGameObject> Clone(void* pArg) override;
     void Free() override;

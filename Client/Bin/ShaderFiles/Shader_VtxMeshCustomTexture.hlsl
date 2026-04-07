@@ -100,6 +100,8 @@ PS_OUT PS_MAIN(PS_IN In)
     float SandGlass = step(g_ColorLamp1, In.vWorldPos.y);
     float4 SandGlassColor = lerp(g_SandColor, g_GrassColor, SandGlass);
     In.vNormal = normalize(In.vNormal);
+
+
     // vNormal.y가 크면 하늘을 바라보는면
     float rockUp = step(g_ColorLamp2, In.vNormal.y);
     float4 finalColor = lerp(g_RockColor, SandGlassColor, rockUp);

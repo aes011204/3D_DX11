@@ -78,15 +78,77 @@ HRESULT CEmptyGObject::Render()
 
 void CEmptyGObject::OnGui()
 {
+	ImGui::Checkbox("Custom Shader", &m_bCustomS);
+
+	if (m_bCustomS == false)
+		return;
+	ImGui::DragFloat("Lamp 1 Intensity", &m_ColorLamp1, 0.1f, 0.0f, 0.0f, "%.2f");
+
+	ImGui::SliderFloat("Lamp 2 Intensity", &m_ColorLamp2, 0.0f, 1.0f, "%.3f");
+
+	ImGui::Separator();
+
+
+
+	ImGui::Text("Terrain Colors (RGBA)");
+
+	ImGui::ColorEdit4("Sand Color", (float*)&m_SandColor);
+
+	ImGui::ColorEdit4("Rock Color", (float*)&m_RockColor);
+
+	ImGui::ColorEdit4("Grass Color", (float*)&m_GrassColor);
+
 }
 
+void CEmptyGObject::Save_ToJson(nlohmann::json& j)
+{
+
+	CGameObject::Save_ToJson(j);
+
+	if (m_bCustomS == false)
+		return;
+	j["bool_CustomShader"] = m_bCustomS;
+	j["ColorLamp1"] = m_ColorLamp1;
+	j["ColorLamp2"] = m_ColorLamp2;
+
+	j["SandColor"] = { m_SandColor.x, m_SandColor.y, m_SandColor.z, m_SandColor.w };
+	j["RockColor"] = { m_RockColor.x, m_RockColor.y, m_RockColor.z, m_RockColor.w };
+	j["GrassColor"] = { m_GrassColor.x, m_GrassColor.y, m_GrassColor.z, m_GrassColor.w };
+
+}
+
+void CEmptyGObject::Load_FromJson(nlohmann::json& j)
+{
+
+	CGameObject::Load_FromJson(j);
+
+	if (m_bCustomS == false)
+		return;
+	m_bCustomS = j["bool_CustomShader"];
+
+	m_ColorLamp1 = j["ColorLamp1"];
+	m_ColorLamp2 = j["ColorLamp2"];
+
+	auto sand = j["SandColor"];
+	m_SandColor = { sand[0], sand[1], sand[2], sand[3] };
+
+	auto rock = j["RockColor"];
+	m_RockColor = { rock[0], rock[1], rock[2], rock[3] };
+
+	auto grass = j["GrassColor"];
+	m_GrassColor = { grass[0], grass[1], grass[2], grass[3] };
+
+
+}
 void CEmptyGObject::RebindCom()
 {
 	// 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
 	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
 	m_pModelCom = Get_Component<CModel>(L"Com_Model");
 	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
-	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+	m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+
+
 }
 
 HRESULT CEmptyGObject::Bind_ShaderResources()
@@ -118,6 +180,21 @@ HRESULT CEmptyGObject::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;
 
+
+
+	if (m_bCustomS == true)
+	{
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorLamp1", &m_ColorLamp1, sizeof(_float))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorLamp2", &m_ColorLamp2, sizeof(_float))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_SandColor", &m_SandColor, sizeof(_float4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_RockColor", &m_RockColor, sizeof(_float4))))
+			return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_RawValue("g_GrassColor", &m_GrassColor, sizeof(_float4))))
+			return E_FAIL;
+	}
 	return S_OK;
 }
 

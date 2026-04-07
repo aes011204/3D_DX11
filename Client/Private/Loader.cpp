@@ -236,7 +236,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	}
 
 	/* Prototype_Component_Model_PlayerBoat */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	PreLocalTransformMatrix = XMMatrixScaling(0.008f, 0.008f, 0.008f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Boat/PlayerBoat3.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
 	{
@@ -248,6 +248,15 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	PreLocalTransformMatrix =  XMMatrixScaling(0.01f,0.01f,0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Town"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/GM_TOWN/GM_Town_tx.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Model_Island_Collector */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) /** XMMatrixRotationY(XMConvertToRadians(180.f))*/;
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Island_Collector"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/Island_collector.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;

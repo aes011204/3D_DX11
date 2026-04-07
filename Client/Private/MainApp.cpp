@@ -879,6 +879,14 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
+
+
+		if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_LightHouse"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/LightHouse/LightHouse_tex.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
 	///////////////GameObject////////////////////////
 
 

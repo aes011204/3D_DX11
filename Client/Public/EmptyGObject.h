@@ -21,14 +21,23 @@ public:
 
     virtual void OnGui() override;
 
+    void Save_ToJson(nlohmann::json& j) override;
+    void Load_FromJson(nlohmann::json& j) override;
+
+
     virtual void RebindCom();
     HRESULT Bind_ShaderResources();
 
 protected:
     HRESULT Ready_Components();
 private:
+    float m_ColorLamp1 = {};
+    float m_ColorLamp2 = {};
 
-
+    _float4 m_SandColor = {};
+    _float4 m_RockColor = {};
+    _float4 m_GrassColor = {};
+    bool m_bCustomS=false;
 private:
 
     shared_ptr<CShader> m_pShaderCom = { nullptr };

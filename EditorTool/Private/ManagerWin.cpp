@@ -128,38 +128,22 @@ void CManagerWin::Render()
 				L"Static"
 			);
 
-			if (nullptr == m_pPreview)
+			if (m_PickMode == true)
 			{
-				MSG_BOX("Failed to Add GameObject to Layer");
-			}
-			else
-			{
-				
-				auto transform = dynamic_pointer_cast<CTransform>(
-					m_pPreview->Get_Component(g_strTransformTag)
+				_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
+
+				CGameInstance::GetInstance()->Add_GameObject(
+					m_iSelectedLevel,
+					m_strSelectedTag,
+					iCurrentLevel,
+					L"Static"
 				);
 
-				if (transform)
-				{
-					_vector vec = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-					transform->Set_Position(vec);
-				}
+				m_PickMode = false;
 			}
+
+			m_pPreview = nullptr;
 		}
-
-		
-		//if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON))
-		//{
-			m_PickMode = false;
-			m_pPreview = nullptr;
-	/*	}*/
-
-		
-		/*if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::RBUTTON))
-		{
-			m_PickMode = false;
-			m_pPreview = nullptr;
-		}*/
 	}
 	ImGui::End();
 }

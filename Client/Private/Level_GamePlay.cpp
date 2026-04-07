@@ -92,6 +92,8 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 			return;
 	}
 
+
+
 	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
 	{
 		CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(

@@ -201,7 +201,7 @@ HRESULT CPlayerBoat::Ready_Components()
 	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
 	OBBDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	OBBDesc.MyLayer = COLLISION_LAYER::PLAYER;
-	OBBDesc.OtherMask = COLLISION_LAYER::TRIGGER;
+	OBBDesc.OtherMask = COLLISION_LAYER::TRIGGER | COLLISION_LAYER::MONSTERATT;
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
 		return E_FAIL;
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);

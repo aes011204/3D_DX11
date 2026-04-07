@@ -50,7 +50,6 @@ bool CData_Manager::ClearMap(SAVETYPE eDATATYPE)
 
 	if (eDATATYPE == SAVETYPE::END)
 		return false;
-
 	_uint iCurLevel = m_pGameInstance.lock()->Get_Current_LevelIdx();
 	if (eDATATYPE == SAVETYPE::GAMEOBJECT)
 	{
@@ -145,11 +144,11 @@ HRESULT CData_Manager::Load_ObjData(const string& fileName)
 		return E_FAIL;
 	}
 
-	if (j["Level"] != m_EditorLevel)
-	{
-		MSG_BOX("This File is not Saved IN Editor");
-		return E_FAIL;
-	}
+//	if (j["Level"] != m_EditorLevel)
+//	{
+//		MSG_BOX("This File is not Saved IN Editor");
+//		return E_FAIL;
+//	}
 	if (j.contains("WorldGameObject"))
 	{
 		for (auto& jObj : j["WorldGameObject"])

@@ -53,6 +53,7 @@ namespace Engine
 		TRIGGER = 1 << 3,
 		ITEM = 1 << 4,
 		UI = 1 << 5,
+		MONSTERATT = 1 << 6,
 		ALL= 0xffffffff,
 		END 
 	};

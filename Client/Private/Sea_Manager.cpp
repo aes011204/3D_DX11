@@ -48,12 +48,12 @@ float CSea_Manager::Calculate_GerstnerWave_Overlap(_float3 Pos)
 {
   
 
-    float relativePosX = Pos.x - TerrainPos.x;
-    float relativePosZ = Pos.z - TerrainPos.z;
+    //float relativePosX = Pos.x - TerrainPos.x;
+    //float relativePosZ = Pos.z - TerrainPos.z;
 
     _float2 UV;
-    UV.x = (relativePosX / TerrainSize) + 0.5;
-    UV.y = (-relativePosZ / TerrainSize) + 0.5;
+    UV.x = (Pos.x - TerrainPos.x) / TerrainSize;
+    UV.y = 1.0f - ((Pos.z - TerrainPos.z) / TerrainSize);
     UV.x = max(0.0f, min(1.0f, UV.x));
     UV.y = max(0.0f, min(1.0f, UV.y));
     float fX = UV.x * (terrain_buffer.lock()->Get_NumVerticeX() - 1);
@@ -65,7 +65,7 @@ float CSea_Manager::Calculate_GerstnerWave_Overlap(_float3 Pos)
     
     int iIndex = (iZ * terrain_buffer.lock()->Get_NumVerticeX()) + iX;
     const vector<float>& vec01 = terrain_buffer.lock()->Get_HeightData();
-    float height01 = vec01[iIndex];
+    float height01 = min(1.f- vec01[iIndex],0.2f);
    
 
 
