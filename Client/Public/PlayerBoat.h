@@ -35,6 +35,13 @@ public:
 
 
 
+    virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
+    virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
+    virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
+
+
+
+
     virtual void OnGui() override;
 
     //virtual void RebindCom();
@@ -70,7 +77,7 @@ private:
 
     LOCATIONSTATE m_Loacation = { LOCATIONSTATE:: SEA };
 
-
+    shared_ptr<class CPlayerStateMachine> m_pPlayerStateMachine = {};
 public:
     static shared_ptr<CPlayerBoat> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     shared_ptr<CGameObject> Clone(void* pArg) override;

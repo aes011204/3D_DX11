@@ -40,6 +40,9 @@
     <Filter Include="97.Modifier">
       <UniqueIdentifier>{be9a5c72-e373-465f-b58b-780088cd71e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\00.Player\state">
+      <UniqueIdentifier>{a832c115-2a8a-4aa9-8777-62cc903ab569}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -172,7 +175,20 @@
     <ClInclude Include="..\Public\Sea.h" />
     <ClInclude Include="..\Public\Island.h" />
     <ClInclude Include="..\Public\Sea_Manager.h" />
-    <ClInclude Include="..\Public\UI_Village.h" />
+    <ClInclude Include="..\Public\PlayerStateMachine.h" />
+    <ClInclude Include="..\Public\PlayerState.h" />
+    <ClInclude Include="..\Public\UI_Village.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player_Village.h">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player_MiniGame.h">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Player_Sea.h">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -300,7 +316,20 @@
     <ClCompile Include="..\Private\Sea.cpp" />
     <ClCompile Include="..\Private\Island.cpp" />
     <ClCompile Include="..\Private\Sea_Manager.cpp" />
-    <ClCompile Include="..\Private\UI_Village.cpp" />
+    <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
+    <ClCompile Include="..\Private\PlayerState.cpp" />
+    <ClCompile Include="..\Private\UI_Village.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_MiniGame.cpp">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_Village.cpp">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Player_Sea.cpp">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

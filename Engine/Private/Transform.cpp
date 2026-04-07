@@ -73,30 +73,49 @@ void CTransform::Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 
 	m_bIsDirty = true;
 }
-void CTransform::Go_Forward(_float fTimeDelta)
+//void CTransform::Go_Forward(_float fTimeDelta)
+//{
+//	_vector vPosition = Get_State(STATE::POSITION);
+//	_vector vLook = Get_State(STATE::LOOK);
+//
+//	vPosition += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+//
+//	//Set_State(STATE::POSITION, vPosition);
+//	Set_Position(vPosition);
+//	m_bIsDirty = true;
+//}
+
+//void CTransform::Go_Backward(_float fTimeDelta)
+//{
+//	_vector vPosition = Get_State(STATE::POSITION);
+//	_vector vLook = Get_State(STATE::LOOK);
+//
+//	vPosition -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+//
+//	//Set_State(STATE::POSITION, vPosition);
+//	Set_Position(vPosition);
+//	m_bIsDirty = true;
+//}
+void CTransform::Go_Forward(_float fDistance)
 {
-	_vector vPosition = Get_State(STATE::POSITION);
+	_vector vPosition = Get_Position();
 	_vector vLook = Get_State(STATE::LOOK);
 
-	vPosition += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+	vPosition += XMVector3Normalize(vLook) * fDistance;
 
-	//Set_State(STATE::POSITION, vPosition);
 	Set_Position(vPosition);
 	m_bIsDirty = true;
 }
-
-void CTransform::Go_Backward(_float fTimeDelta)
+void CTransform::Go_Backward(_float fDistance)
 {
-	_vector vPosition = Get_State(STATE::POSITION);
+	_vector vPosition = Get_Position();
 	_vector vLook = Get_State(STATE::LOOK);
 
-	vPosition -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+	vPosition -= XMVector3Normalize(vLook) * fDistance;
 
-	//Set_State(STATE::POSITION, vPosition);
 	Set_Position(vPosition);
 	m_bIsDirty = true;
 }
-
 void CTransform::Go_Right(_float fTimeDelta)
 {
 	_vector vPosition = Get_State(STATE::POSITION);

@@ -280,6 +280,8 @@
       <Filter>01.Utility\04.Components\Collider</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Collison_Manager.cpp" />
+    <ClCompile Include="..\Private\State.cpp" />
+    <ClCompile Include="..\Private\StateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -507,6 +509,8 @@
       <Filter>01.Utility\04.Components\Collider</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Collison_Manager.h" />
+    <ClInclude Include="..\Public\State.h" />
+    <ClInclude Include="..\Public\StateMachine.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

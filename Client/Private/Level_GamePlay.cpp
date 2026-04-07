@@ -132,7 +132,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	{
 		
 		auto ui = dynamic_pointer_cast<CUI_NPC>(m_pNPC);
-		ui->UI_NPCActive(NPC::MAYOR, true, true, "Repair_First");
+		ui->UI_NPCActive(NPC::MAYOR, true, true, "Mayer_start");
 
 	}
 	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_N))

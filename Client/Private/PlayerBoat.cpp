@@ -9,6 +9,7 @@
 #include "Inventory.h"
 #include "GameInstance.h"
 #include "EventBus.h"
+#include "PlayerStateMachine.h"
 #include "Sea_Manager.h"
 
 CPlayerBoat::CPlayerBoat(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -68,6 +69,9 @@ void CPlayerBoat::Priority_Update(_float fTimeDelta)
 
 void CPlayerBoat::Update(_float fTimeDelta)
 {
+	m_pPlayerStateMachine->Update_StateMachine(fTimeDelta);
+
+
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 	//Å×½ºÆ®
 	if (dinput->KeyPress(DIK_P))
@@ -90,15 +94,18 @@ void CPlayerBoat::Update(_float fTimeDelta)
 		Location_Sea(fTimeDelta, dinput);
 		break;
 	}
+	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
 	__super::Update(fTimeDelta);
-
 	//m_pModelCom->Play_Animation(fTimeDelta);
 }
 
 void CPlayerBoat::Late_Update(_float fTimeDelta)
 {
 	__super::Late_Update(fTimeDelta);
+	m_pPlayerStateMachine->LateUpdate_StateMachine(fTimeDelta);
+
+
 	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::BLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
@@ -205,6 +212,14 @@ HRESULT CPlayerBoat::Ready_Components()
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
 		return E_FAIL;
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+
+
+
+
+	m_pPlayerStateMachine = CPlayerStateMachine::Create(dynamic_pointer_cast<CPlayerBoat>(shared_from_this()));
+
+
+
 
 	return S_OK;
 }
@@ -351,6 +366,31 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
+}
+
+void CPlayerBoat::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+	if(m_pPlayerStateMachine)
+	m_pPlayerStateMachine->OnBeginOverlap(self, other);
+	//CContainerObject::OnBeginOverlap(self, other);
+}
+
+void CPlayerBoat::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+	if (m_pPlayerStateMachine)
+		m_pPlayerStateMachine->OnEndOverlap(self, other);
+
+
+	//CContainerObject::OnEndOverlap(self, other);
+}
+
+void CPlayerBoat::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+	if (m_pPlayerStateMachine)
+		m_pPlayerStateMachine->OnStayOverlap(self, other);
+
+
+	//CContainerObject::OnStayOverlap(self, other);
 }
 
 shared_ptr<CPlayerBoat> CPlayerBoat::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

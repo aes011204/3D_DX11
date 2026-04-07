@@ -65,7 +65,7 @@ float CSea_Manager::Calculate_GerstnerWave_Overlap(_float3 Pos)
     
     int iIndex = (iZ * terrain_buffer.lock()->Get_NumVerticeX()) + iX;
     const vector<float>& vec01 = terrain_buffer.lock()->Get_HeightData();
-    float height01 = min(1.f- vec01[iIndex],0.2f);
+    float height01 = max(1.f- vec01[iIndex],0.1f);
    
 
 

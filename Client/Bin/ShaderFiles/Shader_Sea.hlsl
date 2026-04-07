@@ -137,7 +137,7 @@ VS_OUT VS_MAIN(VS_IN In)
     UV.x = (worldPos.x - g_TerrainPos.x) / g_TerrainSize;
     UV.y = 1.0f -((worldPos.z - g_TerrainPos.z) / g_TerrainSize);
     UV = saturate(UV);
-    Out.height01 = min(1.f - g_TerrainHeight.SampleLevel(DefaultSampler, UV, 0).r, 0.2f);
+    Out.height01 = max(1.f - g_TerrainHeight.SampleLevel(DefaultSampler, UV, 0).r, 0.1f);
     
     float3 offset = float3(0, 0, 0);
     float3 pZ = float3(0, 0, 0);

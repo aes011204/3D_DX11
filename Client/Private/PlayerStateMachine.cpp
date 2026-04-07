@@ -1,0 +1,136 @@
+#include "PlayerStateMachine.h"
+
+#include "PlayerBoat.h"
+#include "State.h"
+#include "PlayerState.h"
+#include "Player_Sea.h"
+
+CPlayerStateMachine::CPlayerStateMachine(weak_ptr<CPlayerBoat> owner)
+	: m_pOwner(owner)
+{
+}
+
+CPlayerStateMachine::~CPlayerStateMachine()
+{
+}
+
+HRESULT CPlayerStateMachine::Init_StateMachine()
+{
+    Init_PlayerStates();
+
+    m_CurState = m_vecState[ETOI(PLAYERSTATE::SEA)];
+
+    m_CurState->Enter();
+
+    return S_OK;
+}
+
+_int CPlayerStateMachine::Update_StateMachine(const _float& timeDelta)
+{
+    if (m_CurState)
+    {
+        _uint nextState = m_CurState->Update_State(timeDelta);
+
+        if (nextState == ETOI(PLAYERSTATE::END))
+        {
+            return nextState;
+        }
+
+        if (nextState < ETOI(PLAYERSTATE::END) && nextState != m_CurStateKey)
+        {
+            Change_State(nextState);
+        }
+    }
+
+    return m_CurStateKey;
+
+}
+
+void CPlayerStateMachine::LateUpdate_StateMachine(const _float& timeDelta)
+{
+    m_CurState->LateUpdate_State(timeDelta);
+}
+
+void CPlayerStateMachine::Change_State(_uint changeStateKey)
+{
+    if (m_CurStateKey == changeStateKey)
+        return; // 이전이랑 같은 상황
+
+    if (m_vecState[changeStateKey] == nullptr || changeStateKey >= ETOI(PLAYERSTATE::END))
+        return; // 인덱스 범위 확인
+
+    // 이전 상태 나가기
+    if (m_CurState)
+        m_CurState->Exit();
+
+    // 이전 상태 등록
+    //m_pPrevState = m_CurState;
+    m_PrevStateKey = m_CurStateKey;
+    m_CurStateKey = changeStateKey;
+
+    // 새 상태로 가져오기
+    m_CurState = m_vecState[changeStateKey];
+    m_CurState->Enter();
+}
+
+void CPlayerStateMachine::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+    if (m_CurState)
+        m_CurState->OnBeginOverlap(self, other);
+}
+
+void CPlayerStateMachine::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+    if (m_CurState)
+        m_CurState->OnEndOverlap(self, other);
+}
+
+void CPlayerStateMachine::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
+{
+    if (m_CurState)
+        m_CurState->OnStayOverlap(self, other);
+}
+
+_int CPlayerStateMachine::GetCurStateNum()
+{
+    return m_CurState->Get_StateKey();
+}
+
+shared_ptr<CPlayerState> CPlayerStateMachine::Get_State(_uint stateKey)
+{
+    if (stateKey < m_vecState.size())
+        return static_pointer_cast<CPlayerState>(m_vecState[stateKey]);
+
+    return nullptr;
+}
+
+HRESULT CPlayerStateMachine::Init_PlayerStates()
+{
+    m_vecState.resize(ETOI(PLAYERSTATE::END));
+   shared_ptr<CPlayerState> pState = nullptr;
+
+    if (nullptr == (pState = CPlayer_Sea::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        return E_FAIL;
+    m_vecState[ETOI(PLAYERSTATE::SEA)] = pState;
+    pState->Init_State();
+
+
+    return S_OK;
+}
+
+shared_ptr<CPlayerStateMachine> CPlayerStateMachine::Create(shared_ptr<CPlayerBoat> owner)
+{
+    shared_ptr<CPlayerStateMachine> pInstance(new CPlayerStateMachine(owner), [](CPlayerStateMachine* p) {p->Free(); delete(p); });
+
+    if (FAILED(pInstance->Init_StateMachine()))
+    {
+        MSG_BOX("Failed to Created : CUIPanel");
+
+    }
+    return pInstance;
+}
+
+void CPlayerStateMachine::Free()
+{
+	CStateMachine::Free();
+}

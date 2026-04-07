@@ -128,9 +128,10 @@ public:
 public:
     void SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ);//기존의 있는 크기에 배수가 아니라 스케일정보 바꿔줌
     void Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);//저장된 크기의 배수로 키우기
-
-	void Go_Forward(_float fTimeDelta);
-    void Go_Backward(_float fTimeDelta);
+    void Go_Forward(_float fDistance);
+	//void Go_Forward(_float fTimeDelta);
+    //void Go_Backward(_float fTimeDelta);
+    void Go_Backward(_float fDistance);
     void Go_Right(_float fTimeDelta);
     void Go_Left(_float fTimeDelta);
 
@@ -147,6 +148,12 @@ public:
     void OnGui() override;
     virtual void Save_ToJson(nlohmann::json& j) override;
     virtual void Load_FromJson(nlohmann::json& j) override;
+
+    _float Get_Speed() const { return m_fSpeedPerSec; }
+    void Set_Speed(_float fSpeed) { m_fSpeedPerSec = fSpeed; }
+
+    _float Get_RadianSpeed() const { return m_fRadianPerSec; }
+    void Set_RadianSpeed(_float fRadian) { m_fRadianPerSec = fRadian; }
 
 
     _float3 QuaternionToEuler(_float4 q);

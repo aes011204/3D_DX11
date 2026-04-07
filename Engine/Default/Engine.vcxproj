@@ -205,6 +205,8 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClInclude Include="..\Public\Prototype_Manager.h" />
     <ClInclude Include="..\Public\Renderer.h" />
     <ClInclude Include="..\Public\Shader.h" />
+    <ClInclude Include="..\Public\State.h" />
+    <ClInclude Include="..\Public\StateMachine.h" />
     <ClInclude Include="..\Public\Texture.h" />
     <ClInclude Include="..\Public\TimeOfDay.h" />
     <ClInclude Include="..\Public\Timer.h" />
@@ -291,6 +293,8 @@ if %ERRORLEVEL% LEQ 4 exit 0</Command>
     <ClCompile Include="..\Private\Prototype_Manager.cpp" />
     <ClCompile Include="..\Private\Renderer.cpp" />
     <ClCompile Include="..\Private\Shader.cpp" />
+    <ClCompile Include="..\Private\State.cpp" />
+    <ClCompile Include="..\Private\StateMachine.cpp" />
     <ClCompile Include="..\Private\Texture.cpp" />
     <ClCompile Include="..\Private\TimeOfDay.cpp" />
     <ClCompile Include="..\Private\Timer.cpp" />

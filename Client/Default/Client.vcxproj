@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\PlayerStateMachine.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\Camera_Play.h" />
     <ClInclude Include="..\Public\CLient_Helper.h" />
@@ -164,6 +165,10 @@
     <ClInclude Include="..\Public\Monster.h" />
     <ClInclude Include="..\Public\Monster_Anim.h" />
     <ClInclude Include="..\Public\PlayerBoat.h" />
+    <ClInclude Include="..\Public\PlayerState.h" />
+    <ClInclude Include="..\Public\Player_MiniGame.h" />
+    <ClInclude Include="..\Public\Player_Sea.h" />
+    <ClInclude Include="..\Public\Player_Village.h" />
     <ClInclude Include="..\Public\RotationModifier.h" />
     <ClInclude Include="..\Public\Sea.h" />
     <ClInclude Include="..\Public\Sea_Manager.h" />
@@ -191,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\Camera_Play.cpp" />
     <ClCompile Include="..\Private\DialogueDB.cpp" />
@@ -210,6 +216,10 @@
     <ClCompile Include="..\Private\Monster.cpp" />
     <ClCompile Include="..\Private\Monster_Anim.cpp" />
     <ClCompile Include="..\Private\PlayerBoat.cpp" />
+    <ClCompile Include="..\Private\PlayerState.cpp" />
+    <ClCompile Include="..\Private\Player_MiniGame.cpp" />
+    <ClCompile Include="..\Private\Player_Sea.cpp" />
+    <ClCompile Include="..\Private\Player_Village.cpp" />
     <ClCompile Include="..\Private\RotationModifier.cpp" />
     <ClCompile Include="..\Private\Sea.cpp" />
     <ClCompile Include="..\Private\Sea_Manager.cpp" />
