@@ -1,9 +1,10 @@
 #include "PlayerState.h"
 
 #include "PlayerBoat.h"
+#include "Camera_Play.h"
 
 CPlayerState::CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
-	: m_Owner(owner), m_pStateMachine(pStateMachine)
+	: m_Owner(owner), m_pStateMachine(pStateMachine), m_pGameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -41,4 +42,6 @@ void CPlayerState::Find_Player()
 	m_pOwnerTransformCom = transform;
 
 	m_Input_Manager = CGameInstance::GetInstance()->Get_DInput_Manger();
+
+
 }

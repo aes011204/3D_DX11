@@ -16,6 +16,7 @@
 #include "VIBuffer_Sea.h"
 #include "Sky.h"
 #include "VIBuffer_Cube.h"
+#include "Village.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: m_pDevice(pDevice), m_pContext(pContext),
@@ -244,7 +245,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
-	/* Prototype_Component_Model_GM_Town */
+	/* Prototype_Component_Model_Town */
 	PreLocalTransformMatrix =  XMMatrixScaling(0.01f,0.01f,0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Town"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/GM_TOWN/GM_Town_tx.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
@@ -321,6 +322,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
+	/* Prototype_GameObject_Village */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Village"),
+		CVillage::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Villsge");
+		return E_FAIL;
+	}
 
 
 	///* Prototype_GameObject_Sky */

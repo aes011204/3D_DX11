@@ -44,7 +44,7 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 	
 
 		_float fRatio = m_AccTime / m_Duration;
-		LOG_F(LOG_LEVEL::INFO, "Time: %.4f / Duration: %.4f / Ratio: %.4f", m_AccTime, m_Duration, m_AccTime / m_Duration);
+		//LOG_F(LOG_LEVEL::INFO, "Time: %.4f / Duration: %.4f / Ratio: %.4f", m_AccTime, m_Duration, m_AccTime / m_Duration);
 
 		if (fRatio > 1) fRatio = 1.f;
 

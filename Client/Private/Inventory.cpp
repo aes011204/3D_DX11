@@ -469,7 +469,7 @@ void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)
         // finalCells.push_back({ fx,fy });
 
       // 락이랑 겹치는지, 밑아이템 하나랑 겹치는지 , 바로 놓을 수 있는지
-        LOG_F(LOG_LEVEL::INFO, "fx:%d fy:%d w:%d h:%d", fx, fy, m_w, m_h);
+        //LOG_F(LOG_LEVEL::INFO, "fx:%d fy:%d w:%d h:%d", fx, fy, m_w, m_h);
         m_InvenSlot[fy * m_w + fx].ItemInst_ID = itemInst.ItemInst_ID;
 
         stored.CurBase.push_back({ fx,fy });

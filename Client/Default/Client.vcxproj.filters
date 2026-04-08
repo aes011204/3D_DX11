@@ -189,6 +189,12 @@
     <ClInclude Include="..\Public\Player_Sea.h">
       <Filter>02.GameObject\00.Player\state</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Monster_Tantacle.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Village.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -329,6 +335,12 @@
     </ClCompile>
     <ClCompile Include="..\Private\Player_Sea.cpp">
       <Filter>02.GameObject\00.Player\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Village.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Monster_Tantacle.cpp">
+      <Filter>02.GameObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

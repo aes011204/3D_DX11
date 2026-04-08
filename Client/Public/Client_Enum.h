@@ -335,4 +335,45 @@ namespace Client
 
     };
 
+
+
+    enum CAM_MODE { FOLLOW, LERP, STOP, SHACK, END };
+    struct CAM_DESC
+    {
+        virtual ~CAM_DESC() = default;
+        CAM_MODE eMode;
+    };
+
+   
+    struct CAM_LERP_DESC : public CAM_DESC
+    {
+        CAM_LERP_DESC() = default;
+
+        _float3 vTargetPos;
+        _float3 vTargetRot;
+        _float  fDuration;
+    };
+
+    
+    struct CAM_FOLLOW_DESC : public CAM_DESC
+    {
+        CAM_FOLLOW_DESC() = default;
+
+        _float fDistance;      
+        _float fPitch;         
+    };
+
+   
+    struct CAM_SHAKE_DESC : public CAM_DESC
+    {
+        _float fIntensity;   
+        _float fDuration;    
+    };
+
+
+    struct Evt_ChangeCam
+    {
+        deque<shared_ptr<CAM_DESC>> commands;
+    };
+
 }

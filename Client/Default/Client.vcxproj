@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\Monster_Tantacle.h" />
     <ClInclude Include="..\Public\PlayerStateMachine.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\Camera_Play.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="..\Public\UI_TabContainer.h" />
     <ClInclude Include="..\Public\UI_Top.h" />
     <ClInclude Include="..\Public\UI_Village.h" />
+    <ClInclude Include="..\Public\Village.h" />
     <ClInclude Include="EmptyUObject.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="CScaleModifier.h" />
@@ -196,6 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\Monster_Tantacle.cpp" />
     <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\Camera_Play.cpp" />
@@ -238,6 +241,7 @@
     <ClCompile Include="..\Private\UI_TabContainer.cpp" />
     <ClCompile Include="..\Private\UI_Top.cpp" />
     <ClCompile Include="..\Private\UI_Village.cpp" />
+    <ClCompile Include="..\Private\Village.cpp" />
     <ClCompile Include="EmptyUObject.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CScaleModifier.cpp" />

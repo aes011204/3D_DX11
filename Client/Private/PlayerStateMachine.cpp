@@ -3,7 +3,9 @@
 #include "PlayerBoat.h"
 #include "State.h"
 #include "PlayerState.h"
+#include "Player_MiniGame.h"
 #include "Player_Sea.h"
+#include "Player_Village.h"
 
 CPlayerStateMachine::CPlayerStateMachine(weak_ptr<CPlayerBoat> owner)
 	: m_pOwner(owner)
@@ -114,6 +116,15 @@ HRESULT CPlayerStateMachine::Init_PlayerStates()
     m_vecState[ETOI(PLAYERSTATE::SEA)] = pState;
     pState->Init_State();
 
+    if (nullptr == (pState = CPlayer_MiniGame::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        return E_FAIL;
+    m_vecState[ETOI(PLAYERSTATE::FISHING)] = pState;
+    pState->Init_State();
+
+    if (nullptr == (pState = CPlayer_Village::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        return E_FAIL;
+    m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
+    pState->Init_State();
 
     return S_OK;
 }

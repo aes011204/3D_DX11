@@ -128,15 +128,21 @@ public:
 public:
     void SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ);//기존의 있는 크기에 배수가 아니라 스케일정보 바꿔줌
     void Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);//저장된 크기의 배수로 키우기
-    void Go_Forward(_float fDistance);
-	//void Go_Forward(_float fTimeDelta);
-    //void Go_Backward(_float fTimeDelta);
-    void Go_Backward(_float fDistance);
+    void Go_Forward_Distanace(_float fDistance);
+    void Go_Backward_Distanace(_float fDistance);
+
+	void Go_Forward(_float fTimeDelta);
+    void Go_Backward(_float fTimeDelta);
+
     void Go_Right(_float fTimeDelta);
     void Go_Left(_float fTimeDelta);
 
     void Go_Up(_float fTimeDelta);
     void Go_Down(_float fTimeDelta);
+
+    void Start_Lerp(_fvector vTargetPos, _float3 vTargetRotation, _float fDuration);
+
+    void Lerp_To(_float fTimeDelta);
 
    // void Rotation(_fvector vAxis, _float fDegree);//속도X 정해논 각도로 따라 항등상태에서 회전 하는거임
     void Turn(_fvector vAxis, _float fTimeDelta);//나한테 저장된 회전 속도 만큼 서서히 회전
@@ -171,7 +177,17 @@ private:
     const _float4x4* m_pParentMatrix = {};
 
     //_float3 m_vScale = {};
+
+public:
+    _bool GetIsLerp() { return m_IsLerping; }
 private:
+    _float m_LerpAcc = 0.f;
+    _float m_LerpTime = 0.f;
+    _vector m_vStartPos = {};
+    _vector m_vStartQuat = {};
+    _vector m_vTargetPos = {};
+    _vector m_vTargetQuat = {};
+    _bool m_IsLerping = false;
 
 public:
     static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

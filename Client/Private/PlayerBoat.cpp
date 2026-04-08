@@ -82,18 +82,18 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	//m_pTransformCom->Get_WorldMatrix();
 	//
 
-	switch(m_Loacation)
-	{
-	case LOCATIONSTATE::SEA:
-		Location_Sea(fTimeDelta, dinput);
-		break;
-	case LOCATIONSTATE::VILLAGE:
-		Location_Sea(fTimeDelta, dinput);
-		break;
-	case LOCATIONSTATE::FISHING:
-		Location_Sea(fTimeDelta, dinput);
-		break;
-	}
+	//switch(m_Loacation)
+	//{
+	//case LOCATIONSTATE::SEA:
+	//	Location_Sea(fTimeDelta, dinput);
+	//	break;
+	//case LOCATIONSTATE::VILLAGE:
+	//	Location_Sea(fTimeDelta, dinput);
+	//	break;
+	//case LOCATIONSTATE::FISHING:
+	//	Location_Sea(fTimeDelta, dinput);
+	//	break;
+	//}
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
 	__super::Update(fTimeDelta);

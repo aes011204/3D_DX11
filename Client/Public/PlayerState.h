@@ -5,12 +5,13 @@
 
 namespace Engine
 {
+
 	class CCollider;
 	class CDInput_Manager;
 }
 
 NS_BEGIN(Client)
-
+class CCamera_Play;
 	class CPlayerStateMachine;
 
 class CPlayerBoat;
@@ -41,10 +42,11 @@ protected:
 	_bool       DoneAnim = false;
 
 	weak_ptr<CPlayerBoat> m_Owner = {};
+	weak_ptr<CGameInstance> m_pGameInstance = {};
 	weak_ptr < CPlayerStateMachine> m_pStateMachine = { };
 
 	weak_ptr<CTransform> m_pOwnerTransformCom = { };
-
+	
 	CDInput_Manager* m_Input_Manager = { nullptr };
 private:
 	// CBase을(를) 통해 상속됨

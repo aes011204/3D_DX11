@@ -22,7 +22,10 @@ public:
 	virtual void Update(_fmatrix WorldMatrix) override ;
 	virtual _bool Intersect(shared_ptr<CBounding> pTarget) override;
 
-	const shared_ptr<BoundingSphere> Get_Desc() const {
+	shared_ptr<BoundingSphere> Get_OriginalDesc() {
+		return m_pOriginalDesc;
+	}
+	const shared_ptr<BoundingSphere>Get_Desc() const {
 		return m_pDesc;
 	}
 

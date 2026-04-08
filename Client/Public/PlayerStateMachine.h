@@ -25,7 +25,6 @@ public:
     void    LateUpdate_StateMachine(const _float& timeDelta);
 
 
-    virtual void Change_State(_uint changeStateKey);
 
     virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other);
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) ;
@@ -44,6 +43,7 @@ public:
 
 private:
    weak_ptr<class CPlayerBoat> m_pOwner;
+   virtual void Change_State(_uint changeStateKey); // 내부용 밖에서 불러도 안바뀜
 
 protected:
     HRESULT Init_PlayerStates();

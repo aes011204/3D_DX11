@@ -24,7 +24,7 @@ public:
 
     virtual void    LateUpdate_State(const _float& timeDelta)override;
     virtual void    Render_State()override;
-    void Location_Sea(_float fTimeDelta);
+    
 
 private:
 

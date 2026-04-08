@@ -26,13 +26,20 @@ public:
 	virtual void Update(_fmatrix WorldMatrix)=0;
 	virtual _bool Intersect(shared_ptr<CBounding> pTarget)=0;
 
+
+
+
 #ifdef _DEBUG
 public:
 	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch, _fvector vColor)=0;
+
+
+
 #endif
 protected:
 	ComPtr<ID3D11Device> m_pDevice = { nullptr };
 	ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
+
 public:
 	virtual void Free() override;
 };

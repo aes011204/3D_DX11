@@ -46,11 +46,13 @@ HRESULT CLevel_GamePlay::Initialize()
 
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
+	//m_pPlayer.lock()->SetCam
 
 	if (FAILED(Ready_Layer_Wave(TEXT("Layer_Wave"))))
 		return E_FAIL;
 
-	
+	if (FAILED(Ready_Layer_ETC(TEXT("Layer_Wave"))))
+		return E_FAIL;
 
 
 	return S_OK;
@@ -234,7 +236,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::STATIC), L"FREE_CAM", freeCamera);
+	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::GAMEPLAY), L"FREE_CAM", freeCamera);
 
 
 
@@ -279,6 +281,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_Wave(const _wstring& strLayerTag)
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 
+}
+HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
+{
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Village"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		return E_FAIL;
 }
 
 shared_ptr<CLevel_GamePlay> CLevel_GamePlay::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

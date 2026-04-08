@@ -73,30 +73,30 @@ void CTransform::Scaling(_float fScaleX, _float fScaleY, _float fScaleZ)
 
 	m_bIsDirty = true;
 }
-//void CTransform::Go_Forward(_float fTimeDelta)
-//{
-//	_vector vPosition = Get_State(STATE::POSITION);
-//	_vector vLook = Get_State(STATE::LOOK);
-//
-//	vPosition += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
-//
-//	//Set_State(STATE::POSITION, vPosition);
-//	Set_Position(vPosition);
-//	m_bIsDirty = true;
-//}
+void CTransform::Go_Forward(_float fTimeDelta)
+{
+	_vector vPosition = Get_State(STATE::POSITION);
+	_vector vLook = Get_State(STATE::LOOK);
 
-//void CTransform::Go_Backward(_float fTimeDelta)
-//{
-//	_vector vPosition = Get_State(STATE::POSITION);
-//	_vector vLook = Get_State(STATE::LOOK);
-//
-//	vPosition -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
-//
-//	//Set_State(STATE::POSITION, vPosition);
-//	Set_Position(vPosition);
-//	m_bIsDirty = true;
-//}
-void CTransform::Go_Forward(_float fDistance)
+	vPosition += XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+
+	//Set_State(STATE::POSITION, vPosition);
+	Set_Position(vPosition);
+	m_bIsDirty = true;
+}
+
+void CTransform::Go_Backward(_float fTimeDelta)
+{
+	_vector vPosition = Get_State(STATE::POSITION);
+	_vector vLook = Get_State(STATE::LOOK);
+
+	vPosition -= XMVector3Normalize(vLook) * m_fSpeedPerSec * fTimeDelta;
+
+	//Set_State(STATE::POSITION, vPosition);
+	Set_Position(vPosition);
+	m_bIsDirty = true;
+}
+void CTransform::Go_Forward_Distanace(_float fDistance)
 {
 	_vector vPosition = Get_Position();
 	_vector vLook = Get_State(STATE::LOOK);
@@ -106,7 +106,7 @@ void CTransform::Go_Forward(_float fDistance)
 	Set_Position(vPosition);
 	m_bIsDirty = true;
 }
-void CTransform::Go_Backward(_float fDistance)
+void CTransform::Go_Backward_Distanace(_float fDistance)
 {
 	_vector vPosition = Get_Position();
 	_vector vLook = Get_State(STATE::LOOK);
@@ -162,6 +162,47 @@ void CTransform::Go_Down(_float fTimeDelta)
 	//Set_State(STATE::POSITION, vPosition);
 	Set_Position(vPosition);
 	m_bIsDirty = true;
+}
+void CTransform::Start_Lerp(_fvector vTargetPos, _float3 vTargetRotation, _float fDuration)
+{
+	m_vStartPos = Get_Position();
+	m_vStartQuat = Get_Quaternion();
+	m_LerpTime = fDuration;
+	m_LerpAcc = 0.f;
+	m_IsLerping = true;
+
+	m_vTargetPos = vTargetPos;
+	m_vTargetQuat = XMQuaternionRotationRollPitchYaw(
+		XMConvertToRadians(vTargetRotation.x),
+		XMConvertToRadians(vTargetRotation.y),
+		XMConvertToRadians(vTargetRotation.z)
+	);
+	if (XMVectorGetX(XMQuaternionDot(m_vStartQuat, m_vTargetQuat)) < 0.f)
+	{
+		m_vTargetQuat = XMVectorNegate(m_vTargetQuat);
+	}
+}
+void CTransform::Lerp_To(_float fTimeDelta)
+{
+	if (m_IsLerping == false)
+		return;
+
+	m_LerpAcc += fTimeDelta;
+	if (m_LerpAcc >= m_LerpTime)
+	{
+		m_IsLerping = false;
+		m_LerpAcc = m_LerpTime;
+	}
+		float t01 = m_LerpAcc / m_LerpTime;
+		t01 = min(max(t01, 0.f), 1.f);
+		
+		//_float fDist = XMVectorGetX(XMVector3Length(vTargetPos - vCurPos));
+
+	//fSpeed = lerp(fSpeed, 0, t01);
+
+	Set_Position(XMVectorLerp(m_vStartPos, m_vTargetPos, t01));
+	Set_Quaternion(XMQuaternionSlerp(m_vStartQuat, m_vTargetQuat, t01));
+	
 }
 
 //void CTransform::Rotation(_fvector vAxis, _float fDegree)

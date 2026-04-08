@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "VIBuffer_Rect.h"
 #include "Model.h"
+#include "Collider.h"
 
 
 // 생성한 원형 객체를 보관한다

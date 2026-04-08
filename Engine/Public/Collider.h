@@ -31,6 +31,10 @@ public:
 
 	void Set_isOverlap(){};
 
+	void OnGui() override;
+	void Save_ToJson(nlohmann::json& j) override;
+	void Load_FromJson(nlohmann::json& j) override;
+
 public:
 	void Update(_fmatrix WorldMatrix);
 	_bool Intersect(shared_ptr<CCollider> pTarget);
@@ -38,6 +42,11 @@ public:
 	bool Is_Overlap(shared_ptr<CCollider> other);
 	void Add_Overlap(shared_ptr<CCollider> otherColl){m_overlapColl.insert(otherColl);};
 	void Remove_Overlap(shared_ptr<CCollider> otherColl){ m_overlapColl.erase(otherColl); };
+
+
+
+	_float3 Get_WorldCenter();
+
 #ifdef _DEBUG
 	HRESULT Render();
 #endif
