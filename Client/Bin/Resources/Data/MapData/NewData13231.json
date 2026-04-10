@@ -2,8 +2,54 @@
     "Level": 3,
     "WorldGameObject": [
         {
-            "ColorLamp1": 0.5,
-            "ColorLamp2": 0.7929999828338623,
+            "Components": [
+                {
+                    "ComProtoLevel": 3,
+                    "ComProtoTag": "Prototype_Component_Collider_AABB",
+                    "ComponentTag": "Com_Collider"
+                },
+                {
+                    "ComProtoLevel": 3,
+                    "ComProtoTag": "Prototype_Component_Model_Town",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        -3.299999952316284,
+                        1.899999976158142,
+                        0.0
+                    ],
+                    "Rotation": [
+                        -180.0,
+                        -1.2999999523162842,
+                        180.0
+                    ],
+                    "Scale": [
+                        3.5,
+                        3.5,
+                        3.5
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Layer_ETC",
+            "ObjName": "Village",
+            "ProtoSavedLevel": 3,
+            "ProtoSavedTag": "Prototype_GameObject_Village"
+        },
+        {
+            "ColorLamp1": 0.3499999940395355,
+            "ColorLamp2": 0.8109999895095825,
             "Components": [
                 {
                     "ComProtoLevel": 0,
@@ -22,7 +68,7 @@
                     "Move Speed": 0.0,
                     "Position": [
                         0.0,
-                        0.5,
+                        0.0,
                         0.0
                     ],
                     "Rotation": [
@@ -65,47 +111,6 @@
         {
             "Components": [
                 {
-                    "ComProtoLevel": 3,
-                    "ComProtoTag": "Prototype_Component_Model_Town",
-                    "ComponentTag": "Com_Model"
-                },
-                {
-                    "ComProtoLevel": 0,
-                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
-                    "ComponentTag": "Com_Shader"
-                },
-                {
-                    "ComProtoLevel": 0,
-                    "ComProtoTag": "",
-                    "ComponentTag": "Com_Transform",
-                    "Move Speed": 0.0,
-                    "Position": [
-                        -3.299999952316284,
-                        2.299999952316284,
-                        0.0
-                    ],
-                    "Rotation": [
-                        -178.99998474121094,
-                        -1.3660375770996325e-05,
-                        180.0
-                    ],
-                    "Scale": [
-                        3.5,
-                        3.5,
-                        3.5
-                    ],
-                    "Turn Speed": 0.0,
-                    "Type": "Transform"
-                }
-            ],
-            "LayerName": "Static",
-            "ObjName": "EmptyGObject",
-            "ProtoSavedLevel": 0,
-            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
-        },
-        {
-            "Components": [
-                {
                     "ComProtoLevel": 0,
                     "ComProtoTag": "Prototype_Component_Model_LightHouse",
                     "ComponentTag": "Com_Model"
@@ -140,13 +145,11 @@
                 }
             ],
             "LayerName": "Static",
-            "ObjName": "EmptyGObject (1)",
+            "ObjName": "EmptyGObject",
             "ProtoSavedLevel": 0,
             "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
         },
         {
-            "ColorLamp1": 1.600000023841858,
-            "ColorLamp2": 0.9539999961853027,
             "Components": [
                 {
                     "ComProtoLevel": 3,
@@ -182,29 +185,10 @@
                     "Type": "Transform"
                 }
             ],
-            "GrassColor": [
-                0.713261604309082,
-                0.3854256868362427,
-                0.2582058012485504,
-                1.0
-            ],
             "LayerName": "Static",
-            "ObjName": "EmptyGObject (2)",
+            "ObjName": "EmptyGObject (1)",
             "ProtoSavedLevel": 0,
-            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject",
-            "RockColor": [
-                1.0,
-                0.21505379676818848,
-                0.0,
-                1.0
-            ],
-            "SandColor": [
-                0.16129034757614136,
-                0.16129034757614136,
-                0.16129034757614136,
-                1.0
-            ],
-            "bool_CustomShader": true
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
         },
         {
             "Components": [
@@ -243,48 +227,7 @@
                 }
             ],
             "LayerName": "Static",
-            "ObjName": "EmptyGObject (3)",
-            "ProtoSavedLevel": 0,
-            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
-        },
-        {
-            "Components": [
-                {
-                    "ComProtoLevel": 3,
-                    "ComProtoTag": "Prototype_Component_Model_ForkLift",
-                    "ComponentTag": "Com_Model"
-                },
-                {
-                    "ComProtoLevel": 0,
-                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
-                    "ComponentTag": "Com_Shader"
-                },
-                {
-                    "ComProtoLevel": 0,
-                    "ComProtoTag": "",
-                    "ComponentTag": "Com_Transform",
-                    "Move Speed": 0.0,
-                    "Position": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "Rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "Scale": [
-                        1.0,
-                        1.0,
-                        1.0
-                    ],
-                    "Turn Speed": 0.0,
-                    "Type": "Transform"
-                }
-            ],
-            "LayerName": "Static",
-            "ObjName": "EmptyGObject (4)",
+            "ObjName": "EmptyGObject (2)",
             "ProtoSavedLevel": 0,
             "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
         }

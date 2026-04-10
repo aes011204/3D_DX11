@@ -184,6 +184,12 @@ void CGameInstance::Clear_Resources(_uint iLevelIndex)
 	return;
 }
 
+_float CGameInstance::Random(_float fMin, _float fMax)
+{
+	return fMin + (static_cast<_float>(rand()) / RAND_MAX) * (fMax - fMin);
+}
+
+
 HRESULT CGameInstance::Resize(_uint g_RsizeWidth, _uint g_RsizeHeight)
 {
 

@@ -140,7 +140,7 @@ public:
     void Go_Up(_float fTimeDelta);
     void Go_Down(_float fTimeDelta);
 
-    void Start_Lerp(_fvector vTargetPos, _float3 vTargetRotation, _float fDuration);
+    void Start_Lerp(_fvector vTargetPos, _float3 vTargetRotation, _float fDuration, _bool IsTarget= false);
 
     void Lerp_To(_float fTimeDelta);
 
@@ -188,6 +188,7 @@ private:
     _vector m_vTargetPos = {};
     _vector m_vTargetQuat = {};
     _bool m_IsLerping = false;
+    _bool m_IsTarget = false;
 
 public:
     static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

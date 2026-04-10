@@ -38,6 +38,7 @@ public:
 
     void Update();
 
+    void OnGui() override;
 private:
     _float4x4 m_TransformStateMatrices[ETOI(D3DTS::END)];
     _float4x4 m_TransformInverseStateMatrices[ETOI(D3DTS::END)];

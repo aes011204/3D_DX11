@@ -46,7 +46,7 @@ HRESULT CVillage::Initialize(void* pArg)
 	//		3.5
 	//	] ,
 
-	m_pTransformCom->Set_Position(XMVectorSet(-3.3f, 3.f, 0.f, 1.f));
+	m_pTransformCom->Set_Position(XMVectorSet(-3.3f, 2.2f, 0.f, 1.f));
 	m_pTransformCom->Set_RotationDegree(_float3{ -180.f, -1.3f, 180.f });
 	m_pTransformCom->Set_Scale(_float3{ 3.5f, 3.5f, 3.5f });
 

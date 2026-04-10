@@ -27,6 +27,7 @@ public:
 
 	void Clear_Resources(_uint iLevelIndex);
 
+	_float Random(_float fMin, _float fMax);
 
 	void SetImguiContext(ImGuiContext* imgContext);
 

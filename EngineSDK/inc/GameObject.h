@@ -35,6 +35,8 @@ public:
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other){}
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) {};
 
+
+    shared_ptr<CTransform> Get_TransformCom() {return m_pTransformCom;}
 protected:
     
     class shared_ptr<CTransform> m_pTransformCom = { nullptr };

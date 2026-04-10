@@ -282,6 +282,9 @@
     <ClCompile Include="..\Private\Collison_Manager.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Instance.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Particle_Point.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -511,6 +514,9 @@
     <ClInclude Include="..\Public\Collison_Manager.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
+    <ClInclude Include="..\Public\VIBuffer_Instance.h" />
+    <ClInclude Include="..\Public\VIBuffer_Particle_Rect.h" />
+    <ClInclude Include="..\Public\VIBuffer_Particle_Point.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

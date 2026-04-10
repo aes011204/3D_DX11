@@ -163,7 +163,7 @@ void CTransform::Go_Down(_float fTimeDelta)
 	Set_Position(vPosition);
 	m_bIsDirty = true;
 }
-void CTransform::Start_Lerp(_fvector vTargetPos, _float3 vTargetRotation, _float fDuration)
+void CTransform::Start_Lerp(_fvector vTargetPos, _float3 vTargetRotation, _float fDuration, _bool IsTarget)
 {
 	m_vStartPos = Get_Position();
 	m_vStartQuat = Get_Quaternion();
@@ -181,6 +181,7 @@ void CTransform::Start_Lerp(_fvector vTargetPos, _float3 vTargetRotation, _float
 	{
 		m_vTargetQuat = XMVectorNegate(m_vTargetQuat);
 	}
+	m_IsTarget = IsTarget;
 }
 void CTransform::Lerp_To(_float fTimeDelta)
 {
@@ -201,7 +202,13 @@ void CTransform::Lerp_To(_float fTimeDelta)
 	//fSpeed = lerp(fSpeed, 0, t01);
 
 	Set_Position(XMVectorLerp(m_vStartPos, m_vTargetPos, t01));
+
+	if(m_IsTarget != true)
+	{
 	Set_Quaternion(XMQuaternionSlerp(m_vStartQuat, m_vTargetQuat, t01));
+		
+	}
+
 	
 }
 
@@ -271,11 +278,33 @@ void CTransform::LookAt(_fvector vAt)
 
 	if (XMVector3LengthSq(vLook).m128_f32[0] < 0.000001f)
 		return;
-	_matrix matLookAt = XMMatrixLookAtLH(vPosition, vAt, XMVectorSet(0.f, 1.f, 0.f, 0.f));
-	_matrix matWorldRot = XMMatrixInverse(nullptr, matLookAt);
 
+	// 기본 up
+	_vector up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+
+	_vector forward = XMVector3Normalize(vLook);
+
+	float dot = XMVectorGetX(XMVector3Dot(forward, up));
+	if (fabs(dot) > 0.99f)
+	{
+		up = XMVectorSet(0.f, 0.f, 1.f, 0.f);
+	}
+	_matrix matLookAt = XMMatrixLookAtLH(vPosition, vAt, up);
+	_matrix matWorldRot = XMMatrixInverse(nullptr, matLookAt);
 	_vector vQuat = XMQuaternionRotationMatrix(matWorldRot);
-	XMStoreFloat4(&m_vRotationQuat, vQuat);
+
+	_vector prevQuat = XMLoadFloat4(&m_vRotationQuat);
+
+	_vector newQuat = XMQuaternionRotationMatrix(matWorldRot);
+	newQuat = XMQuaternionNormalize(newQuat);
+
+	if (XMVectorGetX(XMQuaternionDot(prevQuat, newQuat)) < 0.f)
+	{
+		newQuat = XMVectorNegate(newQuat);
+	}
+
+
+	XMStoreFloat4(&m_vRotationQuat, newQuat);
 	m_bIsDirty = true;
 }
 
@@ -306,31 +335,40 @@ auto CTransform::Orbit(_fvector vTargetPos, _float3 vTargetRotationDegree, _floa
 
 _float3 CTransform::QuaternionToEuler(_float4 q)
 {
-	_float3 euler;
+	   // 1. Normalize (이거 진짜 중요)
+    XMVECTOR quat = XMVectorSet(q.x, q.y, q.z, q.w);
+    quat = XMQuaternionNormalize(quat);
 
-	// Roll (X축 회전)
-	float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
-	float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
-	euler.x = std::atan2(sinr_cosp, cosr_cosp);
+    q.x = XMVectorGetX(quat);
+    q.y = XMVectorGetY(quat);
+    q.z = XMVectorGetZ(quat);
+    q.w = XMVectorGetW(quat);
 
-	// Pitch (Y축 회전)
-	float sinp = 2 * (q.w * q.y - q.z * q.x);
-	if (std::abs(sinp) >= 1)
-		euler.y = std::copysign(XM_PI / 2.f, sinp);
-	else
-		euler.y = std::asin(sinp);
+    _float3 euler;
 
-	// Yaw (Z축 회전)
-	float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-	float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
-	euler.z = std::atan2(siny_cosp, cosy_cosp);
+    // Pitch (X축)
+    float sinp = 2.f * (q.w * q.x - q.y * q.z);
+    if (fabs(sinp) >= 1.f)
+        euler.x = copysign(XM_PI / 2.f, sinp);
+    else
+        euler.x = asinf(sinp);
 
-	// Radian -> Degree 변환
-	euler.x = XMConvertToDegrees(euler.x);
-	euler.y = XMConvertToDegrees(euler.y);
-	euler.z = XMConvertToDegrees(euler.z);
+    // Yaw (Y축)
+    float siny_cosp = 2.f * (q.w * q.y + q.z * q.x);
+    float cosy_cosp = 1.f - 2.f * (q.x * q.x + q.y * q.y);
+    euler.y = atan2f(siny_cosp, cosy_cosp);
 
-	return euler;
+    // Roll (Z축)
+    float sinr_cosp = 2.f * (q.w * q.z + q.x * q.y);
+    float cosr_cosp = 1.f - 2.f * (q.y * q.y + q.z * q.z);
+    euler.z = atan2f(sinr_cosp, cosr_cosp);
+
+    // Rad → Degree
+    euler.x = XMConvertToDegrees(euler.x);
+    euler.y = XMConvertToDegrees(euler.y);
+    euler.z = XMConvertToDegrees(euler.z);
+
+    return euler;
 }
 
 

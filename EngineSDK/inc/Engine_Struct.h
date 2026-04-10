@@ -116,7 +116,54 @@ namespace Engine
         };
     }VTXANIMMESH;
 
-    
+
+    typedef struct tagVertexParticleInstance
+    {
+        XMFLOAT4			vRight;
+        XMFLOAT4			vUp;
+        XMFLOAT4			vLook;
+        XMFLOAT4			vTranslation;
+        XMFLOAT2			vLifeTime;
+    }VTXPARTICLE_INSTANCE;
+
+    typedef struct tagVertexParticleRectInstanceDesc
+    {
+
+        static const _uint iNumElements = { 7 };
+
+        static constexpr D3D11_INPUT_ELEMENT_DESC Elements[] =
+        {
+            {"POSITION", 0 , DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+            {"TEXCOORD", 0 , DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0  },
+
+        	{"TEXCOORD", 1 , DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1  },
+            {"TEXCOORD", 2 , DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1  },
+            {"TEXCOORD", 3 ,DXGI_FORMAT_R32G32B32A32_FLOAT , 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+            {"TEXCOORD", 4 ,DXGI_FORMAT_R32G32B32A32_FLOAT , 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+            {"TEXCOORD", 5 , DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1  }
+        };
+    }VTXPARTICLE_RECTINSTANCE_DESC;
+
+    typedef struct tagVertexParticlePointInstanceDesc
+    {
+        static const unsigned int		iNumElements = { 6 };
+
+        static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[] = {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+   
+            { "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+            { "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+            { "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+            { "WORLD", 4, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+
+        	{ "TEXCOORD", 5, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        };
+    }VTXPARTICLE_POINTINSTANCE_DESC;
+
+
+
+
+
     struct Rect
     {
         float x = 0.f;

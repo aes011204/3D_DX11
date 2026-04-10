@@ -5,6 +5,7 @@
 
 namespace Engine
 {
+	class CGameObject;
 	class CTexture;
 }
 
@@ -352,6 +353,8 @@ namespace Client
         _float3 vTargetPos;
         _float3 vTargetRot;
         _float  fDuration;
+
+        weak_ptr<Engine::CGameObject> m_Target={};
     };
 
     
@@ -360,7 +363,9 @@ namespace Client
         CAM_FOLLOW_DESC() = default;
 
         _float fDistance;      
-        _float fPitch;         
+        _float fPitch;
+        _float fYaw;
+        _float3 vCurrentPos;
     };
 
    

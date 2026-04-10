@@ -69,7 +69,7 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 	switch (eMode)
 	{
 	case CAM_MODE::FOLLOW:
-		Update_Follow(fTimeDelta);
+		Update_Follow(fTimeDelta, pCurrentDesc);
 
 		break;
 	case CAM_MODE::STOP:
@@ -80,8 +80,7 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 			m_bFinish = true;
 
 		break;
-	case CAM_MODE::SHACK:
-		break;
+
 	case CAM_MODE::END:
 		break;
 	}
@@ -105,14 +104,37 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 //}
 
 
-void CCamera_Play::Update_Follow(_float fTimeDelta)
+void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 {
+
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
-
-
 	_long dx = dinput->Get_DIMouseMove(DIMM::X);
 	_long dy = dinput->Get_DIMouseMove(DIMM::Y);
 
+
+	if (m_FirstFlag == false)
+	{
+	auto pFollowDesc = dynamic_pointer_cast<CAM_FOLLOW_DESC>(pDesc);
+	if (!pFollowDesc) return;
+
+	
+	_vector vTargetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+	_vector vCurrentPos = m_pTransformCom->Get_Position();
+	_vector vDir = vCurrentPos - vTargetPos;
+
+	_float3 fDir;
+	XMStoreFloat3(&fDir, XMVector3Normalize(vDir));
+
+	// 역계산
+	m_Yaw = XMConvertToDegrees(atan2f(fDir.x, fDir.z)) - 180.f;
+	m_Pitch = XMConvertToDegrees(asinf(fDir.y));
+	m_fDistance = XMVectorGetX(XMVector3Length(vDir));
+
+
+	
+	m_FirstFlag = true;
+	return ;
+	}
 
 
 
@@ -144,12 +166,12 @@ void CCamera_Play::Update_Follow(_float fTimeDelta)
 		if (dx == 0 && dy == 0)
 		{
 			float delta = NormalizeAngle(targetDegree - m_Yaw);
-			m_Yaw += delta * 10.f * fTimeDelta; // 추적 속도 (조절 가능)
+			m_Yaw += delta * 5.f * fTimeDelta; // 추적 속도 (조절 가능)
 		}
 		m_Yaw = NormalizeAngle(m_Yaw);
 
 
-		m_Pitch = clamp(m_Pitch, -5.f, 90.f);
+		m_Pitch = clamp(m_Pitch, 0.f, 89.f);
 		_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
 		m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
 
@@ -196,6 +218,14 @@ bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 
 	m_pTransformCom->Lerp_To(fTimeDelta);
+
+
+		if(auto pTarget = pLerpDesc->m_Target.lock())
+		{
+			m_pTransformCom->LookAt(pTarget->Get_TransformCom()->Get_Position());
+		}
+
+	__super::Update_TransformMatrices();
 	if (m_pTransformCom->GetIsLerp() == false)
 	{
 		m_FirstFlag = false;
@@ -203,7 +233,9 @@ bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 	}
 
 
-	__super::Update_TransformMatrices();
+
+
+
 	return true;
 
 }

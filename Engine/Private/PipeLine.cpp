@@ -34,6 +34,12 @@ void CPipeLine::Update()
 	}
 }
 
+void CPipeLine::OnGui()
+{
+
+	CBase::OnGui();
+}
+
 unique_ptr<CPipeLine> CPipeLine::Create()
 {
 	unique_ptr<CPipeLine> pInstance(new CPipeLine());

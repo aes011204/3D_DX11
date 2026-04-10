@@ -33,7 +33,7 @@ public:
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
 
-    void Update_Follow(_float fTimeDelta);
+    void Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
     bool Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
 private:
     void Start_Targetting(_float4 startPos, _float degree, _float distance);

@@ -48,6 +48,9 @@ protected:
 	weak_ptr<CTransform> m_pOwnerTransformCom = { };
 	
 	CDInput_Manager* m_Input_Manager = { nullptr };
+
+	weak_ptr<CGameObject> m_pTarget = {};
+
 private:
 	// CBase을(를) 통해 상속됨
 	//void Free() override;

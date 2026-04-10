@@ -13,9 +13,12 @@
 #include "Monster_Anim.h"
 #include "Sea.h"
 #include "Collider.h"
+#include "Explosion.h"
+#include "Fish.h"
 #include "VIBuffer_Sea.h"
-#include "Sky.h"
-#include "VIBuffer_Cube.h"
+#include "VIBuffer_Particle_Point.h"
+#include "Snow.h"
+#include "VIBuffer_Particle_Rect.h"
 #include "Village.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -145,6 +148,14 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
+	/* Prototype_Component_Texture_Snow*/
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Snow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Snow Texture");
+		return E_FAIL;
+	}
 	///* Prototype_Component_Texture_Sky */
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Sky"),
 	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
@@ -181,8 +192,23 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	//	MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
 	//	return E_FAIL;
 	//}
-
+	/* Prototype_Component_Shader_VtxParticleRect */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticleRect"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxParticleRect.hlsl"), VTXPARTICLE_RECTINSTANCE_DESC::Elements, VTXPARTICLE_RECTINSTANCE_DESC::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxCube");
+		return E_FAIL;
+	}
 	
+
+
+	/* Prototype_Component_Shader_VtxParticlePoint */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxParticlePoint.hlsl"), VTXPARTICLE_POINTINSTANCE_DESC::Elements, VTXPARTICLE_POINTINSTANCE_DESC::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxParticlePoint");
+		return E_FAIL;
+	}
 
 	lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
 
@@ -193,6 +219,42 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_1500.raw")))))
 	{
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Terrain");
+		return E_FAIL;
+	}
+	CVIBuffer_Particle_Rect::PARTICLE_RECT_DESC		SnowDesc{};
+	SnowDesc.iNumInstances = 5000;
+	SnowDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	SnowDesc.vRange = _float3(129.f, 1.f, 129.f);
+	SnowDesc.vScale = _float2(0.2f, 0.5f);
+	SnowDesc.vSpeed = _float2(3.0f, 7.0f);
+	SnowDesc.vLifeTime = _float2(3.f, 5.0f);
+	SnowDesc.isLoop = true;
+	/* Prototype_Component_VIBuffer_Particle_Rect_Snow */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Rect_Snow"),
+		CVIBuffer_Particle_Rect::Create(m_pDevice, m_pContext, &SnowDesc))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
+		return E_FAIL;
+	}
+
+
+
+	CVIBuffer_Particle_Point::PARTICLE_POINT_DESC		ExploDesc{};
+	ExploDesc.iNumInstances = 500;
+	ExploDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	ExploDesc.vRange = _float3(0.3f, 0.3f, 0.3f);
+	ExploDesc.vScale = _float2(0.1f, 0.2f);
+	ExploDesc.vSpeed = _float2(3.0f, 7.0f);
+	ExploDesc.vLifeTime = _float2(1.f, 2.0f);
+	ExploDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	ExploDesc.isLoop = false;
+
+
+	/* Prototype_Component_VIBuffer_Particle_Point_Explosion */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_Explosion"),
+		CVIBuffer_Particle_Point::Create(m_pDevice, m_pContext, &ExploDesc))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
 		return E_FAIL;
 	}
 
@@ -263,6 +325,15 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
+	/* Prototype_Component_Model_Fish */
+	PreLocalTransformMatrix = XMMatrixScaling(0.001f, 0.001f, 0.001f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fish"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Fish/Fish.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Fish");
+		return E_FAIL;
+	}
+
 	lstrcpy(m_szLoadingText, TEXT("객체원형를 로딩 중 입니다."));////////////////////////////////
 	/* Prototype_GameObject_Terrain */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
@@ -330,6 +401,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
+	/* Prototype_GameObject_Fish */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		CFish::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : fish");
+		return E_FAIL;
+	}
 
 	///* Prototype_GameObject_Sky */
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sky"),
@@ -339,7 +417,20 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	//	return E_FAIL;
 	//}
 
-
+	/* Prototype_GameObject_Snow */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
+		CSnow::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Snow");
+		return E_FAIL;
+	}
+	/* Prototype_GameObject_Explosion */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
+		CExplosion::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Explosion");
+		return E_FAIL;
+	}
 
 	lstrcpy(m_szLoadingText, TEXT("충돌체를 로딩 중 입니다."));
 	/* Prototype_Component_Collider_AABB */

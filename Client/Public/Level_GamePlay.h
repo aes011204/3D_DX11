@@ -30,6 +30,7 @@ public:
 	HRESULT Ready_Layer_Wave(const _wstring& strLayerTag);
 
 	HRESULT Ready_Layer_ETC(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
 
 private:
 	_bool m_OnTab = false;

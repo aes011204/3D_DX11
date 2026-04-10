@@ -44,17 +44,6 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
 
-		Evt_ChangeCam event = {};
-		auto pLerp = make_shared<CAM_LERP_DESC>();
-		pLerp->eMode = CAM_MODE::FOLLOW;
-	/*	pLerp->vTargetPos = _float3(90.f, 30.f, 30.f);
-		pLerp->vTargetRot = _float3(0.f, 0.f, 180.f);
-		pLerp->fDuration = 2.0f;*/
-
-		event.commands.push_back(pLerp);
-
-		m_pGameInstance.lock()->Get_EventBus()->Publish(event);
-
 		return  ETOI(PLAYERSTATE::SEA);
 	}
 

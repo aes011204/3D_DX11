@@ -5,6 +5,7 @@
 #include "Sea_Manager.h"
 #include "Camera_Play.h"
 #include "EventBus.h"
+#include "Fish.h"
 
 CPlayer_Sea::CPlayer_Sea(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
 	: CPlayerState(owner, pStateMachine)
@@ -18,12 +19,20 @@ CPlayer_Sea::~CPlayer_Sea()
 void CPlayer_Sea::Enter()
 {
 	CPlayerState::Enter();
-
+	// 만일 카메라 기본 위치와 현제 위치가 다르다면 럴프
 	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CAM_FOLLOW_DESC>();
-	pLerp->eMode = CAM_MODE::FOLLOW;
+	
+	//auto pLerp = make_shared<CAM_LERP_DESC>();
+	//pLerp->fDuration = 1.0f;
+	//pLerp->vTargetPos = 1.0f;
+	//pLerp->vTargetRot = 
 
-	event.commands.push_back(pLerp);
+	auto pFow = make_shared<CAM_FOLLOW_DESC>();
+	pFow->eMode = CAM_MODE::FOLLOW;
+	pFow->fPitch = 0.f;
+	pFow->fYaw = 0.f;
+
+	event.commands.push_back(pFow);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
@@ -31,6 +40,7 @@ void CPlayer_Sea::Enter()
 
 void CPlayer_Sea::Exit()
 {
+	m_NextState = PLAYERSTATE::SEA;
 	CPlayerState::Exit();
 }
 
@@ -52,7 +62,24 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 	Location_Sea(timeDelta);
 
 
-	return ETOI(PLAYERSTATE::SEA);
+
+
+	if(m_Input_Manager->KeyDown(DIK_F) && m_pTarget.lock() != nullptr)
+	{
+
+		if(auto Target =dynamic_pointer_cast<CFish>(m_pTarget.lock()))
+		{
+			Target->Change_Cam(m_Owner.lock());
+
+				m_CurSpeed = 0.f;
+				return ETOI(PLAYERSTATE::FISHING);
+		}
+
+	}
+
+
+
+	return ETOI(m_NextState);
 }
 
 void CPlayer_Sea::LateUpdate_State(const _float& timeDelta)
@@ -67,6 +94,8 @@ void CPlayer_Sea::Render_State()
 
 void CPlayer_Sea::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
+
+
 	// 돌이랑 충돌하면 0 아님 - 로 _CurrentSpeed 이거 나중에 충돌체쪽으로 옮기기
 }
 
@@ -77,45 +106,14 @@ void CPlayer_Sea::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider>
 
 void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-	// 오버랩 되어있고 키F를 누르고 있으면 지정된 위치로 천천이 이동 // 정박 -> 끝나면 Village / 이거 나중에 충돌체쪽으로 옮기기
 
-	//if(m_Input_Manager->KeyDown(DIK_F))
-	//{
-	//	if(m_bIsDocking ==false)
-	//	{
-	//	_float3 vTargetCenter = other->Get_WorldCenter();
-	//	m_pOwnerTransformCom.lock()->Start_Lerp (XMLoadFloat3(&vTargetCenter), _float3(-90.f, 0.f, 0.f),2.f);
-	//	m_bIsDocking = true;
-	//		
-	//	}
-
-	//	if (m_bFinDock == true)
-	//	{
-	//		//m_ClientCamPtr.lock()->Set_LerpMode(XMVectorSet( 30.f, 30.f, 30.f ,1.f), _float3(0.f, 180.f, 0.f), 3.f);
-	//		//m_ClientCamPtr.lock()->Change_CamMode(CCamera_Play::LERP, CCamera_Play::STOP);C
-	//		Evt_ChangeCam event={};
-	//		auto pLerp = make_shared<CAM_LERP_DESC>();
-	//		pLerp->eMode = CAM_MODE::LERP ;
-	//		pLerp->vTargetPos = _float3(30.f, 30.f, 30.f);
-	//		pLerp->vTargetRot = _float3(0.f, 0.f, 180.f);
-	//		pLerp->fDuration = 2.0f;
-	//		
-	//		event.commands.push_back(pLerp);
-
-	//		CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
-
-	//		m_pStateMachine.lock()->Change_State(ETOI(PLAYERSTATE::VILLAGE));
-	//		m_CurSpeed = 0.f;
-	//		m_bFinDock = false;
-	//	}
-	//	
-	//
-	//}
-	//else
-	//{
-	//	//m_bIsDocking = false;
-	//}
-	if (m_Input_Manager->KeyDown(DIK_F) && !m_bIsDocking)
+	if (other->Get_MyLayer() == COLLISION_LAYER::FISH)
+	{
+		// "너를 내 타겟으로 찜했다" (포인터만 저장)
+		m_pTarget = other->Get_GOwner();
+	}
+	
+	if (m_Input_Manager->KeyDown(DIK_F) && !m_bIsDocking && other->Get_MyLayer() == TRIGGER)
 	{
 		_float3 vTargetCenter = other->Get_WorldCenter();
 
@@ -125,8 +123,30 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 			2.f
 		);
 
+
+		Evt_ChangeCam event = {};
+		auto pLerp = make_shared<CAM_DESC>();
+		pLerp->eMode = CAM_MODE::STOP;
+		
+		event.commands.push_back(pLerp);
+
+		CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
+
+
 		m_bIsDocking = true;
 	}
+
+	if(m_Input_Manager->KeyUp(DIK_F))
+	{
+		Evt_ChangeCam event = {};
+		auto pfollow = make_shared<CAM_DESC>();
+		pfollow->eMode = CAM_MODE::FOLLOW;
+
+		event.commands.push_back(pfollow);
+
+		CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
+	}
+
 
 
 }
@@ -250,8 +270,8 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 			Evt_ChangeCam event = {};
 					auto pLerp = make_shared<CAM_LERP_DESC>();
 					pLerp->eMode = CAM_MODE::LERP ;
-					pLerp->vTargetPos = _float3(90.f, 30.f, 30.f);
-					pLerp->vTargetRot = _float3(0.f, 0.f, 180.f);
+					pLerp->vTargetPos = _float3(8.2f, 3.f, 7.6f);
+					pLerp->vTargetRot = _float3(5.f, -130.f, 0.f);
 					pLerp->fDuration = 2.0f;
 					
 					event.commands.push_back(pLerp);
@@ -262,6 +282,7 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 					m_CurSpeed = 0.f;
 			m_bFinDock = true;
 			m_bIsDocking = false;
+			/*m_NextState = PLAYERSTATE::VILLAGE;*/
 			return ETOI(PLAYERSTATE::VILLAGE);
 		}
 		return ETOI(PLAYERSTATE::SEA);

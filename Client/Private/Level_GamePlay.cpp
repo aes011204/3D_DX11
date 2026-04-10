@@ -51,9 +51,11 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Wave(TEXT("Layer_Wave"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_ETC(TEXT("Layer_Wave"))))
+	if (FAILED(Ready_Layer_ETC(TEXT("Layer_ETC"))))
 		return E_FAIL;
 
+	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
+		return E_FAIL;
 
 	return S_OK;
 }
@@ -110,23 +112,23 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
 
 	// �ϴ� ���� �ΰ� ���߿� �������� UIHander, UIController �� �̵�
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) // �ϴ� Ű�� ������ ��
-	{
-		if (m_OnTab == false) // �����־��ٸ� �ѱ�
-		{
+	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) // �ϴ� Ű�� ������ ��
+	//{
+	//	if (m_OnTab == false) // �����־��ٸ� �ѱ�
+	//	{
 
-			dynamic_pointer_cast<CUI_TabContainer>(m_TapUI)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE),TAB::INVEN);
-			m_HoldItem->UI_Active();
-			m_OnTab = true;
-		}
-		else // �����־��ٸ� ����
-		{
-			m_TapUI->UI_InActive();
-			m_HoldItem->UI_InActive();
+	//		dynamic_pointer_cast<CUI_TabContainer>(m_TapUI)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE),TAB::INVEN);
+	//		m_HoldItem->UI_Active();
+	//		m_OnTab = true;
+	//	}
+	//	else // �����־��ٸ� ����
+	//	{
+	//		m_TapUI->UI_InActive();
+	//		m_HoldItem->UI_InActive();
 
-			m_OnTab = false;
-		}
-	}
+	//		m_OnTab = false;
+	//	}
+	//}
 	m_pInvenCntl->Update(fTimeDelta);
 
 	// 일단 테스트
@@ -137,20 +139,20 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		ui->UI_NPCActive(NPC::MAYOR, true, true, "Mayer_start");
 
 	}
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_N))
-	{
+	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_N))
+	//{
+	//
+	//	auto ui = dynamic_pointer_cast<CUI_MiniGame>(m_pMiniGame);
+	//	ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE,1002);
+	//
+	//}
+	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_B))
+	//{
 
-		auto ui = dynamic_pointer_cast<CUI_MiniGame>(m_pMiniGame);
-		ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE,1002);
+	//	auto ui = dynamic_pointer_cast<CUI_Village>(m_Village);
+	//	ui->UI_Active();
 
-	}
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_B))
-	{
-
-		auto ui = dynamic_pointer_cast<CUI_Village>(m_Village);
-		ui->UI_Active();
-
-	}
+	//}
 
 }
 
@@ -203,7 +205,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CCamera_Play::CAMERAPLAY_DESC CLCamDesc = {};
 	CLCamDesc.fFar = 500.f;
 	CLCamDesc.fNear = 0.1f;
-	CLCamDesc.fFovY = XMConvertToRadians(60.f);
+	CLCamDesc.fFovY = XMConvertToRadians(50.f);
 	CLCamDesc.vAt = { 60.f, 0.f, 60.f, 1.f };
 	CLCamDesc.vEyes = { 60.f, 60.f, -30.f, 1.f };
 	CLCamDesc.fSpeedPerSec = 10.f;
@@ -224,7 +226,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
 	FRCamDesc.fFar = 500.f;
 	FRCamDesc.fNear = 0.1f;
-	FRCamDesc.fFovY = XMConvertToRadians(60.f);
+	FRCamDesc.fFovY = XMConvertToRadians(50.f);
 	FRCamDesc.vEyes = _float4(0.f, 10.f, -7.f, 1.f);
 	FRCamDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	FRCamDesc.fSpeedPerSec = 10.f;
@@ -232,7 +234,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	FRCamDesc.fMouseSensor = 0.01f;
 
 	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
-		ETOI(LEVEL::STATIC), strLayerTag, &FRCamDesc));
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &FRCamDesc));
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
@@ -280,6 +282,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Wave(const _wstring& strLayerTag)
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sea"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
+	return S_OK;
 
 }
 HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
@@ -287,7 +290,29 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Village"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		return E_FAIL;
+	return S_OK;
 }
+
+
+HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& strLayerTag)
+{
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		return E_FAIL;
+
+	if (nullptr == ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag))))
+		return E_FAIL;
+
+
+
+	return  S_OK;
+}
+
+
 
 shared_ptr<CLevel_GamePlay> CLevel_GamePlay::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
