@@ -35,12 +35,26 @@ public:
 
     void Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
     bool Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
+    void Get_Target_PosLook(_float3& camPos, _float3& vTargetRot);
+    void Shake_Cam(_float fTimeDelta);
 private:
     void Start_Targetting(_float4 startPos, _float degree, _float distance);
 
 private:
     //shared_ptr<CAM_DESC> m_pCurrentDesc = nullptr; // 데이터 안에 모드 정보가 있음
     //shared_ptr<CAM_DESC> m_pNextDesc = nullptr; // 다음 예약석
+
+
+    _float3 m_BasePos = {};
+
+    float m_ShakeTime = {};
+    float    m_ShakePower = {};
+    float    m_DeAc = {};
+
+    //
+
+    float  m_fStartFovy = 0;
+    float m_Acc = 0.f;
 
     deque<shared_ptr<CAM_DESC>> m_CamCommands;
 

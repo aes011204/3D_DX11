@@ -18,8 +18,29 @@ CPlayer_Village::~CPlayer_Village()
 
 void CPlayer_Village::Enter()
 {
-	auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+	Evt_ChangeCam event = {};
+	auto pLerp = make_shared<CAM_LERP_DESC>();
+	pLerp->eMode = CAM_MODE::LERP;
+	pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
+	pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
+	pLerp->fDuration = 2.0f;
+	pLerp->fFov = 30.f;
+	pLerp->OnComplete = [this]() {
+			auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 	m_Village->UI_Active();
+	};
+	event.commands.push_back(pLerp);
+
+	auto pStop = make_shared<CAM_DESC>();
+	pStop->eMode = CAM_MODE::STOP;
+	event.commands.push_back(pStop);
+
+
+
+	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
+
+
+
 	CPlayerState::Enter();
 }
 

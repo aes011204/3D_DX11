@@ -26,6 +26,7 @@ public:
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
 
+    void OnGui() override;
 private:
     _float	m_fMouseSensor = {};
 

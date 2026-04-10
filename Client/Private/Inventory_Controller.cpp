@@ -248,6 +248,16 @@ void CInventory_Controller::Update(float TimeDelta)
 
 	}
 
+	auto inven = m_PlayerInven.lock();
+	if (inven && inven->Get_Dirty())
+	{
+		inven->Set_Dirty(false);
+		Evt_ShipStat e = inven->CalculateEquip();
+
+		m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+	}
+
+
 }
 
 shared_ptr<CInventory_Controller> CInventory_Controller::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven, shared_ptr<CUI_Item> UIHoldItem)

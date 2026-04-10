@@ -123,6 +123,12 @@ HRESULT CVIBuffer_Particle_Point::Initialize_Prototype(const CVIBuffer_Instance:
 
 HRESULT CVIBuffer_Particle_Point::Initialize(void* pArg)
 {
+	D3D11_SUBRESOURCE_DATA			InstanceInitialData{};
+	InstanceInitialData.pSysMem = m_pInstanceVertices.get();
+
+	if (FAILED(m_pDevice->CreateBuffer(&m_InstanceBufferDesc, &InstanceInitialData, &m_pVBInstance)))
+		return E_FAIL;
+
 	return S_OK;
 }
 

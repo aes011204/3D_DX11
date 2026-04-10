@@ -169,8 +169,11 @@
     <ClInclude Include="..\Public\Monster_Anim.h" />
     <ClInclude Include="..\Public\PlayerBoat.h" />
     <ClInclude Include="..\Public\PlayerState.h" />
+    <ClInclude Include="..\Public\Player_FishShop.h" />
     <ClInclude Include="..\Public\Player_MiniGame.h" />
+    <ClInclude Include="..\Public\Player_RepairShop.h" />
     <ClInclude Include="..\Public\Player_Sea.h" />
+    <ClInclude Include="..\Public\Player_Storage.h" />
     <ClInclude Include="..\Public\Player_Village.h" />
     <ClInclude Include="..\Public\RotationModifier.h" />
     <ClInclude Include="..\Public\Sea.h" />
@@ -225,8 +228,11 @@
     <ClCompile Include="..\Private\Monster_Anim.cpp" />
     <ClCompile Include="..\Private\PlayerBoat.cpp" />
     <ClCompile Include="..\Private\PlayerState.cpp" />
+    <ClCompile Include="..\Private\Player_FishShop.cpp" />
     <ClCompile Include="..\Private\Player_MiniGame.cpp" />
+    <ClCompile Include="..\Private\Player_RepairShop.cpp" />
     <ClCompile Include="..\Private\Player_Sea.cpp" />
+    <ClCompile Include="..\Private\Player_Storage.cpp" />
     <ClCompile Include="..\Private\Player_Village.cpp" />
     <ClCompile Include="..\Private\RotationModifier.cpp" />
     <ClCompile Include="..\Private\Sea.cpp" />

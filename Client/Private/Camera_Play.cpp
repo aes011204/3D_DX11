@@ -39,7 +39,14 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 		}
 	);
 
-
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Demage>(
+		[this](const Evt_Demage& e)
+		{
+			m_DeAc = e.DeAc;
+			m_ShakePower = e.ShakePower;
+			m_ShakeTime = e.ShakeTime;
+		}
+	);
 	m_fMouseSensor = 0.2f;
 
 
@@ -48,7 +55,8 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 
 	m_MinDistance = 7.f;
 	m_MaxDistance = 20.f;
-
+	//m_MinDistance = 15.f;
+	//m_MaxDistance = 35.f;
 	m_fDistance = 18.f;
 	return S_OK;
 }
@@ -73,7 +81,7 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 
 		break;
 	case CAM_MODE::STOP:
-		__super::Update_TransformMatrices();
+	//	__super::Update_TransformMatrices();
 		break;
 	case CAM_MODE::LERP:
 		if (false == Update_Lerp(fTimeDelta, pCurrentDesc))
@@ -85,15 +93,31 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 		break;
 	}
 
+	 XMStoreFloat3(&m_BasePos,m_pTransformCom->Get_Position());
+
+	Shake_Cam(fTimeDelta);
+
+
+
+	__super::Update_TransformMatrices();
+
+
 	if (m_bFinish == true)
 	{
+		if(pCurrentDesc->OnComplete != nullptr)
+		{
+			pCurrentDesc->OnComplete();
+		}
 		m_bFinish = false;
 		m_FirstFlag = false;
 		m_CamCommands.pop_front();
 		//m_CamMode = m_NextCamMode;
+
 	}
-	_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
-	LOG_F(LOG_LEVEL::INFO,"Cam Pos : % f, % f, % f\n", XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos));
+	//_vector vPos = m_pTransformCom->Get_State(STATE::POSITION);
+	//LOG_F(LOG_LEVEL::INFO,"Cam Pos : % f, % f, % f\n", XMVectorGetX(vPos), XMVectorGetY(vPos), XMVectorGetZ(vPos));
+
+
 }
 
 //void CCamera_Play::Change_CamMode(CAM_MODE m_ChangeMode, CAM_MODE m_NextMode)
@@ -131,7 +155,6 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 	m_fDistance = XMVectorGetX(XMVector3Length(vDir));
 
 
-	
 	m_FirstFlag = true;
 	return ;
 	}
@@ -171,7 +194,7 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 		m_Yaw = NormalizeAngle(m_Yaw);
 
 
-		m_Pitch = clamp(m_Pitch, 0.f, 89.f);
+		m_Pitch = clamp(m_Pitch, 1.f, 88.f);
 		_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
 		m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
 
@@ -197,7 +220,7 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 		m_pTransformCom->LookAt(targetPos);
 
 	}
-	__super::Update_TransformMatrices();
+	//__super::Update_TransformMatrices();
 }
 
 bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
@@ -208,16 +231,38 @@ bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 	if (m_FirstFlag == false)
 	{
+		if(pLerpDesc->IsLerpTarget ==true)
+		{
+			_float3 cam, angle;
+			Get_Target_PosLook(cam, angle);
+			pLerpDesc->vTargetPos = cam;
+				pLerpDesc->vTargetRot = angle;
+		}
 		_vector vTargetPos = XMLoadFloat3(&pLerpDesc->vTargetPos);
+
 		m_pTransformCom->Start_Lerp(vTargetPos, pLerpDesc->vTargetRot, pLerpDesc->fDuration);
 		m_FirstFlag = true;
+		m_fStartFovy = m_fFovy;
+
 		return true;
 	}
 
 
 
-
 	m_pTransformCom->Lerp_To(fTimeDelta);
+
+	m_Acc += fTimeDelta;
+	if (m_Acc >= pLerpDesc->fDuration)
+	{
+		m_Acc = pLerpDesc->fDuration;
+	}
+
+
+	if (pLerpDesc->fFov > 0)
+	{
+		m_fFovy = lerp(m_fStartFovy, XMConvertToRadians(pLerpDesc->fFov) , m_Acc / pLerpDesc->fDuration);
+	}
+
 
 
 		if(auto pTarget = pLerpDesc->m_Target.lock())
@@ -225,9 +270,10 @@ bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 			m_pTransformCom->LookAt(pTarget->Get_TransformCom()->Get_Position());
 		}
 
-	__super::Update_TransformMatrices();
+	//__super::Update_TransformMatrices();
 	if (m_pTransformCom->GetIsLerp() == false)
 	{
+		m_Acc = 0.f;
 		m_FirstFlag = false;
 		return false;
 	}
@@ -237,6 +283,111 @@ bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 
 	return true;
+
+}
+
+void CCamera_Play::Get_Target_PosLook(_float3& camPos, _float3& vTargetRot)
+{
+	//_vector targetLook = m_pTargetTransform.lock()->Get_State(STATE::LOOK);
+	//_float3 vLook;
+	//XMStoreFloat3(&vLook, XMVector3Normalize(targetLook));
+
+	//float targetDegree = XMConvertToDegrees(atan2f(vLook.x, vLook.z));
+
+
+	//m_Pitch = 30.f;
+	//	m_Yaw = targetDegree;
+
+	//m_Pitch = clamp(m_Pitch, 0.f, 89.f);
+	//_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
+	//m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
+
+
+	//float yawRad = XMConvertToRadians(m_Yaw + 180.f);
+	//float pitchRad = XMConvertToRadians(m_Pitch);
+
+	//float x = m_fDistance * cosf(pitchRad) * sinf(yawRad);
+	//float y = m_fDistance * sinf(pitchRad);
+	//float z = m_fDistance * cosf(pitchRad) * cosf(yawRad);
+
+	//_vector offset = XMVectorSet(x, y, z, 0.f);
+
+
+	//_vector targetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+	//_vector camposVetor = targetPos + offset;
+	//_float3 tmp = {};
+	// XMStoreFloat3(&tmp, camposVetor);
+	// camPos = tmp;
+	//
+	//	_vector currentPos = m_pTransformCom->Get_Position();
+
+	//	_vector vDir = XMVector3Normalize(targetPos - camPos);
+	//	_float3 fDir;
+	//	XMStoreFloat3(&fDir, vDir);
+
+
+	//	float finalYaw = XMConvertToDegrees(atan2f(fDir.x, fDir.z));
+	//	float finalPitch = XMConvertToDegrees(asinf(fDir.y));
+	//	float finalRoll = 0.f;
+
+	//	vTargetRot = _float3(finalPitch, finalYaw, finalRoll);
+	//
+	// 1. 배의 방향 각도 구하기
+	_vector targetLook = m_pTargetTransform.lock()->Get_State(STATE::LOOK);
+	_float3 vLook;
+	XMStoreFloat3(&vLook, XMVector3Normalize(targetLook));
+	float targetDegree = XMConvertToDegrees(atan2f(vLook.x, vLook.z));
+
+	// 2. 우리가 원하는 카메라의 최종 상태 (배 뒤 30도 위치)
+	m_Pitch = 30.f;
+	m_Yaw = targetDegree; // 배가 보는 방향과 일치시킴
+
+	// 3. 거리/오프셋 계산 (기존 로직 유지)
+	m_Pitch = clamp(m_Pitch, 0.f, 89.f);
+	_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
+	m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
+
+	float yawRad = XMConvertToRadians(m_Yaw + 180.f); // 배의 뒤쪽 좌표를 구하기 위해 180도 더함
+	float pitchRad = XMConvertToRadians(m_Pitch);
+
+	float x = m_fDistance * cosf(pitchRad) * sinf(yawRad);
+	float y = m_fDistance * sinf(pitchRad);
+	float z = m_fDistance * cosf(pitchRad) * cosf(yawRad);
+
+	_vector offset = XMVectorSet(x, y, z, 0.f);
+	_vector targetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+
+	// 최종 위치 저장
+	_vector camposVetor = targetPos + offset;
+	XMStoreFloat3(&camPos, camposVetor);
+
+	// 4. 회전값 결정 (역산 대신 직접 대입)
+	// 카메라가 배 뒤에 안착했을 때, 배가 보는 방향(m_Yaw)과 똑같은 방향을 보게 합니다.
+	// 만약 배의 앞면을 보고 있다면 m_Yaw 대신 m_Yaw (그대로) 혹은 
+	// 배를 정확히 정면으로 바라봐야 한다면 m_Yaw를 유지한 채 Pitch만 조절하면 됩니다.
+
+	vTargetRot = _float3(m_Pitch, m_Yaw, 0.f);
+}
+
+void CCamera_Play::Shake_Cam(_float fTimeDelta)
+{
+
+	
+
+	if(m_ShakeTime > 0.f)
+	{
+		m_ShakeTime -= fTimeDelta;
+
+		float randX = m_pGameInstance.lock()->Random(-1.f, 1.f) * m_ShakePower;
+		float randY = m_pGameInstance.lock()->Random(-1.f, 1.f) * m_ShakePower;
+
+		m_ShakePower -= fTimeDelta  * m_DeAc;
+
+		_float3 finalPos = _float3{ randX,randY,0.f };
+		
+		m_pTransformCom->Set_Position(m_BasePos + _float3{ randX,randY,0.f });
+	}
+
 
 }
 

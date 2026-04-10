@@ -54,6 +54,10 @@ private:
     bool m_bIsDocking = false;
     bool m_bFinDock = false;
     _float3 m_targetPos = {};
+
+    bool m_OnTab = false;
+
+    weak_ptr<class CUI_TabContainer> m_TapUI={};
 public:
     static shared_ptr<CPlayer_Sea> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
 

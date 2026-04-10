@@ -44,5 +44,6 @@ namespace Engine
     {
         Client::CInventory_Controller* m_contrl_Pointer = {};
     };
+    
 
 }

@@ -53,10 +53,13 @@ public:
 private:
     weak_ptr<class CInventory> m_Inven = {};
     shared_ptr<CUIText>m_TextInfo = {};
+    shared_ptr<CUIText>m_TextInfo_1 = {};
 
     shared_ptr<CUIPanel> m_InvenPanel = { nullptr };
     vector<shared_ptr<CUIImage>> m_ItemUI = {};
     vector<shared_ptr<CUISlot>> m_Slot = {};
+    vector<shared_ptr<CUISlot>> m_DemageSlot = {};
+
 public:
     static shared_ptr<CUI_Inventory> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;

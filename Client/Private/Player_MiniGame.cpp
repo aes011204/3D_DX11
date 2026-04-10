@@ -1,7 +1,7 @@
 #include "Player_MiniGame.h"
 #include "DInput_Manager.h"
 #include "PlayerBoat.h"
-#include "Sea_Manager.h"
+#include "EventBus.h"
 #include "UI_Item.h"
 #include "UI_MiniGame.h"
 #include "UI_TabContainer.h"
@@ -18,17 +18,40 @@ CPlayer_MiniGame::~CPlayer_MiniGame()
 void CPlayer_MiniGame::Enter()
 {
 
-	auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
-	dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
 
-	auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
-	m_HoldItem->UI_Active();
+	Evt_ChangeCam event = {};
+	auto pLerp = make_shared<CAM_LERP_DESC>();
+	pLerp->eMode = CAM_MODE::LERP;
 
-	auto MiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
-	auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
-	ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE, 1002);
+	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
+	XMStoreFloat3(&pLerp->vTargetPos, m_pOwnerTransformCom.lock()->Get_Position()
+		- XMVector3Normalize(forward) * 3.f   // »ìÂ¦ µÚ·Î
+		+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // À§);
+	pLerp->m_Target = m_Owner;
+	pLerp->fDuration = 1.5f;
+	pLerp->OnComplete = [this]() {
 
-	
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
+
+		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+		m_HoldItem->UI_Active();
+
+		auto MiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
+		auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
+		ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE, 1002);
+		};
+	event.commands.push_back(pLerp);
+
+
+	auto pStop = make_shared<CAM_DESC>();
+	pStop->eMode = CAM_MODE::STOP;
+	event.commands.push_back(pStop);
+
+	m_pGameInstance.lock()->Get_EventBus()->Publish(event);
+
+
+
 	CPlayerState::Enter();
 }
 

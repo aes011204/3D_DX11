@@ -94,6 +94,39 @@ HRESULT CCamera_Free::Render()
 	return S_OK;
 }
 
+void CCamera_Free::OnGui()
+{
+	CCamera::OnGui();
+
+	const _float4x4& mat = *(m_pTransformCom->Get_WorldMatrix());
+
+	_float3 euler;
+
+	// Pitch (X축 회전)
+	euler.x = asinf(-mat._32);
+
+	// 오차 범위 체크 (Gimbal Lock 방지)
+	if (cosf(euler.x) > 0.0001f)
+	{
+		euler.y = atan2f(mat._31, mat._33); // Yaw
+		euler.z = atan2f(mat._12, mat._22); // Roll
+	}
+	else
+	{
+		euler.y = 0.0f;
+		euler.z = atan2f(-mat._21, mat._11);
+	}
+
+	// 라디안을 Degree로 변환
+	euler.x = XMConvertToDegrees(euler.x);
+	euler.y = XMConvertToDegrees(euler.y);
+	euler.z = XMConvertToDegrees(euler.z);
+
+
+
+	ImGui::Text("Rotation (Euler): X:%.2f, Y:%.2f, Z:%.2f", euler.x, euler.y, euler.z);
+}
+
 shared_ptr<CCamera_Free> CCamera_Free::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
 	shared_ptr<CCamera_Free> pInstance(new CCamera_Free(pDevice, pContext), [](CCamera* p) {p->Free(); delete p;});

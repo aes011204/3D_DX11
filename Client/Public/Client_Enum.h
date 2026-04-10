@@ -281,13 +281,13 @@ namespace Client
         _uint y = {};
     };
 
-    struct Evt_ShipStats
-    {
-        _uint BoatSpeed = {};
-        _uint FishingSpeed = {};
-        _uint Light = {};
-        SEA_MASK SeaMask = {};
-    };
+    //struct Evt_ShipStats
+    //{
+    //    _uint BoatSpeed = {};
+    //    _uint FishingSpeed = {};
+    //    _uint Light = {};
+    //    SEA_MASK SeaMask = {};
+    //};
     
     struct Evt_AddMoney
     {
@@ -343,6 +343,7 @@ namespace Client
     {
         virtual ~CAM_DESC() = default;
         CAM_MODE eMode;
+        function<void()> OnComplete = nullptr;
     };
 
    
@@ -354,7 +355,9 @@ namespace Client
         _float3 vTargetRot;
         _float  fDuration;
 
-        weak_ptr<Engine::CGameObject> m_Target={};
+        _float fFov = 0;
+        _bool IsLerpTarget = false;
+        weak_ptr<Engine::CGameObject> m_Target = {};
     };
 
     
@@ -380,5 +383,25 @@ namespace Client
     {
         deque<shared_ptr<CAM_DESC>> commands;
     };
+
+    struct Evt_ShipStat
+    {
+        _uint EngineSpeed = {};
+        _uint LightIntensity = {};
+        _uint FishingSpeed = {};
+        SEA_MASK SeaMask = {};
+        _float InvenMoney = {};
+    };
+
+
+    struct Evt_Demage
+    {
+        float ShakeTime = {};
+        float ShakePower = {};
+        float DeAc = {};
+
+        int DemageCount = {};
+    };
+
 
 }

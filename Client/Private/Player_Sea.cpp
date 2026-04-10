@@ -6,6 +6,7 @@
 #include "Camera_Play.h"
 #include "EventBus.h"
 #include "Fish.h"
+#include "UI_TabContainer.h"
 
 CPlayer_Sea::CPlayer_Sea(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
 	: CPlayerState(owner, pStateMachine)
@@ -22,10 +23,14 @@ void CPlayer_Sea::Enter()
 	// 만일 카메라 기본 위치와 현제 위치가 다르다면 럴프
 	Evt_ChangeCam event = {};
 	
-	//auto pLerp = make_shared<CAM_LERP_DESC>();
-	//pLerp->fDuration = 1.0f;
-	//pLerp->vTargetPos = 1.0f;
-	//pLerp->vTargetRot = 
+	auto pLerp = make_shared<CAM_LERP_DESC>();
+	pLerp->eMode = LERP;
+	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
+	pLerp->IsLerpTarget = true;
+	pLerp->fFov = 40;
+	//pLerp->m_Target = m_Owner;
+	pLerp->fDuration = 1.f;
+	event.commands.push_back(pLerp);
 
 	auto pFow = make_shared<CAM_FOLLOW_DESC>();
 	pFow->eMode = CAM_MODE::FOLLOW;
@@ -51,6 +56,8 @@ HRESULT CPlayer_Sea::Init_State()
 	m_MaxSpeed = 5.f;
 	m_pSea_Manager = CSea_Manager::GetInstance();
 
+
+	
 	return CPlayerState::Init_State();
 }
 
@@ -77,6 +84,23 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 
 	}
 
+
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) 
+	{
+		if (m_OnTab == false) 
+		{
+			m_TapUI = dynamic_pointer_cast<CUI_TabContainer>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer"));
+
+			m_TapUI.lock()->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
+			m_OnTab = true;
+		}
+		else
+		{
+			m_TapUI.lock()->UI_InActive();
+
+			m_OnTab = false;
+		}
+	}
 
 
 	return ETOI(m_NextState);
@@ -267,7 +291,7 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 
 		if (m_pOwnerTransformCom.lock()->GetIsLerp() == false)
 		{
-			Evt_ChangeCam event = {};
+			/*Evt_ChangeCam event = {};
 					auto pLerp = make_shared<CAM_LERP_DESC>();
 					pLerp->eMode = CAM_MODE::LERP ;
 					pLerp->vTargetPos = _float3(8.2f, 3.f, 7.6f);
@@ -276,7 +300,7 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 					
 					event.commands.push_back(pLerp);
 
-					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
+					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);*/
 
 					//m_pStateMachine.lock()->Change_State(ETOI(PLAYERSTATE::VILLAGE));
 					m_CurSpeed = 0.f;

@@ -2,6 +2,7 @@
 #include "GameInstance.h"
 #include "Model.h"
 #include "Collider.h"
+#include "PlayerBoat.h"
 
 
 CMonster::CMonster(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -82,18 +83,6 @@ void CMonster::Late_Update(_float fTimeDelta)
 HRESULT CMonster::Render()
 {
 
-#ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
-		return S_OK;
-	m_pColliderCom->Render();
-
-	m_Hand_Collider_1->Render();
-	m_Hand_Collider_2->Render();
-
-#endif
-
-
-
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
@@ -110,6 +99,18 @@ HRESULT CMonster::Render()
 	if (FAILED(m_pModelCom->Render(i)))
 		return E_FAIL;
 	}
+
+
+
+#ifdef _DEBUG
+	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+		return S_OK;
+	m_pColliderCom->Render();
+
+	m_Hand_Collider_1->Render();
+	m_Hand_Collider_2->Render();
+
+#endif
 
 
 
@@ -132,7 +133,7 @@ void CMonster::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> 
 	{
 		if (self == m_Hand_Collider_2 || self == m_Hand_Collider_1)
 		{
-			int i = 0;
+			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage();
 		}
 	}
 

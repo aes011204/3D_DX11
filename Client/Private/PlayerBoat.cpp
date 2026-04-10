@@ -250,17 +250,45 @@ void CPlayerBoat::Add_Money(_int money)
 
 void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask)
 {
+
+
+	int i = {};
+	//{
+	//	Evt_ShipStats e = {};
+	//	e.BoatSpeed = m_BoatSpeed = boatSpeed;
+	//	e.FishingSpeed = m_FishingSpeed = fishingSpeed;
+	//	e.Light = m_Light = light;
+	//	e.SeaMask = m_SeaMask = seaMask;
+
+	//	
+	//	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+
+	//}
+}
+
+void CPlayerBoat::Get_Demage()
+{
+	// 채력 하나 줄고
+	m_Hp--;
+	if(m_Hp <= 0)
 	{
-		Evt_ShipStats e = {};
-		e.BoatSpeed = m_BoatSpeed = boatSpeed;
-		e.FishingSpeed = m_FishingSpeed = fishingSpeed;
-		e.Light = m_Light = light;
-		e.SeaMask = m_SeaMask = seaMask;
-
-		
-		m_pGameInstance.lock()->Get_EventBus()->Publish(e);
-
+	//만일 채력이 0 이면 죽음 상태
+		return;
 	}
+
+	// 외형 변경
+
+
+	// 카메라 쉐이크 -> 데미지 준쪽에서
+	Evt_Demage e = {};
+	e.ShakePower = 0.5f;
+	e.ShakeTime = 2.f;
+	e.DeAc = 0.5f;
+	e.DemageCount = m_MAXHp - m_Hp;
+	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+	// 인밴 한 칸 렌뎀 삭제 
+
+
 }
 
 void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)

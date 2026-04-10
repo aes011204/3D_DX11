@@ -11,6 +11,11 @@
 #include "GameInstance.h"
 #include "DInput_Manager.h"
 
+namespace Engine
+{
+	struct Evt_Demage;
+}
+
 CUI_Inventory::CUI_Inventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CUIPanel(pDevice, pContext)
 {
@@ -34,21 +39,40 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 				Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
 		});
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ShipStats>([this](const Evt_ShipStats& e)
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ShipStat>([this](const Evt_ShipStat& e)
 		{
-
-			//wstring strInf_0 = format(L"어선 속도 : {}kn", e.BoatSpeed);
-			//wstring strInfo_1 = format(L"낚시 속도 : {}%", e.FishingSpeed);
-			//wstring strInfo_2 = format(L"등불 : {}ln", e.Light);
-
 			wstring strInfo = format(L"어선 속도 : {}kn\n낚시 속도 : {}%\n등불 : {}lm",
-				e.BoatSpeed, e.FishingSpeed, e.Light);
-			
-			wstring strInfo_2 = format(L"잡을수 있는 어종 :\n {}", 0);
+				e.EngineSpeed, e.FishingSpeed, e.LightIntensity);
 			this->m_TextInfo->Set_Text(strInfo);
+
+			wstring strSeaTypes = L"";
+			_uint iCount = 0;
+			for (_uint i = 0; i < (_uint)SEA_TYPE::END; ++i)
+			{
+				// e.mask에 해당 비트가 켜져 있는지 확인 (예: 1 << 0, 1 << 1 ...)
+				if (e.SeaMask & (1 << i))
+				{
+					if (iCount > 0) strSeaTypes += L", "; // 두 번째 이름부터는 쉼표 추가
+					strSeaTypes += GetSeaTypeName((SEA_TYPE)(1 << i));
+					iCount++;
+				}
+			}
+
+			if (iCount == 0) strSeaTypes = L"없음";
+
+			wstring strInfo_2 = format(L"잡을수 있는 어종 :\n {}", strSeaTypes);
+			this->m_TextInfo_1->Set_Text(strInfo_2);
 		});
 
-
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Demage>(
+		[this](const Evt_Demage& e)
+		{
+			
+			for (_uint i = 0; i < e.DemageCount; i++)
+			{
+				m_DemageSlot[i]->Set_TextureIndex(1);
+			}
+		});
 
 	return CUIPanel::Initialize_Prototype();
 }
@@ -195,7 +219,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 		shared_ptr<CUIText> InfoTex_1 = CUIText::Create(m_pDevice, m_pContext);
 		InfoTex_1->Initialize(&InfoTexDesc_1);
 		pChild->Add_Child(InfoTex_1, L"InfoTex_1", false);
-		//m_TextInfo = InfoTex_1;
+		m_TextInfo_1 = InfoTex_1;
 
 	}
 
@@ -260,6 +284,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 		DamgePanel->Add_Layout_Child(m_pInstance, NameTag, false);
 		m_pInstance->Set_Interactive(false);
 		m_pInstance->Set_Zorder(2);
+		m_DemageSlot.push_back(m_pInstance);
 	}
 
 

@@ -39,6 +39,7 @@ public:
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
+    void Get_Demage();
 
 
 
@@ -68,7 +69,11 @@ private:
     shared_ptr<class CInventory> m_pInvenCom = { nullptr };
     shared_ptr< CCollider> m_pColliderCom = { nullptr };
 
+
 private:
+    int curBoatLevel = {};
+    int m_Hp = { 3 };
+    int m_MAXHp = {3};
     _float m_Money = {};
    _uint m_BoatSpeed = {};
    _uint m_FishingSpeed = {};

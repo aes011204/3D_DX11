@@ -1,7 +1,7 @@
 #include "Explosion.h"
 #include "GameInstance.h"
 #include "Model.h"
-#include "VIBuffer_Particle_Rect.h"
+#include "VIBuffer_Particle_Point.h"
 #include "Texture.h"
 
 
@@ -55,18 +55,18 @@ HRESULT CExplosion::Render()
 
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
-
-
+	
+	
 		if (FAILED(m_pShaderCom->Begin(0)))
 			return E_FAIL;
-
-
+	
+	
 		if (FAILED(m_pVIBufferCom->Bind_Resources()))
 			return E_FAIL;
-
+	
 		if (FAILED(m_pVIBufferCom->Render()))
 			return E_FAIL;
-
+	
 
 
 

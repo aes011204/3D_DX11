@@ -13,8 +13,8 @@ sampler DefaultSampler = sampler_state
 struct VS_IN
 {
     float3 vPosition : POSITION;
-    row_major float4x4 TransformMatrix : WOELD;
-    float2 vLifeTime : TEXCOOD0;
+    row_major float4x4 TransformMatrix : WORLD; 
+    float2 vLifeTime : TEXCOORD0; 
 };
 
 struct VS_OUT

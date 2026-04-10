@@ -3,7 +3,9 @@
 #include "GameObject.h"
 #include "Client_Define.h"
 NS_BEGIN(Engine)
-class CVIBuffer_Particle_Rect;
+
+class CVIBuffer_Particle_Point;
+	class CVIBuffer_Particle_Rect;
 NS_END
 NS_BEGIN(Client)
 class CExplosion :
@@ -38,7 +40,7 @@ private:
 private:
 
     shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CVIBuffer_Particle_Rect> m_pVIBufferCom = { nullptr };
+    shared_ptr<CVIBuffer_Particle_Point> m_pVIBufferCom = { nullptr };
    
     shared_ptr<CTexture> m_pTextureCom = { nullptr };
   

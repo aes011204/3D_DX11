@@ -45,6 +45,8 @@ private:
     vector<Item_Inst> m_Inventory = {}; // 순서 상관없이 들어있는데이터
 	vector<Slot> m_InvenSlot = {}; // 칸별로 점유중인지 아닌지
 
+    _bool m_Dirty = { false };
+
     class shared_ptr<class CInventory_Controller> m_Controller;
     // 컨트롤러는 싱글톤? 아님 여기서 만들어야 하나?
 
@@ -59,7 +61,11 @@ public:// 아이템 넣고 뺴기
     Item_Inst Peek_Itme(_uint MusX, _uint MusY);
 
     void OnGui() override;
-    void CalculateEquip();// 장비 인포 배에 업뎃
+    Evt_ShipStat CalculateEquip();// 장비 인포 배에 업뎃
+
+
+    _bool Get_Dirty() const { return m_Dirty; }
+    void Set_Dirty(_bool dirty) { m_Dirty = dirty; }
 private:
     void PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY);
 
@@ -71,6 +77,8 @@ private:
     void Apply_BaseMask(vector<Slot>& vecSlot);// 락
     SLOT_TYPE CharToType(char c);// 슬랏 타입
     void Init_BoatUpgrade();
+
+
     
 
 public:
