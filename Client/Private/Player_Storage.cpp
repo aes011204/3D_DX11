@@ -1,5 +1,4 @@
-#include "Player_Village.h"
-
+#include "Player_Storage.h"
 #include <UI.h>
 
 #include "DInput_Manager.h"
@@ -7,16 +6,16 @@
 #include "Sea_Manager.h"
 #include "EventBus.h"
 
-CPlayer_Village::CPlayer_Village(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
+CPlayer_Storage::CPlayer_Storage(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
 	: CPlayerState(owner, pStateMachine)
 {
 }
 
-CPlayer_Village::~CPlayer_Village()
+CPlayer_Storage::~CPlayer_Storage()
 {
 }
 
-void CPlayer_Village::Enter()
+void CPlayer_Storage::Enter()
 {
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CAM_LERP_DESC>();
@@ -44,14 +43,14 @@ void CPlayer_Village::Enter()
 	CPlayerState::Enter();
 }
 
-void CPlayer_Village::Exit()
+void CPlayer_Storage::Exit()
 {
 	auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 	m_Village->UI_InActive();
 	CPlayerState::Exit();
 }
 
-HRESULT CPlayer_Village::Init_State()
+HRESULT CPlayer_Storage::Init_State()
 {
 
 
@@ -59,7 +58,7 @@ HRESULT CPlayer_Village::Init_State()
 	return CPlayerState::Init_State();
 }
 
-int CPlayer_Village::Update_State(const _float& timeDelta)
+int CPlayer_Storage::Update_State(const _float& timeDelta)
 {
 
 	if(m_Input_Manager->KeyDown(DIK_X))
@@ -72,25 +71,25 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 	return ETOI(PLAYERSTATE::VILLAGE);
 }
 
-void CPlayer_Village::LateUpdate_State(const _float& timeDelta)
+void CPlayer_Storage::LateUpdate_State(const _float& timeDelta)
 {
 	
 }
 
-void CPlayer_Village::Render_State()
+void CPlayer_Storage::Render_State()
 {
 	
 }
 
-shared_ptr<CPlayer_Village> CPlayer_Village::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
+shared_ptr<CPlayer_Storage> CPlayer_Storage::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
 {
-	shared_ptr<CPlayer_Village> pInstance(new CPlayer_Village(owner,pStateMachine), [](CPlayer_Village* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_Storage> pInstance(new CPlayer_Storage(owner,pStateMachine), [](CPlayer_Storage* p) {p->Free(); delete(p); });
 
 
 	return pInstance;
 }
 
-void CPlayer_Village::Free()
+void CPlayer_Storage::Free()
 {
 	CPlayerState::Free();
 }

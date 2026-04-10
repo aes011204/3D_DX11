@@ -3,8 +3,11 @@
 #include "PlayerBoat.h"
 #include "State.h"
 #include "PlayerState.h"
+#include "Player_FishShop.h"
 #include "Player_MiniGame.h"
+#include "Player_RepairShop.h"
 #include "Player_Sea.h"
+#include "Player_Storage.h"
 #include "Player_Village.h"
 
 CPlayerStateMachine::CPlayerStateMachine(weak_ptr<CPlayerBoat> owner)
@@ -125,6 +128,26 @@ HRESULT CPlayerStateMachine::Init_PlayerStates()
         return E_FAIL;
     m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
     pState->Init_State();
+
+
+
+
+    if (nullptr == (pState = CPlayer_Storage::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        return E_FAIL;
+    m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
+    pState->Init_State();
+
+        if (nullptr == (pState = CPlayer_RepairShop::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+            return E_FAIL;
+    m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
+    pState->Init_State();;
+
+        if (nullptr == (pState = CPlayer_FishShop::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+            return E_FAIL;
+    m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
+    pState->Init_State();
+
+
 
     return S_OK;
 }

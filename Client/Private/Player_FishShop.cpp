@@ -1,4 +1,4 @@
-#include "Player_Village.h"
+#include "Player_FishShop.h"
 
 #include <UI.h>
 
@@ -6,28 +6,30 @@
 #include "PlayerBoat.h"
 #include "Sea_Manager.h"
 #include "EventBus.h"
+#include "UI_NPC.h"
 
-CPlayer_Village::CPlayer_Village(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
+CPlayer_FishShop::CPlayer_FishShop(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
 	: CPlayerState(owner, pStateMachine)
 {
 }
 
-CPlayer_Village::~CPlayer_Village()
+CPlayer_FishShop::~CPlayer_FishShop()
 {
 }
 
-void CPlayer_Village::Enter()
+void CPlayer_FishShop::Enter()
 {
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CAM_LERP_DESC>();
 	pLerp->eMode = CAM_MODE::LERP;
-	pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
-	pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
-	pLerp->fDuration = 2.0f;
-	pLerp->fFov = 30.f;
+	pLerp->vTargetPos = _float3(0.688f, 2.814f, 1.268f);
+	pLerp->vTargetRot = _float3(21.49f, -50.13f, 0.f);
+	pLerp->fDuration = 1.0f;
+	//pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
-			auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
-	m_Village->UI_Active();
+			auto m_NPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC");
+			auto ui = dynamic_pointer_cast<CUI_NPC>(m_NPC);
+			ui->UI_NPCActive(NPC::MAYOR, true, true, "FishStore_First");
 	};
 	event.commands.push_back(pLerp);
 
@@ -44,14 +46,14 @@ void CPlayer_Village::Enter()
 	CPlayerState::Enter();
 }
 
-void CPlayer_Village::Exit()
+void CPlayer_FishShop::Exit()
 {
-	auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
-	m_Village->UI_InActive();
+	auto m_NPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC");
+	m_NPC->UI_InActive();
 	CPlayerState::Exit();
 }
 
-HRESULT CPlayer_Village::Init_State()
+HRESULT CPlayer_FishShop::Init_State()
 {
 
 
@@ -59,38 +61,38 @@ HRESULT CPlayer_Village::Init_State()
 	return CPlayerState::Init_State();
 }
 
-int CPlayer_Village::Update_State(const _float& timeDelta)
+int CPlayer_FishShop::Update_State(const _float& timeDelta)
 {
 
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
 
-		return  ETOI(PLAYERSTATE::SEA);
+		return  ETOI(PLAYERSTATE::VILLAGE);
 	}
 
 
 	return ETOI(PLAYERSTATE::VILLAGE);
 }
 
-void CPlayer_Village::LateUpdate_State(const _float& timeDelta)
+void CPlayer_FishShop::LateUpdate_State(const _float& timeDelta)
 {
 	
 }
 
-void CPlayer_Village::Render_State()
+void CPlayer_FishShop::Render_State()
 {
 	
 }
 
-shared_ptr<CPlayer_Village> CPlayer_Village::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
+shared_ptr<CPlayer_FishShop> CPlayer_FishShop::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
 {
-	shared_ptr<CPlayer_Village> pInstance(new CPlayer_Village(owner,pStateMachine), [](CPlayer_Village* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_FishShop> pInstance(new CPlayer_FishShop(owner,pStateMachine), [](CPlayer_FishShop* p) {p->Free(); delete(p); });
 
 
 	return pInstance;
 }
 
-void CPlayer_Village::Free()
+void CPlayer_FishShop::Free()
 {
 	CPlayerState::Free();
 }

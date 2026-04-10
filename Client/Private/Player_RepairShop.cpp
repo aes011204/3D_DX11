@@ -1,4 +1,4 @@
-#include "Player_Village.h"
+#include "Player_RepairShop.h"
 
 #include <UI.h>
 
@@ -7,16 +7,16 @@
 #include "Sea_Manager.h"
 #include "EventBus.h"
 
-CPlayer_Village::CPlayer_Village(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
+CPlayer_RepairShop::CPlayer_RepairShop(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
 	: CPlayerState(owner, pStateMachine)
 {
 }
 
-CPlayer_Village::~CPlayer_Village()
+CPlayer_RepairShop::~CPlayer_RepairShop()
 {
 }
 
-void CPlayer_Village::Enter()
+void CPlayer_RepairShop::Enter()
 {
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CAM_LERP_DESC>();
@@ -44,14 +44,14 @@ void CPlayer_Village::Enter()
 	CPlayerState::Enter();
 }
 
-void CPlayer_Village::Exit()
+void CPlayer_RepairShop::Exit()
 {
 	auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 	m_Village->UI_InActive();
 	CPlayerState::Exit();
 }
 
-HRESULT CPlayer_Village::Init_State()
+HRESULT CPlayer_RepairShop::Init_State()
 {
 
 
@@ -59,7 +59,7 @@ HRESULT CPlayer_Village::Init_State()
 	return CPlayerState::Init_State();
 }
 
-int CPlayer_Village::Update_State(const _float& timeDelta)
+int CPlayer_RepairShop::Update_State(const _float& timeDelta)
 {
 
 	if(m_Input_Manager->KeyDown(DIK_X))
@@ -72,25 +72,25 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 	return ETOI(PLAYERSTATE::VILLAGE);
 }
 
-void CPlayer_Village::LateUpdate_State(const _float& timeDelta)
+void CPlayer_RepairShop::LateUpdate_State(const _float& timeDelta)
 {
 	
 }
 
-void CPlayer_Village::Render_State()
+void CPlayer_RepairShop::Render_State()
 {
 	
 }
 
-shared_ptr<CPlayer_Village> CPlayer_Village::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
+shared_ptr<CPlayer_RepairShop> CPlayer_RepairShop::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
 {
-	shared_ptr<CPlayer_Village> pInstance(new CPlayer_Village(owner,pStateMachine), [](CPlayer_Village* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_RepairShop> pInstance(new CPlayer_RepairShop(owner,pStateMachine), [](CPlayer_RepairShop* p) {p->Free(); delete(p); });
 
 
 	return pInstance;
 }
 
-void CPlayer_Village::Free()
+void CPlayer_RepairShop::Free()
 {
 	CPlayerState::Free();
 }

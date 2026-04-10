@@ -18,6 +18,8 @@ CPlayer_Village::~CPlayer_Village()
 
 void CPlayer_Village::Enter()
 {
+
+
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CAM_LERP_DESC>();
 	pLerp->eMode = CAM_MODE::LERP;
