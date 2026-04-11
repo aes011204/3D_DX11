@@ -43,7 +43,7 @@ private:
     weak_ptr<class CSea_Manager> m_pSea_Manager = {};
    
 private:
-    PLAYERSTATE m_NextState = PLAYERSTATE::SEA;
+    E_PLAYERSTATE m_NextState = E_PLAYERSTATE::SEA;
 
     //float m_TargetSpeed = {};
     float m_CurSpeed = {};

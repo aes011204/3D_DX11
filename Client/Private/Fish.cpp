@@ -128,7 +128,7 @@ void CFish::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> othe
 	//	event.commands.push_back(pStop);
 
 	//	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
-	//	//m_NextState = PLAYERSTATE::FISHING;
+	//	//m_NextState = E_PLAYERSTATE::FISHING;
 
 
 

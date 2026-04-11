@@ -10,6 +10,7 @@
 #include "GameInstance.h"
 #include "TransformModifier.h"
 #include "DInput_Manager.h"
+#include "EventBus.h"
 
 CUI_NPC::CUI_NPC(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CUIPanel(pDevice, pContext)
@@ -63,6 +64,8 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 			nameBaseDesc.TextureProtoName = L"Prototype_Component_Texture_TitleBackground";
 			shared_ptr<CUIImage> NameBase = CUIImage::Create(m_pDevice, m_pContext);
 			NameBase->Initialize(&nameBaseDesc);
+
+			m_NameBase = NameBase;
 
 			Dialogue->Add_Child(NameBase, L"NameBase", false);
 
@@ -154,10 +157,13 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 	}
 	return CUIPanel::OnInit(pArg);
 }
-void CUI_NPC::UI_NPCActive(NPC npc, _bool dialogueOrSpeech, _bool NPCImg, const string& dialogueId)
+void CUI_NPC::UI_NPCActive( const string& dialogueId, list<string>& Fistlist)
 {
-	shared_ptr<Dialogue> dialogue = CDialogueDB::GetInstance()->GetDialogueById(dialogueId);
+	
+	m_DialogueList = Fistlist;
 
+	shared_ptr<Dialogue> dialogue = CDialogueDB::GetInstance()->GetDialogueById(dialogueId);
+	_bool dialogueOrSpeech;
 	if (dialogue->Texture_Char_Path == nullptr)
 	{
 		int i = 0;
@@ -178,7 +184,7 @@ void CUI_NPC::UI_NPCActive(NPC npc, _bool dialogueOrSpeech, _bool NPCImg, const 
 		m_BackImg->UI_Active();
 
 
-
+		dialogueOrSpeech = false;
 		//널이 아닌경우
 		m_Name_Text->Set_Text(dialogue->speaker);
 	}
@@ -187,6 +193,7 @@ void CUI_NPC::UI_NPCActive(NPC npc, _bool dialogueOrSpeech, _bool NPCImg, const 
 		//널인 경우
 		m_NpcImg->UI_InActive();
 		m_BackImg->UI_InActive();
+		dialogueOrSpeech = true;
 	}
 
 	//if (NPCImg == true)
@@ -245,15 +252,18 @@ void CUI_NPC::UI_DialogueActive(_bool dialogueOrSpeech, _uint curIndex)
 
 	if (dialogueOrSpeech == true)
 	{
+
 		m_Dialogue->UI_Active();
 		m_Dialogue->Set_TextureIndex(0);
 		m_Dialogue_Text->UI_Active();
 		m_Dialogue_Text->Set_Text(m_CashingDialogue->lines[curIndex].text);
 		//m_Dialogue->m_behavior.push_back() 효과
 
+		m_NameBase->UI_InActive();
 	}
 	else
 	{
+
 		m_Dialogue->UI_Active();
 		m_Dialogue->Set_TextureIndex(1);
 		//m_Dialogue->m_behavior.push_back() 효과
@@ -306,6 +316,24 @@ void CUI_NPC::OnUpdate(const _float& timeDelta)
 			if(m_CashingDialogue->lines[m_CurIndex].NextID >= m_CashingDialogue->lines.size())
 			{
 				m_bFIn = true;
+				if (m_DialogueList.empty())
+				{
+					return; // 이건 그냥 클릭 안된채로 유지'
+				}
+				m_DialogueList.pop_front();
+
+				if(m_DialogueList.empty())
+				{
+					// 이밴트
+					m_pGameInstance.lock()->Get_EventBus()->Publish(Evt_Dialogue_Finish{});
+
+				}
+				else
+				{
+				UI_NPCActive(m_DialogueList.front(), m_DialogueList);
+				}
+
+
 				return;
 			}
 

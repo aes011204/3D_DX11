@@ -23,7 +23,7 @@ HRESULT CPlayerStateMachine::Init_StateMachine()
 {
     Init_PlayerStates();
 
-    m_CurState = m_vecState[ETOI(PLAYERSTATE::SEA)];
+    m_CurState = m_vecState[ETOI(E_PLAYERSTATE::SEA)];
 
     m_CurState->Enter();
 
@@ -36,12 +36,12 @@ _int CPlayerStateMachine::Update_StateMachine(const _float& timeDelta)
     {
         _uint nextState = m_CurState->Update_State(timeDelta);
 
-        if (nextState == ETOI(PLAYERSTATE::END))
+        if (nextState == ETOI(E_PLAYERSTATE::END))
         {
             return nextState;
         }
 
-        if (nextState < ETOI(PLAYERSTATE::END) && nextState != m_CurStateKey)
+        if (nextState < ETOI(E_PLAYERSTATE::END) && nextState != m_CurStateKey)
         {
             Change_State(nextState);
         }
@@ -61,7 +61,7 @@ void CPlayerStateMachine::Change_State(_uint changeStateKey)
     if (m_CurStateKey == changeStateKey)
         return; // 이전이랑 같은 상황
 
-    if (m_vecState[changeStateKey] == nullptr || changeStateKey >= ETOI(PLAYERSTATE::END))
+    if (m_vecState[changeStateKey] == nullptr || changeStateKey >= ETOI(E_PLAYERSTATE::END))
         return; // 인덱스 범위 확인
 
     // 이전 상태 나가기
@@ -111,22 +111,22 @@ shared_ptr<CPlayerState> CPlayerStateMachine::Get_State(_uint stateKey)
 
 HRESULT CPlayerStateMachine::Init_PlayerStates()
 {
-    m_vecState.resize(ETOI(PLAYERSTATE::END));
+    m_vecState.resize(ETOI(E_PLAYERSTATE::END));
    shared_ptr<CPlayerState> pState = nullptr;
 
     if (nullptr == (pState = CPlayer_Sea::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(PLAYERSTATE::SEA)] = pState;
+    m_vecState[ETOI(E_PLAYERSTATE::SEA)] = pState;
     pState->Init_State();
 
     if (nullptr == (pState = CPlayer_MiniGame::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(PLAYERSTATE::FISHING)] = pState;
+    m_vecState[ETOI(E_PLAYERSTATE::FISHING)] = pState;
     pState->Init_State();
 
     if (nullptr == (pState = CPlayer_Village::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
+    m_vecState[ETOI(E_PLAYERSTATE::VILLAGE)] = pState;
     pState->Init_State();
 
 
@@ -134,17 +134,17 @@ HRESULT CPlayerStateMachine::Init_PlayerStates()
 
     if (nullptr == (pState = CPlayer_Storage::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
+    m_vecState[ETOI(E_PLAYERSTATE::STORAGE)] = pState;
     pState->Init_State();
 
         if (nullptr == (pState = CPlayer_RepairShop::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
             return E_FAIL;
-    m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
+    m_vecState[ETOI(E_PLAYERSTATE::REPAIR_SHOP)] = pState;
     pState->Init_State();;
 
         if (nullptr == (pState = CPlayer_FishShop::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
             return E_FAIL;
-    m_vecState[ETOI(PLAYERSTATE::VILLAGE)] = pState;
+    m_vecState[ETOI(E_PLAYERSTATE::FISH_SHOP)] = pState;
     pState->Init_State();
 
 

@@ -58,7 +58,7 @@ public:
     void Set_FishingSpeed(_uint speed) { m_FishingSpeed = speed; }
     void Set_Light(_uint light) { m_Light = light; }
     void Set_SeaMask(SEA_MASK mask) { m_SeaMask = mask; }*/
-    void Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask);
+    void Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask, _float InvenMoney);
 private:
     weak_ptr<class CSea_Manager> m_pSea_Manager = {};
 
@@ -75,10 +75,11 @@ private:
     int m_Hp = { 3 };
     int m_MAXHp = {3};
     _float m_Money = {};
-   _uint m_BoatSpeed = {};
+   _uint m_BoatSpeed = {10}; //기본은 10
    _uint m_FishingSpeed = {};
    _uint m_Light = {};
-    SEA_MASK m_SeaMask = {}; // d이거 왜 있음
+   SEA_MASK m_SeaMask = {}; // d이거 왜 있음
+   float m_InvenMoney = {}; // d이거 왜 있음
 
     LOCATIONSTATE m_Loacation = { LOCATIONSTATE:: SEA };
 

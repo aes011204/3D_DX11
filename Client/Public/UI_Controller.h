@@ -1,5 +1,6 @@
 #pragma once
 #include "Client_Define.h"
+#include "Client_Enum.h"
 #include "Base.h"
 
 
@@ -24,17 +25,22 @@ public:
 
 public:
     HRESULT Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    void StateUI();
     void Update(float TimeDelta);
     HRESULT Ready_UI();
 
     shared_ptr<CUI> Get_LoadingUI() { return m_Loading; };
 
     void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl);
+
+    void End_StateUI();
 private:
     shared_ptr<CUI> m_Loading = {nullptr};
 
 
     shared_ptr<class CUI_MiniGame> m_miniGame = { nullptr };
+
+    Client::E_PLAYERSTATE m_PendingUIState;
 private:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };
     ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };

@@ -313,7 +313,7 @@ namespace Client
 
     enum class LOCATIONSTATE { REPAIR_SHOP, SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP, VILLAGE, END };
 
-	enum class PLAYERSTATE {REPAIR_SHOP, FISH_SHOP, FISHING, SEA, NPC , VILLAGE ,END };
+	enum class E_PLAYERSTATE {REPAIR_SHOP, FISH_SHOP, FISHING, SEA, STORAGE , VILLAGE ,END };
 
 
     struct Wave_Desc
@@ -403,5 +403,26 @@ namespace Client
         int DemageCount = {};
     };
 
+    struct Evt_Cam_Arrived
+    {
+        E_PLAYERSTATE playerstate = {};
+
+    };
+
+    struct Evt_Dialogue_Finish
+    {
+
+    };
+
+    struct Evt_EndState
+    {
+        //E_PLAYERSTATE End_playerstate = {};
+    };
+
+
+    struct Evt_ChangeState
+    {
+        E_PLAYERSTATE playerstate = {};
+    };
 
 }

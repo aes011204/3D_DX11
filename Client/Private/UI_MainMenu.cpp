@@ -12,6 +12,7 @@
 #include "Level_Loading.h"
 #include "Engine_Helper.h"
 #include "FadeModifier.h"
+#include "UI_Controller.h"
 
 CUI_MainMenu::CUI_MainMenu(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
     :CUIPanel(pDevice, pContext)

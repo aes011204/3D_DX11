@@ -44,8 +44,9 @@ private:
     //shared_ptr<CAM_DESC> m_pCurrentDesc = nullptr; // 데이터 안에 모드 정보가 있음
     //shared_ptr<CAM_DESC> m_pNextDesc = nullptr; // 다음 예약석
 
+    _float3 m_BasePos; // 해당 프레임에 처음 위치
 
-    _float3 m_BasePos = {};
+    _float3 m_FinalPos = {};
 
     float m_ShakeTime = {};
     float    m_ShakePower = {};

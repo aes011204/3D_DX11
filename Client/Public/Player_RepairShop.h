@@ -34,7 +34,8 @@ public:
     static shared_ptr<CPlayer_RepairShop> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
    
 private:
-   
+    E_PLAYERSTATE eNextState = E_PLAYERSTATE::REPAIR_SHOP;
+
 
 private:
     virtual void Free();

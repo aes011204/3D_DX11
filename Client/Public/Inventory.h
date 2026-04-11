@@ -62,6 +62,7 @@ public:// 아이템 넣고 뺴기
 
     void OnGui() override;
     Evt_ShipStat CalculateEquip();// 장비 인포 배에 업뎃
+    void Get_Damage();// 장비 인포 배에 업뎃
 
 
     _bool Get_Dirty() const { return m_Dirty; }

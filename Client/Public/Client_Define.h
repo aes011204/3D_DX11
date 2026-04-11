@@ -4,7 +4,7 @@
 #include <process.h>
 
 #include"Client_Enum.h"
-#include"UI_Controller.h"
+
 
 extern HWND g_hWnd;
 extern HINSTANCE g_hInst;

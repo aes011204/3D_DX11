@@ -2,6 +2,7 @@
 
 #include <UI.h>
 
+#include "DialogueDB.h"
 #include "DInput_Manager.h"
 #include "PlayerBoat.h"
 #include "Sea_Manager.h"
@@ -18,6 +19,7 @@ CPlayer_Village::~CPlayer_Village()
 
 void CPlayer_Village::Enter()
 {
+	CDialogueDB::GetInstance()->Set_PendingDialogue(m_VecDialogue);
 
 
 	Evt_ChangeCam event = {};
@@ -28,8 +30,12 @@ void CPlayer_Village::Enter()
 	pLerp->fDuration = 2.0f;
 	pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
-			auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
-	m_Village->UI_Active();
+
+		Evt_Cam_Arrived e = {};
+		e.playerstate = E_PLAYERSTATE::VILLAGE;
+		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
+	//		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+	//m_Village->UI_Active();
 	};
 	event.commands.push_back(pLerp);
 
@@ -38,24 +44,39 @@ void CPlayer_Village::Enter()
 	event.commands.push_back(pStop);
 
 
-
+	
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-
+	eNextState = E_PLAYERSTATE::VILLAGE;
 
 	CPlayerState::Enter();
 }
 
+
 void CPlayer_Village::Exit()
 {
-	auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
-	m_Village->UI_InActive();
+	//auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+	//m_Village->UI_InActive();
+
+
+	Evt_EndState e = {};
+	//e.playerstate = E_PLAYERSTATE::VILLAGE;
+	CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
+
+	//m_VecDialogue.clear();
 	CPlayerState::Exit();
 }
 
 HRESULT CPlayer_Village::Init_State()
 {
+	m_VecDialogue.push_back("Start");
+	m_VecDialogue.push_back("Mayer_start");
 
+
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeState>([this](const Evt_ChangeState& e)
+	{
+			eNextState = e.playerstate;
+	});
 
 
 	return CPlayerState::Init_State();
@@ -67,11 +88,11 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
 
-		return  ETOI(PLAYERSTATE::SEA);
+		return  ETOI(E_PLAYERSTATE::SEA);
 	}
 
 
-	return ETOI(PLAYERSTATE::VILLAGE);
+	return ETOI(eNextState);
 }
 
 void CPlayer_Village::LateUpdate_State(const _float& timeDelta)
@@ -94,5 +115,7 @@ shared_ptr<CPlayer_Village> CPlayer_Village::Create(shared_ptr<CPlayerBoat> owne
 
 void CPlayer_Village::Free()
 {
+	//m_VecDialogue.clear();
+
 	CPlayerState::Free();
 }

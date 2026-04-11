@@ -45,7 +45,7 @@ void CPlayer_Sea::Enter()
 
 void CPlayer_Sea::Exit()
 {
-	m_NextState = PLAYERSTATE::SEA;
+	//m_NextState = E_PLAYERSTATE::SEA;
 	CPlayerState::Exit();
 }
 
@@ -64,8 +64,8 @@ HRESULT CPlayer_Sea::Init_State()
 int CPlayer_Sea::Update_State(const _float& timeDelta)
 {
 
-	if (Move(timeDelta) == ETOI(PLAYERSTATE::VILLAGE))
-		return ETOI(PLAYERSTATE::VILLAGE);
+	if (Move(timeDelta) == ETOI(E_PLAYERSTATE::VILLAGE))
+		return ETOI(E_PLAYERSTATE::VILLAGE);
 	Location_Sea(timeDelta);
 
 
@@ -79,7 +79,7 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 			Target->Change_Cam(m_Owner.lock());
 
 				m_CurSpeed = 0.f;
-				return ETOI(PLAYERSTATE::FISHING);
+				return ETOI(E_PLAYERSTATE::FISHING);
 		}
 
 	}
@@ -302,14 +302,14 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 
 					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);*/
 
-					//m_pStateMachine.lock()->Change_State(ETOI(PLAYERSTATE::VILLAGE));
+					//m_pStateMachine.lock()->Change_State(ETOI(E_PLAYERSTATE::VILLAGE));
 					m_CurSpeed = 0.f;
 			m_bFinDock = true;
 			m_bIsDocking = false;
-			/*m_NextState = PLAYERSTATE::VILLAGE;*/
-			return ETOI(PLAYERSTATE::VILLAGE);
+			/*m_NextState = E_PLAYERSTATE::VILLAGE;*/
+			return ETOI(E_PLAYERSTATE::VILLAGE);
 		}
-		return ETOI(PLAYERSTATE::SEA);
+		return ETOI(E_PLAYERSTATE::SEA);
 	}
 	auto m_pTransformCom = m_pOwnerTransformCom.lock();
 	auto dinput = m_Input_Manager;
@@ -369,7 +369,7 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
 	}
 
-return 	ETOI(PLAYERSTATE::SEA);
+return 	ETOI(E_PLAYERSTATE::SEA);
 }
 
 shared_ptr<CPlayer_Sea> CPlayer_Sea::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)

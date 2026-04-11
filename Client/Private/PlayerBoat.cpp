@@ -70,7 +70,7 @@ void CPlayerBoat::Priority_Update(_float fTimeDelta)
 void CPlayerBoat::Update(_float fTimeDelta)
 {
 	m_pPlayerStateMachine->Update_StateMachine(fTimeDelta);
-
+	
 
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 	//Å×½ºÆ®
@@ -248,22 +248,22 @@ void CPlayerBoat::Add_Money(_int money)
 	}
 }
 
-void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask)
+void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask, _float InvenMoney)
 {
 
 
-	int i = {};
-	//{
-	//	Evt_ShipStats e = {};
-	//	e.BoatSpeed = m_BoatSpeed = boatSpeed;
-	//	e.FishingSpeed = m_FishingSpeed = fishingSpeed;
-	//	e.Light = m_Light = light;
-	//	e.SeaMask = m_SeaMask = seaMask;
+int i = {};
 
-	//	
-	//	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+	Evt_ShipStat e = {};
+	e.EngineSpeed = m_BoatSpeed = boatSpeed;
+	e.FishingSpeed = m_FishingSpeed = fishingSpeed;
+	e.LightIntensity = m_Light = light;
+	e.SeaMask = m_SeaMask = seaMask;
 
-	//}
+	e.InvenMoney = m_InvenMoney;
+
+	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+
 }
 
 void CPlayerBoat::Get_Demage()

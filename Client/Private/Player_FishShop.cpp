@@ -2,6 +2,7 @@
 
 #include <UI.h>
 
+#include "DialogueDB.h"
 #include "DInput_Manager.h"
 #include "PlayerBoat.h"
 #include "Sea_Manager.h"
@@ -19,6 +20,9 @@ CPlayer_FishShop::~CPlayer_FishShop()
 
 void CPlayer_FishShop::Enter()
 {
+
+	CDialogueDB::GetInstance()->Set_PendingDialogue(m_VecDialogue);
+
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CAM_LERP_DESC>();
 	pLerp->eMode = CAM_MODE::LERP;
@@ -27,9 +31,9 @@ void CPlayer_FishShop::Enter()
 	pLerp->fDuration = 1.0f;
 	//pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
-			auto m_NPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC");
-			auto ui = dynamic_pointer_cast<CUI_NPC>(m_NPC);
-			ui->UI_NPCActive(NPC::MAYOR, true, true, "FishStore_First");
+		Evt_Cam_Arrived e = {};
+		e.playerstate = E_PLAYERSTATE::FISH_SHOP;
+		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 	};
 	event.commands.push_back(pLerp);
 
@@ -40,7 +44,7 @@ void CPlayer_FishShop::Enter()
 
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
-
+	eNextState = E_PLAYERSTATE::FISH_SHOP;
 
 
 	CPlayerState::Enter();
@@ -48,15 +52,23 @@ void CPlayer_FishShop::Enter()
 
 void CPlayer_FishShop::Exit()
 {
-	auto m_NPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC");
-	m_NPC->UI_InActive();
+	//auto m_NPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC");
+	//m_NPC->UI_InActive();
+	Evt_EndState e = {};
+	//e.playerstate = E_PLAYERSTATE::VILLAGE;
+	CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
+
 	CPlayerState::Exit();
 }
 
 HRESULT CPlayer_FishShop::Init_State()
 {
+	m_VecDialogue.push_back("FishStore_First");
 
-
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeState>([this](const Evt_ChangeState& e)
+		{
+			eNextState = e.playerstate;
+		});
 
 	return CPlayerState::Init_State();
 }
@@ -67,11 +79,11 @@ int CPlayer_FishShop::Update_State(const _float& timeDelta)
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
 
-		return  ETOI(PLAYERSTATE::VILLAGE);
+		return  ETOI(E_PLAYERSTATE::VILLAGE);
 	}
 
 
-	return ETOI(PLAYERSTATE::VILLAGE);
+	return ETOI(eNextState);
 }
 
 void CPlayer_FishShop::LateUpdate_State(const _float& timeDelta)

@@ -10,6 +10,7 @@ CPlayerState::CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerSt
 
 CPlayerState::~CPlayerState()
 {
+
 }
 
 void CPlayerState::Enter()
@@ -23,7 +24,7 @@ void CPlayerState::Exit()
 {
 	CState::Exit();
 
-
+	m_VecDialogue.clear();
 
 }
 

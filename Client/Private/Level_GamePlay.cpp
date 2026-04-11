@@ -15,6 +15,7 @@
 #include "UI_MiniGame.h"
 #include "UI_NPC.h"
 #include "UI_Village.h"
+#include "UI_Controller.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -132,13 +133,13 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	m_pInvenCntl->Update(fTimeDelta);
 
 	// 일단 테스트
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_M))
-	{
-		
-		auto ui = dynamic_pointer_cast<CUI_NPC>(m_pNPC);
-		ui->UI_NPCActive(NPC::MAYOR, true, true, "Mayer_start");
+	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_M))
+	//{
+	//	
+	//	auto ui = dynamic_pointer_cast<CUI_NPC>(m_pNPC);
+	//	ui->UI_NPCActive("Mayer_start",);
 
-	}
+	//}
 	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_N))
 	//{
 	//

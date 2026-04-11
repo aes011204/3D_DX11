@@ -1,5 +1,7 @@
 #include "UI_Controller.h"
 
+#include <numbers>
+
 #include "ItemInfo.h"
 #include "RotationModifier.h"
 #include "UI_HUD.h"
@@ -11,6 +13,8 @@
 #include "UI_NPC.h"
 #include "UI_MiniGame.h"
 #include "UI_Village.h"
+#include "EventBus.h"
+#include "DialogueDB.h"
 
 IMPLEMENT_SINGLETON(CUI_Controller)
 
@@ -32,8 +36,141 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 	Ready_UI();
 
+
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Cam_Arrived>([this](const Evt_Cam_Arrived e)
+	{
+		if(!CDialogueDB::GetInstance()->Get_PendingDialogue().empty())
+		{
+			auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
+			dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_NPCActive(CDialogueDB::GetInstance()->Get_PendingDialogue().front(), CDialogueDB::GetInstance()->Get_PendingDialogue());
+			m_PendingUIState = e.playerstate;
+		}
+		else
+		{
+			m_PendingUIState = e.playerstate;
+			StateUI();
+			
+		}
+
+	});
+	
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Dialogue_Finish>([this](const Evt_Dialogue_Finish e)
+		{
+		if(m_PendingUIState ==E_PLAYERSTATE::VILLAGE)
+		{
+			auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
+			dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+			
+		}
+			StateUI();
+		});
+
+
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_EndState>([this](const Evt_EndState e)
+		{
+			End_StateUI();
+		});
+
 	return S_OK;
 }
+void CUI_Controller::End_StateUI()
+{
+
+
+	if (m_PendingUIState == E_PLAYERSTATE::VILLAGE)
+	{
+		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+		m_Village->UI_InActive();
+
+		auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+	}
+
+	if (m_PendingUIState == E_PLAYERSTATE::FISHING)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		(Tab)->UI_InActive();
+
+		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+		m_HoldItem->UI_InActive();
+
+		auto MiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
+		auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
+		ui->UI_InActive();
+	}
+
+	if (m_PendingUIState == E_PLAYERSTATE::FISH_SHOP)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		(Tab)->UI_InActive();
+
+		auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+	}
+
+	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		(Tab)->UI_InActive();
+
+		auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+	}
+
+	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		(Tab)->UI_InActive();
+
+		auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+	}
+
+}
+
+void CUI_Controller::StateUI()
+{
+	if (m_PendingUIState == E_PLAYERSTATE::VILLAGE)
+	{
+		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+		m_Village->UI_Active();
+	}
+
+	if (m_PendingUIState == E_PLAYERSTATE::FISHING)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
+
+		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+		m_HoldItem->UI_Active();
+
+		auto MiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
+		auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
+		ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE, 1002);
+	}
+
+	if (m_PendingUIState == E_PLAYERSTATE::FISH_SHOP)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE), TAB::INVEN);
+
+	}
+
+	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE), TAB::INVEN);
+
+	}
+
+	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
+
+	}
+}
+
 
 void CUI_Controller::Update(float TimeDelta)
 {
@@ -175,6 +312,7 @@ void CUI_Controller::Set_InvenCtrl(shared_ptr<CInventory_Controller> invenCtrl)
 		m_miniGame->Set_InvenCtrl(invenCtrl);
 	}
 }
+
 
 
 void CUI_Controller::Free()

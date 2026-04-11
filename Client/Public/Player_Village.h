@@ -2,6 +2,7 @@
 #include "PlayerState.h"
 
 
+
 NS_BEGIN(Client)
 
 	class CPlayerBoat;
@@ -27,6 +28,9 @@ public:
     
 
 private:
+
+    E_PLAYERSTATE eNextState = E_PLAYERSTATE::VILLAGE;
+
 
     //weak_ptr<class CSea_Manager> m_pSea_Manager = {};
  

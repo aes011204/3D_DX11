@@ -1,7 +1,7 @@
 #include "Camera_Play.h"
 #include "DInput_Manager.h"
 #include "Transform.h"
-#include "../../Engine/Public/EventBus.h"
+#include "EventBus.h"
 
 CCamera_Play::CCamera_Play(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CCamera(pDevice, pContext)
@@ -217,6 +217,7 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 		_vector newPos = XMVectorLerp(currentPos, camPos, 8.f * fTimeDelta);
 
 		m_pTransformCom->Set_Position(newPos);
+		//XMStoreFloat3(&m_FinalPos, newPos);
 		m_pTransformCom->LookAt(targetPos);
 
 	}
@@ -225,6 +226,8 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 {
+	//Lerp 일떄는 카메라 쉐이크 없음 -> 이거는 Transform //
+
 	// 이넘으로 타입 확실한데 스테틱으로 나중에
 	auto pLerpDesc = dynamic_pointer_cast<CAM_LERP_DESC>(pDesc);
 	if (!pLerpDesc) return false;

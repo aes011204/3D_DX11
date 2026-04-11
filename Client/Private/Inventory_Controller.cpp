@@ -8,6 +8,7 @@
 #include "DInput_Manager.h"
 #include "UI_Item.h"
 #include "ItemDB.h"
+#include "PlayerBoat.h"
 #include "UI_Inventory.h"
 
 
@@ -37,6 +38,11 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 	});
 
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_Demage>([this](const Evt_Demage& e)
+		{
+			m_PlayerInven.lock()->Get_Damage();
+
+		});
 
 	//auto tmppointer = dynamic_pointer_cast<CInventory_Controller>(shared_from_this());
 	//if(tmppointer == nullptr)
@@ -252,9 +258,8 @@ void CInventory_Controller::Update(float TimeDelta)
 	if (inven && inven->Get_Dirty())
 	{
 		inven->Set_Dirty(false);
-		Evt_ShipStat e = inven->CalculateEquip();
-
-		m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+		Evt_ShipStat stat = inven->CalculateEquip();
+		dynamic_pointer_cast<CPlayerBoat>(inven->Get_GOwner())->Set_ShipStats(stat.EngineSpeed, stat.FishingSpeed, stat.LightIntensity, stat.SeaMask, stat.InvenMoney);
 	}
 
 

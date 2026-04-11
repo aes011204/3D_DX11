@@ -465,6 +465,29 @@ Evt_ShipStat CInventory::CalculateEquip()
 	return stat;
 }
 
+void CInventory::Get_Damage()
+{
+	// 사이즈가 맥스로 랜덤 인뎃스
+	int RandIndex = { -1 };
+	RandIndex = static_cast<int>(m_pGameInstance.lock()->Random(0, m_InvenSlot.size()-1));
+	// 전체 순회 -> 만일 이미 고장난 칸이거나 투명칸이면 다시 렌덤
+	while(m_InvenSlot[RandIndex].IsBroken == true || m_InvenSlot[RandIndex].IsLock == true)
+	{
+		RandIndex = abs(m_pGameInstance.lock()->Random(0, m_InvenSlot.size()));
+	}
+
+	// 장비가 있을떄 -> 장비 이것도 그냥 버려버려?? 일단은 버려
+	// 물고기가 있을 떄 -> 물고기 버리기 ->칸 x로 변환
+	if(m_InvenSlot[RandIndex].ItemInst_ID!= ID_Absence)
+	{
+		//ThrowAwayFrom_Inven() // 이건 위치 
+		RemoveFrom_Inven(m_InvenSlot[RandIndex].ItemInst_ID); // 아이디로
+	}
+		m_InvenSlot[RandIndex].IsBroken = true;
+
+		return;
+}
+
 void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)
 {
 	itemInst.BaseXY = _float2{ static_cast<_float>(BaseX), static_cast<_float>(BaseY) };

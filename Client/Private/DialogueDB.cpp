@@ -167,6 +167,7 @@ wstring CDialogueDB::Utf8ToWstring(const string& str)
 
 void CDialogueDB::Free()
 {
+    m_NextIds.clear();
     __super::Free();
 }
 

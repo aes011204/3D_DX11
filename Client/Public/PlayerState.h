@@ -8,6 +8,7 @@ namespace Engine
 
 	class CCollider;
 	class CDInput_Manager;
+	class CGameInstance;
 }
 
 NS_BEGIN(Client)
@@ -42,7 +43,7 @@ protected:
 	_bool       DoneAnim = false;
 
 	weak_ptr<CPlayerBoat> m_Owner = {};
-	weak_ptr<CGameInstance> m_pGameInstance = {};
+	weak_ptr<CGameInstance> m_pGameInstance;
 	weak_ptr < CPlayerStateMachine> m_pStateMachine = { };
 
 	weak_ptr<CTransform> m_pOwnerTransformCom = { };
@@ -51,6 +52,8 @@ protected:
 
 	weak_ptr<CGameObject> m_pTarget = {};
 
+
+	list<string> m_VecDialogue;
 private:
 	// CBase을(를) 통해 상속됨
 	//void Free() override;

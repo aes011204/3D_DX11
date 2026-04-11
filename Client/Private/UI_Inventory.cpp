@@ -359,6 +359,11 @@ void CUI_Inventory::OnUpdate(const _float& timeDelta)
 			//m_Slot[index]->Set_ColorFlat(false);
 			break;
 		}
+
+		if(InvenSlot[index].IsBroken == true)
+		{
+			m_Slot[index]->Set_TextureIndex(1);
+		}
 	}
 
 
@@ -593,6 +598,7 @@ void CUI_Inventory::Render_Item()
 	}
 	for (int i = 0; i < items.size(); i++)
 	{
+		
 
 		LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
 

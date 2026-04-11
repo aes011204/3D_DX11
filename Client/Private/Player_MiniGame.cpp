@@ -30,16 +30,10 @@ void CPlayer_MiniGame::Enter()
 	pLerp->m_Target = m_Owner;
 	pLerp->fDuration = 1.5f;
 	pLerp->OnComplete = [this]() {
-
-		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
-		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
-
-		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
-		m_HoldItem->UI_Active();
-
-		auto MiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
-		auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
-		ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE, 1002);
+		Evt_Cam_Arrived e = {};
+		e.playerstate = E_PLAYERSTATE::FISHING;
+		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
+		
 		};
 	event.commands.push_back(pLerp);
 
@@ -58,7 +52,7 @@ void CPlayer_MiniGame::Enter()
 void CPlayer_MiniGame::Exit()
 {
 
-	auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+	/*auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 	dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_InActive();
 
 	auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
@@ -66,8 +60,10 @@ void CPlayer_MiniGame::Exit()
 
 	auto MiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
 	auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
-	ui->UI_InActive();
-
+	ui->UI_InActive();*/
+	Evt_EndState e = {};
+	//e.playerstate = E_PLAYERSTATE::VILLAGE;
+	CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 
 	CPlayerState::Exit();
 }
@@ -86,9 +82,9 @@ int CPlayer_MiniGame::Update_State(const _float& timeDelta)
 	
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
-	return ETOI(PLAYERSTATE::SEA);
+	return ETOI(E_PLAYERSTATE::SEA);
 	}
-		return  ETOI(PLAYERSTATE::FISHING);
+		return  ETOI(E_PLAYERSTATE::FISHING);
 }
 
 void CPlayer_MiniGame::LateUpdate_State(const _float& timeDelta)
