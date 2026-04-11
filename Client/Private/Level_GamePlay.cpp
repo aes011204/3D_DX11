@@ -7,6 +7,7 @@
 #include "Camera_Free.h"
 #include "DInput_Manager.h"
 #include "FadeModifier.h"
+#include "Fish.h"
 #include "UI_TabContainer.h"
 #include "UI_TabContainer.h"
 #include "Inventory_Controller.h"
@@ -291,8 +292,26 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Village"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
+
+
+
+	CFish::FISH_DESC fishDesc = {};
+
+	fishDesc.fish_DefID = 1001;
+	fishDesc.FishCount = 5;
+	fishDesc.Size = _float2(0.1f, .2f);
+	fishDesc.Height = _float2(-.1f, .1f);
+	fishDesc.Radius = _float2(1.f, 2.f);
+	fishDesc.AlphaTime = _float2(1.f, 2.f);
+	fishDesc.Speed = _float2(1.f, 2.f);
+
+
+	fishDesc.vPosition = _float3(10.f, -2.f, 0.f);
+
+
+
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
 		return E_FAIL;
 	return S_OK;
 }
@@ -303,6 +322,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& strLayerTag)
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
+
+	
 
 	if (nullptr == ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag))))

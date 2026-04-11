@@ -21,9 +21,17 @@ CUI_MiniGame::CUI_MiniGame(const CUIPanel& prototype)
 	: CUIPanel(prototype)
 {
 }
-void CUI_MiniGame::UI_PanelActive(MINIGAME MiniGameState, _uint Defid)
+void CUI_MiniGame::UI_PanelActive(/*MINIGAME MiniGameState, _uint Defid*/)
 {
-	m_DefID = Defid;
+
+	if (m_DefID ==  ID_Absence )
+		return;
+
+
+	
+
+
+	//m_DefID 
 
 
 	////m_Children.clear();
@@ -41,7 +49,7 @@ void CUI_MiniGame::UI_PanelActive(MINIGAME MiniGameState, _uint Defid)
 	//	m_TabContents[ETOI(TAB::INVEN)]->UI_InActive();
 	//	numPanel++;
 	//}
-	Item_Def def = CItemDB::GetInstance()->GetItemByID(Defid);
+	Item_Def def = CItemDB::GetInstance()->GetItemByID(m_DefID);
 	m_FishIcon->Change_Texture(def.pTexture);
 	m_nameTex->Set_Text(S2W(def.ItemName));
 	Set_ActiveForCustom();
@@ -59,10 +67,23 @@ void CUI_MiniGame::UI_PanelActive(MINIGAME MiniGameState, _uint Defid)
 	{
 		it->UI_Active();
 	}
+
+
 }
 
 HRESULT CUI_MiniGame::OnInit(void* pArg)
 {
+
+
+
+
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
+		[this](const Evt_FishingData& e) {
+			m_DefID = e.Fish_ID;
+		}
+	);
+
+
 
 	m_Speed = 100.f;
 	m_RodSpeed = .1f;
@@ -268,6 +289,7 @@ void CUI_MiniGame::OnActive()
 
 void CUI_MiniGame::OnInActive()
 {
+	m_DefID = ID_Absence;
 	CUIPanel::OnInActive();
 }
 

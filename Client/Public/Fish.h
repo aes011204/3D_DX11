@@ -7,6 +7,35 @@ NS_BEGIN(Client)
 class CFish :
     public CGameObject
 {
+public:
+    struct FISH_DESC : public CGameObject::GAMEOBJECT_DESC
+    {
+        _uint FishCount = {};
+
+        _float2 Height = {};
+        _float2 Size = {};
+        float InitPosRad = {};
+        _float2 AlphaTime = {};
+        _float2 Speed = {};
+        _float2 Radius = {};
+
+        _uint fish_DefID = {};
+    };
+
+
+    struct  FishSData
+    {
+        _float4x4 FishMatrices={};
+
+        float Height = {};
+        float Size = {};
+        float InitPosRad = {};
+        float Alpha = {};
+        float Speed = {};
+        float Radius = {};
+    };
+
+
 private:
     CFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     CFish(const CFish& prototype);
@@ -34,16 +63,25 @@ public:
 
     virtual void RebindCom();
     HRESULT Bind_ShaderResources();
+    _uint Get_fish_DefID() { return fish_DefID; };
 
 protected:
     HRESULT Ready_Components();
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr };
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CShader> m_pShaderCom = {nullptr};
+    shared_ptr<CModel> m_pModelCom = {nullptr};
     shared_ptr<CCollider> m_pColliderCom = { nullptr };
 
+private:
+
+
+    _uint m_CurFishCount = {};
+
+    _uint m_FishCount = {};
+    float m_acc = {};
+    vector<FishSData> m_Fishs = {};
+    _uint fish_DefID = {};
 public:
     static shared_ptr<CFish> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     shared_ptr<CGameObject> Clone(void* pArg) override;

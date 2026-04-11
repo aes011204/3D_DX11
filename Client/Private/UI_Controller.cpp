@@ -117,7 +117,7 @@ void CUI_Controller::End_StateUI()
 		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
+	if (m_PendingUIState == E_PLAYERSTATE::STORAGE)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -146,7 +146,7 @@ void CUI_Controller::StateUI()
 
 		auto MiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
 		auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
-		ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE, 1002);
+		ui->UI_PanelActive();
 	}
 
 	if (m_PendingUIState == E_PLAYERSTATE::FISH_SHOP)
@@ -163,7 +163,7 @@ void CUI_Controller::StateUI()
 
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
+	if (m_PendingUIState == E_PLAYERSTATE::STORAGE)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);

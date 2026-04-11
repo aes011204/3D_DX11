@@ -425,4 +425,10 @@ namespace Client
         E_PLAYERSTATE playerstate = {};
     };
 
+    
+        struct Evt_FishingData
+    {
+        int Fish_ID;
+    };
+
 }

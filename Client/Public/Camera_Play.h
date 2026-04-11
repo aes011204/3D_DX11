@@ -36,7 +36,7 @@ public:
     void Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
     bool Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
     void Get_Target_PosLook(_float3& camPos, _float3& vTargetRot);
-    void Shake_Cam(_float fTimeDelta);
+    _float3 Shake_Cam(_float fTimeDelta);
 private:
     void Start_Targetting(_float4 startPos, _float degree, _float distance);
 
@@ -46,8 +46,7 @@ private:
 
     _float3 m_BasePos; // 해당 프레임에 처음 위치
 
-    _float3 m_FinalPos = {};
-
+    _bool m_isShack = false;
     float m_ShakeTime = {};
     float    m_ShakePower = {};
     float    m_DeAc = {};

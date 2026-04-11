@@ -23,9 +23,28 @@ HRESULT CFish::Initialize_Prototype()
 HRESULT CFish::Initialize(void* pArg)
 {
 
-	m_bIsSavableClass = true;
+	FISH_DESC* fishDesc = static_cast<FISH_DESC*>(pArg);
 
-	if (FAILED(__super::Initialize(pArg)))
+	fish_DefID = fishDesc->fish_DefID;
+	m_FishCount = fishDesc->FishCount;
+
+	m_Fishs.resize(fishDesc->FishCount);
+	for(int i=0; i < fishDesc->FishCount ; i++)
+	{
+		m_Fishs[i].Height = m_pGameInstance.lock()->Random(fishDesc->Height.x, fishDesc->Height.y);
+		m_Fishs[i].Size = m_pGameInstance.lock()->Random(fishDesc->Size.x, fishDesc->Size.y);
+		m_Fishs[i].Speed = m_pGameInstance.lock()->Random(fishDesc->Speed.x, fishDesc->Speed.y);
+		m_Fishs[i].Radius = m_pGameInstance.lock()->Random(fishDesc->Radius.x, fishDesc->Radius.y);
+		m_Fishs[i].Alpha = m_pGameInstance.lock()->Random(fishDesc->AlphaTime.x, fishDesc->AlphaTime.y);
+		m_Fishs[i].InitPosRad = m_pGameInstance.lock()->Random(XMConvertToRadians(0.f), XMConvertToRadians(179.f));
+
+	}
+
+
+
+
+
+	if (FAILED(__super::Initialize(fishDesc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -46,6 +65,44 @@ void CFish::Update(_float fTimeDelta)
 		RebindCom();      // "바뀐 것"만 한 번 갱신
 		m_bIsDirtyCom = false;
 	}
+
+
+
+	_matrix pivot  = XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix());
+
+	m_acc += fTimeDelta;
+
+	for(int i =0; i < m_FishCount; i++)
+	{
+
+		//크자이공부
+		//m_Fishs[i].FishMatrices;
+
+		_matrix mat = XMMatrixIdentity();
+
+		_matrix scale = XMMatrixScaling(1.f * m_Fishs[i].Size, 1.f * m_Fishs[i].Size, 1.f * m_Fishs[i].Size);
+
+
+		_matrix RotY = XMMatrixRotationY((m_Fishs[i].Speed * m_acc + m_Fishs[i].InitPosRad)+XMConvertToRadians(90.f));
+
+
+
+		float X = m_Fishs[i].Radius * sin(m_Fishs[i].Speed * m_acc + m_Fishs[i].InitPosRad);
+		float Z = m_Fishs[i].Radius * cos(m_Fishs[i].Speed * m_acc + m_Fishs[i].InitPosRad);
+
+		_matrix Trans = XMMatrixTranslation(X, m_Fishs[i].Height, Z);
+
+		XMStoreFloat4x4(&m_Fishs[i].FishMatrices, scale * RotY * Trans * pivot);
+	}
+
+
+
+
+
+
+
+
+
 	int a = 1;
 
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
@@ -72,21 +129,30 @@ HRESULT CFish::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
 
-	for (size_t i = 0; i < iNumMesh; i++)
+
+	for (int i = 0; i < m_FishCount; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-		if (FAILED(m_pShaderCom->Begin(0)))
+		//if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+		//return E_FAIL;
+		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_Fishs[i].FishMatrices)))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
-			return E_FAIL;
+	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+		for (size_t i = 0; i < iNumMesh; i++)
+		{
+			m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+			if (FAILED(m_pShaderCom->Begin(0)))
+				return E_FAIL;
+
+			if (FAILED(m_pModelCom->Render(i)))
+				return E_FAIL;
+		}
+
 	}
-
-
 
 	return S_OK;
 }
@@ -141,38 +207,38 @@ void CFish::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> othe
 
 void CFish::Change_Cam(shared_ptr<CGameObject>m_Player)
 {
-	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CAM_LERP_DESC>();
-	pLerp->eMode = CAM_MODE::LERP;
-	
-	_vector forward = m_Player->Get_TransformCom()->Get_State(STATE::LOOK);
-	XMStoreFloat3(&pLerp->vTargetPos, m_Player->Get_TransformCom()->Get_Position()
-		- XMVector3Normalize(forward) * 3.f   // 살짝 뒤로
-		+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // 위);
-	//pLerp->vTargetRot = _float3(1.f, 1.f, 1.f);
-	pLerp->m_Target = m_Player;
-	pLerp->fDuration = 1.5f;
-	event.commands.push_back(pLerp);
+	//Evt_ChangeCam event = {};
+	//auto pLerp = make_shared<CAM_LERP_DESC>();
+	//pLerp->eMode = CAM_MODE::LERP;
+	//
+	//_vector forward = m_Player->Get_TransformCom()->Get_State(STATE::LOOK);
+	//XMStoreFloat3(&pLerp->vTargetPos, m_Player->Get_TransformCom()->Get_Position()
+	//	- XMVector3Normalize(forward) * 3.f   // 살짝 뒤로
+	//	+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // 위);
+	////pLerp->vTargetRot = _float3(1.f, 1.f, 1.f);
+	//pLerp->m_Target = m_Player;
+	//pLerp->fDuration = 1.5f;
+	//event.commands.push_back(pLerp);
 
-	auto pStop = make_shared<CAM_DESC>();
-	pStop->eMode = CAM_MODE::STOP;
-	event.commands.push_back(pStop);
+	//auto pStop = make_shared<CAM_DESC>();
+	//pStop->eMode = CAM_MODE::STOP;
+	//event.commands.push_back(pStop);
 
-	m_pGameInstance.lock()->Get_EventBus()->Publish(event);
+	//m_pGameInstance.lock()->Get_EventBus()->Publish(event);
 }
 
 void CFish::RebindCom()
 {
 	
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+	//m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
 	m_pModelCom = Get_Component<CModel>(L"Com_Model");
 
 }
 
 HRESULT CFish::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
-		return E_FAIL;
+	//if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	//	return E_FAIL;
 
 	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
 		return E_FAIL;
@@ -207,33 +273,26 @@ HRESULT CFish::Bind_ShaderResources()
 
 HRESULT CFish::Ready_Components()
 {
-	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"),
-	//	TEXT("Com_Shader"), reinterpret_cast<CComponent**>(&m_pShaderCom))))
-	//	return E_FAIL;
 
-	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona"),
-	//	TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
-	//	return E_FAIL;
-
-	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
-		return E_FAIL;
-	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fish"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
-		return E_FAIL;
-	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
-	//	return E_FAIL;
-
-	CBounding_AABB::BOUNDING_AABB_DESC		AABBDesc{};
-	AABBDesc.vExtents = _float3(0.4f, 0.4f, 0.4f);
-	AABBDesc.vCenter = _float3(0.f, 1.f, 0.f);
-	AABBDesc.MyLayer = COLLISION_LAYER::FISH;
-	AABBDesc.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_Collider"), &m_pColliderCom, &AABBDesc)))
-		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+		// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
+		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+			return E_FAIL;
 
 
+
+		// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
+		if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fish"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+			return E_FAIL;
+
+
+		CBounding_AABB::BOUNDING_AABB_DESC		AABBDesc{};
+		AABBDesc.vExtents = _float3(0.4f, 0.4f, 0.4f);
+		AABBDesc.vCenter = _float3(0.f, 1.f, 0.f);
+		AABBDesc.MyLayer = COLLISION_LAYER::FISH;
+		AABBDesc.OtherMask = COLLISION_LAYER::PLAYER;
+		if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_Collider"), &m_pColliderCom, &AABBDesc)))
+			return E_FAIL;
+		m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
 	return S_OK;
 }
 
@@ -262,5 +321,6 @@ shared_ptr<CGameObject> CFish::Clone(void* pArg)
 
 void CFish::Free()
 {
+	m_Fishs.clear();
 	__super::Free();
 }

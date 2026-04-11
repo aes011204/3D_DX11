@@ -67,6 +67,8 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Demage>(
 		[this](const Evt_Demage& e)
 		{
+			if (e.DemageCount >= m_DemageSlot.size())
+				return;
 			
 			for (_uint i = 0; i < e.DemageCount; i++)
 			{

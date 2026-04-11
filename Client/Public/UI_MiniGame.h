@@ -27,7 +27,7 @@ public:
 
 public:
 
-	void UI_PanelActive(MINIGAME MiniGameState, _uint Defid);
+	void UI_PanelActive();
 
 	HRESULT OnInit(void* pArg) override;
 	void OnActive()override;

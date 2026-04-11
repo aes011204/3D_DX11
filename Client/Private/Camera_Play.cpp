@@ -42,9 +42,15 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Demage>(
 		[this](const Evt_Demage& e)
 		{
-			m_DeAc = e.DeAc;
+			if (m_isShack) return;
+
 			m_ShakePower = e.ShakePower;
 			m_ShakeTime = e.ShakeTime;
+			m_DeAc = e.ShakePower / e.ShakeTime;;
+
+
+			m_isShack = true;
+
 		}
 	);
 	m_fMouseSensor = 0.2f;
@@ -78,7 +84,7 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 	{
 	case CAM_MODE::FOLLOW:
 		Update_Follow(fTimeDelta, pCurrentDesc);
-
+	
 		break;
 	case CAM_MODE::STOP:
 	//	__super::Update_TransformMatrices();
@@ -87,18 +93,22 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 		if (false == Update_Lerp(fTimeDelta, pCurrentDesc))
 			m_bFinish = true;
 
+	
 		break;
 
 	case CAM_MODE::END:
 		break;
 	}
 
-	 XMStoreFloat3(&m_BasePos,m_pTransformCom->Get_Position());
+
+
+	
+	XMStoreFloat3(&m_BasePos, m_pTransformCom->Get_Position());
 
 	Shake_Cam(fTimeDelta);
 
 
-
+	// 4. 최종 행렬 업데이트
 	__super::Update_TransformMatrices();
 
 
@@ -138,25 +148,25 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 	if (m_FirstFlag == false)
 	{
-	auto pFollowDesc = dynamic_pointer_cast<CAM_FOLLOW_DESC>(pDesc);
-	if (!pFollowDesc) return;
-
-	
-	_vector vTargetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
-	_vector vCurrentPos = m_pTransformCom->Get_Position();
-	_vector vDir = vCurrentPos - vTargetPos;
-
-	_float3 fDir;
-	XMStoreFloat3(&fDir, XMVector3Normalize(vDir));
-
-	// 역계산
-	m_Yaw = XMConvertToDegrees(atan2f(fDir.x, fDir.z)) - 180.f;
-	m_Pitch = XMConvertToDegrees(asinf(fDir.y));
-	m_fDistance = XMVectorGetX(XMVector3Length(vDir));
+		auto pFollowDesc = dynamic_pointer_cast<CAM_FOLLOW_DESC>(pDesc);
+		if (!pFollowDesc) return;
 
 
-	m_FirstFlag = true;
-	return ;
+		_vector vTargetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+		_vector vCurrentPos = m_pTransformCom->Get_Position();
+		_vector vDir = vCurrentPos - vTargetPos;
+
+		_float3 fDir;
+		XMStoreFloat3(&fDir, XMVector3Normalize(vDir));
+
+		// 역계산
+		m_Yaw = XMConvertToDegrees(atan2f(fDir.x, fDir.z)) - 180.f;
+		m_Pitch = XMConvertToDegrees(asinf(fDir.y));
+		m_fDistance = XMVectorGetX(XMVector3Length(vDir));
+
+
+		m_FirstFlag = true;
+		return;
 	}
 
 
@@ -335,17 +345,17 @@ void CCamera_Play::Get_Target_PosLook(_float3& camPos, _float3& vTargetRot)
 
 	//	vTargetRot = _float3(finalPitch, finalYaw, finalRoll);
 	//
-	// 1. 배의 방향 각도 구하기
+
 	_vector targetLook = m_pTargetTransform.lock()->Get_State(STATE::LOOK);
 	_float3 vLook;
 	XMStoreFloat3(&vLook, XMVector3Normalize(targetLook));
 	float targetDegree = XMConvertToDegrees(atan2f(vLook.x, vLook.z));
 
-	// 2. 우리가 원하는 카메라의 최종 상태 (배 뒤 30도 위치)
+	
 	m_Pitch = 30.f;
-	m_Yaw = targetDegree; // 배가 보는 방향과 일치시킴
+	m_Yaw = targetDegree;
 
-	// 3. 거리/오프셋 계산 (기존 로직 유지)
+	
 	m_Pitch = clamp(m_Pitch, 0.f, 89.f);
 	_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
 	m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
@@ -360,22 +370,20 @@ void CCamera_Play::Get_Target_PosLook(_float3& camPos, _float3& vTargetRot)
 	_vector offset = XMVectorSet(x, y, z, 0.f);
 	_vector targetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
 
-	// 최종 위치 저장
+	
 	_vector camposVetor = targetPos + offset;
 	XMStoreFloat3(&camPos, camposVetor);
 
-	// 4. 회전값 결정 (역산 대신 직접 대입)
-	// 카메라가 배 뒤에 안착했을 때, 배가 보는 방향(m_Yaw)과 똑같은 방향을 보게 합니다.
-	// 만약 배의 앞면을 보고 있다면 m_Yaw 대신 m_Yaw (그대로) 혹은 
-	// 배를 정확히 정면으로 바라봐야 한다면 m_Yaw를 유지한 채 Pitch만 조절하면 됩니다.
 
 	vTargetRot = _float3(m_Pitch, m_Yaw, 0.f);
 }
 
-void CCamera_Play::Shake_Cam(_float fTimeDelta)
+_float3 CCamera_Play::Shake_Cam(_float fTimeDelta)
 {
 
-	
+	if(m_isShack == false)
+		return _float3{ 0.f, 0.f, 0.f };
+
 
 	if(m_ShakeTime > 0.f)
 	{
@@ -384,12 +392,17 @@ void CCamera_Play::Shake_Cam(_float fTimeDelta)
 		float randX = m_pGameInstance.lock()->Random(-1.f, 1.f) * m_ShakePower;
 		float randY = m_pGameInstance.lock()->Random(-1.f, 1.f) * m_ShakePower;
 
-		m_ShakePower -= fTimeDelta  * m_DeAc;
+		m_ShakePower -= fTimeDelta  * (m_DeAc);
 
 		_float3 finalPos = _float3{ randX,randY,0.f };
-		
+
+		if (m_ShakeTime <= 0)
+			m_isShack = false;
+
 		m_pTransformCom->Set_Position(m_BasePos + _float3{ randX,randY,0.f });
+		return _float3{ randX, randY, 0.f }; // 오프셋만 반환
 	}
+	return _float3{ 0.f, 0.f, 0.f };
 
 
 }

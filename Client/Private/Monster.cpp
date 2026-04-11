@@ -117,7 +117,7 @@ HRESULT CMonster::Render()
 
 	return S_OK;
 }
-int ci = 0;
+
 void CMonster::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
 	if(m_State != STATE::ATTACK &&  self == m_pColliderCom)
@@ -134,15 +134,11 @@ void CMonster::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> 
 		if (self == m_Hand_Collider_2 || self == m_Hand_Collider_1)
 		{
 			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage();
-			ci++;
+		
 		}
 	}
 
-	if(ci == 2)
-	{
-		
-	int i = 0;
-	}
+
 
 }
 void CMonster::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)

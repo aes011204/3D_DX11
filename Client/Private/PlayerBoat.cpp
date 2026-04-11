@@ -269,21 +269,21 @@ int i = {};
 void CPlayerBoat::Get_Demage()
 {
 	// 채력 하나 줄고
+	//if(m_Hp <= 0)
+	//{
+	////만일 채력이 0 이면 죽음 상태
+	//	return;
+	//}
 	m_Hp--;
-	if(m_Hp <= 0)
-	{
-	//만일 채력이 0 이면 죽음 상태
-		return;
-	}
 
 	// 외형 변경
 
 
 	// 카메라 쉐이크 -> 데미지 준쪽에서
 	Evt_Demage e = {};
-	e.ShakePower = 0.5f;
-	e.ShakeTime = 2.f;
-	e.DeAc = 0.5f;
+	e.ShakePower = 0.3f;
+	e.ShakeTime = 1.f;
+	//e.DeAc = 0.1f;
 	e.DemageCount = m_MAXHp - m_Hp;
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 	// 인밴 한 칸 렌뎀 삭제 

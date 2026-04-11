@@ -79,6 +79,13 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 			Target->Change_Cam(m_Owner.lock());
 
 				m_CurSpeed = 0.f;
+
+
+				Evt_FishingData e = {};
+				e.Fish_ID = Target->Get_fish_DefID();
+				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+
+
 				return ETOI(E_PLAYERSTATE::FISHING);
 		}
 
