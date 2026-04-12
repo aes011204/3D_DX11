@@ -34,7 +34,7 @@ HRESULT CUI_Top::OnInit(void* pArg)
 			shared_ptr<CUIText> Text_Day = CUIText::Create(m_pDevice, m_pContext);
 			Text_Day->Initialize(&textDay_Desc);
 			Time_Base->Add_Child(Text_Day, L"Text_Day", false);
-			m_TimeText = Text_Day;
+			m_DayText = Text_Day;
 
 			
 			CUIText::TEXT_DESC textTime_Desc = {};
@@ -43,7 +43,7 @@ HRESULT CUI_Top::OnInit(void* pArg)
 			shared_ptr<CUIText> Text_Time = CUIText::Create(m_pDevice, m_pContext);
 			Text_Time->Initialize(&textTime_Desc);
 			Time_Base->Add_Child(Text_Time, L"Text_Time", false);
-			m_DayText = Text_Time;
+			m_TimeText = Text_Time;
 			
 		}
 
@@ -111,7 +111,8 @@ void CUI_Top::OnUpdate(const _float& timeDelta)
 	m_pGameInstance.lock()->ComputeTime(iDay, fHour, fMinute, fSecond);
 	if(fMinute!= preMin)
 	{
-	m_DayText->Set_Text(format(L"{:02.0f}:{:02.0f}", fHour, fMinute));
+
+		m_TimeText->Set_Text(format(L"{:02.0f}:{:02.0f}", fHour, fMinute));
 		
 	}
 	if(preDay!= iDay)
@@ -148,7 +149,7 @@ void CUI_Top::OnUpdate(const _float& timeDelta)
 	}
 
 	preDay = iDay;
-	preMin = iDay;
+	preMin = fMinute;
 	__super::OnUpdate(timeDelta);
 }
 

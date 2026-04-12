@@ -72,8 +72,8 @@ private:
 
 private:
     int curBoatLevel = {};
-    int m_Hp = { 3 };
-    int m_MAXHp = {3};
+    int m_Hp = {4 };
+    int m_MAXHp = {4};
     _float m_Money = {};
    _uint m_BoatSpeed = {10}; //±âº»Àº 10
    _uint m_FishingSpeed = {};

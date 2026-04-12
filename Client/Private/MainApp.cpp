@@ -69,8 +69,8 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 	// UI Pool 채우기 / ready_UI 역할
 	CUI_Controller::GetInstance()->Initialize(m_pDevice, m_pContext);
-	auto SeaManager =CSea_Manager::GetInstance();
-	if(SeaManager != nullptr)
+	auto SeaManager = CSea_Manager::GetInstance();
+	if (SeaManager != nullptr)
 	{
 		SeaManager->Initialize();
 		m_pGameInstance.lock()->Push_ManagerClass(L"Sea_Manager", SeaManager.get());
@@ -85,9 +85,9 @@ HRESULT CMainApp::Initialize()
 
 
 
-  
+
 	//아이템은 아이템 UI 다 프로토 타입 만든후 사용
-	CItemDB ::GetInstance()->Initialize();
+	CItemDB::GetInstance()->Initialize();
 	CDialogueDB::GetInstance()->Ready_DialogueDB();
 
 
@@ -119,7 +119,7 @@ HRESULT CMainApp::Render()
 	m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
 
 	m_pGameInstance.lock()->Draw();
-	
+
 
 
 	m_pEditorInstance.lock()->Render_Editor();
@@ -149,17 +149,17 @@ HRESULT CMainApp::Ready_Fonts()
 	/*C:\Users\aes01>C:\MakeSpriteFont.exe "Noto Sans CJK SC" "Noto_Sans_CJK_SC_24.spritefont" /FontSize:24 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD7A3 /DefaultCharacter:0xAC00
 Importing Noto Sans CJK SC*/
 
-	//MakeSpriteFont.exe "Front Page Neue" / FontSize:16 /FastPack /CharacterRegion : 0x0020 - 0x00FF / CharacterRegion : 0x3131 - 0x3163 / CharacterRegion : 0xAC00 - 0xD800 / DefaultCharacter : 0xAC00 "%USERPROFILE%\Desktop\Font_Page_Neue.spritefont"
-	/*MakeSpriteFont.exe "Front Page Neue" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Front Page Neue.spritefont"*/
-	/*MakeSpriteFont.exe "Hahmlet ExtraBold" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet_ExtraBold.spritefont"*/
-	/*MakeSpriteFont.exe "Hahmlet SemiBold" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet SemiBold.spritefont"*/
-	/*MakeSpriteFont.exe "Liberation Sans" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Liberation Sans.spritefont"*/
-	/*MakeSpriteFont.exe "Noto Sans CJK SC" /FontSize:32 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Noto_Sans_CJK_SC_32.spritefont"*/
-	/*MakeSpriteFont.exe "Poltawski Nowy" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Poltawski Nowy.spritefont"*/
-	/*MakeSpriteFont.exe "Perfect DOS VGA 437" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Perfect DOS VGA 437.spritefont"*/
-	/*MakeSpriteFont.exe "Oswald" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Oswald.spritefont"*/
-	/*MakeSpriteFont.exe "Signika" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Signika.spritefont"*/
-	/*MakeSpriteFont.exe "Wingdings" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Wingdings.spritefont"*/
+//MakeSpriteFont.exe "Front Page Neue" / FontSize:16 /FastPack /CharacterRegion : 0x0020 - 0x00FF / CharacterRegion : 0x3131 - 0x3163 / CharacterRegion : 0xAC00 - 0xD800 / DefaultCharacter : 0xAC00 "%USERPROFILE%\Desktop\Font_Page_Neue.spritefont"
+/*MakeSpriteFont.exe "Front Page Neue" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Front Page Neue.spritefont"*/
+/*MakeSpriteFont.exe "Hahmlet ExtraBold" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet_ExtraBold.spritefont"*/
+/*MakeSpriteFont.exe "Hahmlet SemiBold" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Hahmlet SemiBold.spritefont"*/
+/*MakeSpriteFont.exe "Liberation Sans" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Liberation Sans.spritefont"*/
+/*MakeSpriteFont.exe "Noto Sans CJK SC" /FontSize:32 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Noto_Sans_CJK_SC_32.spritefont"*/
+/*MakeSpriteFont.exe "Poltawski Nowy" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Poltawski Nowy.spritefont"*/
+/*MakeSpriteFont.exe "Perfect DOS VGA 437" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Perfect DOS VGA 437.spritefont"*/
+/*MakeSpriteFont.exe "Oswald" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Oswald.spritefont"*/
+/*MakeSpriteFont.exe "Signika" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Signika.spritefont"*/
+/*MakeSpriteFont.exe "Wingdings" /FontSize:16 /FastPack/CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 "%USERPROFILE%\Desktop\Wingdings.spritefont"*/
 
 
 	return S_OK;
@@ -284,7 +284,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
-	
+
 
 	///////////////////UItexture/////////////////////
 
@@ -690,7 +690,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	////////////////////////KEY///////////////////////////
 	//Prototype_Component_Texture_HorizontalUITray
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_KEY"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Key/keyboard_Icon_%d.png"),216 ))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Key/keyboard_Icon_%d.png"), 216))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -830,12 +830,26 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 	/* Prototype_Component_Texture_Sky */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_%d.dds"), 4))))
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_RGB.png"), 4))))
+	{
+		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Texture_Sky_Noise */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Noise"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/ComplexNoise1_Texture.png"), 4))))
 	{
 		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
 		return E_FAIL;
 	}
 
+	/* Prototype_Component_Texture_Sky_Distortion */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Distortion"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/CloudDistortion_Normal.png"), 4))))
+	{
+		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
+		return E_FAIL;
+	}
 	/* Prototype_Component_VIBuffer_Sea */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"),
 		CVIBuffer_Sea::Create(m_pDevice, m_pContext, 128, 4))))
@@ -856,7 +870,7 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
 	/* Prototype_Component_Model_Island */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) , XMMatrixRotationY(XMConvertToRadians(180.f));
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/island.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
 	{
@@ -881,7 +895,7 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 	}
 
 
-		if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_LightHouse"),
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_LightHouse"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/LightHouse/LightHouse_tex.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");

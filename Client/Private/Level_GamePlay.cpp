@@ -228,7 +228,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
 	FRCamDesc.fFar = 500.f;
 	FRCamDesc.fNear = 0.1f;
-	FRCamDesc.fFovY = XMConvertToRadians(30.f);
+	FRCamDesc.fFovY = XMConvertToRadians(50.f);
 	FRCamDesc.vEyes = _float4(0.f, 10.f, -7.f, 1.f);
 	FRCamDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	FRCamDesc.fSpeedPerSec = 10.f;

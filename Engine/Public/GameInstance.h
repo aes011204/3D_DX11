@@ -123,6 +123,7 @@ public:/*For.Font_Manager*/
 
 	public:/*For.TimeOfDay*/
 		void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
+		_float Get_TOD01();
 	public:/*For.Collison_Mgr*/
 		void Add_Collider(shared_ptr<class CCollider> coll);
 

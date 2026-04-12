@@ -106,6 +106,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	m_pTimeOfDay = CTimeOfDay::Create();
 	if (nullptr == m_pTimeOfDay)
 		return E_FAIL;
+	Push_ManagerClass(L"TimeOfDay", m_pTimeOfDay.get());
 
 	m_pCollision_Manager = CCollision_Manager::Create(ppDevice.Get(), ppContext.Get());
 	if (nullptr == m_pCollision_Manager)
@@ -471,6 +472,11 @@ _float2 CGameInstance::Measure_String(const _wstring& strFontTag, const _tchar* 
 void CGameInstance::ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond)
 {
 	m_pTimeOfDay->ComputeTime(iDay, fHour, fMinute, fSecond);
+}
+
+_float CGameInstance::Get_TOD01()
+{
+	return m_pTimeOfDay->Get_TOD01();
 }
 
 void CGameInstance::Add_Collider(shared_ptr<CCollider> coll)
