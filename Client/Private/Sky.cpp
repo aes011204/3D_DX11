@@ -119,7 +119,8 @@ HRESULT CSky::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_AfterSunsetT", &AfterSunsetT, sizeof(_float2))))
 		return E_FAIL;
-
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT2", &NightT2, sizeof(_float2))))
+		return E_FAIL;
 	// 3. 시간대별 색상 (float3) 바인딩
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vNightColor", &Night, sizeof(_float3))))
 		return E_FAIL;

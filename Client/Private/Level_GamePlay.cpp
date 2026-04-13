@@ -40,8 +40,6 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 
-	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Moster"))))
-		return E_FAIL;
 
 	if (FAILED(Ready_Layer_Player(TEXT("Layer_Player"))))
 		return E_FAIL;
@@ -49,6 +47,10 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Camera(TEXT("Layer_Camera"))))
 		return E_FAIL;
 	//m_pPlayer.lock()->SetCam
+
+	if (FAILED(Ready_Layer_Monster(TEXT("Layer_Moster"))))
+		return E_FAIL;
+
 
 	if (FAILED(Ready_Layer_Wave(TEXT("Layer_Wave"))))
 		return E_FAIL;
@@ -112,6 +114,13 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
 	}
 
+
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_P))
+	{
+		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
+			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
+			return ;
+	}
 
 	// �ϴ� ���� �ΰ� ���߿� �������� UIHander, UIController �� �̵�
 	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) // �ϴ� Ű�� ������ ��
@@ -207,7 +216,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CCamera_Play::CAMERAPLAY_DESC CLCamDesc = {};
 	CLCamDesc.fFar = 500.f;
 	CLCamDesc.fNear = 0.1f;
-	CLCamDesc.fFovY = XMConvertToRadians(50.f);
+	CLCamDesc.fFovY = XMConvertToRadians(60.f);
 	CLCamDesc.vAt = { 60.f, 0.f, 60.f, 1.f };
 	CLCamDesc.vEyes = { 60.f, 60.f, -30.f, 1.f };
 	CLCamDesc.fSpeedPerSec = 10.f;
@@ -228,7 +237,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
 	FRCamDesc.fFar = 500.f;
 	FRCamDesc.fNear = 0.1f;
-	FRCamDesc.fFovY = XMConvertToRadians(50.f);
+	FRCamDesc.fFovY = XMConvertToRadians(60.f);
 	FRCamDesc.vEyes = _float4(0.f, 10.f, -7.f, 1.f);
 	FRCamDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	FRCamDesc.fSpeedPerSec = 10.f;
@@ -257,6 +266,12 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster_Anim"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
+
+
+	//	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
+	//		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+	//		return E_FAIL;
+	
 
 	return S_OK;
 }
@@ -292,7 +307,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Village"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
-
+	
 
 
 	CFish::FISH_DESC fishDesc = {};
@@ -308,11 +323,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 
 	fishDesc.vPosition = _float3(10.f, -2.f, 0.f);
 
+	fishDesc.InvenCtrl = m_pInvenCntl;
 
 
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
 		return E_FAIL;
+
+
 	return S_OK;
 }
 

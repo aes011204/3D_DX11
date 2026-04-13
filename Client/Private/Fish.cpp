@@ -4,6 +4,7 @@
 #include "Bounding_AABB.h"
 #include "DInput_Manager.h"
 #include "EventBus.h"
+#include "MiniGame_Logic.h"
 
 CFish::CFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CGameObject{ pDevice ,pContext }
@@ -40,7 +41,7 @@ HRESULT CFish::Initialize(void* pArg)
 
 	}
 
-
+	Set_InvenCtrl(fishDesc->InvenCtrl);
 
 
 
@@ -142,8 +143,8 @@ HRESULT CFish::Render()
 	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
 		for (size_t i = 0; i < iNumMesh; i++)
 		{
-			m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-			//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+			//m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			////m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
 			if (FAILED(m_pShaderCom->Begin(0)))
 				return E_FAIL;
@@ -166,8 +167,7 @@ void CFish::OnGui()
 
 void CFish::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-
-
+	
 
 	CGameObject::OnBeginOverlap(self, other);
 }

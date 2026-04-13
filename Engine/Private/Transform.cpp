@@ -480,8 +480,14 @@ void CTransform::Save_ToJson(nlohmann::json& j)
 	j["Position"] = { m_vPosition.x, m_vPosition.y, m_vPosition.z };
 	j["Scale"] = { m_vScale.x, m_vScale.y, m_vScale.z };
 
-	
-	j["Rotation"] = {  m_vRotationDegree.x, m_vRotationDegree.y, m_vRotationDegree.z };
+	/*_float3 angle =  Get_RotationDegree();
+	j["Rotation"] = { angle.x, angle.y, angle.z };*/
+	j["RotationQuat"] = {
+	m_vRotationQuat.x,
+	m_vRotationQuat.y,
+	m_vRotationQuat.z,
+	m_vRotationQuat.w
+	};
 
 	j["Move Speed"] = m_fSpeedPerSec;
 	j["Turn Speed"] = m_fRadianPerSec;
@@ -503,16 +509,25 @@ void CTransform::Load_FromJson(nlohmann::json& j)
 		SetUp_Scale(Scale.x, Scale.y, Scale.z);
 	}
 		//Rotation()
-	if (j.contains("Rotation")) {
+	/*if (j.contains("Rotation")) {
 		_float3 Rotaion = { j["Rotation"][0], j["Rotation"][1] ,j["Rotation"][2] };
 		Set_RotationDegree(Rotaion);
 
+	}*/
+	if (j.contains("RotationQuat")) {
+		_float4 q = {
+			j["RotationQuat"][0],
+			j["RotationQuat"][1],
+			j["RotationQuat"][2],
+			j["RotationQuat"][3]
+		};
+		m_vRotationQuat = q;
 	}
 
 	m_fSpeedPerSec = j["Move Speed"];
 	m_fRadianPerSec = j["Turn Speed"];
 
-	
+	Update_WorldMatrix();
 }
 
 

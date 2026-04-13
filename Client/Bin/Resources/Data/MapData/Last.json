@@ -1,0 +1,445 @@
+{
+    "Level": 3,
+    "WorldGameObject": [
+        {
+            "ColorLamp1": 0.5,
+            "ColorLamp2": 0.7929999828338623,
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Model_Island",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh_CustomTexture",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        0.0,
+                        0.5,
+                        0.0
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "GrassColor": [
+                0.07450980693101883,
+                0.10980392247438431,
+                0.05098039284348488,
+                1.0
+            ],
+            "LayerName": "Static",
+            "ObjName": "Island",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_Island",
+            "RockColor": [
+                0.4588235318660736,
+                0.45490196347236633,
+                0.529411792755127,
+                1.0
+            ],
+            "SandColor": [
+                0.5764706134796143,
+                0.5490196347236633,
+                0.43529412150382996,
+                1.0
+            ]
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 3,
+                    "ComProtoTag": "Prototype_Component_Model_Island_Collector",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Model_LightHouse",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        34.29999923706055,
+                        7.0,
+                        19.799999237060547
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.9999998807907104,
+                        -0.0,
+                        -1.1920928955078125e-07
+                    ],
+                    "Scale": [
+                        10.0,
+                        10.0,
+                        10.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject (1)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Model_BirchTree",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.9999998807907104,
+                        -0.0,
+                        -1.1920928955078125e-07
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject (2)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Model_Rock1",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        122.01000213623047,
+                        -1.2999999523162842,
+                        -36.5
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.9999998807907104,
+                        -0.0,
+                        -1.1920928955078125e-07
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject (3)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Model_PineTree",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.9999998807907104,
+                        -0.0,
+                        -1.1920928955078125e-07
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject (4)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Model_Bush",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.9999998807907104,
+                        -0.0,
+                        -1.1920928955078125e-07
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject (5)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Model_Rock0",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        39.40999984741211,
+                        0.0,
+                        -18.200000762939453
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.9999998807907104,
+                        -0.0,
+                        -1.1920928955078125e-07
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject (6)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Model_Rock2",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        77.30000305175781,
+                        -2.0999999046325684,
+                        161.3000030517578
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject (7)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        },
+        {
+            "Components": [
+                {
+                    "ComProtoLevel": 3,
+                    "ComProtoTag": "Prototype_Component_Model_ForkLift",
+                    "ComponentTag": "Com_Model"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "Prototype_Component_Shader_VtxMesh",
+                    "ComponentTag": "Com_Shader"
+                },
+                {
+                    "ComProtoLevel": 0,
+                    "ComProtoTag": "",
+                    "ComponentTag": "Com_Transform",
+                    "Move Speed": 0.0,
+                    "Position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "RotationQuat": [
+                        0.0,
+                        0.9999998807907104,
+                        -0.0,
+                        -1.1920928955078125e-07
+                    ],
+                    "Scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "Turn Speed": 0.0,
+                    "Type": "Transform"
+                }
+            ],
+            "LayerName": "Static",
+            "ObjName": "EmptyGObject (8)",
+            "ProtoSavedLevel": 0,
+            "ProtoSavedTag": "Prototype_GameObject_CEmptyGObject"
+        }
+    ]
+}

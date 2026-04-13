@@ -43,6 +43,9 @@
     <Filter Include="02.GameObject\00.Player\state">
       <UniqueIdentifier>{a832c115-2a8a-4aa9-8777-62cc903ab569}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02.GameObject\01.Monster">
+      <UniqueIdentifier>{81667df0-868a-45da-a1c3-65f2d9b12649}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Client.h">
@@ -103,9 +106,6 @@
       <Filter>02.GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Camera_Play.h">
-      <Filter>02.GameObject</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Monster.h">
       <Filter>02.GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UI_Inventory.h">
@@ -211,6 +211,19 @@
     <ClInclude Include="..\Public\Island.h">
       <Filter>02.GameObject</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\Monster.h">
+      <Filter>02.GameObject\01.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mon_MonkFish.h">
+      <Filter>02.GameObject\01.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mon_R.h">
+      <Filter>02.GameObject\01.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Mon_Tentacle.h">
+      <Filter>02.GameObject\01.Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\MiniGame_Logic.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -266,9 +279,6 @@
       <Filter>02.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Camera_Play.cpp">
-      <Filter>02.GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Monster.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\UI_Inventory.cpp">
@@ -374,6 +384,19 @@
     <ClCompile Include="..\Private\Island.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\Monster.cpp">
+      <Filter>02.GameObject\01.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mon_MonkFish.cpp">
+      <Filter>02.GameObject\01.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mon_R.cpp">
+      <Filter>02.GameObject\01.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Mon_Tentacle.cpp">
+      <Filter>02.GameObject\01.Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\MiniGame_Logic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

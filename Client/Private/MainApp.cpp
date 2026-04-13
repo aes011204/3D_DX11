@@ -877,6 +877,15 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
+
+	/* Prototype_Component_Model_Island_Side */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island_Side"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/island_Side.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{ 
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
 	///* Prototype_Component_Model_Rock0 */
 	//PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock0"),
@@ -885,14 +894,57 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 	//	MSG_BOX("Faild to Add_Prototype : GM_Town");
 	//	return E_FAIL;
 	//}
-	/* Prototype_Component_Model_Rock1 */
+	/* Prototype_Component_Model_Rock0 */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock0_1.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock0"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock0.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
+	/* Prototype_Component_Model_Rock1 */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock1"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock1.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Model_Rock2 */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock2"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock2.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+
+	/*Prototype_Component_Model_PineTree*/
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_PineTree"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tree/Tree_Pine.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+	/*Prototype_Component_Model_BirchTree*/
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_BirchTree"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tree/Tree_Birch.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+	/*Prototype_Component_Model_Bush*/
+
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Bush"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tree/Bush.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+
 
 
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_LightHouse"),

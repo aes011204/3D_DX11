@@ -144,7 +144,11 @@
     <ClInclude Include="..\Public\BackGround.h" />
     <ClInclude Include="..\Public\Explosion.h" />
     <ClInclude Include="..\Public\Fish.h" />
+    <ClInclude Include="..\Public\MiniGame_Logic.h" />
     <ClInclude Include="..\Public\Monster_Tantacle.h" />
+    <ClInclude Include="..\Public\Mon_MonkFish.h" />
+    <ClInclude Include="..\Public\Mon_R.h" />
+    <ClInclude Include="..\Public\Mon_Tentacle.h" />
     <ClInclude Include="..\Public\PlayerStateMachine.h" />
     <ClInclude Include="..\Public\Body_Player.h" />
     <ClInclude Include="..\Public\Camera_Play.h" />
@@ -206,7 +210,11 @@
     <ClCompile Include="..\Private\BackGround.cpp" />
     <ClCompile Include="..\Private\Explosion.cpp" />
     <ClCompile Include="..\Private\Fish.cpp" />
+    <ClCompile Include="..\Private\MiniGame_Logic.cpp" />
     <ClCompile Include="..\Private\Monster_Tantacle.cpp" />
+    <ClCompile Include="..\Private\Mon_MonkFish.cpp" />
+    <ClCompile Include="..\Private\Mon_R.cpp" />
+    <ClCompile Include="..\Private\Mon_Tentacle.cpp" />
     <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
     <ClCompile Include="..\Private\Body_Player.cpp" />
     <ClCompile Include="..\Private\Camera_Play.cpp" />

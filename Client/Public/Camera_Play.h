@@ -53,7 +53,7 @@ private:
 
     //
 
-    float  m_fStartFovy = 0;
+    float  m_fStartFovy = 0.f;
     float m_Acc = 0.f;
 
     deque<shared_ptr<CAM_DESC>> m_CamCommands;

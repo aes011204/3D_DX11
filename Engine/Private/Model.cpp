@@ -232,6 +232,11 @@ HRESULT CModel::Play_Animation(_float fTimeDelta)
 		pBone->Update_CombinedTransformMatrix(m_Bones, XMLoadFloat4x4(&m_PreLocalTransformMatrix));
 	}
 
+	if(m_isFinish == true)
+	{
+		int i = 0;
+	}
+
 	return S_OK;
 }
 

@@ -255,6 +255,7 @@ bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 		m_pTransformCom->Start_Lerp(vTargetPos, pLerpDesc->vTargetRot, pLerpDesc->fDuration);
 		m_FirstFlag = true;
+
 		m_fStartFovy = m_fFovy;
 
 		return true;

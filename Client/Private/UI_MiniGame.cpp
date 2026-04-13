@@ -11,6 +11,7 @@
 #include "FadeModifier.h"
 #include "Inventory_Controller.h"
 #include "EventBus.h"
+#include "MiniGame_Logic.h"
 
 CUI_MiniGame::CUI_MiniGame(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CUIPanel(pDevice, pContext)
@@ -84,9 +85,38 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	);
 
 
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MiniGame>(
+		[this](const Evt_MiniGame& e) {
 
-	m_Speed = 100.f;
-	m_RodSpeed = .1f;
+			if(e.IsOnZoon ==true)
+			{
+				m_prograssBar01 += 0.2;
+				m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+				m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+
+			}
+			else
+			{
+
+				m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+				m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+				m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+				m_changeColor = true;
+				colortime = .5f;
+			}
+		}
+	);
+
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>(
+		[this](const Evt_GetFish& e) {
+			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+
+		}
+	);
+
+	//m_Speed = 100.f;
+	//m_RodSpeed = .1f;
 
 
 	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_AddMoney>([this](const Evt_AddMoney& e)
@@ -263,16 +293,16 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 		}
 	}
 
-	////////////////////TEST//////////////////////////////
-	m_zoneCount = 3;
-	m_zones[0].start = 0.1f;
-	m_zones[0].end = 0.2f;
-	m_zones[1].start = 0.3f;
-	m_zones[1].end = 0.6f;
-	m_zones[2].start = 0.9f;
-	m_zones[2].end = .95f;
+	//////////////////////TEST//////////////////////////////
+	//m_zoneCount = 3;
+	//m_zones[0].start = 0.1f;
+	//m_zones[0].end = 0.2f;
+	//m_zones[1].start = 0.3f;
+	//m_zones[1].end = 0.6f;
+	//m_zones[2].start = 0.9f;
+	//m_zones[2].end = .95f;
 
-	m_FishCount = 4;
+	//m_FishCount = 4;
 
 	return hr;
 
@@ -284,6 +314,11 @@ void CUI_MiniGame::OnActive()
 	m_Spinner->GetUITransform()->SetRotation(0);
 	m_prograssBar01 = 0;
 	m_bFin = false;
+
+	m_zoneCount = m_Logic->GetZoneCount();
+	memcpy(m_zones, m_Logic->GetZones(), sizeof(Zone) * m_zoneCount);
+
+
 	CUIPanel::OnActive();
 }
 
@@ -300,100 +335,116 @@ void CUI_MiniGame::OnDisabled()
 
 void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 {
-	bool m_chose = false;
-	if(m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F))
-	{
-		if (/*m_bFin == true &&*/ m_InvenCtrl.lock()->Is_Dragging() == true)
-		{ m_bStart = false; }
-		else if (m_bFin == true && m_FishCount == 0)
-		{m_bStart = false;}
-		else if (!m_bStart && m_InvenCtrl.lock()->Is_Dragging() != true )
-		{
-			m_bStart = true; m_AccTime = 0.f; m_prograssBar01 = 0.f; m_bFin = false;
+
+
+	if (!m_Logic)
+		return;
+
+	//bool m_chose = false;
+	//if(m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F))
+	//{
+	//	if (/*m_bFin == true &&*/ m_InvenCtrl.lock()->Is_Dragging() == true)
+	//	{ m_bStart = false; }
+	//	else if (m_bFin == true && m_FishCount == 0)
+	//	{m_bStart = false;}
+	//	else if (!m_bStart && m_InvenCtrl.lock()->Is_Dragging() != true )
+	//	{
+	//		m_bStart = true; m_AccTime = 0.f; m_prograssBar01 = 0.f; m_bFin = false;
+	//	}
+	//	else { m_chose = true; }
+
+
+	//}
+
+
+	float progress = m_Logic->GetProgress01();
+
+	m_PrograssIcon->GetUITransform()->SetAnchoredPos(
+		_float2{
+			m_PrograssIcon->GetUITransform()->Get_AnchoredPos().x,
+			lerp(0.f, 239.f, progress)
 		}
-		else { m_chose = true; }
+	);
+
+	
 
 
-	}
-		m_prograssBar01 = clamp(m_prograssBar01, 0.f, 1.f);
+	m_Spinner->GetUITransform()->SetRotation(-(m_Logic->GetAngle()));
 
-		m_PrograssIcon->GetUITransform()->SetAnchoredPos(_float2{ m_PrograssIcon->GetUITransform()->Get_AnchoredPos().x,
-		lerp(0.f, 239.f, m_prograssBar01) }
-		);
 
-	float angle01={};
-	if (m_bStart == true )
-	{
-		m_prograssBar01 += m_RodSpeed * timeDelta;
-		
+	//float angle01={};
+	//if (m_bStart == true )
+	//{
+		//m_prograssBar01 += m_RodSpeed * timeDelta;
+		//
 
-		////////////////////////////////////
-		m_AccTime += timeDelta;
-		m_Angle = m_Speed * m_AccTime;
-		// 쉐이더는 오른쪽이 증가인데 로직은 + 가ㅏ 왼쪽 회전이라 바꿈 
-		m_Spinner->GetUITransform()->SetRotation(-m_Angle);
+		//////////////////////////////////////
+		//m_AccTime += timeDelta;
+		//m_Angle = m_Speed * m_AccTime;
+		//// 쉐이더는 오른쪽이 증가인데 로직은 + 가ㅏ 왼쪽 회전이라 바꿈 
+		//m_Spinner->GetUITransform()->SetRotation(-m_Angle);
 
-		float currentAngle = fmod(m_Angle, 360.f);
-		if (currentAngle < 0) currentAngle += 360.f;
+		//float currentAngle = fmod(m_Angle, 360.f);
+		//if (currentAngle < 0) currentAngle += 360.f;
 
-		angle01 = (currentAngle / 360.f);
+		//angle01 = (currentAngle / 360.f);
 		//LOG_F(LOG_LEVEL::INFO, "angle %f", angle01);
 
-		if (m_chose == true)
-		{
-			bool isSuccess = false;
-			for (int i = 0; i < m_zoneCount; i++)
-			{
-				if (m_zones[i].start <= angle01 && m_zones[i].end >= angle01)
-				{
-					isSuccess = true;
-					break;
-				}
-			}
+		//if (m_chose == true)
+		//{
+		//	bool isSuccess = false;
+		//	for (int i = 0; i < m_zoneCount; i++)
+		//	{
+		//		if (m_zones[i].start <= angle01 && m_zones[i].end >= angle01)
+		//		{
+		//			isSuccess = true;
+		//			break;
+		//		}
+		//	}
 
-			if(isSuccess == true)
-			{
-				// 효과 초록 원 이팩트 밖으로 커짐
-			//m_bStart = false;
+		//	if(isSuccess == true)
+		//	{
+		//		// 효과 초록 원 이팩트 밖으로 커짐
+		//	//m_bStart = false;
 
-				m_prograssBar01 += 0.2;
-				m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f },false));
-				m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{1.f,1.f}, false)));
+		//		m_prograssBar01 += 0.2;
+		//		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f },false));
+		//		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{1.f,1.f}, false)));
 
-			}
-			else
-			{
-				// 초록 영역 붉어지고 빨간 원 이팩트 밖으로 커짐 아주 짧게
+		//	}
+		//	else
+		//	{
+		//		// 초록 영역 붉어지고 빨간 원 이팩트 밖으로 커짐 아주 짧게
 
-				m_prograssBar01 -= 0.2;
+		//		m_prograssBar01 -= 0.2;
 
-				m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f },false));
-				m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
-				m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
-				m_changeColor = true;
-				colortime = .5f;
-			}
-		}
-	}
+		//		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f },false));
+		//		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+		//		m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+		//		m_changeColor = true;
+		//		colortime = .5f;
+		//	}
+	//	}
+	//}
 
-	if(m_prograssBar01 >= 1.f && !m_bFin)
-	{
-		//진짜 성공 반환
-		m_bStart = false;
-		
-			m_bFin = true;
-	
-		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
-		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+	//if(m_prograssBar01 >= 1.f && !m_bFin)
+	//{
+	//	//진짜 성공 반환
+	//	m_bStart = false;
+	//	
+	//		m_bFin = true;
+	//
+	//	m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+	//	m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
 
-		Evt_GetFish  e = {};
-		e.DefID = m_DefID;
-		e.fishInst.size = 20;
-		e.fishInst.mutation_ID = 2;
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
+	//	Evt_GetFish  e = {};
+	//	e.DefID = m_DefID;
+	//	e.fishInst.size = 20;
+	//	e.fishInst.mutation_ID = 2;
+	////	m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
-		m_FishCount--;
-	}
+	//	m_FishCount--;
+	//}
 
 
 

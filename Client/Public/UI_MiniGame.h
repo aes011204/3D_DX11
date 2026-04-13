@@ -39,10 +39,7 @@ public:
 	void OnClear()override;
 
 
-	void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl) {
-		m_InvenCtrl = invenCtrl
-			;
-	}
+
 
 public:
 	Zone m_zones[8];
@@ -80,8 +77,8 @@ private:
 	shared_ptr<CUIImage> m_PrograssIcon = { nullptr };
 
 	shared_ptr<CShader> m_CircleShader = { nullptr };
-	//
-	weak_ptr<class CInventory_Controller> m_InvenCtrl = {};
+
+	shared_ptr<class CMiniGame_Logic> m_Logic = {nullptr};
 public:
 	static shared_ptr<CUI_MiniGame> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	void Free() override;

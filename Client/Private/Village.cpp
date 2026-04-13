@@ -21,7 +21,6 @@ HRESULT CVillage::Initialize_Prototype()
 HRESULT CVillage::Initialize(void* pArg)
 {
 
-	m_bIsSavableClass = true;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;

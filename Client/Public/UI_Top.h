@@ -7,6 +7,7 @@
 namespace Engine
 {
 	class CUIText;
+    class CUIImage;
 }
 
 NS_BEGIN(Client)
@@ -40,6 +41,7 @@ public:
 private:
     shared_ptr<CUIText> m_DayText = {};
     shared_ptr<CUIText> m_TimeText = {};
+    shared_ptr<CUIImage> m_DayCircle = {};
 
     _uint preDay = {};
     _float preMin = {};

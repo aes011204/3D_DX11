@@ -18,6 +18,7 @@ float2 g_MidNightT;
 float2 g_DayT;
 float2 g_SunsetT;
 float2 g_AfterSunsetT;
+float2 g_NightT2;
 
 // 색상 데이터 (Time Colors)
 float3 g_vNightColor;
@@ -155,7 +156,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 // Sky Color
 
-    float3 newColor = g_vAfterSunsetColor;
+    float3 newColor = g_vNightColor;
     float wNight = smoothstep(g_NightT.x, g_NightT.y, g_fTOD01);
     newColor = lerp(newColor, g_vNightColor, wNight);
     float wMidNight = smoothstep(g_MidNightT.x, g_MidNightT.y, g_fTOD01);
@@ -166,7 +167,8 @@ PS_OUT PS_MAIN(PS_IN In)
     newColor = lerp(newColor, g_vSunsetColor, wSunSet);
     float wAfterSunSet = smoothstep(g_AfterSunsetT.x, g_AfterSunsetT.y, g_fTOD01);
     newColor = lerp(newColor, g_vAfterSunsetColor, wAfterSunSet);
-
+    float wNight2 = smoothstep(g_NightT2.x, g_NightT2.y, g_fTOD01);
+    newColor = lerp(newColor, g_vNightColor, wNight2);
 
     float stepped = floor(skyTex.g * 4.0f) / 4.0f;
     float3 skyColor = lerp(g_vSkyBottomColor, g_vSkyTopColor, stepped);

@@ -431,4 +431,12 @@ namespace Client
         int Fish_ID;
     };
 
+
+        struct Evt_MiniGame
+        {
+            _bool IsOnZoon = {};
+
+
+        };
+
 }

@@ -15,6 +15,9 @@
 #include "Collider.h"
 #include "Explosion.h"
 #include "Fish.h"
+#include "Mon_MonkFish.h"
+#include "Mon_R.h"
+#include "Mon_Tentacle.h"
 #include "VIBuffer_Sea.h"
 #include "VIBuffer_Particle_Point.h"
 #include "Snow.h"
@@ -280,6 +283,23 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
 	}
+	/* Prototype_Component_Model_Tentacle */
+	PreLocalTransformMatrix = XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Tentacle"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tentacle/Tentacle_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Model_R */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R/R.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+
 
 	PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
 	/*Prototype_Component_Model_Fiona_Anim*/
@@ -409,6 +429,57 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		MSG_BOX("Faild to Add_Prototype : fish");
 		return E_FAIL;
 	}
+
+
+
+
+
+
+	/* Prototype_GameObject_R */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
+		CMon_R::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+
+	/* Prototype_GameObject_Tentacle */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
+		CMon_Tentacle::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+
+
+	/* Prototype_GameObject_MonkFish */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
+		CMon_MonkFish::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	///* Prototype_GameObject_Sky */
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Sky"),

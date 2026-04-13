@@ -3,8 +3,10 @@
 #pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
+#include "MiniGame_Logic.h"
 NS_BEGIN(Client)
-class CFish :
+
+	class CFish :
     public CGameObject
 {
 public:
@@ -20,6 +22,8 @@ public:
         _float2 Radius = {};
 
         _uint fish_DefID = {};
+
+        shared_ptr<class CInventory_Controller> InvenCtrl = { nullptr };
     };
 
 
@@ -33,6 +37,7 @@ public:
         float Alpha = {};
         float Speed = {};
         float Radius = {};
+       
     };
 
 
@@ -65,6 +70,10 @@ public:
     HRESULT Bind_ShaderResources();
     _uint Get_fish_DefID() { return fish_DefID; };
 
+    void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl) {
+        m_MiniGame_Logic->Set_InvenCtrl(invenCtrl);}
+
+
 protected:
     HRESULT Ready_Components();
 private:
@@ -82,6 +91,10 @@ private:
     float m_acc = {};
     vector<FishSData> m_Fishs = {};
     _uint fish_DefID = {};
+
+
+    shared_ptr<class CMiniGame_Logic> m_MiniGame_Logic = { nullptr };
+
 public:
     static shared_ptr<CFish> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     shared_ptr<CGameObject> Clone(void* pArg) override;

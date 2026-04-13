@@ -27,7 +27,7 @@ void CPlayer_Sea::Enter()
 	pLerp->eMode = LERP;
 	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
 	pLerp->IsLerpTarget = true;
-	pLerp->fFov = 40;
+	pLerp->fFov = 60;
 	//pLerp->m_Target = m_Owner;
 	pLerp->fDuration = 1.f;
 	event.commands.push_back(pLerp);

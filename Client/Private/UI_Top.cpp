@@ -36,7 +36,7 @@ HRESULT CUI_Top::OnInit(void* pArg)
 			Time_Base->Add_Child(Text_Day, L"Text_Day", false);
 			m_DayText = Text_Day;
 
-			
+
 			CUIText::TEXT_DESC textTime_Desc = {};
 			textTime_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
 			textTime_Desc.strText = L"12:34";
@@ -44,21 +44,21 @@ HRESULT CUI_Top::OnInit(void* pArg)
 			Text_Time->Initialize(&textTime_Desc);
 			Time_Base->Add_Child(Text_Time, L"Text_Time", false);
 			m_TimeText = Text_Time;
-			
+
 		}
 
 		CUIImage::UIIMAGE_DESC TimeWheelDesc = {};
 		TimeWheelDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		TimeWheelDesc.TextureProtoName = L"Prototype_Component_Texture_TimeOfDayWheel";
-		shared_ptr<CUIPanel> Time_Wheel = CUIPanel::Create(m_pDevice, m_pContext);
+		shared_ptr<CUIImage> Time_Wheel = CUIImage::Create(m_pDevice, m_pContext);
 		Time_Wheel->Initialize(&TimeWheelDesc);
 		Add_Child(Time_Wheel, L"Time_Wheel", false);
-
+		m_DayCircle = Time_Wheel;
 
 		CUIImage::UIIMAGE_DESC TimePointerDesc = {};
 		TimePointerDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		TimePointerDesc.TextureProtoName = L"Prototype_Component_Texture_TimeOfDayPointer";
-		shared_ptr<CUIPanel> TimePointer = CUIPanel::Create(m_pDevice, m_pContext);
+		shared_ptr<CUIImage> TimePointer = CUIImage::Create(m_pDevice, m_pContext);
 		TimePointer->Initialize(&TimePointerDesc);
 		Time_Wheel->Add_Child(TimePointer, L"TimePointer", false);
 
@@ -77,7 +77,7 @@ HRESULT CUI_Top::OnInit(void* pArg)
 		CUIImage::UIIMAGE_DESC CompassRingDesc = {};
 		CompassRingDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		CompassRingDesc.TextureProtoName = L"Prototype_Component_Texture_CompassRing";
-		shared_ptr<CUIPanel> CompassRing = CUIPanel::Create(m_pDevice, m_pContext);
+		shared_ptr<CUIImage> CompassRing = CUIImage::Create(m_pDevice, m_pContext);
 		CompassRing->Initialize(&CompassRingDesc);
 		Add_Child(CompassRing, L"CompassRing", false);
 
@@ -109,13 +109,13 @@ void CUI_Top::OnUpdate(const _float& timeDelta)
 	_float fMinute = 0;
 	_float fSecond = 0;
 	m_pGameInstance.lock()->ComputeTime(iDay, fHour, fMinute, fSecond);
-	if(fMinute!= preMin)
+	if (fMinute != preMin)
 	{
 
 		m_TimeText->Set_Text(format(L"{:02.0f}:{:02.0f}", fHour, fMinute));
-		
+
 	}
-	if(preDay!= iDay)
+	if (preDay != iDay)
 	{
 		wstring strDay = L"";
 		_uint iday = iDay % 7;
@@ -145,11 +145,17 @@ void CUI_Top::OnUpdate(const _float& timeDelta)
 		default:
 			break;
 		}
-	m_DayText->Set_Text(format(L"{}, {}일 차", strDay, iDay));
+		m_DayText->Set_Text(format(L"{}, {}일 차", strDay, iDay));
 	}
 
 	preDay = iDay;
 	preMin = fMinute;
+
+
+	float circel = m_pGameInstance.lock()->Get_TOD01() * -360.f;
+	m_DayCircle->GetUITransform()->SetRotation(circel);
+
+
 	__super::OnUpdate(timeDelta);
 }
 
