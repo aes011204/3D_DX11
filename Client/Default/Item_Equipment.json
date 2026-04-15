@@ -1,78 +1,78 @@
 {
     "Items": [
-        {
-            "ItemID": 2001,
-            "ItemType": "EQUIP",
-            "ItemName": "기이한 엔진",
-            "ItemDesc": "누군가가 이 엔진을 낯선 방식으로 개조했습니다.어떻게 손봤는지는 모르겠지만 일반적인 엔진보다 동력이 세진 것 같습니다.",
-            "TexturePath": "//pass//",
-            "ItemShape": {
-                "Width": 1,
-                "Height": 2,
-                "Shape_Mask": [
-                    [ 1 ],
-                    [ 1 ]
-                ]
-            },
-            "SizeNum": 2,
-
-            "Cost": 0,
-            "InstallTime": 2,
-            "EquipType": "ENGINE",
-
-            "EquipType_Effect": {
-                "Research_Lv": 2,
-                "Speed_Kn" : 14
-            }
-
-
+      {
+        "ItemID": 2001,
+        "ItemType": "EQUIP",
+        "ItemName": "기이한 엔진",
+        "ItemDesc": "누군가가 이 엔진을 낯선 방식으로 개조했습니다.어떻게 손봤는지는 모르겠지만 일반적인 엔진보다 동력이 세진 것 같습니다.",
+        "TexturePath": "../Bin/Resources/Textures/Item/Equip/engine1.png",
+        "ItemShape": {
+          "Width": 1,
+          "Height": 2,
+          "Shape_Mask": [
+            [ 1 ],
+            [ 1 ]
+          ]
         },
-        {
-            "ItemID": 2002,
-            "ItemType": "EQUIP",
-            "ItemName": "금이 간 전구",
-            "ItemDesc": "촛불보단 낫습니다. 그뿐입니다.",
-            "TexturePath": "//pass//",
-            "ItemShape": {
-                "Width": 1,
-                "Height": 1,
-                "Shape_Mask": [ [ 1 ] ]
-            },
-            "SizeNum": 2,
+        "SizeNum": 2,
 
-            "Cost": 100,
-            "InstallTime": 1,
-            "EquipType": "LIGHT",
+        "Cost": 0,
+        "InstallTime": 2,
+        "EquipType": "ENGINE",
 
-            "EquipType_Effect": {
-                "Lumen": 500,
-                "Range": 10
-            }
+        "EquipType_Effect": {
+          "Research_Lv": 2,
+          "Speed_Kn": 14
+        }
+
+
+      },
+      {
+        "ItemID": 2002,
+        "ItemType": "EQUIP",
+        "ItemName": "금이 간 전구",
+        "ItemDesc": "촛불보단 낫습니다. 그뿐입니다.",
+        "TexturePath": "../Bin/Resources/Textures/Item/Equip/light1.png",
+        "ItemShape": {
+          "Width": 1,
+          "Height": 1,
+          "Shape_Mask": [ [ 1 ] ]
         },
-        {
-            "ItemID": 2003,
-            "ItemType": "EQUIP",
-            "ItemName": "기본 낚싯대",
-            "ItemDesc": "깨지고 부서지기 쉬운 낚싯대로 아주 작은 물고기만 잡을 수 있습니다.",
-            "TexturePath": "//pass//",
-            "ItemShape": {
-                "Width": 2,
-                "Height": 1,
-                "Shape_Mask": [ [ 1, 1 ] ]
-            },
-            "SizeNum": 2,
+        "SizeNum": 2,
 
-            "Cost": 37,
-            "InstallTime": 1,
-            "EquipType": "LIGHT",
+        "Cost": 100,
+        "InstallTime": 1,
+        "EquipType": "LIGHT",
 
-            "EquipType_Effect": {
-                "Research_Lv": 0,
-                "SeaType_Mask": [ "COASTAL" ],
-                "Speed_Per": 35
-            }
-
+        "EquipType_Effect": {
+          "Lumen": 500,
+          "Range": 10
+        }
+      },
+      {
+        "ItemID": 2003,
+        "ItemType": "EQUIP",
+        "ItemName": "기본 낚싯대",
+        "ItemDesc": "깨지고 부서지기 쉬운 낚싯대로 아주 작은 물고기만 잡을 수 있습니다.",
+        "TexturePath": "../Bin/Resources/Textures/Item/Equip/rod1.png",
+        "ItemShape": {
+          "Width": 2,
+          "Height": 1,
+          "Shape_Mask": [ [ 1, 1 ] ]
         },
+        "SizeNum": 2,
+
+        "Cost": 37,
+        "InstallTime": 1,
+        "EquipType": "ROD",
+
+        "EquipType_Effect": {
+          "Research_Lv": 0,
+          "SeaType_Mask": [ "COASTAL" ],
+          "Speed_Per": 35
+        }
+
+      },
         {
             "ItemID": 2004,
             "ItemType": "EQUIP",

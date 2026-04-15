@@ -45,6 +45,8 @@ private:
 
 	shared_ptr<class CUI> m_Village = {};
 
+	shared_ptr<class CMiniGameController> m_pMiniGame_Controller = { nullptr };
+
 public:
 	static shared_ptr<CLevel_GamePlay> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	virtual void Free() override;

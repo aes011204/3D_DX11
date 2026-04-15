@@ -36,7 +36,7 @@ public:
 private:
     E_PLAYERSTATE eNextState = E_PLAYERSTATE::FISH_SHOP;
 
-
+    Item_Inst m_ItemIdInst = {};
 private:
     virtual void Free();
 

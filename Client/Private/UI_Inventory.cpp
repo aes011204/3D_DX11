@@ -376,7 +376,7 @@ void CUI_Inventory::OnUpdate(const _float& timeDelta)
 		{
 		case ITEM_TYPE::MATERIAL:
 		case ITEM_TYPE::EQUIP:
-			color = { 0.f,0.f,0.f,1.f };
+			color = { 0.23f, 0.23f, 0.21f, 1.f };
 			break;
 		case ITEM_TYPE::FISH:
 			color = { .7f,0.2f,0.2f,1.f };

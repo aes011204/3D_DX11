@@ -140,6 +140,15 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_NonAnim(const aiMesh* pAIMesh, _fma
 
 HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel)
 {
+	/*struct WeightData
+	{
+		int boneIndex;
+		float weight;
+	};
+
+	vector<vector<WeightData>> tempWeights(m_iNumVertices);*/
+
+
 	m_iVertexStride = sizeof(VTXANIMMESH);
 
 	// Vertex Buffer
@@ -217,8 +226,63 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 				pVertices[AIVertexWeight.mVertexId].vBlendIndex.w = i;
 				pVertices[AIVertexWeight.mVertexId].vBlendWeight.w = AIVertexWeight.mWeight;
 			}
+			//int vtxId = AIVertexWeight.mVertexId;
+
+	
+			//tempWeights[vtxId].push_back({ (int)i, AIVertexWeight.mWeight });
 		}
 	}
+	//for (size_t i = 0; i < m_iNumVertices; i++)
+	//{
+	//	auto& weights = tempWeights[i];
+
+	//	// 큰 weight 순으로 정렬
+	//	sort(weights.begin(), weights.end(), [](auto& a, auto& b)
+	//		{
+	//			return a.weight > b.weight;
+	//		});
+
+	//	// 상위 4개만 사용
+	//	for (int k = 0; k < 4 && k < weights.size(); k++)
+	//	{
+	//		switch (k)
+	//		{
+	//		case 0:
+	//			pVertices[i].vBlendIndex.x = weights[k].boneIndex;
+	//			pVertices[i].vBlendWeight.x = weights[k].weight;
+	//			break;
+	//		case 1:
+	//			pVertices[i].vBlendIndex.y = weights[k].boneIndex;
+	//			pVertices[i].vBlendWeight.y = weights[k].weight;
+	//			break;
+	//		case 2:
+	//			pVertices[i].vBlendIndex.z = weights[k].boneIndex;
+	//			pVertices[i].vBlendWeight.z = weights[k].weight;
+	//			break;
+	//		case 3:
+	//			pVertices[i].vBlendIndex.w = weights[k].boneIndex;
+	//			pVertices[i].vBlendWeight.w = weights[k].weight;
+	//			break;
+	//		}
+	//	}
+	//}
+
+	//for (size_t i = 0; i < m_iNumVertices; i++)
+	//{
+	//	float sum =
+	//		pVertices[i].vBlendWeight.x +
+	//		pVertices[i].vBlendWeight.y +
+	//		pVertices[i].vBlendWeight.z +
+	//		pVertices[i].vBlendWeight.w;
+
+	//	if (sum > 0.f)
+	//	{
+	//		pVertices[i].vBlendWeight.x /= sum;
+	//		pVertices[i].vBlendWeight.y /= sum;
+	//		pVertices[i].vBlendWeight.z /= sum;
+	//		pVertices[i].vBlendWeight.w /= sum;
+	//	}
+	//}
 
 
 	D3D11_SUBRESOURCE_DATA			VertexInitialData{};

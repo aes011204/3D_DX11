@@ -6,6 +6,7 @@
 #include "Camera_Play.h"
 #include "EventBus.h"
 #include "Fish.h"
+#include "UI_Item.h"
 #include "UI_TabContainer.h"
 
 CPlayer_Sea::CPlayer_Sea(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
@@ -83,6 +84,8 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 
 				Evt_FishingData e = {};
 				e.Fish_ID = Target->Get_fish_DefID();
+				e.Fish = Target;
+				e.RodSpeed = m_Owner.lock()->Get_RodSpeed();
 				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 
@@ -97,8 +100,12 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 		if (m_OnTab == false) 
 		{
 			m_TapUI = dynamic_pointer_cast<CUI_TabContainer>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer"));
-
 			m_TapUI.lock()->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
+
+			auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+			m_HoldItem->UI_Active();
+
+
 			m_OnTab = true;
 		}
 		else

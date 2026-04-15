@@ -24,8 +24,8 @@ CUI_MiniGame::CUI_MiniGame(const CUIPanel& prototype)
 }
 void CUI_MiniGame::UI_PanelActive(/*MINIGAME MiniGameState, _uint Defid*/)
 {
-
-	if (m_DefID ==  ID_Absence )
+	_uint  m_DefID = m_Logic->Get_DefID();
+	if (m_DefID == ID_Absence)
 		return;
 
 
@@ -78,11 +78,11 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
+	/*m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
 		[this](const Evt_FishingData& e) {
-			m_DefID = e.Fish_ID;
+			
 		}
-	);
+	);*/
 
 
 	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MiniGame>(
@@ -114,6 +114,10 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 		}
 	);
+
+
+
+
 
 	//m_Speed = 100.f;
 	//m_RodSpeed = .1f;
@@ -315,9 +319,7 @@ void CUI_MiniGame::OnActive()
 	m_prograssBar01 = 0;
 	m_bFin = false;
 
-	m_zoneCount = m_Logic->GetZoneCount();
-	memcpy(m_zones, m_Logic->GetZones(), sizeof(Zone) * m_zoneCount);
-
+	
 
 	CUIPanel::OnActive();
 }
@@ -339,6 +341,9 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 
 	if (!m_Logic)
 		return;
+
+	m_zoneCount = m_Logic->GetZoneCount();
+	memcpy(m_zones, m_Logic->GetZones(), sizeof(Zone) * m_zoneCount);
 
 	//bool m_chose = false;
 	//if(m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F))
@@ -445,8 +450,8 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 
 	//	m_FishCount--;
 	//}
-
-
+	
+	m_amountTex->Set_Text(format(L"{}", m_Logic->GetFishCount()));
 
 	if(m_changeColor == true)
 	{

@@ -162,7 +162,6 @@
     <ClInclude Include="..\Public\FadeModifier.h">
       <Filter>97.Modifier</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\ItemInfo.h" />
     <ClInclude Include="..\Public\UI_Controller.h">
       <Filter>03.UI</Filter>
     </ClInclude>
@@ -224,6 +223,10 @@
       <Filter>02.GameObject\01.Monster</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\MiniGame_Logic.h" />
+    <ClInclude Include="..\Public\MiniGameController.h" />
+    <ClInclude Include="..\Public\ItemInfo.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -335,7 +338,6 @@
     <ClCompile Include="..\Private\FadeModifier.cpp">
       <Filter>97.Modifier</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\ItemInfo.cpp" />
     <ClCompile Include="..\Private\UI_Controller.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
@@ -397,6 +399,10 @@
       <Filter>02.GameObject\01.Monster</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\MiniGame_Logic.cpp" />
+    <ClCompile Include="..\Private\MiniGameController.cpp" />
+    <ClCompile Include="..\Private\ItemInfo.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

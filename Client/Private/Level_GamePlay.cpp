@@ -17,6 +17,8 @@
 #include "UI_NPC.h"
 #include "UI_Village.h"
 #include "UI_Controller.h"
+#include "EventBus.h"
+#include "MiniGameController.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -61,6 +63,8 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
 		return E_FAIL;
 
+
+
 	return S_OK;
 }
 
@@ -72,7 +76,6 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"HoldItem", false, nullptr);
  	m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
 
-	m_pInvenCntl = CInventory_Controller::Create(m_pDevice, m_pContext,m_PlayerInven ,m_HoldItem);
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::HUD, L"HUD", true, nullptr);
 
@@ -85,10 +88,25 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MiniGame", false, nullptr);
 	m_pMiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
 
-	CUI_Controller::GetInstance()->Set_InvenCtrl(m_pInvenCntl);
+	//CUI_Controller::GetInstance()->Set_InvenCtrl(m_pInvenCntl);
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Village", false, nullptr);
 	m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+
+
+
+	m_pInvenCntl = CInventory_Controller::Create(m_pDevice, m_pContext, m_PlayerInven, m_HoldItem);
+	m_pMiniGame_Controller = CMiniGameController::Create();
+
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>([this](const Evt_FishingData e)
+		{
+			m_pMiniGame_Controller->Start_Fishing(e.Fish, m_pInvenCntl, e.RodSpeed);
+		});
+
+
+
+
+
 	return S_OK;
 }
 
@@ -268,10 +286,18 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
 		return E_FAIL;
 
 
-	//	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
-	//		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
-	//		return E_FAIL;
+		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
+			ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+			return E_FAIL;
 	
+		//if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
+		//	ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		//	return E_FAIL;
+
+		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
+			ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+			return E_FAIL;
+
 
 	return S_OK;
 }
@@ -323,7 +349,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 
 	fishDesc.vPosition = _float3(10.f, -2.f, 0.f);
 
-	fishDesc.InvenCtrl = m_pInvenCntl;
 
 
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),

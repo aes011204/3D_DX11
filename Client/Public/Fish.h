@@ -23,7 +23,6 @@ public:
 
         _uint fish_DefID = {};
 
-        shared_ptr<class CInventory_Controller> InvenCtrl = { nullptr };
     };
 
 
@@ -45,7 +44,6 @@ private:
     CFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     CFish(const CFish& prototype);
 public:
-    virtual ~CFish() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
@@ -57,9 +55,11 @@ public:
 
     virtual void OnGui() override;
 
+    int GetFishCount() const { return m_FishCount; }
+    shared_ptr<CMiniGame_Logic> GetMiniGameLogic() const {return m_MiniGame_Logic;}
+    void SetMiniGameLogic(shared_ptr<CMiniGame_Logic> logic) {m_MiniGame_Logic = logic;}
 
-
-    virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
+	virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
@@ -70,8 +70,6 @@ public:
     HRESULT Bind_ShaderResources();
     _uint Get_fish_DefID() { return fish_DefID; };
 
-    void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl) {
-        m_MiniGame_Logic->Set_InvenCtrl(invenCtrl);}
 
 
 protected:
@@ -85,7 +83,7 @@ private:
 private:
 
 
-    _uint m_CurFishCount = {};
+   // _uint m_CurFishCount = {};
 
     _uint m_FishCount = {};
     float m_acc = {};

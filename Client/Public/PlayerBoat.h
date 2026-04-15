@@ -4,6 +4,7 @@
 
 NS_BEGIN(Engine)
 class CCollider;
+class CDInput_Manager;
 NS_END
 
 NS_BEGIN(Client)
@@ -41,7 +42,8 @@ public:
 
     void Get_Demage();
 
-
+    float Get_RodSpeed() const{return m_RodSpeed;}
+    shared_ptr<CInventory> GetInventory() const{return m_pInvenCom;}
 
     virtual void OnGui() override;
 
@@ -53,9 +55,9 @@ protected:
     HRESULT Ready_PartObjects();
 public:
     //_float Get_Money() { return m_Money; }
-    void Add_Money(_int money);
+    void Add_Money(_float money);
    /* void Set_BoatSpeed(_uint speed) { m_BoatSpeed = speed; }
-    void Set_FishingSpeed(_uint speed) { m_FishingSpeed = speed; }
+    void Set_FishingSpeed(_uint speed) { m_RodSpeed = speed; }
     void Set_Light(_uint light) { m_Light = light; }
     void Set_SeaMask(SEA_MASK mask) { m_SeaMask = mask; }*/
     void Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask, _float InvenMoney);
@@ -76,7 +78,7 @@ private:
     int m_MAXHp = {4};
     _float m_Money = {};
    _uint m_BoatSpeed = {10}; //기본은 10
-   _uint m_FishingSpeed = {};
+   _float m_RodSpeed = {10.f};
    _uint m_Light = {};
    SEA_MASK m_SeaMask = {}; // d이거 왜 있음
    float m_InvenMoney = {}; // d이거 왜 있음

@@ -41,7 +41,7 @@ HRESULT CFish::Initialize(void* pArg)
 
 	}
 
-	Set_InvenCtrl(fishDesc->InvenCtrl);
+	/*Set_InvenCtrl(fishDesc->InvenCtrl);*/
 
 
 
@@ -62,6 +62,13 @@ void CFish::Priority_Update(_float fTimeDelta)
 
 void CFish::Update(_float fTimeDelta)
 {
+
+	if (GetFishCount() <= 0)
+		Mark_Destroy();
+
+	 //TODO:: 물고기 갯수 줄어들어야 함
+
+
 	if (m_bIsDirtyCom) {
 		RebindCom();      // "바뀐 것"만 한 번 갱신
 		m_bIsDirtyCom = false;
@@ -99,7 +106,10 @@ void CFish::Update(_float fTimeDelta)
 
 
 
-
+	if(m_MiniGame_Logic !=nullptr)
+	{
+		m_MiniGame_Logic->Update(fTimeDelta);
+	}
 
 
 
@@ -167,7 +177,8 @@ void CFish::OnGui()
 
 void CFish::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-	
+
+
 
 	CGameObject::OnBeginOverlap(self, other);
 }

@@ -81,6 +81,7 @@ void CInventory_Controller::Update(float TimeDelta)
 
 	if (m_bIsOnSlot == true/*m_UIInven->MousePosToSlot(SlotX, SlotY)*/)/*ui 에서 마우스가 어느 칸을 가르키고 있는지 반환 , -면 칸 이 아닌거임*/
 	{
+		m_bPrevOnSlot = true;
 		// 마우스가 그리드 안에 들어와 있다
 		Item_Inst tmpInst = {};
 
@@ -112,10 +113,10 @@ void CInventory_Controller::Update(float TimeDelta)
 			Item_Inst inst = m_PlayerInven.lock()->Peek_Itme(m_SlotX, m_SlotY);
 			if(m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY|| inst.ItemInst_ID!= m_prevItemInstId)
 			{
-				Evt_ToolTip e = {};
+				Evt_ItemHovered e = {};
 				e.isHold = false;
 				e.itemInst = inst;
-				e.locationState = LOCATIONSTATE::SEA;
+		
 				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 				m_PrevSlotX = m_SlotX;
@@ -185,20 +186,21 @@ void CInventory_Controller::Update(float TimeDelta)
 		//if (prevMouseOnSlot == true)
 		//{
 			//if( m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY)
-			if(m_bDragging ==false)
+			if(m_bPrevOnSlot == true && m_bDragging ==false)
 			{
 			Item_Inst emptyinst = {};
 
-			Evt_ToolTip e = {};
+			Evt_ItemHovered e = {};
 			e.isHold = false;
 			e.itemInst = emptyinst;
-			e.locationState = LOCATIONSTATE::END;
+			
 			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 			m_PrevSlotX = 99;
 			m_PrevSlotY = 99;
 				
 			}
+			m_bPrevOnSlot = false;
 			//prevMouseOnSlot = false;
 
 		//}
@@ -241,10 +243,10 @@ void CInventory_Controller::Update(float TimeDelta)
 		{
 			//if (m_PrevDragging == false) // 처음 들었을 때만
 			//{
-			Evt_ToolTip e = {};
+			Evt_ItemHovered e = {};
 			e.isHold = true;
 			e.itemInst = m_UIHoldItem->Get_HoldItem();
-			e.locationState = LOCATIONSTATE::SEA;
+
 			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 			m_PrevDragging = m_bDragging;

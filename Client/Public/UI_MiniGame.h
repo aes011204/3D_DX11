@@ -10,7 +10,9 @@ namespace Engine
 
 NS_BEGIN(Client)
 
-class CUI_MiniGame :
+class CMiniGame_Logic;
+
+	class CUI_MiniGame :
 	public CUIPanel
 {
 public:
@@ -26,6 +28,7 @@ public:
 	~CUI_MiniGame() = default;
 
 public:
+	void SetMiniGameLogic(shared_ptr<CMiniGame_Logic> logic) { m_Logic = logic; }
 
 	void UI_PanelActive();
 

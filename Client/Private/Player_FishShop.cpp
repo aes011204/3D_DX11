@@ -7,6 +7,8 @@
 #include "PlayerBoat.h"
 #include "Sea_Manager.h"
 #include "EventBus.h"
+#include "Inventory.h"
+#include "ItemDB.h"
 #include "UI_NPC.h"
 
 CPlayer_FishShop::CPlayer_FishShop(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
@@ -34,7 +36,7 @@ void CPlayer_FishShop::Enter()
 		Evt_Cam_Arrived e = {};
 		e.playerstate = E_PLAYERSTATE::FISH_SHOP;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
-	};
+		};
 	event.commands.push_back(pLerp);
 
 	auto pStop = make_shared<CAM_DESC>();
@@ -70,16 +72,43 @@ HRESULT CPlayer_FishShop::Init_State()
 			eNextState = e.playerstate;
 		});
 
+
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ItemHovered>([this](const Evt_ItemHovered& e)
+		{
+			m_ItemIdInst = e.itemInst;
+		});
+
 	return CPlayerState::Init_State();
 }
 
 int CPlayer_FishShop::Update_State(const _float& timeDelta)
 {
 
-	if(m_Input_Manager->KeyDown(DIK_X))
+	if (m_Input_Manager->KeyDown(DIK_X))
 	{
 
 		return  ETOI(E_PLAYERSTATE::VILLAGE);
+	}
+	else if (m_Input_Manager->KeyDown(DIK_F) && !m_ItemIdInst.ItemInst_ID == ID_Absence)
+	{
+		if (m_ItemIdInst.ItemType == ITEM_TYPE::FISH)
+		{
+			float money = {};
+			if (m_ItemIdInst.IsMutaion == true)
+				money = m_ItemIdInst.MutaionCashing.MutCost;
+			else
+			{
+				auto def = CItemDB::GetInstance()->GetItemByID(m_ItemIdInst.ItemDef_ID).TypeDef;
+
+				money = get<Fish_Def>(def).Cost;
+
+			}
+
+			m_Owner.lock()->Add_Money(money);
+			m_Owner.lock()->GetInventory()->RemoveFrom_Inven(m_ItemIdInst.ItemInst_ID);
+
+		}
+
 	}
 
 
@@ -88,17 +117,17 @@ int CPlayer_FishShop::Update_State(const _float& timeDelta)
 
 void CPlayer_FishShop::LateUpdate_State(const _float& timeDelta)
 {
-	
+
 }
 
 void CPlayer_FishShop::Render_State()
 {
-	
+
 }
 
 shared_ptr<CPlayer_FishShop> CPlayer_FishShop::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
 {
-	shared_ptr<CPlayer_FishShop> pInstance(new CPlayer_FishShop(owner,pStateMachine), [](CPlayer_FishShop* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_FishShop> pInstance(new CPlayer_FishShop(owner, pStateMachine), [](CPlayer_FishShop* p) {p->Free(); delete(p); });
 
 
 	return pInstance;

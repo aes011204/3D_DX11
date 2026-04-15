@@ -16,7 +16,7 @@ CItemInfo::CItemInfo(const CUIPanel& prototype)
 {
 }
 
-void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE locationState)
+void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE PlayerState)
 {
 	wstring NameInfo = L"";
 	wstring LeftInfo = L"";
@@ -131,10 +131,10 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 	if (isHold == true)
 	{
 
-		switch (locationState)
+		switch (PlayerState)
 		{
-		case LOCATIONSTATE::FISHING:
-		case LOCATIONSTATE::SEA:
+		case E_PLAYERSTATE::FISHING:
+		case E_PLAYERSTATE::SEA:
 			// 놓기 회전 버리기
 			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
@@ -146,7 +146,11 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 			fCurrentY -= (sizeY + m_PaddingY);
 
 			break;
-		case LOCATIONSTATE::SHOP_INVEN:
+		case E_PLAYERSTATE::REPAIR_SHOP:
+		case E_PLAYERSTATE::FISH_SHOP:
+
+
+			//if()TODO:: 마우스가 샵일떄 자신일떄
 			//설치 회전 창고로보내기 환불
 			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
@@ -167,10 +171,10 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 	else
 	{
 		
-		switch (locationState)
+		switch (PlayerState)
 		{
-		case LOCATIONSTATE::FISHING:
-		case LOCATIONSTATE::SEA:
+		case E_PLAYERSTATE::FISHING:
+		case E_PLAYERSTATE::SEA:
 			//집기 버리기
 			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
@@ -178,13 +182,14 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
 			break;
-		case LOCATIONSTATE::SHOP:
-			//구매
-			sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f ,fCurrentY }, cost);
-			fCurrentY -= (sizeY + m_PaddingY);
+		//case E_PLAYERSTATE::REPAIR_SHOP: // 이거 구매 측
+		//	//구매
+		//	sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f ,fCurrentY }, cost);
+		//	fCurrentY -= (sizeY + m_PaddingY);
 
-		break;
-		case LOCATIONSTATE::SHOP_INVEN:
+		//break;
+		case E_PLAYERSTATE::REPAIR_SHOP:// 이건 나 측
+		
 			//집기 버리기 창고로보내기 판매
 			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
@@ -194,7 +199,22 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, LOCATIONSTATE l
 			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost * 0.8f);
+			sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost * 0.5f);
+			fCurrentY -= (sizeY + m_PaddingY);
+			break;
+
+
+		case E_PLAYERSTATE::FISH_SHOP:
+			//집기 버리기 창고로보내기 판매
+			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
+			fCurrentY -= (sizeY + m_PaddingY);
+
+			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
+			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
+			fCurrentY -= (sizeY + m_PaddingY);
+
+			sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost);
 			fCurrentY -= (sizeY + m_PaddingY);
 			break;
 		}
@@ -232,12 +252,7 @@ void CItemInfo::UI_Active()
 
 HRESULT CItemInfo::OnInit(void* pArg)
 {
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ToolTip>([this](const Evt_ToolTip& e)
-		{
-		if(e.locationState == LOCATIONSTATE::END)
-			UI_InActive();
-		this->UI_PanelActive(e.isHold, e.itemInst, e.locationState);
-		});
+
 
 	HRESULT hr = E_FAIL;
 	ITEMINFO_DESC* INFODesc = static_cast<ITEMINFO_DESC*>(pArg);

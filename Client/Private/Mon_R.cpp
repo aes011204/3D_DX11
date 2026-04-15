@@ -30,12 +30,19 @@ HRESULT CMon_R::Initialize(void* pArg)
 
 
 	m_AnimIndex = 1;
-	m_pModelCom->Set_Animation(m_AnimIndex, true);
-	m_State = STATE::IDLE;
+	m_pModelCom_One->Set_Animation(m_AnimIndex, true);
+	/*for(int i =0; i <11;i++)
+	{
+		m_pModelCom_Etc[i] ->Set_Animation(i, false);
+		
+	}*/
+	m_IndexETC = 4;
+	m_pModelCom_Etc->Set_Animation(m_IndexETC, true);
+	//m_State = STATE::IDLE;
 
 
-	m_pSocketMatrix_RightHand = m_pModelCom->Get_BoneMatrixPtr("r_botclaw_jnt");
-	m_pSocketMatrix_LefttHand= m_pModelCom->Get_BoneMatrixPtr("l_botclaw_jnt");
+	//m_pSocketMatrix_RightHand = m_pModelCom->Get_BoneMatrixPtr("r_botclaw_jnt");
+	//m_pSocketMatrix_LefttHand= m_pModelCom->Get_BoneMatrixPtr("l_botclaw_jnt");
 
 	return S_OK;
 }
@@ -46,32 +53,36 @@ void CMon_R::Priority_Update(_float fTimeDelta)
 
 void CMon_R::Update(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_pModelCom_One->Play_Animation(fTimeDelta);
 
 
-	if(m_pModelCom->Get_IsFinishAnim() == true)
-	{
-		int i = 0;
-	}
+	//for (int i = 0; i < 11; i++)
+	//{
+	//	m_pModelCom_Etc[i]->Play_Animation(fTimeDelta);
 
-	if(m_State == ATTACK && m_pModelCom->Get_IsFinishAnim()==true)
-	{
-		m_AnimIndex = 2;
-		m_pModelCom->Set_Animation(m_AnimIndex, false);
-		m_State = STATE::RELEASE;
-	}
-	else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
-	{
-		m_AnimIndex = 1;
-		m_pModelCom->Set_Animation(m_AnimIndex, true);
-		m_State = STATE::IDLE;
-	}
+	//}
+	
+	
+	m_pModelCom_Etc->Play_Animation(fTimeDelta);
+
+	//if(m_State == ATTACK && m_pModelCom->Get_IsFinishAnim()==true)
+	//{
+	//	m_AnimIndex = 2;
+	//	m_pModelCom->Set_Animation(m_AnimIndex, false);
+	//	m_State = STATE::RELEASE;
+	//}
+	//else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
+	//{
+	//	m_AnimIndex = 1;
+	//	m_pModelCom->Set_Animation(m_AnimIndex, true);
+	//	m_State = STATE::IDLE;
+	//}
 
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
 
-	m_Hand_Collider_1->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_RightHand)));
-	m_Hand_Collider_2->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_LefttHand)));
+	//m_Hand_Collider_1->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_RightHand)));
+	//m_Hand_Collider_2->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_LefttHand)));
 	
 }
 
@@ -85,30 +96,63 @@ HRESULT CMon_R::Render()
 
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
-
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
-
-	for(size_t i=0; i< iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		size_t iNumMesh = m_pModelCom_One->Get_NumMeshes();
 
-	if (FAILED(m_pShaderCom->Begin(0)))
-		return E_FAIL;
+		for (size_t i = 0; i < iNumMesh; i++)
+		{
+			m_pModelCom_One->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			m_pModelCom_One->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-	if (FAILED(m_pModelCom->Render(i)))
-		return E_FAIL;
+			if (FAILED(m_pShaderCom->Begin(0)))
+				return E_FAIL;
+
+			if (FAILED(m_pModelCom_One->Render(i)))
+				return E_FAIL;
+		}
 	}
+	//
+	{
+		//for (int j = 0; j < 11; j++)
+		//{
+		//	size_t iNumMesh = m_pModelCom_Etc[0]->Get_NumMeshes();
+		//
+		//	for (size_t i = 0; i < iNumMesh; i++)
+		//	{
+		//		m_pModelCom_Etc[j]->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		//		m_pModelCom_Etc[j]->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		//
+		//		if (FAILED(m_pShaderCom->Begin(0)))
+		//			return E_FAIL;
+		//
+		//		if (FAILED(m_pModelCom_Etc[j]->Render(i)))
+		//			return E_FAIL;
+		//	}
+		//}
 
 
+		size_t iNumMesh = m_pModelCom_Etc->Get_NumMeshes();
+		
+		for (size_t i = 0; i < iNumMesh; i++)
+		{
+			m_pModelCom_Etc->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			m_pModelCom_Etc->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+			if (FAILED(m_pShaderCom->Begin(0)))
+				return E_FAIL;
+
+			if (FAILED(m_pModelCom_Etc->Render(i)))
+				return E_FAIL;
+		}
+	}
 
 #ifdef _DEBUG
 	if (m_pGameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
 	m_pColliderCom->Render();
 
-	m_Hand_Collider_1->Render();
-	m_Hand_Collider_2->Render();
+	//m_Hand_Collider_1->Render();
+	//m_Hand_Collider_2->Render();
 
 #endif
 
@@ -120,23 +164,23 @@ HRESULT CMon_R::Render()
 
 void CMon_R::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-	if(m_State != STATE::ATTACK &&  self == m_pColliderCom)
-	{
-	m_AnimIndex = 0;
+	//if(m_State != STATE::ATTACK &&  self == m_pColliderCom)
+	//{
+	//m_AnimIndex = 0;
 
-	m_pModelCom->Set_Animation(m_AnimIndex, false);
-	m_State = ATTACK;
-	
-	}
+	//m_pModelCom->Set_Animation(m_AnimIndex, false);
+	//m_State = ATTACK;
+	//
+	//}
 
-	if(m_State == ATTACK)
-	{
-		if (self == m_Hand_Collider_2 || self == m_Hand_Collider_1)
-		{
-			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage();
-		
-		}
-	}
+	//if(m_State == ATTACK)
+	//{
+	//	/*if (self == m_Hand_Collider_2 || self == m_Hand_Collider_1)
+	//	{
+	//		dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage();
+	//	
+	//	}*/
+	//}
 
 
 
@@ -158,13 +202,38 @@ void CMon_R::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> oth
 
 void CMon_R::OnGui()
 {
+	ImGui::SliderInt("ETC Anim Index", (_int*)&m_IndexETC, 0, 10);
+
+	// 버튼으로도 테스트
+	if (ImGui::Button("Prev"))
+	{
+		if (m_IndexETC > 0)
+			m_IndexETC--;
+		m_pModelCom_Etc->Set_Animation(m_IndexETC, true);
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Next"))
+	{
+		if (m_IndexETC < 10)
+			m_IndexETC++;
+		m_pModelCom_Etc->Set_Animation(m_IndexETC, true);
+	}
+
+	// 현재 값 출력
+	ImGui::Text("Current Index: %d", m_IndexETC);
+
+	
+
+
 }
 
 void CMon_R::RebindCom()
 {
 
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	//m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+	//m_pModelCom = Get_Component<CModel>(L"Com_Model");
 
 }
 
@@ -207,10 +276,18 @@ HRESULT CMon_R::Ready_Components()
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_One"), TEXT("Com_Model_One"), &m_pModelCom_One, nullptr)))
 		return E_FAIL;
 
+	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함
+	//for (int i = 0; i < 11; i++)
+	//{
 
+	//	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"), TEXT("Com_Model_Etc"), &m_pModelCom_Etc[i], nullptr)))
+	//		return E_FAIL;
+	//}
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"), TEXT("Com_Model_Etc"), &m_pModelCom_Etc, nullptr)))
+		return E_FAIL;
 	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
 	OBBDesc.vExtents = _float3(2.f, 1.f, 2.f);
 	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
@@ -223,25 +300,25 @@ HRESULT CMon_R::Ready_Components()
 
 	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc{};
 	
-	SPhereDesc.fRadius = 2.f;
-	SPhereDesc.vCenter = _float3(0.f, 2.f,0.f);
-	SPhereDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Hand_Collider_1"), &m_Hand_Collider_1 , &SPhereDesc)))
-		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Hand_Collider_1);
+	//SPhereDesc.fRadius = 2.f;
+	//SPhereDesc.vCenter = _float3(0.f, 2.f,0.f);
+	//SPhereDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
+	//SPhereDesc.OtherMask = COLLISION_LAYER::PLAYER;
+	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
+	//	TEXT("Com_Hand_Collider_1"), &m_Hand_Collider_1 , &SPhereDesc)))
+	//	return E_FAIL;
+	//m_pGameInstance.lock()->Add_Collider(m_Hand_Collider_1);
 
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc1{};
-	SPhereDesc1.fRadius = 2.f;
-	SPhereDesc1.vCenter = _float3(0.f, -2.f, 0.f);
-	SPhereDesc1.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc1.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Hand_Collider_2"), &m_Hand_Collider_2, &SPhereDesc1)))
-		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Hand_Collider_2);
+	//CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc1{};
+	//SPhereDesc1.fRadius = 2.f;
+	//SPhereDesc1.vCenter = _float3(0.f, -2.f, 0.f);
+	//SPhereDesc1.MyLayer = COLLISION_LAYER::MONSTERATT;
+	//SPhereDesc1.OtherMask = COLLISION_LAYER::PLAYER;
+	//if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
+	//	TEXT("Com_Hand_Collider_2"), &m_Hand_Collider_2, &SPhereDesc1)))
+	//	return E_FAIL;
+	//m_pGameInstance.lock()->Add_Collider(m_Hand_Collider_2);
 
 
 

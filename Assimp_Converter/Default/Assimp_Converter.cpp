@@ -1,5 +1,4 @@
-﻿
-#include "Converter_Define.h"
+﻿#include  "Converter_Define.h"
 #include "Converter_function.h"
 
 bool Convert_Binary(string fbxPath, string exportPath);
@@ -24,7 +23,7 @@ int main()
 	bool result = { false };
 	for (const auto& entry : filesystem::recursive_directory_iterator(pInputFilePath))
 	{
-		
+
 		if (filesystem::is_regular_file(entry.path()))
 		{
 			if (entry.path().extension() == ".fbx" || entry.path().extension() == ".FBX")
@@ -230,7 +229,7 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 		OutFile.write((char*)g_vecVertices.data(), sizeof(Cvt_VTXMESH) * meshInfo.iNumVertices);
 
 
-	
+
 
 
 
@@ -320,7 +319,7 @@ bool Write_Channel(const aiNodeAnim* pAIChannel, ofstream& OutFile)
 		float qRotation[4] = {};
 		float vTranslation[3] = {};
 
-		for (size_t i = 0;i < channelDesc.iNumKeyframes;i++)
+		for (size_t i = 0; i < channelDesc.iNumKeyframes; i++)
 		{
 			Cvt_Keyframe KeyFrame = {};
 			if (pAIChannel->mNumScalingKeys > i)
@@ -361,7 +360,7 @@ bool Write_Animation(const aiScene* AIScene, ofstream& OutFile)
 		aiAnimation* pAIAnimation = AIScene->mAnimations[i];
 
 		Cvt_Animation animationDesc = {};
-		strncpy_s(animationDesc.szName,pAIAnimation->mName.C_Str(),MAX_PATH);
+		strncpy_s(animationDesc.szName, pAIAnimation->mName.C_Str(), MAX_PATH);
 		//memcpy(&animationDesc.szName, &pAIAnimation->mName, sizeof(MAX_PATH));
 		animationDesc.dDuration = pAIAnimation->mDuration;
 		animationDesc.dTickPerSecond = pAIAnimation->mTicksPerSecond;
@@ -371,7 +370,7 @@ bool Write_Animation(const aiScene* AIScene, ofstream& OutFile)
 		OutFile.write((char*)&animationDesc, sizeof(Cvt_Animation));
 
 
-		for (size_t i = 0;i < animationDesc.iNumChannels;i++)
+		for (size_t i = 0; i < animationDesc.iNumChannels; i++)
 		{
 
 			Write_Channel(pAIAnimation->mChannels[i], OutFile);
@@ -560,7 +559,7 @@ bool Convert_Binary(string fbxPath, string exportPath)
 	{
 		return false;
 	}
-	if (bIsAnim&&false == Write_Animation(AIScene, OutFile))
+	if (bIsAnim && false == Write_Animation(AIScene, OutFile))
 	{
 		return false;
 	}

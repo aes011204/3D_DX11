@@ -76,6 +76,14 @@ HRESULT CInventory::Initialize(void* pArg)
 
 	inst2.BaseXY = { 2,0 };
 	AddItem(inst2, 2, 0);
+
+
+	Equip_Inst instEquip = {};
+	Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
+	AddItem(inst3, 1, 3);
+
+	Item_Inst inst4 = Create_ItemInstance(2003, instEquip, 1);
+	AddItem(inst4, 5, 3);
 	return S_OK;
 }
 Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, variant<monostate, Fish_Inst, Equip_Inst>  TypeDefInst, int rot)

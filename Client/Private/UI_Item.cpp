@@ -30,6 +30,7 @@ void CUI_Item::HoldItem(Item_Inst HoldItemInst)
 		static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(false);
 	
 }
+
 void CUI_Item::ReleaseItem()
 {
 	m_bIsHold = false;

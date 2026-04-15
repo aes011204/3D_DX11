@@ -82,18 +82,21 @@ VS_OUT VS_MAIN(VS_IN In)
     g_BoneMatrices[In.vBlendIndex.w] * fWeightW;
 
     vector vPosition = mul(float4(In.vPosition, 1.f), BoneMatrix);
-    vector vNormal = mul(float4(In.vNormal, 1.f), BoneMatrix);
+    vector vNormal = mul(float4(In.vNormal, 0.f), BoneMatrix);
 
 
 
 
     matWV = mul(g_WorldMatrix, g_ViewMatrix);
     matWVP = mul(matWV, g_ProjMatrix);
-    
+
     Out.vPosition = mul(vPosition, matWVP);
-    Out.vNormal = normalize(mul(float4(vNormal), g_WorldMatrix)); //받아온 노말은 지역이라 월드좌표로 차원맞춰줘야함. 노말라이즈는 픽셀 쉐이더 에서 하는것보다 여기서 하는게 성능상 이점
+    Out.vNormal = normalize(mul(vNormal, g_WorldMatrix));
+     //받아온 노말은 지역이라 월드좌표로 차원맞춰줘야함. 노말라이즈는 픽셀 쉐이더 에서 하는것보다 여기서 하는게 성능상 이점
+    
     Out.vTexcoord = In.vTexcoord;
-    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix); // 나중 계산을 위해 z 나누기, 뷰,투영 없는 거 저장 
+    Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
+    // 나중 계산을 위해 z 나누기, 뷰,투영 없는 거 저장 
     
     
     return Out;

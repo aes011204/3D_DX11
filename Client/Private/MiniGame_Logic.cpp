@@ -23,6 +23,17 @@ CMiniGame_Logic::CMiniGame_Logic(const CMiniGame_Logic& prototype)
 {
 }
 
+HRESULT CMiniGame_Logic::Initialize_Prototype()
+{
+	return S_OK;
+}
+
+HRESULT CMiniGame_Logic::Render(_uint iMeshIndex)
+{
+	return S_OK;
+
+}
+
 HRESULT CMiniGame_Logic::Initialize(void* pArg)
 {
 
@@ -32,8 +43,9 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 	m_DefID = pDesc->DefID;
 	m_RodSpeed = pDesc->RodSpeed;
 	m_zoneCount = pDesc->zoneCount;
+	m_InitZoonSize = pDesc->zoneSize;
 	m_zoneSize = m_pGameInstance.lock()->Random(pDesc->zoneSize.x, pDesc->zoneSize.y);
-	m_FishCount = pDesc ->FishCount;
+	m_FishCount = pDesc ->FishCount;                                                                                                                                                                                          
 
 
 	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
@@ -42,7 +54,7 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 	//	}
 	//);
 
-
+	m_InvenCtrl = pDesc->pInvenCtrl;
 
 	m_Speed = 100.f;
 
@@ -172,6 +184,9 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
 		m_FishCount--;
+
+		ResetZoon();
+
 	}
 
 
@@ -190,13 +205,34 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 	
 }
 
+void CMiniGame_Logic::ResetZoon()
+{
+	m_zoneSize = m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
+
+	float divide = 1.f / m_zoneCount;
+
+	for (int i = 0; i < m_zoneCount; i++)
+	{
+		float divideStart = i * divide;
+		float divideEnd = divideStart + divide;
+
+		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
+
+		// 구간 안에서만 생성되게 제한
+		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
+		float end = start + m_zoneSize;
+
+		m_zones[i].start = start;
+		m_zones[i].end = end;
+	}
+}
 
 
-shared_ptr<CMiniGame_Logic> CMiniGame_Logic::Create()
+shared_ptr<CMiniGame_Logic> CMiniGame_Logic::Create(void* pArg)
 {
 	shared_ptr<CMiniGame_Logic> pInstance(new CMiniGame_Logic(), [](CMiniGame_Logic* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(pInstance->Initialize(pArg)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 

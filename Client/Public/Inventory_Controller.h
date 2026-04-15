@@ -53,6 +53,9 @@ private:
     _uint m_PrevSlotX, m_PrevSlotY = {};
     _bool m_bIsOnSlot = { false };
 
+
+    _bool m_bPrevOnSlot = { false };
+
     // 상점 등등을 위한 인밴 데이터도 필요함
     class weak_ptr<class CInventory> m_PlayerInven = {}; // 로직
    // class shared_ptr<class CUI_Inventory> m_UIInven = { nullptr }; // UI

@@ -31,7 +31,7 @@ public:
 
     shared_ptr<CUI> Get_LoadingUI() { return m_Loading; };
 
-    void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl);
+   // void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl);
 
     void End_StateUI();
 private:

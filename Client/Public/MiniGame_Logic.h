@@ -22,6 +22,9 @@ public:
 		_uint DefID = {};
 		float RodSpeed = {};
 		_uint FishCount = {};
+
+		weak_ptr<class CInventory_Controller> pInvenCtrl;
+
 	};
 protected:
 	CMiniGame_Logic();
@@ -36,14 +39,10 @@ public:
 	virtual HRESULT Render(_uint iMeshIndex);
 	virtual void Update(const _float& timeDelta);
 
-	void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl) {
-		m_InvenCtrl = invenCtrl
-			;
-	}
+	void ResetZoon();
 
 
-
-
+	_uint GetFishCount() const{return m_FishCount;}
 	float GetProgress01() const { return m_prograssBar01; }
 
 	float GetAngle() const { return m_Angle; }
@@ -56,17 +55,19 @@ public:
 	bool IsStart() const { return m_bStart; }
 	bool IsFinish() const { return m_bFin; }
 
-
+	_uint Get_DefID() { return m_DefID; };
 
 public:
 	Zone m_zones[8];
-	float m_zoneCount;
+	int m_zoneCount;
 	float m_AccTime = { 0 };
 	float m_Angle = { 0 };
 	float m_Speed = {};
 	_bool m_bStart = { false };
 
 	float m_zoneSize = {};
+
+	_float2 m_InitZoonSize = {};
 
 	///
 	bool m_changeColor = { false };
@@ -89,7 +90,7 @@ private:
 	//
 	weak_ptr<class CInventory_Controller> m_InvenCtrl = {};
 public:
-	static shared_ptr<CMiniGame_Logic> Create();
+	static shared_ptr<CMiniGame_Logic> Create(void* pArg);
 	void Free() override;
 };
 

@@ -11,6 +11,8 @@ namespace Engine
 
 namespace Client
 {
+	class CMiniGame_Logic;
+	class CFish;
 	enum class LOCATIONSTATE;
 
 	// 아이템 관련 
@@ -266,7 +268,7 @@ namespace Client
         Test1,
     };
 
-    enum class INVENTYPE {PLAYER, CHEST, SHOP, END};
+    enum class INVENTYPE { PLAYER, CHEST, SHOP, END };
 
 
     struct Evt_InvenPlayerInit_Data
@@ -288,10 +290,10 @@ namespace Client
     //    _uint Light = {};
     //    SEA_MASK SeaMask = {};
     //};
-    
+
     struct Evt_AddMoney
     {
-        _float money={};
+        _float money = {};
     };
 
     struct Evt_GetFish
@@ -300,20 +302,20 @@ namespace Client
         Fish_Inst fishInst = {};
     };
 
-    struct Evt_ToolTip
+    struct Evt_ItemHovered
     {
         _bool isHold = {};
         Item_Inst itemInst = {};
         LOCATIONSTATE locationState = {};
     };
 
-    enum class HUD { SKILL, COMPASS , TOP, BOAT, ETC, END };
+    enum class HUD { SKILL, COMPASS, TOP, BOAT, ETC, END };
 
-    enum class NPC {MAYOR, SHIPWRIGHT, FISHMONGER, TRADER, END};
+    enum class NPC { MAYOR, SHIPWRIGHT, FISHMONGER, TRADER, END };
 
     enum class LOCATIONSTATE { REPAIR_SHOP, SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP, VILLAGE, END };
 
-	enum class E_PLAYERSTATE {REPAIR_SHOP, FISH_SHOP, FISHING, SEA, STORAGE , VILLAGE ,END };
+    enum class E_PLAYERSTATE { REPAIR_SHOP, FISH_SHOP, FISHING, SEA, STORAGE, VILLAGE, END };
 
 
     struct Wave_Desc
@@ -346,7 +348,7 @@ namespace Client
         function<void()> OnComplete = nullptr;
     };
 
-   
+
     struct CAM_LERP_DESC : public CAM_DESC
     {
         CAM_LERP_DESC() = default;
@@ -360,22 +362,22 @@ namespace Client
         weak_ptr<Engine::CGameObject> m_Target = {};
     };
 
-    
+
     struct CAM_FOLLOW_DESC : public CAM_DESC
     {
         CAM_FOLLOW_DESC() = default;
 
-        _float fDistance;      
+        _float fDistance;
         _float fPitch;
         _float fYaw;
         _float3 vCurrentPos;
     };
 
-   
+
     struct CAM_SHAKE_DESC : public CAM_DESC
     {
-        _float fIntensity;   
-        _float fDuration;    
+        _float fIntensity;
+        _float fDuration;
     };
 
 
@@ -425,18 +427,26 @@ namespace Client
         E_PLAYERSTATE playerstate = {};
     };
 
-    
-        struct Evt_FishingData
+
+    struct Evt_FishingData
     {
         int Fish_ID;
+        weak_ptr<CFish> Fish ={};
+        _float RodSpeed = {};
     };
 
 
-        struct Evt_MiniGame
-        {
-            _bool IsOnZoon = {};
+    struct Evt_MiniGame
+    {
+        _bool IsOnZoon = {};
 
 
-        };
+    };
+
+    struct Evt_BindMiniGameLogic
+    {
+        shared_ptr<CMiniGame_Logic> logic;
+    };
+
 
 }

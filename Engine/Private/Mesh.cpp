@@ -109,12 +109,18 @@ HRESULT CMesh::Initialize(void* pArg)
 HRESULT CMesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* pConstantName,
 	const vector<shared_ptr<CBone>>& bones)
 {
-	ZeroMemory(m_BoneMatrices, sizeof(_float4x4) * 512);
-
+	//ZeroMemory(m_BoneMatrices, sizeof(_float4x4) * 512);
+	for (int i = 0; i < 512; i++)
+	{
+		XMStoreFloat4x4(&m_BoneMatrices[i], XMMatrixIdentity());
+	}
 	for(size_t i =0; i<m_iNumBones; i++)
 	{
 		XMStoreFloat4x4(&m_BoneMatrices[i], XMLoadFloat4x4(&m_OffsetMatrices[i] )*
 			XMLoadFloat4x4(bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrixPtr()));
+		//XMStoreFloat4x4(&m_BoneMatrices[i],
+		//	XMLoadFloat4x4(bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrixPtr()) *
+		//	XMLoadFloat4x4(&m_OffsetMatrices[i]));
 	}
 	
 		return shader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);

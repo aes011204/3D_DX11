@@ -29,13 +29,13 @@ HRESULT CMon_MonkFish::Initialize(void* pArg)
 		return E_FAIL;
 
 
-	m_AnimIndex = 1;
-	m_pModelCom->Set_Animation(m_AnimIndex, true);
+	m_AnimIndex = 0;
+	m_pModelCom_Mon->Set_Animation(m_AnimIndex, true);
+
+
 	m_State = STATE::IDLE;
 
 
-	m_pSocketMatrix_RightHand = m_pModelCom->Get_BoneMatrixPtr("r_botclaw_jnt");
-	m_pSocketMatrix_LefttHand= m_pModelCom->Get_BoneMatrixPtr("l_botclaw_jnt");
 
 	return S_OK;
 }
@@ -46,32 +46,29 @@ void CMon_MonkFish::Priority_Update(_float fTimeDelta)
 
 void CMon_MonkFish::Update(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	//m_pModelCom_Mon->Play_Animation(fTimeDelta);
 
 
-	if(m_pModelCom->Get_IsFinishAnim() == true)
-	{
-		int i = 0;
-	}
+	//if(m_pModelCom_Mon->Get_IsFinishAnim() == true)
+	//{
+	//	int i = 0;
+	//}
 
-	if(m_State == ATTACK && m_pModelCom->Get_IsFinishAnim()==true)
-	{
-		m_AnimIndex = 2;
-		m_pModelCom->Set_Animation(m_AnimIndex, false);
-		m_State = STATE::RELEASE;
-	}
-	else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
-	{
-		m_AnimIndex = 1;
-		m_pModelCom->Set_Animation(m_AnimIndex, true);
-		m_State = STATE::IDLE;
-	}
+	//if(m_State == ATTACK && m_pModelCom_Mon->Get_IsFinishAnim()==true)
+	//{
+	//	m_AnimIndex = 2;
+	//	m_pModelCom_Mon->Set_Animation(m_AnimIndex, false);
+	//	m_State = STATE::RELEASE;
+	//}
+	//else if(m_State == RELEASE && m_pModelCom_Mon->Get_IsFinishAnim() == true)
+	//{
+	//	m_AnimIndex = 1;
+	//	m_pModelCom_Mon->Set_Animation(m_AnimIndex, true);
+	//	m_State = STATE::IDLE;
+	//}
 
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
-
-	m_Hand_Collider_1->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_RightHand)));
-	m_Hand_Collider_2->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_LefttHand)));
 	
 }
 
@@ -82,33 +79,47 @@ void CMon_MonkFish::Late_Update(_float fTimeDelta)
 
 HRESULT CMon_MonkFish::Render()
 {
-
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
-
+	size_t iNumMesh = m_pModelCom_Mon->Get_NumMeshes();
+	
 	for(size_t i=0; i< iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-
+	
+		m_pModelCom_Mon->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_pModelCom_Mon->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+	
 	if (FAILED(m_pShaderCom->Begin(0)))
 		return E_FAIL;
-
-	if (FAILED(m_pModelCom->Render(i)))
+	
+	if (FAILED(m_pModelCom_Mon->Render(i)))
 		return E_FAIL;
+
 	}
-
-
-
+	
+	
+	//size_t iNumMesh = m_pModelCom_Boat->Get_NumMeshes();
+	//
+	//for (size_t j = 0; j < iNumMesh; j++)
+	//{
+	//if (FAILED(Bind_ShaderResources_Mesh()))
+	//	return E_FAIL;
+	//	m_pModelCom_Boat->Bind_Material(m_pShaderCom_Mesh, "g_DiffuseTexture", j, TextureType_DIFFUSE, 0);
+	//	//m_pModelCom_Mon->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+	//
+	//	if (FAILED(m_pShaderCom_Mesh->Begin(0)))
+	//		return E_FAIL;
+	//
+	//	if (FAILED(m_pModelCom_Boat->Render(j)))
+	//		return E_FAIL;
+	//}
+	
 #ifdef _DEBUG
 	if (m_pGameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
 	m_pColliderCom->Render();
 
-	m_Hand_Collider_1->Render();
-	m_Hand_Collider_2->Render();
 
 #endif
 
@@ -120,23 +131,23 @@ HRESULT CMon_MonkFish::Render()
 
 void CMon_MonkFish::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-	if(m_State != STATE::ATTACK &&  self == m_pColliderCom)
+	/*if(m_State != STATE::ATTACK &&  self == m_pColliderCom)
 	{
 	m_AnimIndex = 0;
 
-	m_pModelCom->Set_Animation(m_AnimIndex, false);
+	m_pModelCom_Mon->Set_Animation(m_AnimIndex, false);
 	m_State = ATTACK;
 	
-	}
+	}*/
 
-	if(m_State == ATTACK)
-	{
-		if (self == m_Hand_Collider_2 || self == m_Hand_Collider_1)
-		{
-			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage();
-		
-		}
-	}
+	//if(m_State == ATTACK)
+	//{
+	//	if (self == m_Hand_Collider_2 || self == m_Hand_Collider_1)
+	//	{
+	//		dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage();
+	//	
+	//	}
+	//}
 
 
 
@@ -163,8 +174,8 @@ void CMon_MonkFish::OnGui()
 void CMon_MonkFish::RebindCom()
 {
 
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	/*m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_pModelCom = Get_Component<CModel>(L"Com_Model");*/
 
 }
 
@@ -200,15 +211,53 @@ HRESULT CMon_MonkFish::Bind_ShaderResources()
 	return S_OK;
 }
 
+HRESULT CMon_MonkFish::Bind_ShaderResources_Mesh()
+{
+	/*if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom_Mesh, "g_WorldMatrix")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom_Mesh, "g_ViewMatrix")))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom_Mesh, "g_ProjMatrix")))
+		return E_FAIL;
+
+
+
+	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom_Mesh, "g_vCamPosition")))
+		return E_FAIL;
+
+	const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
+	if (nullptr == pLightDesc)
+		return E_FAIL;
+
+	if (FAILED(m_pShaderCom_Mesh->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom_Mesh->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom_Mesh->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom_Mesh->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
+		return E_FAIL;*/
+
+	return S_OK;
+}
+
 HRESULT CMon_MonkFish::Ready_Components()
 {
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
+
+	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader_Mesh"), &m_pShaderCom_Mesh, nullptr)))
+	//	return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Marrow_Mon"), TEXT("Com_Model_Mon"), &m_pModelCom_Mon, nullptr)))
 		return E_FAIL;
+
+	//if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Marrow_Boat"), TEXT("Com_Model_Boat"), &m_pModelCom_Boat, nullptr)))
+	//	return E_FAIL;
 
 
 	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
@@ -221,29 +270,7 @@ HRESULT CMon_MonkFish::Ready_Components()
 		return E_FAIL;
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc{};
 	
-	SPhereDesc.fRadius = 2.f;
-	SPhereDesc.vCenter = _float3(0.f, 2.f,0.f);
-	SPhereDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Hand_Collider_1"), &m_Hand_Collider_1 , &SPhereDesc)))
-		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Hand_Collider_1);
-
-
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc1{};
-	SPhereDesc1.fRadius = 2.f;
-	SPhereDesc1.vCenter = _float3(0.f, -2.f, 0.f);
-	SPhereDesc1.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc1.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Hand_Collider_2"), &m_Hand_Collider_2, &SPhereDesc1)))
-		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Hand_Collider_2);
-
-
 
 	return S_OK;
 }

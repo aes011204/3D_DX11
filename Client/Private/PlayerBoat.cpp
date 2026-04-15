@@ -74,7 +74,7 @@ void CPlayerBoat::Update(_float fTimeDelta)
 
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 	//Å×½ºÆ®
-	if (dinput->KeyPress(DIK_P))
+	if (dinput->KeyPress(DIK_0))
 	{
 		Add_Money(m_Money++);
 	}
@@ -237,7 +237,7 @@ HRESULT CPlayerBoat::Ready_PartObjects()
 	return S_OK;
 }
 
-void CPlayerBoat::Add_Money(_int money)
+void CPlayerBoat::Add_Money(_float money)
 {
 	{
 		m_Money += money;
@@ -256,7 +256,7 @@ int i = {};
 
 	Evt_ShipStat e = {};
 	e.EngineSpeed = m_BoatSpeed = boatSpeed;
-	e.FishingSpeed = m_FishingSpeed = fishingSpeed;
+	e.FishingSpeed = m_RodSpeed = fishingSpeed;
 	e.LightIntensity = m_Light = light;
 	e.SeaMask = m_SeaMask = seaMask;
 
