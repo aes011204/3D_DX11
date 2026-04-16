@@ -17,6 +17,7 @@
 #include "Fish.h"
 #include "Mon_MonkFish.h"
 #include "Mon_R.h"
+#include "Mon_R_Act.h"
 #include "Mon_Tentacle.h"
 #include "VIBuffer_Sea.h"
 #include "VIBuffer_Particle_Point.h"
@@ -291,9 +292,9 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
 	}
-	/* Prototype_Component_Model_R */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R"),
+	/* Prototype_Component_Model_R_Act */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(45.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R/R.dat", MODEL::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
@@ -309,7 +310,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_R_Act_Etc */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f)) * XMMatrixTranslation(0.f, 10.f, 0.f);
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f)) * XMMatrixTranslation(0.f, 15.f, 0.f);
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R_Act/Rffffffff_Act_Fix.dat", MODEL::ANIM, PreLocalTransformMatrix))))
 	{
@@ -320,7 +321,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	/* Prototype_Component_Model_Marrow_Mon */
- 	PreLocalTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+ 	PreLocalTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f) *XMMatrixRotationZ(XMConvertToRadians(180.f))*XMMatrixRotationX(XMConvertToRadians(-90.f)) *XMMatrixRotationY(XMConvertToRadians(-30.f)) ;
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Marrow_Mon"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Marrow_Mon/Marrow_Mon_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
 	{
@@ -488,6 +489,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
+	/* Prototype_GameObject_R_Act */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
+		CMon_R_Act::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
 
 	/* Prototype_GameObject_Tentacle */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),

@@ -219,11 +219,29 @@ HRESULT CModel::Ready_Animations(ifstream& InFile)
 
 HRESULT CModel::Play_Animation(_float fTimeDelta)
 {
-
-
-	// 현제 애니메이션에 맞는 상태대로 뼈의 Transformation을 갱신해준다
 	m_isFinish = { false };
+	//if (m_IsBlending == true)
+	//{
+	//	m_fBlendElapsed += fTimeDelta;
+	//	_float ratio = m_fBlendElapsed / m_fBlendTime;
+	//	
+	//	if (ratio >= 1.f)
+	//	{
+	//		m_IsBlending = false;
+	//		m_iCurrentAnimIndex = m_BlendIndex;
+	//		m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_Bones, true);
+	//	}
+	//	else
+	//	{
+	//		m_isFinish = m_Animations[m_iCurrentAnimIndex]->Blend_TransformationMatrices(fTimeDelta, m_Animations[m_BlendIndex], ratio, m_Bones, m_isAnimLoop, m_BlendIsLoop);
+	//	}
+	//}
+	//else
+	{
 	m_isFinish = m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_Bones, m_isAnimLoop);
+		
+	}
+	// 현제 애니메이션에 맞는 상태대로 뼈의 Transformation을 갱신해준다
 
 
 	// 모든뼈를 순회하면 CombinedTransformation을 셋팅 해준다
@@ -233,17 +251,22 @@ HRESULT CModel::Play_Animation(_float fTimeDelta)
 		pBone->Update_CombinedTransformMatrix(m_Bones, XMLoadFloat4x4(&m_PreLocalTransformMatrix));
 	}
 
-	if(m_isFinish == true)
-	{
-		int i = 0;
-	}
-
 	return S_OK;
 }
 
 void CModel::Set_Animation(_uint iIndex, _bool isLoop)
 {
+
+	//if (m_iCurrentAnimIndex != iIndex)
+	//{
+	//	m_IsBlending = true;
+	//	m_fBlendElapsed = 0.f;
+	//	m_BlendIndex = iIndex;
+	//	m_BlendIsLoop = isLoop;
+	//}
+
 	m_iCurrentAnimIndex = iIndex;
+
 	m_isAnimLoop = isLoop;
 	if(m_isAnimLoop==false)
 	m_Animations[m_iCurrentAnimIndex]->ReStart();

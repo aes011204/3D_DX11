@@ -66,7 +66,12 @@ private:
 
 	_bool m_isAnimLoop = { false };
 	_uint m_iCurrentAnimIndex = {};
+	_uint m_BlendIndex = {};
 	_uint m_iNumAnimations = {};
+	_bool m_IsBlending = {};
+	_float m_fBlendTime = {1.f};
+	_float m_fBlendElapsed = {};
+	_bool m_BlendIsLoop = {};
 	vector<shared_ptr<class CAnimation>> m_Animations;
 
 

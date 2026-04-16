@@ -13,7 +13,8 @@ public:
 public:
 	HRESULT Initialize(ifstream& InFile);
 	void Update_TransformationMatrix(_uint* pCurrentKeyFrameIndex, _float fCurrentTrackPosition, const vector<shared_ptr<class CBone>>& Bones);
-
+	void Update_ToMatrix(_uint* pCurrentKeyFrameIndex, _float fCurrentTrackPosition, vector<_matrix>& OutMatrices);
+	int Get_BoneIndex() const { return m_iBoneIndex; }
 private:
 	vector<KEYFRAME> m_KeyFrames;
 	_uint m_iNumKeyFrames = {};

@@ -131,15 +131,31 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		//}
 
 	}
-
-
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_O))
+	{
+		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
+			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
+			return ;
+	}
 	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_P))
 	{
 		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_I))
+	{
+		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
+			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
+			return ;
+	}
 
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_U))
+	{
+		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
+			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
+			return;
+	}
 	// �ϴ� ���� �ΰ� ���߿� �������� UIHander, UIController �� �̵�
 	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) // �ϴ� Ű�� ������ ��
 	//{
@@ -286,17 +302,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
 		return E_FAIL;
 
 
-		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
-			ETOI(LEVEL::GAMEPLAY), strLayerTag)))
-			return E_FAIL;
-	
-		//if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
-		//	ETOI(LEVEL::GAMEPLAY), strLayerTag)))
-		//	return E_FAIL;
 
-		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
-			ETOI(LEVEL::GAMEPLAY), strLayerTag)))
-			return E_FAIL;
+
 
 
 	return S_OK;

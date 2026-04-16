@@ -3,6 +3,8 @@
 
 
 NS_BEGIN(Engine)
+class CBone;
+
 class CAnimation :
     public CBase
 {
@@ -17,6 +19,8 @@ public:
     //HRESULT Initialize(const aiAnimation* pAIAnimation, class CModel* pModel);
 
     _bool Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<class CBone>>& Bones, _bool isLoop);
+    _bool Blend_TransformationMatrices(_float timeDelta, const shared_ptr<CAnimation>& nextAnim, _float blendRatio, const vector<shared_ptr<CBone>>& bones, _bool isCurLoop, _bool isNextLoop/*, int32 rootNodeIndex = -1*/);
+    void Update_ToBuffer(_float fTimeDelta, vector<_matrix>& OutMatrices, _bool isLoop, _uint boneCount);
 
     void ReStart() { m_fCurrentTrackPosition = 0.f;
     	for (auto& iIndex : m_CurrentKeyFrameIndices)

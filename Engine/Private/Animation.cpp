@@ -1,5 +1,6 @@
 #include "Animation.h"
 #include "Channel.h"
+#include "Bone.h"
 
 CAnimation::CAnimation()
 {
@@ -66,6 +67,100 @@ _bool CAnimation::Update_TransformationMatrices(_float fTimeDelta, const vector<
 	return false;
 }
 
+_bool CAnimation::Blend_TransformationMatrices(_float timeDelta, const shared_ptr<CAnimation>& nextAnim,
+	_float blendRatio, const vector<shared_ptr<CBone>>& bones, _bool isCurLoop, _bool isNextLoop)
+{
+	vector<_matrix> poseA;
+	vector<_matrix> poseB;
+	// A
+	auto backupA = m_CurrentKeyFrameIndices;
+	float backupTimeA = m_fCurrentTrackPosition;
+
+	Update_ToBuffer(timeDelta, poseA, isCurLoop, bones.size());
+
+	m_CurrentKeyFrameIndices = backupA;
+	m_fCurrentTrackPosition = backupTimeA;
+
+	// B 
+	auto backupB = nextAnim->m_CurrentKeyFrameIndices;
+	float backupTimeB = nextAnim->m_fCurrentTrackPosition;
+
+	nextAnim->Update_ToBuffer(timeDelta, poseB, isNextLoop, bones.size());
+
+	nextAnim->m_CurrentKeyFrameIndices = backupB;
+	nextAnim->m_fCurrentTrackPosition = backupTimeB;
+	for (int boneIndex = 0; boneIndex < bones.size(); ++boneIndex)
+	{
+		_vector sA, rA, tA;
+		_vector sB, rB, tB;
+
+		bool validA = XMMatrixDecompose(&sA, &rA, &tA, poseA[boneIndex]);
+		bool validB = XMMatrixDecompose(&sB, &rB, &tB, poseB[boneIndex]);
+
+		if (!validA && !validB)
+			continue;
+
+		if (!validA)
+		{
+			bones[boneIndex]->Update_TransformationMatrix(poseB[boneIndex]);
+			continue;
+		}
+
+		if (!validB)
+		{
+			bones[boneIndex]->Update_TransformationMatrix(poseA[boneIndex]);
+			continue;
+		}
+
+		_vector scale = XMVectorLerp(sA, sB, blendRatio);
+		_vector rot = XMQuaternionNormalize(XMQuaternionSlerp(rA, rB, blendRatio));
+		_vector pos = XMVectorLerp(tA, tB, blendRatio);
+
+		_matrix mat = XMMatrixAffineTransformation(scale, XMVectorZero(), rot, pos);
+
+		bones[boneIndex]->Update_TransformationMatrix(mat);
+	}
+	return true;
+}
+void CAnimation::Update_ToBuffer(
+	_float fTimeDelta,
+	vector<_matrix>& OutMatrices,
+	_bool isLoop ,_uint boneCount)
+{
+	
+	OutMatrices.resize(boneCount);
+
+	for (auto& mat : OutMatrices)
+		mat = XMMatrixIdentity();
+
+	// 시간 업데이트
+	m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
+
+	if (m_fCurrentTrackPosition >= m_fDuration)
+	{
+		if (!isLoop)
+		{
+			for (size_t i = 0; i < m_iNumChannels; i++)
+			{
+				m_Channels[i]->Update_ToMatrix(
+					&m_CurrentKeyFrameIndices[i],
+					m_fCurrentTrackPosition,
+					OutMatrices);
+			}
+			return;
+		}
+
+		m_fCurrentTrackPosition = 0.f;
+	}
+
+	for (size_t i = 0; i < m_iNumChannels; i++)
+	{
+		m_Channels[i]->Update_ToMatrix(
+			&m_CurrentKeyFrameIndices[i],
+			m_fCurrentTrackPosition,
+			OutMatrices);
+	}
+}
 shared_ptr<CAnimation> CAnimation::Create(ifstream& InFile)
 {
 	shared_ptr<CAnimation> pInstance(new CAnimation(), [](CAnimation* p) {p->Free(); delete p; });
