@@ -20,6 +20,7 @@ CModel::CModel(const CModel& Prototype)
 	m_Materials{ Prototype.m_Materials },
 	//m_Bones{ Prototype.m_Bones },
 	m_iNumAnimations{ Prototype.m_iNumAnimations }
+	,m_iTotalNumBone {Prototype.m_iTotalNumBone}
 	//m_Animations{ Prototype.m_Animations }
 
 {
@@ -169,7 +170,7 @@ HRESULT CModel::Ready_Bones(ifstream& InFile)
 
 	for (uint32_t i = 0; i < m_iTotalNumBone; ++i)
 	{
-		Cvt_Bone BoneDesc = {};
+ 		Cvt_Bone BoneDesc = {};
 
 		
 		InFile.read((char*)&BoneDesc, sizeof(Cvt_Bone));

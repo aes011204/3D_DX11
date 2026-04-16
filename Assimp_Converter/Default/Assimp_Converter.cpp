@@ -111,56 +111,193 @@ static const aiScene* LoadScene_Assimp(Assimp::Importer& importer, const string 
 
 }
 
+//bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
+//{
+//
+//
+//
+//	// 메쉬 //
+//	Cvt_MeshInfo meshInfo = {};
+//	for (size_t i = 0; i < scene->mNumMeshes; i++)
+//	{
+//		g_vecVertices.clear();
+//
+//		aiMesh* pAIMesh = scene->mMeshes[i];
+//
+//		strncpy_s(meshInfo.szName, pAIMesh->mName.C_Str(), MAX_PATH);//strncpy_s 파일 이름이 63 개보다 많으면 짤리지만 들어감
+//		meshInfo.iNumVertices = pAIMesh->mNumVertices;
+//		meshInfo.iMaterialIndex = pAIMesh->mMaterialIndex;
+//
+//		meshInfo.iNumIndices = pAIMesh->mNumFaces * 3; // 삼각형 가정
+//
+//		meshInfo.iNumBones = pAIMesh->mNumBones;
+//
+//		// 저장
+//		OutFile.write((char*)&meshInfo, sizeof(Cvt_MeshInfo));
+//
+//
+//
+//		Cvt_VTXMESH vtx = {};
+//		// 버텍스 //
+//
+//		g_vecVertices.reserve(meshInfo.iNumVertices);
+//
+//		for (size_t j = 0; j < meshInfo.iNumVertices; j++)
+//		{
+//
+//			memcpy(&vtx.vPos, &pAIMesh->mVertices[j], sizeof(float) * 3);
+//
+//			for (uint32_t i = 0; i < 8; ++i) {
+//				if (pAIMesh->HasTextureCoords(i)) {
+//					// i번 채널의 j번째 정점 데이터를 우리 구조체 vUV[i]에 복사
+//					vtx.vUV[i][0] = pAIMesh->mTextureCoords[i][j].x;
+//					vtx.vUV[i][1] = pAIMesh->mTextureCoords[i][j].y;
+//				}
+//			}
+//			if (pAIMesh->HasNormals())
+//				memcpy(&vtx.vNormal, &pAIMesh->mNormals[j], sizeof(float) * 3);
+//			if (pAIMesh->HasTangentsAndBitangents())
+//				memcpy(&vtx.vTangent, &pAIMesh->mTangents[j], sizeof(float) * 3);
+//
+//
+//			// 초기화
+//			for (int k = 0; k < 4; ++k)
+//			{
+//				vtx.vIndices[k] = -1;
+//				vtx.vWeights[k] = 0.f;
+//			}
+//
+//			g_vecVertices.push_back(vtx);
+//		}
+//
+//		// 가중치, 인덱스 //
+//
+//		vector<Cvt_BoneAdd> m_VecBoneAdd;
+//
+//		for (size_t i = 0; i < pAIMesh->mNumBones; i++)
+//		{
+//
+//			aiBone* pAIBone = pAIMesh->mBones[i];
+//			int iBoneIndex = -1;
+//
+//			for (int b = 0; b < g_vecBones.size(); ++b)
+//			{
+//				if (strcmp(g_vecBones[b].szName, pAIBone->mName.C_Str()) == 0)
+//				{
+//					iBoneIndex = b;
+//
+//					aiMatrix4x4 tmpOffsetMat = pAIBone->mOffsetMatrix;
+//					tmpOffsetMat = tmpOffsetMat.Transpose();
+//					memcpy(&g_vecBones[b].OffsetMatrix, &tmpOffsetMat, sizeof(float) * 16);
+//
+//
+//					Cvt_BoneAdd boneAdd = {};
+//					boneAdd.iBoneIndex = iBoneIndex;
+//					memcpy(&boneAdd.OffsetMatrix, &g_vecBones[b].OffsetMatrix, sizeof(float) * 16);
+//					m_VecBoneAdd.push_back(boneAdd);
+//
+//					break;
+//				}
+//			}
+//			if (-1 == iBoneIndex)
+//				return E_FAIL;
+//
+//			//pAIBone->mNumWeights 이 뼈가 몇개의 정점에 영향을 주는가
+//			for (uint32_t w = 0; w < pAIBone->mNumWeights; ++w)
+//			{
+//				uint32_t iVertexID = pAIBone->mWeights[w].mVertexId;
+//				float fWeight = pAIBone->mWeights[w].mWeight;
+//
+//				// 해당 정점의 빈 슬롯(4칸 중 하나) 찾기
+//				for (int k = 0; k < 4; ++k)
+//				{
+//					if (g_vecVertices[iVertexID].vIndices[k] == -1)
+//					{
+//						g_vecVertices[iVertexID].vIndices[k] = i;
+//						g_vecVertices[iVertexID].vWeights[k] = fWeight;
+//						break; // 한 칸 채웠으면 다음 정점으로
+//					}
+//				}
+//			}
+//
+//
+//		}
+//
+//		if (!m_VecBoneAdd.empty())
+//			OutFile.write((char*)m_VecBoneAdd.data(), sizeof(Cvt_BoneAdd) * m_VecBoneAdd.size());
+//
+//		OutFile.write((char*)g_vecVertices.data(), sizeof(Cvt_VTXMESH) * meshInfo.iNumVertices);
+//
+//
+//
+//
+//
+//
+//		// 인덱스 //
+//		vector<uint32_t> vecIndices;
+//		vecIndices.reserve(meshInfo.iNumIndices);
+//		for (uint32_t f = 0; f < pAIMesh->mNumFaces; ++f)
+//		{
+//			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[0]);
+//			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[1]);
+//			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[2]);
+//
+//		}
+//
+//		OutFile.write((char*)vecIndices.data(), sizeof(uint32_t) * meshInfo.iNumIndices);
+//
+//
+//
+//	}
+//
+//	cout << "SUCCESS CONVERT MESH" << endl;
+//	return true;
+//
+//
+//};
+
 bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 {
-
-
-
-	// 메쉬 //
 	Cvt_MeshInfo meshInfo = {};
-	for (size_t i = 0; i < scene->mNumMeshes; i++)
+
+	for (size_t meshIdx = 0; meshIdx < scene->mNumMeshes; meshIdx++)
 	{
 		g_vecVertices.clear();
 
-		aiMesh* pAIMesh = scene->mMeshes[i];
+		aiMesh* pAIMesh = scene->mMeshes[meshIdx];
 
-		strncpy_s(meshInfo.szName, pAIMesh->mName.C_Str(), MAX_PATH);//strncpy_s 파일 이름이 63 개보다 많으면 짤리지만 들어감
+		strncpy_s(meshInfo.szName, pAIMesh->mName.C_Str(), MAX_PATH);
 		meshInfo.iNumVertices = pAIMesh->mNumVertices;
 		meshInfo.iMaterialIndex = pAIMesh->mMaterialIndex;
+		meshInfo.iNumIndices = pAIMesh->mNumFaces * 3;
+		meshInfo.iNumBones = 0;
 
-		meshInfo.iNumIndices = pAIMesh->mNumFaces * 3; // 삼각형 가정
-
-		meshInfo.iNumBones = pAIMesh->mNumBones;
-
-		// 저장
-		OutFile.write((char*)&meshInfo, sizeof(Cvt_MeshInfo));
-
-
-
-		Cvt_VTXMESH vtx = {};
-		// 버텍스 //
-
+		// -----------------------------
+		// 버텍스 생성
+		// -----------------------------
 		g_vecVertices.reserve(meshInfo.iNumVertices);
 
 		for (size_t j = 0; j < meshInfo.iNumVertices; j++)
 		{
+			Cvt_VTXMESH vtx = {};
 
 			memcpy(&vtx.vPos, &pAIMesh->mVertices[j], sizeof(float) * 3);
 
-			for (uint32_t i = 0; i < 8; ++i) {
-				if (pAIMesh->HasTextureCoords(i)) {
-					// i번 채널의 j번째 정점 데이터를 우리 구조체 vUV[i]에 복사
-					vtx.vUV[i][0] = pAIMesh->mTextureCoords[i][j].x;
-					vtx.vUV[i][1] = pAIMesh->mTextureCoords[i][j].y;
+			for (uint32_t uv = 0; uv < 8; ++uv)
+			{
+				if (pAIMesh->HasTextureCoords(uv))
+				{
+					vtx.vUV[uv][0] = pAIMesh->mTextureCoords[uv][j].x;
+					vtx.vUV[uv][1] = pAIMesh->mTextureCoords[uv][j].y;
 				}
 			}
+
 			if (pAIMesh->HasNormals())
 				memcpy(&vtx.vNormal, &pAIMesh->mNormals[j], sizeof(float) * 3);
+
 			if (pAIMesh->HasTangentsAndBitangents())
 				memcpy(&vtx.vTangent, &pAIMesh->mTangents[j], sizeof(float) * 3);
 
-
-			// 초기화
 			for (int k = 0; k < 4; ++k)
 			{
 				vtx.vIndices[k] = -1;
@@ -170,91 +307,147 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 			g_vecVertices.push_back(vtx);
 		}
 
-		// 가중치, 인덱스 //
-
+		// -----------------------------
+		// Bone 처리 + Remap
+		// -----------------------------
 		vector<Cvt_BoneAdd> m_VecBoneAdd;
+		vector<int> boneRemap(pAIMesh->mNumBones, -1);
 
-		for (size_t i = 0; i < pAIMesh->mNumBones; i++)
+		for (size_t boneIdx = 0; boneIdx < pAIMesh->mNumBones; boneIdx++)
 		{
+			aiBone* pAIBone = pAIMesh->mBones[boneIdx];
 
-			aiBone* pAIBone = pAIMesh->mBones[i];
-			int iBoneIndex = -1;
+			int globalBoneIndex = -1;
 
 			for (int b = 0; b < g_vecBones.size(); ++b)
 			{
 				if (strcmp(g_vecBones[b].szName, pAIBone->mName.C_Str()) == 0)
 				{
-					iBoneIndex = b;
+					globalBoneIndex = b;
 
-					aiMatrix4x4 tmpOffsetMat = pAIBone->mOffsetMatrix;
-					tmpOffsetMat = tmpOffsetMat.Transpose();
-					memcpy(&g_vecBones[b].OffsetMatrix, &tmpOffsetMat, sizeof(float) * 16);
+					aiMatrix4x4 offset = pAIBone->mOffsetMatrix;
+					offset = offset.Transpose();
 
+					memcpy(&g_vecBones[b].OffsetMatrix, &offset, sizeof(float) * 16);
 
 					Cvt_BoneAdd boneAdd = {};
-					boneAdd.iBoneIndex = iBoneIndex;
+					boneAdd.iBoneIndex = globalBoneIndex;
 					memcpy(&boneAdd.OffsetMatrix, &g_vecBones[b].OffsetMatrix, sizeof(float) * 16);
+
+					int mappedIndex = (int)m_VecBoneAdd.size();
 					m_VecBoneAdd.push_back(boneAdd);
+
+					boneRemap[boneIdx] = mappedIndex; 
 
 					break;
 				}
 			}
-			if (-1 == iBoneIndex)
+
+			if (globalBoneIndex == -1)
 				return E_FAIL;
-
-			//pAIBone->mNumWeights 이 뼈가 몇개의 정점에 영향을 주는가
-			for (uint32_t w = 0; w < pAIBone->mNumWeights; ++w)
-			{
-				uint32_t iVertexID = pAIBone->mWeights[w].mVertexId;
-				float fWeight = pAIBone->mWeights[w].mWeight;
-
-				// 해당 정점의 빈 슬롯(4칸 중 하나) 찾기
-				for (int k = 0; k < 4; ++k)
-				{
-					if (g_vecVertices[iVertexID].vIndices[k] == -1)
-					{
-						g_vecVertices[iVertexID].vIndices[k] = i;
-						g_vecVertices[iVertexID].vWeights[k] = fWeight;
-						break; // 한 칸 채웠으면 다음 정점으로
-					}
-				}
-			}
-
-
 		}
 
+		// -----------------------------
+		// Weight 적용 
+		// -----------------------------
+		for (size_t boneIdx = 0; boneIdx < pAIMesh->mNumBones; boneIdx++)
+		{
+			aiBone* pAIBone = pAIMesh->mBones[boneIdx];
+
+			int mappedIndex = boneRemap[boneIdx];
+			if (mappedIndex == -1)
+				continue;
+
+			for (uint32_t w = 0; w < pAIBone->mNumWeights; ++w)
+			{
+				uint32_t vtxID = pAIBone->mWeights[w].mVertexId;
+				float weight = pAIBone->mWeights[w].mWeight;
+
+				if (vtxID >= g_vecVertices.size())
+					continue;
+
+				int minIndex = 0;
+				float minWeight = g_vecVertices[vtxID].vWeights[0];
+
+				for (int k = 1; k < 4; k++)
+				{
+					if (g_vecVertices[vtxID].vWeights[k] < minWeight)
+					{
+						minWeight = g_vecVertices[vtxID].vWeights[k];
+						minIndex = k;
+					}
+				}
+
+				if (g_vecVertices[vtxID].vIndices[minIndex] == -1 || weight > minWeight)
+				{
+					g_vecVertices[vtxID].vIndices[minIndex] = mappedIndex;
+					g_vecVertices[vtxID].vWeights[minIndex] = weight;
+				}
+			}
+		}
+
+		// -----------------------------
+		// weight 보정
+		// -----------------------------
+		for (auto& v : g_vecVertices)
+		{
+			float sum = 0.f;
+			for (int k = 0; k < 4; k++)
+				sum += v.vWeights[k];
+
+			if (sum == 0.f)
+			{
+				v.vIndices[0] = 0;
+				v.vWeights[0] = 1.f;
+			}
+			else
+			{
+				for (int k = 0; k < 4; k++)
+					v.vWeights[k] /= sum;
+			}
+
+			for (int k = 0; k < 4; k++)
+			{
+				if (v.vIndices[k] < 0)
+				{
+					v.vIndices[k] = 0;
+					v.vWeights[k] = 0.f;
+				}
+			}
+		}
+
+		// -----------------------------
+		// 저장
+		// -----------------------------
+		meshInfo.iNumBones = (uint32_t)m_VecBoneAdd.size();
+
+		OutFile.write((char*)&meshInfo, sizeof(Cvt_MeshInfo));
+
 		if (!m_VecBoneAdd.empty())
-			OutFile.write((char*)m_VecBoneAdd.data(), sizeof(Cvt_BoneAdd) * m_VecBoneAdd.size());
+			OutFile.write((char*)m_VecBoneAdd.data(), sizeof(Cvt_BoneAdd) * meshInfo.iNumBones);
 
 		OutFile.write((char*)g_vecVertices.data(), sizeof(Cvt_VTXMESH) * meshInfo.iNumVertices);
 
-
-
-
-
-
-		// 인덱스 //
+		// -----------------------------
+		// 인덱스
+		// -----------------------------
 		vector<uint32_t> vecIndices;
 		vecIndices.reserve(meshInfo.iNumIndices);
+
 		for (uint32_t f = 0; f < pAIMesh->mNumFaces; ++f)
 		{
 			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[0]);
 			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[1]);
 			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[2]);
-
 		}
 
 		OutFile.write((char*)vecIndices.data(), sizeof(uint32_t) * meshInfo.iNumIndices);
-
-
-
 	}
 
 	cout << "SUCCESS CONVERT MESH" << endl;
 	return true;
+}
 
-
-};
 bool Ready_Bones(const aiNode* pAINode, unsigned int iParentBoneIndex, ofstream& OutFile)
 {
 	/*shared_ptr<CAssimp_Bone> pBone = CAssimp_Bone::Create(pAINode, iParentIndex);
@@ -547,6 +740,8 @@ bool Convert_Binary(string fbxPath, string exportPath)
 	header.iNumMaterial = AIScene->mNumMaterials;
 	header.iNumAnimation = AIScene->mNumAnimations;
 	header.iTotalNumBone = g_vecBones.size();
+	
+	
 	// 저장
 	OutFile.write((char*)&header, sizeof(Cvt_Header));
 

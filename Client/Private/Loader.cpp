@@ -320,7 +320,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	/* Prototype_Component_Model_Marrow_Mon */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+ 	PreLocalTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Marrow_Mon"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Marrow_Mon/Marrow_Mon_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
 	{

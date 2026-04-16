@@ -29,7 +29,7 @@ HRESULT CMon_MonkFish::Initialize(void* pArg)
 		return E_FAIL;
 
 
-	m_AnimIndex = 0;
+	m_AnimIndex = 2;
 	m_pModelCom_Mon->Set_Animation(m_AnimIndex, true);
 
 
@@ -46,7 +46,7 @@ void CMon_MonkFish::Priority_Update(_float fTimeDelta)
 
 void CMon_MonkFish::Update(_float fTimeDelta)
 {
-	//m_pModelCom_Mon->Play_Animation(fTimeDelta);
+	m_pModelCom_Mon->Play_Animation(fTimeDelta);
 
 
 	//if(m_pModelCom_Mon->Get_IsFinishAnim() == true)
