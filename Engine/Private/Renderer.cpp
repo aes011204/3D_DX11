@@ -54,6 +54,7 @@ void CRenderer::Draw()
 
 	Render_NonBlend();
 
+	Render_Sea();
 	Render_Blend();
 
 	Render_UI();
@@ -83,13 +84,50 @@ void CRenderer::Render_NonBlend()
 
 void CRenderer::Render_Blend()
 {
-	for (auto& pRenderObject : m_RenderObject[ETOI(RENDERGROUP::BLEND)])
+
+	auto& vec = m_RenderObject[ETOI(RENDERGROUP::BLEND)];
+
+	_vector vCamPos = XMLoadFloat4(m_pGameInstance.lock()->Get_CamPositon());
+
+
+	sort(vec.begin(), vec.end(),
+		[&](const shared_ptr<CEntity>& a, const shared_ptr<CEntity>& b)
+		{
+			_vector posA = a->Get_WorldPos();
+			_vector posB = b->Get_WorldPos();
+
+			float distA = XMVectorGetX(XMVector3LengthSq(posA - vCamPos));
+			float distB = XMVectorGetX(XMVector3LengthSq(posB - vCamPos));
+
+			return distA > distB; 
+		});
+
+	
+	for (auto& obj : vec)
+	{
+		if (obj)
+			obj->Render();
+	}
+
+	vec.clear();
+	/*for (auto& pRenderObject : m_RenderObject[ETOI(RENDERGROUP::BLEND)])
+	{
+			pRenderObject->Render();
+	}
+
+	m_RenderObject[ETOI(RENDERGROUP::BLEND)].clear();*/
+}
+
+void CRenderer::Render_Sea()
+{
+
+	for (auto& pRenderObject : m_RenderObject[ETOI(RENDERGROUP::SEA)])
 	{
 		if (pRenderObject != nullptr)
 			pRenderObject->Render();
 	}
 
-	m_RenderObject[ETOI(RENDERGROUP::BLEND)].clear();
+	m_RenderObject[ETOI(RENDERGROUP::SEA)].clear();
 }
 
 void CRenderer::Render_UI()

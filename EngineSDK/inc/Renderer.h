@@ -27,11 +27,13 @@ private:
 
    // ComPtr <ID3D11DepthStencilState> m_pDepthDisableState = { nullptr };
 
-    list<shared_ptr<CEntity>> m_RenderObject[ETOI(RENDERGROUP::END)];
+    vector<shared_ptr<CEntity>> m_RenderObject[ETOI(RENDERGROUP::END)];
+
 
 private:
     void Render_Priority();
     void Render_NonBlend();
+    void Render_Sea();
     void Render_Blend();
     void Render_UI();
 

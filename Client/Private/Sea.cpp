@@ -77,7 +77,7 @@ void CSea::Update(_float fTimeDelta)
 void CSea::Late_Update(_float fTimeDelta)
 {
 	int a = 1;
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::BLEND, static_pointer_cast<CSea>(shared_from_this()));
+	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::SEA, static_pointer_cast<CSea>(shared_from_this()));
 }
 
 
@@ -100,6 +100,13 @@ HRESULT CSea::Render()
 		return E_FAIL;
 
 	return S_OK;
+}
+
+_vector CSea::Get_WorldPos()
+{
+	{
+		return m_pTransformCom->Get_Position();
+	}
 }
 
 void CSea::OnGui()

@@ -230,6 +230,7 @@
     <ClInclude Include="..\Public\Mon_R_Act.h">
       <Filter>02.GameObject\01.Monster</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\UI_Box.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -409,6 +410,7 @@
     <ClCompile Include="..\Private\Mon_R_Act.cpp">
       <Filter>02.GameObject\01.Monster</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\UI_Box.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

@@ -35,6 +35,11 @@ public:
 
 		return pCom;
 	}
+	virtual _vector Get_WorldPos() const
+	{
+		return XMVectorZero();
+	}
+
 
 	HRESULT Remove_Component(const _wstring& strComponentTag);
 

@@ -36,7 +36,7 @@ public:
     virtual void Late_Update(_float fTimeDelta) override;
     float Calculate_GerstnerWave_Overlap(_float3 Pos);
     virtual HRESULT Render() override;
-
+    virtual _vector Get_WorldPos();
     virtual void OnGui() override;
 
 protected:

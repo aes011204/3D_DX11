@@ -1,6 +1,7 @@
 #include "Player_Storage.h"
 #include <UI.h>
 
+#include "DialogueDB.h"
 #include "DInput_Manager.h"
 #include "PlayerBoat.h"
 #include "Sea_Manager.h"
@@ -17,6 +18,8 @@ CPlayer_Storage::~CPlayer_Storage()
 
 void CPlayer_Storage::Enter()
 {
+	CDialogueDB::GetInstance()->Set_PendingDialogue(list<string> {});
+
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CAM_LERP_DESC>();
 	pLerp->eMode = CAM_MODE::LERP;

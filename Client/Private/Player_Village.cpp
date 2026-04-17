@@ -63,7 +63,7 @@ void CPlayer_Village::Exit()
 	//e.playerstate = E_PLAYERSTATE::VILLAGE;
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 
-	//m_VecDialogue.clear();
+	m_VecDialogue.clear();
 	CPlayerState::Exit();
 }
 

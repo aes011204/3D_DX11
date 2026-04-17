@@ -35,6 +35,11 @@ public:
 
 		return pCom;
 	}
+	virtual _vector Get_WorldPos() const
+	{
+		return XMVectorZero();
+	}
+
 
 	HRESULT Remove_Component(const _wstring& strComponentTag);
 
@@ -105,8 +110,8 @@ public:
 	};
 
 protected:
-
 	_bool m_bIsDirtyCom = {true};// 처음은 해야하니까
+
     map<const _wstring, class shared_ptr<CComponent> > m_Components;
 
 	_bool m_bIsSavableClass = { false };

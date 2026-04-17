@@ -104,6 +104,8 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 		});
 
 
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Box", false, nullptr);
+	//m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 
 
 

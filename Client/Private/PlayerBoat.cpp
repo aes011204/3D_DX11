@@ -106,7 +106,7 @@ void CPlayerBoat::Late_Update(_float fTimeDelta)
 	m_pPlayerStateMachine->LateUpdate_StateMachine(fTimeDelta);
 
 
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::BLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CPlayerBoat>(shared_from_this()));
 }
 
 HRESULT CPlayerBoat::Render()

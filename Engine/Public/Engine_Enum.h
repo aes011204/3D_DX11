@@ -7,7 +7,7 @@ namespace Engine
 
 	enum class PROTOTYPE { GAMEOBJECT, COMPONENT};
 
-	enum class RENDERGROUP { PRIORITY, NONBLEND, BLEND, UI, END };
+	enum class RENDERGROUP { PRIORITY, NONBLEND, BLEND, SEA, UI, END };
 
 	enum class UI_LAYER { OVERRIDE, WINDOW, STACK, HUD, END };
 
@@ -48,11 +48,13 @@ namespace Engine
 	{
 		NONE = 0,
 		PLAYER = 1 << 0, 
-		MONSTER = 1 << 1 ,
-		TERRAIN = 1 << 2,
-		TRIGGER = 1 << 3,
-		ITEM = 1 << 4,
-		UI = 1 << 5,
+		MONSTER = 1 << 1,
+		MONSTERATT = 1 << 2 ,
+		TERRAIN = 1 << 3,
+		TRIGGER = 1 << 4,
+		ITEM = 1 << 5,
+		UI = 1 << 6,
+		FISH = 1 << 7,
 		ALL= 0xffffffff,
 		END 
 	};

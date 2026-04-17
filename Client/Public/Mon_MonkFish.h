@@ -40,7 +40,8 @@ public:
     virtual void RebindCom();
     HRESULT Bind_ShaderResources();
     HRESULT Bind_ShaderResources_Mesh();
-
+    virtual _vector Get_WorldPos() ;
+   
 protected:
     HRESULT Ready_Components();
 
@@ -59,7 +60,8 @@ private:
     STATE m_State = {};
     STATE m_PrevState = {};
 
-    _float m_Alpha = {};
+    _float m_Alpha_Mesh = {};
+    _float m_Alpha_Anim = {};
     _float m_AlphaSpeed = {};
     _float3 m_Dir = {};
 private:

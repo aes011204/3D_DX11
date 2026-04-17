@@ -15,6 +15,7 @@
 #include "UI_Village.h"
 #include "EventBus.h"
 #include "DialogueDB.h"
+#include "UI_Box.h"
 
 IMPLEMENT_SINGLETON(CUI_Controller)
 
@@ -158,6 +159,9 @@ void CUI_Controller::End_StateUI()
 
 		auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
 		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+
+		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
+		dynamic_pointer_cast<CUI_Box>(Box)->UI_InActive();
 	}
 
 }
@@ -206,6 +210,9 @@ void CUI_Controller::StateUI()
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
+
+		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
+		dynamic_pointer_cast<CUI_Box>(Box)->UI_PanelActive(true);
 
 	}
 }
@@ -339,6 +346,22 @@ HRESULT CUI_Controller::Ready_UI()
 	shared_ptr<CUI_Village> Village = CUI_Village::Create(m_pDevice, m_pContext);
 	Village->Initialize(&VillagePanel);
 	m_pGameInstance.lock()->UI_InsertToPool(L"Village", Village);
+
+	/////////////BOX//////////////
+
+	CUI_Box::BOX_DESC pDescBox = {};
+	shared_ptr<CUI_Box> Box = CUI_Box::Create(m_pDevice, m_pContext);
+	if (TabContainer == nullptr)
+		return E_FAIL;
+	Box->Initialize(&pDescBox);
+	m_pGameInstance.lock()->UI_InsertToPool(L"Box", Box);
+
+
+
+
+
+
+
 
 
 	return S_OK;

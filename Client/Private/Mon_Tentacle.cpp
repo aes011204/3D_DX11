@@ -107,7 +107,7 @@ void CMon_Tentacle::Update(_float fTimeDelta)
 
 void CMon_Tentacle::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CMon_Tentacle>(shared_from_this()));
 }
 
 HRESULT CMon_Tentacle::Render()

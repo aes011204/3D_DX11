@@ -11,7 +11,7 @@ CMon_MonkFish::CMon_MonkFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceCo
 }
 
 CMon_MonkFish::CMon_MonkFish(const CMon_MonkFish& prototype)
-	: CGameObject{prototype}
+	: CGameObject{ prototype }
 {
 }
 
@@ -30,9 +30,10 @@ HRESULT CMon_MonkFish::Initialize(void* pArg)
 
 
 
-	 m_LenghtNear = 15.f;
-	 m_LenghtAttack = 5.f;
-	m_Alpha = 0;
+	m_LenghtNear = 13.f;
+	m_LenghtAttack = 6.f;
+	m_Alpha_Mesh = 0;
+	m_Alpha_Anim = 0;
 	m_AlphaSpeed = 4.f;
 
 	m_pPlayer = m_pGameInstance.lock()->Get_GameObject(
@@ -43,7 +44,7 @@ HRESULT CMon_MonkFish::Initialize(void* pArg)
 	_float3 targetPos = {};
 	XMStoreFloat3(&targetPos, m_pPlayer.lock()->Get_TransformCom()->Get_Position());
 
-	_vector finalPos = XMVectorSet(targetPos.x + 10.f, 0.f, targetPos.z +10.f, 1.f);
+	_vector finalPos = XMVectorSet(targetPos.x + 10.f, 0.f, targetPos.z + 10.f, 1.f);
 
 	m_pTransformCom->Set_Position(finalPos);
 
@@ -54,7 +55,7 @@ HRESULT CMon_MonkFish::Initialize(void* pArg)
 	m_State = STATE::REVEAL;
 	m_pTransformCom->Set_Speed(2.f);
 
-	m_pSocketMatrix = m_pModelCom_Mon ->Get_BoneMatrixPtr("jaw2_jnt");
+	m_pSocketMatrix = m_pModelCom_Mon->Get_BoneMatrixPtr("jaw2_jnt");
 	return S_OK;
 }
 
@@ -125,10 +126,10 @@ void CMon_MonkFish::Update(_float fTimeDelta)
 		}
 		break;
 	case STATE::REVEAL:
-		m_Alpha += fTimeDelta * m_AlphaSpeed;
-		if (m_Alpha >= 1)
+		m_Alpha_Mesh += fTimeDelta * m_AlphaSpeed;
+		if (m_Alpha_Mesh >= 1)
 		{
-			m_Alpha = 1;
+			m_Alpha_Mesh = 1;
 			/*	if (m_pModelCom_Mon->Get_IsFinishAnim() == true)
 				{*/
 			ChangeState(STATE::IDLE);
@@ -144,37 +145,40 @@ void CMon_MonkFish::Update(_float fTimeDelta)
 	case STATE::RUNAWAY:
 		//m_pTransformCom->LookAt(XMLoadFloat3(&m_Dir));
 		m_pTransformCom->Go_Forward(fTimeDelta);
-		
-			break;
+
+		break;
+	}
+
+	if (dist >= m_LenghtNear + 3.f)
+	{
+
+		m_Alpha_Mesh += fTimeDelta * m_AlphaSpeed;
+		m_Alpha_Anim -= fTimeDelta * m_AlphaSpeed;
+		m_Alpha_Mesh = clamp(m_Alpha_Mesh, 0.f, 1.f);
+		m_Alpha_Anim = clamp(m_Alpha_Anim, 0.f, 1.f);
+	}
+	else
+	{
+		m_Alpha_Mesh -= fTimeDelta * m_AlphaSpeed;
+		m_Alpha_Anim += fTimeDelta * m_AlphaSpeed;
+		m_Alpha_Anim = clamp(m_Alpha_Anim, 0.f, 1.f);
+		m_Alpha_Mesh = clamp(m_Alpha_Mesh, 0.f, 1.f);
+
 	}
 
 
 
 
-	/*if(m_State == P_NEAR && m_pModelCom_Mon->Get_IsFinishAnim()==true)
-	{
-		m_AnimIndex = 2;
-		m_pModelCom_Mon->Set_Animation(m_AnimIndex, false);
-		
-	}
-	else if(m_State == ATTACK && m_pModelCom_Mon->Get_IsFinishAnim() == true)
-	{
-		m_AnimIndex = 0;
-		m_pModelCom_Mon->Set_Animation(m_AnimIndex, true);
-		
-	}*/
 
 
-
-	
 
 	m_pColliderCom->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix)));
 
-	
+
 }
 void CMon_MonkFish::ChangeState(STATE newState)
 {
-	if(m_State != newState)
+	if (m_State != newState)
 	{
 		EnterState(newState);
 		m_PrevState = m_State;
@@ -190,7 +194,7 @@ void CMon_MonkFish::EnterState(STATE newState)
 		m_pModelCom_Mon->Set_Animation(1, true);
 		break;
 	case STATE::IDLE:
-		
+
 		m_pModelCom_Mon->Set_Animation(2, true);
 		break;
 	case STATE::P_NEAR:
@@ -198,11 +202,11 @@ void CMon_MonkFish::EnterState(STATE newState)
 		m_pModelCom_Mon->Set_Animation(0, true);
 		break;
 	case STATE::REVEAL:
-		
+
 		m_pModelCom_Mon->Set_Animation(2, true);
 		break;
 	case STATE::RUNAWAY:
-		m_pTransformCom->Set_Speed(5);
+		m_pTransformCom->Set_Speed(10.f);
 		m_pModelCom_Mon->Set_Animation(0, true);
 		break;
 	}
@@ -211,47 +215,71 @@ void CMon_MonkFish::EnterState(STATE newState)
 
 void CMon_MonkFish::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+
+	if (m_Alpha_Anim < 1.f - 0.001f)
+	{
+	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::BLEND, static_pointer_cast<CMon_MonkFish>(shared_from_this()));
+		
+	}
+	else
+	{
+		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CMon_MonkFish>(shared_from_this()));
+
+	}
 }
 
 HRESULT CMon_MonkFish::Render()
 {
-	if (FAILED(Bind_ShaderResources()))
-		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom_Mon->Get_NumMeshes();
-	
-	for(size_t i=0; i< iNumMesh; i++)
+
+
+	if (m_Alpha_Anim > 0.f)
 	{
-	
-		m_pModelCom_Mon->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom_Mon->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-	
-	if (FAILED(m_pShaderCom->Begin(0)))
-		return E_FAIL;
-	
-	if (FAILED(m_pModelCom_Mon->Render(i)))
-		return E_FAIL;
+
+		if (FAILED(Bind_ShaderResources()))
+			return E_FAIL;
+
+		size_t iNumMesh = m_pModelCom_Mon->Get_NumMeshes();
+
+		for (size_t i = 0; i < iNumMesh; i++)
+		{
+
+			m_pModelCom_Mon->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			m_pModelCom_Mon->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
+			if (m_Alpha_Anim < 1.f)
+				m_pShaderCom->Begin(1); // Alpha
+			else
+				m_pShaderCom->Begin(0); // Opaque
+
+			if (FAILED(m_pModelCom_Mon->Render(i)))
+				return E_FAIL;
+
+		}
+	}
+
+	if (m_Alpha_Mesh > 0.f)
+	{
+
+		size_t iNumMesh = m_pModelCom_Boat->Get_NumMeshes();
+
+			if (FAILED(Bind_ShaderResources_Mesh()))
+				return E_FAIL;
+
+		for (size_t j = 0; j < iNumMesh; j++)
+		{
+			m_pModelCom_Boat->Bind_Material(m_pShaderCom_Mesh, "g_DiffuseTexture", j, TextureType_DIFFUSE, 0);
+
+
+			if (FAILED(m_pShaderCom_Mesh->Begin(1)))
+				return E_FAIL;
+
+			if (FAILED(m_pModelCom_Boat->Render(j)))
+				return E_FAIL;
+		}
 
 	}
-	
-	
-	 iNumMesh = m_pModelCom_Boat->Get_NumMeshes();
-	
-	for (size_t j = 0; j < iNumMesh; j++)
-	{
-	if (FAILED(Bind_ShaderResources_Mesh()))
-		return E_FAIL;
-		m_pModelCom_Boat->Bind_Material(m_pShaderCom_Mesh, "g_DiffuseTexture", j, TextureType_DIFFUSE, 0);
-		
-	
-		if (FAILED(m_pShaderCom_Mesh->Begin(0)))
-			return E_FAIL;
-	
-		if (FAILED(m_pModelCom_Boat->Render(j)))
-			return E_FAIL;
-	}
-	
+
 #ifdef _DEBUG
 	if (m_pGameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
@@ -270,12 +298,12 @@ void CMon_MonkFish::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CColli
 {
 
 	_vector vToPlayer = m_pPlayer.lock()->Get_TransformCom()->Get_Position() - m_pTransformCom->Get_Position();
-		_vector dir = XMVector3Normalize(m_pPlayer.lock()->Get_TransformCom()->Get_Position() - m_pTransformCom->Get_Position() );
-		m_State = STATE::RUNAWAY;
-		_vector targetPos = m_pTransformCom->Get_Position() + vToPlayer * 100.f;
+	_vector dir = XMVector3Normalize(m_pPlayer.lock()->Get_TransformCom()->Get_Position() - m_pTransformCom->Get_Position());
+	ChangeState(STATE::RUNAWAY);
+	_vector targetPos = m_pTransformCom->Get_Position() + vToPlayer * 100.f;
 
-		XMStoreFloat3(&m_Dir, targetPos);
-	
+	XMStoreFloat3(&m_Dir, targetPos);
+
 
 	//if(m_State == ATTACK)
 	//{
@@ -295,7 +323,7 @@ void CMon_MonkFish::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollide
 
 	int i = 0;
 
-	
+
 }
 
 void CMon_MonkFish::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
@@ -313,11 +341,11 @@ void CMon_MonkFish::OnGui()
 	if (ImGui::Button("P_NEAR"))    ChangeState(STATE::P_NEAR);
 
 	ImGui::Text("Current State: %s",
-    magic_enum::enum_name(m_State).data());
+		magic_enum::enum_name(m_State).data());
 
 	_vector vToPlayer = m_pPlayer.lock()->Get_TransformCom()->Get_Position() - m_pTransformCom->Get_Position();
 	_float dist = XMVectorGetX(XMVector3Length(vToPlayer));
-	ImGui::Text("Current State: %f",dist);
+	ImGui::Text("Current State: %f", dist);
 }
 
 void CMon_MonkFish::RebindCom()
@@ -357,6 +385,10 @@ HRESULT CMon_MonkFish::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;
 
+
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_Alpha_Anim, sizeof(_float))))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -389,7 +421,19 @@ HRESULT CMon_MonkFish::Bind_ShaderResources_Mesh()
 	if (FAILED(m_pShaderCom_Mesh->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;
 
+	if (FAILED(m_pShaderCom_Mesh->Bind_RawValue("g_Alpha", &m_Alpha_Mesh, sizeof(_float))))
+		return E_FAIL;
+
+
+
 	return S_OK;
+}
+
+_vector CMon_MonkFish::Get_WorldPos()
+{
+	{
+		return m_pTransformCom->Get_Position();
+	}
 }
 
 
@@ -421,14 +465,14 @@ HRESULT CMon_MonkFish::Ready_Components()
 		return E_FAIL;
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
 
-	
+
 
 	return S_OK;
 }
 
 shared_ptr<CMon_MonkFish> CMon_MonkFish::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
-	shared_ptr<CMon_MonkFish> pInstance(new CMon_MonkFish(pDevice, pContext), [](CMon_MonkFish* p) {p->Free(); delete p;});
+	shared_ptr<CMon_MonkFish> pInstance(new CMon_MonkFish(pDevice, pContext), [](CMon_MonkFish* p) {p->Free(); delete p; });
 
 	if (FAILED(pInstance->Initialize_Prototype()))
 	{
@@ -440,7 +484,7 @@ shared_ptr<CMon_MonkFish> CMon_MonkFish::Create(ComPtr<ID3D11Device> pDevice, Co
 
 shared_ptr<CGameObject> CMon_MonkFish::Clone(void* pArg)
 {
-	shared_ptr<CMon_MonkFish> pInstance(new CMon_MonkFish(*this), [](CMon_MonkFish* p) {p->Free(); delete p;});
+	shared_ptr<CMon_MonkFish> pInstance(new CMon_MonkFish(*this), [](CMon_MonkFish* p) {p->Free(); delete p; });
 
 	if (FAILED(pInstance->Initialize(pArg)))
 	{
