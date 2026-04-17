@@ -49,7 +49,6 @@ public:
     _float2 SlotToPos(int col, int row);
     _float2 Calculate_RenderPos(const Item_Inst& item);
 
-
 private:
     weak_ptr<class CInventory> m_Inven = {};
     shared_ptr<CUIText>m_TextInfo = {};

@@ -23,9 +23,12 @@ HRESULT CInventory::Initialize_Prototype()
 
 HRESULT CInventory::Initialize(void* pArg)
 {
+
+	INVEN_DESC* inven_desc = static_cast<INVEN_DESC*>(pArg);
+	m_InvenType = inven_desc->invenType;
+
 	if (pArg != nullptr)
 	{
-		INVEN_DESC* inven_desc = static_cast<INVEN_DESC*>(pArg);
 
 		if (inven_desc->invenType == INVENTYPE::PLAYER)
 		{
@@ -36,6 +39,13 @@ HRESULT CInventory::Initialize(void* pArg)
 		{
 			m_w = inven_desc->width;
 			m_h = inven_desc->height;
+
+		}
+		else if (inven_desc->invenType == INVENTYPE::STORAGE)
+		{
+	
+			m_w = 7;
+			m_h = 8;
 
 		}
 	}
@@ -185,6 +195,59 @@ Item_Inst CInventory::AddItem(Item_Inst itemInst, _int BaseX, _int BaseY)
 	// 초록
 }
 
+_bool CInventory::Auto_Add(Item_Inst& itemInst)
+{
+	for (int j = 0; j < m_w; j++)
+	{
+		for (int i = 0; i < m_h; i++)
+		{
+			if (m_InvenSlot[i * m_w + j].ItemInst_ID == ID_Absence)
+			{
+				PLACE_COLOR color = {};
+				CanPlace(itemInst, j, i, color);
+				if (color == PLACE_COLOR::GREEN)
+				{
+					AddItem(itemInst, j, i);
+					return true;
+				}
+				else
+					continue;
+			}
+		}
+
+		
+	}
+	return false;
+}
+
+_bool CInventory::Auto_Move_To(weak_ptr<CInventory> OtherInven, _uint BaseX, _uint BaseY)
+{
+	//m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID
+		if (m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID != ID_Absence)
+	{
+		for (auto& item : m_Inventory)
+		{
+			if (m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID == item.ItemInst_ID)
+			{
+				_bool result = OtherInven.lock()->Auto_Add(item);
+
+
+				if(result == true)
+				{
+				RemoveFrom_Inven(item.ItemInst_ID);
+				return true;
+				}
+				else
+				{
+				return false;
+					
+				}
+			}
+		}
+	}
+		
+		return false;
+}
 _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_COLOR& color)
 {
 	// 해당 아이템의 모양 + BaseX,Y

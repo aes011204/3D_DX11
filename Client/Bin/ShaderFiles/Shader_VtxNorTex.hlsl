@@ -3,12 +3,12 @@
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 //texture2D g_Texture;
 
-vector g_vCamPosition;
+//vector g_vCamPosition;
 
 // 재질 정보
 texture2D g_DiffuseTexture;
-vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1); // 주변광 반응 정도
-vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f); //하이라이트 강도
+//vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1); // 주변광 반응 정도
+//vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f); //하이라이트 강도
 
 // 빛정보 (빛색, 세기 등)
 vector g_vLightDir;
@@ -61,7 +61,9 @@ struct PS_IN
 
 struct PS_OUT
 {
-    vector vColor : SV_Target0;
+   // vector vColor : SV_Target0;
+    vector vDiffuse : SV_TARGET0;
+    vector vNormal : SV_TARGET1;
 };
 
 
@@ -92,25 +94,27 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-
-    float3 sand =  g_vSandColor.rgb;
-    float3 algae =  g_vAlgaeColor.rgb;
-    float3 rock =  g_vRockColor.rgb;
-
-    float3 finalColor = (sand * vMtrlDiffuse.r) + (algae * vMtrlDiffuse.g) + (rock * vMtrlDiffuse.b);
-
-    vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, normalize(In.vNormal)), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
-   
-    vector vLook = In.vWorldPos - g_vCamPosition;
-    vector vRelfect = reflect(normalize(g_vLightDir), In.vNormal);
- 
-    float vSpecular = pow(max(dot(normalize(vLook) * -1, normalize(vRelfect)), 0.f), 100.f);
-    
-    vector vSpecularColor = g_vLightSpecular * g_vMtrlSpecular * vSpecular;
-    
-    Out.vColor = g_vLightDiffuse * float4(finalColor, 1.f) * vShader + vSpecularColor;
-    // 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트??
-    
+    //
+    //float3 sand =  g_vSandColor.rgb;
+    //float3 algae =  g_vAlgaeColor.rgb;
+    //float3 rock =  g_vRockColor.rgb;
+    //
+    //float3 finalColor = (sand * vMtrlDiffuse.r) + (algae * vMtrlDiffuse.g) + (rock * vMtrlDiffuse.b);
+    //
+    //vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, normalize(In.vNormal)), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
+    //
+    //vector vLook = In.vWorldPos - g_vCamPosition;
+    //vector vRelfect = reflect(normalize(g_vLightDir), In.vNormal);
+    //
+    //float vSpecular = pow(max(dot(normalize(vLook) * -1, normalize(vRelfect)), 0.f), 100.f);
+    //
+    //vector vSpecularColor = g_vLightSpecular * g_vMtrlSpecular * vSpecular;
+    //
+    //Out.vColor = g_vLightDiffuse * float4(finalColor, 1.f) * vShader + vSpecularColor;
+    //// 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트??
+    ///
+    Out.vDiffuse = vMtrlDiffuse;
+    Out.vNormal = In.vNormal;
     return Out;
 }
 

@@ -11,6 +11,7 @@ namespace Engine
 
 namespace Client
 {
+    class CInventory;
 	class CMiniGame_Logic;
 	class CFish;
 	enum class LOCATIONSTATE;
@@ -268,7 +269,7 @@ namespace Client
         Test1,
     };
 
-    enum class INVENTYPE { PLAYER, CHEST, SHOP, END };
+    enum class INVENTYPE { PLAYER, CHEST, SHOP,STORAGE, END };
 
 
     struct Evt_InvenPlayerInit_Data
@@ -276,11 +277,19 @@ namespace Client
         weak_ptr<class CInventory> Inven_ptr = {};
     };
 
-    struct Evt_MouseToIndex_Data
+    struct Evt_InvenStrageInit_Data
+    {
+        weak_ptr<class CInventory> Inven_ptr = {};
+    };
+
+    struct  Evt_MouseToIndex_Data
     {
         _bool IsOnSlot = { false };
         _uint x = {};
         _uint y = {};
+
+        _bool IsPlayer = {};
+
     };
 
     //struct Evt_ShipStats
@@ -447,6 +456,15 @@ namespace Client
     {
         shared_ptr<CMiniGame_Logic> logic;
     };
-
+    struct Evt_OpenInventory
+    {
+        weak_ptr<CInventory> inven;
+    };
+    struct Evt_CloseInventory
+    {
+    };
+    struct Evt_MoveTo_Storage
+    {
+    };
 
 }

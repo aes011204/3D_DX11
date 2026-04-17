@@ -97,6 +97,10 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 
 
+
+
+
+
 	return S_OK;
 }
 void CUI_Controller::End_StateUI()
@@ -197,6 +201,8 @@ void CUI_Controller::StateUI()
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE), TAB::INVEN);
 
+		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+		m_HoldItem->UI_Active();
 	}
 
 	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
@@ -204,12 +210,17 @@ void CUI_Controller::StateUI()
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE), TAB::INVEN);
 
+		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+		m_HoldItem->UI_Active();
 	}
 
 	if (m_PendingUIState == E_PLAYERSTATE::STORAGE)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
+
+		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+		m_HoldItem->UI_Active();
 
 		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
 		dynamic_pointer_cast<CUI_Box>(Box)->UI_PanelActive(true);

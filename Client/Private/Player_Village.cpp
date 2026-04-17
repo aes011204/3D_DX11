@@ -69,8 +69,8 @@ void CPlayer_Village::Exit()
 
 HRESULT CPlayer_Village::Init_State()
 {
-	m_VecDialogue.push_back("Start");
-	m_VecDialogue.push_back("Mayer_start");
+	//m_VecDialogue.push_back("Start");
+	//m_VecDialogue.push_back("Mayer_start");
 
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeState>([this](const Evt_ChangeState& e)

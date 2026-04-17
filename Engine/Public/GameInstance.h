@@ -127,7 +127,15 @@ public:/*For.Font_Manager*/
 	public:/*For.Collison_Mgr*/
 		void Add_Collider(shared_ptr<class CCollider> coll);
 
+		public:/*For.Target_Manager_Mgr*/
+	HRESULT Add_RenderTarget(const _wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat,
+	                         const _float4& vClearColor);
+	HRESULT Bind_RT_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName,
+	                               const _wstring& strTargetTag);
 
+	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
+	HRESULT Begin_MRT(const _wstring& strMRTTag);
+	HRESULT End_MRT();
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
@@ -145,7 +153,7 @@ private:
 	unique_ptr<class CFont_Manager> m_pFont_Manager = { nullptr };
 	unique_ptr<class CTimeOfDay> m_pTimeOfDay = { nullptr };
 	unique_ptr<class CCollision_Manager> m_pCollision_Manager = { nullptr };
-
+	unique_ptr<class CTarget_Manager> m_pTarget_Manager = { nullptr };
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 
 	map<_wstring,CBase*> m_ManagerForImgui = {}; // rawPointer ÂüÁ¶¿ë

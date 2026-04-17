@@ -40,6 +40,8 @@ public:
     vector<Item_Inst>& Get_InventoryItem() { return m_Inventory; }
     int Get_W() { return m_w; }
     int Get_H() { return m_h; }
+
+    INVENTYPE  Get_Inventype() { return m_InvenType; }
 private:
     int m_w, m_h = {0};
     vector<Item_Inst> m_Inventory = {}; // 순서 상관없이 들어있는데이터
@@ -52,6 +54,8 @@ private:
 
 public:// 아이템 넣고 뺴기
     Item_Inst AddItem(Item_Inst itemInst, _int BaseX, _int BaseY);
+    _bool Auto_Add(Item_Inst& itemInst);
+    _bool Auto_Move_To(weak_ptr<CInventory> OtherInven, _uint BaseX, _uint BaseY);
     _int CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY,PLACE_COLOR& color);
     Item_Inst TryMove_Item(_uint BaseX, _uint BaseY);
     void Upgrade_Boat(_uint index);
@@ -79,7 +83,7 @@ private:
     SLOT_TYPE CharToType(char c);// 슬랏 타입
     void Init_BoatUpgrade();
 
-
+    INVENTYPE m_InvenType = {};
     
 
 public:

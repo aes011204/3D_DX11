@@ -15,19 +15,35 @@ CRenderer::~CRenderer() { Free(); };
 
 HRESULT CRenderer::Initialize()
 {
-	D3D11_DEPTH_STENCIL_DESC dsDesc;
-	ZeroMemory(&dsDesc, sizeof(dsDesc));
+	_uint			iNumViewports = { 1 };
+	D3D11_VIEWPORT	ViewportDesc{};
 
-	//// 1. 깊이 테스트 기능을 끕니다.
-	//dsDesc.DepthEnable = FALSE;
-	//dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // 깊이 기록 안 함
-	//dsDesc.DepthFunc = D3D11_COMPARISON_ALWAYS;         // 항상 통과
+	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
-	//// 2. 스텐실(Stencil) 기능도 끕니다.
-	//dsDesc.StencilEnable = FALSE;
+	/* For.RenderTargets */
+	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Diffuse"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 
-	//// 3. 디바이스를 통해 상태 객체 생성
-	//m_pDevice->CreateDepthStencilState(&dsDesc, m_pDepthDisableState.GetAddressOf());
+	//if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Normal"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_RenderTarget(TEXT("Target_Shade"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	//	return E_FAIL;
+
+
+	/* For.MRTs */
+	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Diffuse"))))
+		return E_FAIL;
+	//if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Normal"))))
+	//	return E_FAIL;
+
+	//if (FAILED(m_pGameInstance->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
+	//	return E_FAIL;
+
+
+
+
+
 
 	return S_OK;
 }
@@ -73,6 +89,14 @@ void CRenderer::Render_Priority()
 
 void CRenderer::Render_NonBlend()
 {
+
+	/* Diffuse + Normal */
+	if (FAILED(m_pGameInstance.lock()->Begin_MRT(TEXT("MRT_GameObjects"))))
+		return;
+
+
+
+
 	for (auto& pRenderObject : m_RenderObject[ETOI(RENDERGROUP::NONBLEND)])
 	{
 		if (pRenderObject != nullptr)
@@ -80,6 +104,9 @@ void CRenderer::Render_NonBlend()
 	}
 
 	m_RenderObject[ETOI(RENDERGROUP::NONBLEND)].clear();
+
+
+	m_pGameInstance.lock()->End_MRT();
 }
 
 void CRenderer::Render_Blend()

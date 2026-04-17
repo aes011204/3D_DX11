@@ -44,6 +44,12 @@ void CPlayer_Storage::Enter()
 
 	eNextState = E_PLAYERSTATE::STORAGE;
 
+
+	Evt_OpenInventory e;
+	e.inven = m_Owner.lock()->Get_StorageCom();
+	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+
+
 	CPlayerState::Enter();
 }
 
@@ -53,6 +59,13 @@ void CPlayer_Storage::Exit()
 	Evt_EndState e = {};
 	//e.playerstate = E_PLAYERSTATE::VILLAGE;
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
+
+
+
+	Evt_CloseInventory close;
+	m_pGameInstance.lock()->Get_EventBus()->Publish(close);
+
+
 
 	CPlayerState::Exit();
 }

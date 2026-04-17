@@ -282,9 +282,17 @@
     <ClCompile Include="..\Private\Collison_Manager.cpp" />
     <ClCompile Include="..\Private\State.cpp" />
     <ClCompile Include="..\Private\StateMachine.cpp" />
-    <ClCompile Include="..\Private\VIBuffer_Instance.cpp" />
-    <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp" />
-    <ClCompile Include="..\Private\VIBuffer_Particle_Point.cpp" />
+    <ClCompile Include="..\Private\RenderTarget.cpp" />
+    <ClCompile Include="..\Private\Target_Manager.cpp" />
+    <ClCompile Include="..\Private\VIBuffer_Instance.cpp">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Particle_Point.cpp">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -514,9 +522,17 @@
     <ClInclude Include="..\Public\Collison_Manager.h" />
     <ClInclude Include="..\Public\State.h" />
     <ClInclude Include="..\Public\StateMachine.h" />
-    <ClInclude Include="..\Public\VIBuffer_Instance.h" />
-    <ClInclude Include="..\Public\VIBuffer_Particle_Rect.h" />
-    <ClInclude Include="..\Public\VIBuffer_Particle_Point.h" />
+    <ClInclude Include="..\Public\RenderTarget.h" />
+    <ClInclude Include="..\Public\Target_Manager.h" />
+    <ClInclude Include="..\Public\VIBuffer_Instance.h">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Particle_Point.h">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\VIBuffer_Particle_Rect.h">
+      <Filter>01.Utility\04.Components\VIIBufer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

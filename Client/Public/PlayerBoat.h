@@ -50,6 +50,8 @@ public:
     //virtual void RebindCom();
     HRESULT Bind_ShaderResources();
 
+    weak_ptr<class CInventory> Get_StorageCom() { return m_pStorageCom; }
+
 protected:
     HRESULT Ready_Components();
     HRESULT Ready_PartObjects();
@@ -69,6 +71,7 @@ private:
     //shared_ptr<CTexture> m_pTextureCom = { nullptr };
 
     shared_ptr<class CInventory> m_pInvenCom = { nullptr };
+    shared_ptr<class CInventory> m_pStorageCom = { nullptr };
     shared_ptr< CCollider> m_pColliderCom = { nullptr };
 
 

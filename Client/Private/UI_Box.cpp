@@ -60,6 +60,8 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 	// 일단 기본적으로 패널 은 다 inactive, 버튼은 iTabfig 에 따라 active
 	//::OnActive() 에서 클릭한 거만 활성화
 	
+	m_Name_Text->UI_Active();
+	m_Storage->UI_Active();
 
 
 
@@ -71,12 +73,12 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 		m_pUITransformCom->UpdateLayoutIfDirty();
 
 	//m_bInteractable = true;
-	OnActive();
 
-	for (auto& it : m_Children)
-	{
-		it->UI_Active();
-	}
+	//for (auto& it : m_Children)
+	//{
+	//	it->UI_Active();
+	//}
+	OnActive();
 
 }
 
@@ -225,11 +227,11 @@ shared_ptr<CUI_Box> CUI_Box::Create(ComPtr<ID3D11Device> pDevice,
 
 void CUI_Box::Free()
 {
-	for (int i = 0; i < 32; ++i)
+	/*for (int i = 0; i < 32; ++i)
 	{
 		m_TabContents[i].reset();
 		
-	}
+	}*/
 
 	CUIPanel::Free();
 }

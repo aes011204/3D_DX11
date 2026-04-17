@@ -28,9 +28,18 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 	////m_Inven = CInventory::Create();
 	//
 	////m_Inven->Upgrade_Boat(0); // 젤 처음
-
-
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MouseToIndex_Data>([this](const Evt_MouseToIndex_Data& e) {m_SlotX = e.x; m_SlotY = e.y; m_bIsOnSlot = e.IsOnSlot; });
+	///
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_OpenInventory>(
+		[this](const Evt_OpenInventory& e)
+		{
+			m_TargetInven = e.inven;
+		});
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_CloseInventory>(
+		[this](const Evt_CloseInventory&)
+		{
+			m_TargetInven.reset();
+		});
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MouseToIndex_Data>([this](const Evt_MouseToIndex_Data& e) {m_SlotX = e.x; m_SlotY = e.y; m_bIsOnSlot = e.IsOnSlot;  m_IsPlayerSlot = e.IsPlayer;  });
 
 	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>([this](const Evt_GetFish& e)
 	{
@@ -44,6 +53,14 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 		});
 
+
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_MoveTo_Storage>([this](const Evt_MoveTo_Storage e)
+		{
+			auto player = dynamic_pointer_cast<CPlayerBoat>(m_PlayerInven.lock()->Get_GOwner());
+			if (player == nullptr)
+				return;
+			m_PlayerInven.lock()->Auto_Move_To(player->Get_StorageCom(), m_SlotX, m_SlotY);
+		});
 	//auto tmppointer = dynamic_pointer_cast<CInventory_Controller>(shared_from_this());
 	//if(tmppointer == nullptr)
 	//{
@@ -63,14 +80,21 @@ void CInventory_Controller::Make_Hold(Item_Inst inst)
 		m_bDragging = true;
 	
 }
+shared_ptr<CInventory>  CInventory_Controller::Get_CurrentInven()
+{
+	if (m_IsPlayerSlot)
+		return m_PlayerInven.lock();
+	else
+		return m_TargetInven.lock();
+}
 void CInventory_Controller::Update(float TimeDelta)
 {
 	auto dInput = m_pGameInstance.lock()->Get_DInput_Manger();
 	//	->MouseDown(DIMB::LBUTTON);
 
 
-	auto Inven = m_PlayerInven.lock();
-	if (Inven == nullptr)
+	auto CurInven = Get_CurrentInven();
+	if (CurInven == nullptr)
 	{
 		return;
 	}
@@ -93,7 +117,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			{
 				//잡고 있는 아이템이 없을경우
 				// 집기
-				tmpInst = Inven->TryMove_Item(m_SlotX, m_SlotY);
+				tmpInst = CurInven->TryMove_Item(m_SlotX, m_SlotY);
 
 				if (tmpInst.ItemInst_ID == ID_Absence)
 					return;
@@ -107,10 +131,10 @@ void CInventory_Controller::Update(float TimeDelta)
 			else if (dInput->KeyDown(DIK_Z) /* + 일정 시간 이상 누르고 있을떄*/)
 			{
 				//인밴에 있는거 버리기
-				Inven->ThrowAwayFrom_Inven(m_SlotX, m_SlotY);
+				CurInven->ThrowAwayFrom_Inven(m_SlotX, m_SlotY);
 			}
 			//auto Inven = m_PlayerInven.lock();
-			Item_Inst inst = m_PlayerInven.lock()->Peek_Itme(m_SlotX, m_SlotY);
+			Item_Inst inst = CurInven->Peek_Itme(m_SlotX, m_SlotY);
 			if(m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY|| inst.ItemInst_ID!= m_prevItemInstId)
 			{
 				Evt_ItemHovered e = {};
@@ -132,25 +156,26 @@ void CInventory_Controller::Update(float TimeDelta)
 			// 잡고있는 아이템이 있는경우
 			PLACE_COLOR color = PLACE_COLOR::END;
 
-			Inven->CanPlace(/*m_HoldItem*/m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY, color);
+			CurInven->CanPlace(/*m_HoldItem*/m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY, color);
 
-			Inven->SetHighlightArea(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY, color);
+			CurInven->SetHighlightArea(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY, color);
 
 			
 		
 
 			if (dInput->MouseDown(DIMB::LBUTTON))
 			{
+				auto DestInven = Get_CurrentInven();
 				switch (color)
 				{
 				case PLACE_COLOR::GREEN:
-					tmpInst = Inven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
+					tmpInst = DestInven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
 					//m_HoldItem = tmpInst;// 이건 빈 인스턴스
 					m_UIHoldItem->ReleaseItem();
 					m_bDragging = false;
 					break;
 				case PLACE_COLOR::ORANGE:
-					tmpInst = Inven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
+					tmpInst = DestInven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
 
 					if (tmpInst.ItemInst_ID == ID_Absence)
 						return;
@@ -224,7 +249,8 @@ void CInventory_Controller::Update(float TimeDelta)
 			m_bDragging = false;
 			m_UIHoldItem->ReleaseItem();
 			//색칠한거 지워야함
-			for(auto& slot :m_PlayerInven.lock()->Get_Invenslot())
+			//auto inven = Get_CurrentInven();
+			for(auto& slot : CurInven->Get_Invenslot())
 			{
 				slot.Slot_Color = PLACE_COLOR::END;
 			}
@@ -232,8 +258,8 @@ void CInventory_Controller::Update(float TimeDelta)
 		if (m_bIsOnSlot == false)
 		{
 
-
-			for (auto& slot : m_PlayerInven.lock()->Get_Invenslot())
+			//auto inven = Get_CurrentInven();
+			for (auto& slot : CurInven->Get_Invenslot())
 			{
 				slot.Slot_Color = PLACE_COLOR::END;
 			}
@@ -255,13 +281,16 @@ void CInventory_Controller::Update(float TimeDelta)
 		}
 
 	}
+	auto cur = CurInven;
+	auto player = m_PlayerInven.lock();
 
-	auto inven = m_PlayerInven.lock();
-	if (inven && inven->Get_Dirty())
+	if (cur && player && cur.get() == player.get() && player->Get_Dirty())
 	{
-		inven->Set_Dirty(false);
-		Evt_ShipStat stat = inven->CalculateEquip();
-		dynamic_pointer_cast<CPlayerBoat>(inven->Get_GOwner())->Set_ShipStats(stat.EngineSpeed, stat.FishingSpeed, stat.LightIntensity, stat.SeaMask, stat.InvenMoney);
+	
+		player->Set_Dirty(false);
+		Evt_ShipStat stat = player->CalculateEquip();
+		dynamic_pointer_cast<CPlayerBoat>(player->Get_GOwner())->Set_ShipStats(stat.EngineSpeed, stat.FishingSpeed, stat.LightIntensity, stat.SeaMask, stat.InvenMoney);
+	
 	}
 
 

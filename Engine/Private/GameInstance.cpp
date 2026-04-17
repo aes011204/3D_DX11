@@ -18,6 +18,7 @@
 #include "Font_Manager.h"
 #include "Collison_Manager.h"
 #include "TimeOfDay.h"
+#include "Target_Manager.h"
 
 IMPLEMENT_SINGLETON(CGameInstance)
 
@@ -53,6 +54,13 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	m_pObject_Manager = CObject_Manager::Create(EngineDesc.iMaxLevelNum);
 	if (nullptr == m_pObject_Manager)
 		return E_FAIL;
+
+
+	// ·»´õ·¯ Àü¿¡
+	m_pTarget_Manager = CTarget_Manager::Create(ppDevice.Get(), ppContext.Get());
+	if (nullptr == m_pTarget_Manager)
+		return E_FAIL;
+
 	// ·»´õ·¯¸¦ »ý¼ºÇØ µÐ´Ù
 	m_Renderer = CRenderer::Create(ppDevice, ppContext);
 	if (nullptr == m_Renderer)
@@ -111,6 +119,8 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	m_pCollision_Manager = CCollision_Manager::Create(ppDevice.Get(), ppContext.Get());
 	if (nullptr == m_pCollision_Manager)
 		return E_FAIL;
+
+
 
 	return S_OK;
 }
@@ -484,14 +494,44 @@ void CGameInstance::Add_Collider(shared_ptr<CCollider> coll)
 	m_pCollision_Manager->Add_Collider(coll);
 }
 
+HRESULT CGameInstance::Add_RenderTarget(const _wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor)
+{
+	return m_pTarget_Manager->Add_RenderTarget(strTargetTag, iSizeX, iSizeY, ePixelFormat, vClearColor);
+}
+
+HRESULT CGameInstance::Bind_RT_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, const _wstring& strTargetTag)
+{
+	return m_pTarget_Manager->Bind_ShaderResource(pShader, pConstantName, strTargetTag);
+}
+
+HRESULT CGameInstance::Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag)
+{
+	return m_pTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
+}
+
+HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag)
+{
+	return m_pTarget_Manager->Begin_MRT(strMRTTag);
+}
+
+HRESULT CGameInstance::End_MRT()
+{
+	return m_pTarget_Manager->End_MRT();
+}
 
 void CGameInstance::Free()
 {
 	__super::Free();
 
 	m_ManagerForImgui.clear();
-	
 
+	
+	m_pPicking_Manager.reset();
+	m_pCamera_Manager.reset();
+	m_pFont_Manager.reset();
+	m_pTimeOfDay.reset();
+	m_pCollision_Manager.reset();
+	m_pTarget_Manager.reset();
 	m_pObject_Manager.reset();
 	m_pProto_Manager.reset();
 	m_pLevel_Manager.reset();

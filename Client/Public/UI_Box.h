@@ -58,7 +58,7 @@ private:
 	shared_ptr<CUIText> m_Name_Text = {};
 
 	/*shared_ptr<CUIButton> m_ButtonContents[32] = {};*/
-	shared_ptr<CUIPanel> m_TabContents[32] = {};
+	//shared_ptr<CUIPanel> m_TabContents[32] = {};
 	shared_ptr<CUIPanel> m_Storage = {};
 
 
@@ -68,7 +68,7 @@ private:
 	float m_fDuration = {};
 
 
-	weak_ptr<CPlayerBoat> m_PlayerBoat = {  };
+	//weak_ptr<CPlayerBoat> m_PlayerBoat = {  };
 
 public:
 	static shared_ptr<CUI_Box> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

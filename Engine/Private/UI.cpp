@@ -330,7 +330,6 @@ HRESULT CUI::Render()
 				m_bIsDirty_Zorder = false;
 			}
 		}
-
 		OnRender();
 
 		for (auto& it : m_Children)

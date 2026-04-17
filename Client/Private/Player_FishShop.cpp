@@ -110,7 +110,13 @@ int CPlayer_FishShop::Update_State(const _float& timeDelta)
 		}
 
 	}
+	else if (m_Input_Manager->MouseDown(DIMB::WHEEL))
+	{
+		Evt_MoveTo_Storage e = {};
+		
+		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 
+	}
 
 	return ETOI(eNextState);
 }

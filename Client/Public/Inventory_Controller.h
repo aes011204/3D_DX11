@@ -26,6 +26,7 @@ public:
     HRESULT Initialize(weak_ptr<CInventory> Inven, shared_ptr<class CUI_Item> UIHoldItem);
     void Update(float TimeDelta);
     void Make_Hold(Item_Inst inst);
+    shared_ptr<CInventory> Get_CurrentInven();
 
     void Set_Inven(weak_ptr<class CInventory> inventory) { m_PlayerInven = inventory; }
 
@@ -57,10 +58,18 @@ private:
     _bool m_bPrevOnSlot = { false };
 
     // 상점 등등을 위한 인밴 데이터도 필요함
-    class weak_ptr<class CInventory> m_PlayerInven = {}; // 로직
+     weak_ptr<class CInventory> m_PlayerInven = {}; // 로직
+    weak_ptr<CInventory> m_TargetInven;
+
+
+    weak_ptr<CInventory> m_SourceInven;
+    weak_ptr<CInventory> m_DestInven;
+
+    _bool m_IsPlayerSlot = false;
+
    // class shared_ptr<class CUI_Inventory> m_UIInven = { nullptr }; // UI
-    class shared_ptr<class CUI_Item> m_UIHoldItem = { nullptr };
-    class weak_ptr<CGameInstance>m_pGameInstance = { };
+   shared_ptr<class CUI_Item> m_UIHoldItem = { nullptr };
+   weak_ptr<CGameInstance>m_pGameInstance = { };
 public:
     static shared_ptr<CInventory_Controller> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven,shared_ptr<CUI_Item> UIHoldItem);
     virtual void Free() override;

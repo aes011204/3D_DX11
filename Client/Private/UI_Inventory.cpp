@@ -429,6 +429,15 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 	Evt_MouseToIndex_Data e = {};
 	e.IsOnSlot = false; // ±âº» false
 
+	if(m_Inven.lock()->Get_Inventype() == INVENTYPE::PLAYER)
+	{
+		e.IsPlayer = true;
+	}
+	else
+	{
+		e.IsPlayer = false;
+	}
+
 	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
 
 	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
@@ -466,7 +475,10 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 	//LOG_F(LOG_LEVEL::INFO, "x: %d ,y: %d ", e.x, e.y);
 
-	m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+	if (m_InvenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
+	{
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+	}
 	
 	return true;
 

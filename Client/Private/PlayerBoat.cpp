@@ -57,6 +57,12 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenPlayerInit_Data>(e);
 	}
 
+	{
+		Evt_InvenStrageInit_Data e = {};
+		e.Inven_ptr = m_pStorageCom;
+
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
+	}
 
 
 	return S_OK;
@@ -202,6 +208,17 @@ HRESULT CPlayerBoat::Ready_Components()
 	inven_desc.invenType = INVENTYPE::PLAYER;
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Inven"), &m_pInvenCom, &inven_desc)))
 		return E_FAIL;
+
+
+
+
+
+
+	CInventory::INVEN_DESC storage_desc = {};
+	storage_desc.invenType = INVENTYPE::STORAGE;
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pStorageCom, &storage_desc)))
+		return E_FAIL;
+	
 
 	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
 	OBBDesc.vExtents = _float3(0.5f, 0.6f, 1.5f);
