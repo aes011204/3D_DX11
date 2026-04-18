@@ -19,6 +19,7 @@ public:
 public:
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(void* pArg);
+    virtual HRESULT Render() { return S_OK; };
 
     HRESULT Set_Owner(shared_ptr<CEntity> pOwner);
     shared_ptr<CUI> Get_UOwner() { return m_pUOwner.lock(); }

@@ -22,6 +22,12 @@ public:
 
 	HRESULT Begin_MRT(const _wstring& strMRTTag);
 	HRESULT End_MRT();
+
+#ifdef _DEBUG
+public:
+	HRESULT Ready_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
+	HRESULT Render(shared_ptr<class CVIBuffer_Rect> pVIBuffer, shared_ptr<class CShader> pShader, const _wstring& strMRTTag);
+#endif
 protected:
 
 private:

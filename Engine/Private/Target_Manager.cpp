@@ -2,6 +2,8 @@
 #include "RenderTarget.h"
 
 CTarget_Manager::CTarget_Manager(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+
+	:m_pDevice(pDevice), m_pContext(pContext)
 {
 }
 
@@ -71,17 +73,30 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag)
 		return E_FAIL;
 	m_pContext->OMGetRenderTargets(1, m_pBackBuffer.GetAddressOf(), m_pOriginalDSV.GetAddressOf());
 
-	ComPtr<ID3D11RenderTargetView> pRenderTargets[8] = { nullptr };
+	//ComPtr<ID3D11RenderTargetView> pRenderTargets[8] = { nullptr };
+	//
+	//_uint       iNumRenderTargets = { 0 };
+	//
+	//for (auto& pRenderTarget : *pMRTList)
+	//{
+	//
+	//	pRenderTarget->Clear();
+	//
+	//	pRenderTargets[iNumRenderTargets++] = pRenderTarget->Get_RTV();
+	//}
+	//
+	//m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets->GetAddressOf(), m_pOriginalDSV.Get());
+	ID3D11RenderTargetView* pRenderTargets[8] = { nullptr };
 
 	_uint       iNumRenderTargets = { 0 };
 
 	for (auto& pRenderTarget : *pMRTList)
 	{
-		pRenderTargets[iNumRenderTargets++] = pRenderTarget->Get_RTV();
+		pRenderTarget->Clear();
+		pRenderTargets[iNumRenderTargets++] = pRenderTarget->Get_RTV().Get();
 	}
 
-	m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets->GetAddressOf(), m_pOriginalDSV.Get());
-
+	m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets, m_pOriginalDSV.Get());
 	return S_OK;
 }
 
@@ -95,7 +110,34 @@ HRESULT CTarget_Manager::End_MRT()
 	return S_OK;
 
 }
+#ifdef _DEBUG
+HRESULT CTarget_Manager::Ready_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
+{
+	shared_ptr<CRenderTarget> pRenderTarget = Find_RenderTarget(strTargetTag);
+	if(nullptr == pRenderTarget)
+	{
+		return E_FAIL;
+	}
 
+	return pRenderTarget->Ready_Debug(fX, fY, fSizeX, fSizeY);
+
+}
+
+HRESULT CTarget_Manager::Render(shared_ptr<CVIBuffer_Rect> pVIBuffer, shared_ptr <CShader> pShader, const _wstring& strMRTTag)
+{
+	list<shared_ptr<CRenderTarget>>* pMRTList = Find_MRT(strMRTTag);
+
+	if (nullptr == pMRTList)
+		return E_FAIL;
+
+	for (auto& pRenderTarget : *pMRTList)
+	{
+		pRenderTarget->Render(pVIBuffer, pShader);
+	}
+
+	return S_OK;
+}
+#endif
 list<shared_ptr<CRenderTarget>>* CTarget_Manager::Find_MRT(const _wstring& strMRTTag)
 {
 	auto        iter = m_MRTs.find(strMRTTag);

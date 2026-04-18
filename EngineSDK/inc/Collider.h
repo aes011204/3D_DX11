@@ -19,6 +19,7 @@ public:
 public:
 	virtual HRESULT Initialize_Prototype(COLLIDER eType);
 	virtual HRESULT Initialize(void* pArg) override;
+	
 
 	void Set_MyLayer(COLLISION_MASK myLayer) { m_MyLayer = myLayer; }
 	void Set_OtherLayerMask(COLLISION_MASK otherLayer) { m_OtherMask = otherLayer; }
@@ -48,7 +49,8 @@ public:
 	_float3 Get_WorldCenter();
 
 #ifdef _DEBUG
-	HRESULT Render();
+
+	virtual HRESULT Render() override;
 #endif
 
 private:

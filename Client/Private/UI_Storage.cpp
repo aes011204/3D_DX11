@@ -105,6 +105,9 @@ void CUI_Storage::OnActive()
 {
 	__super::OnActive();
 
+	Evt_OpenInventory e;
+	e.inven = m_Inven;
+	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 }
 
 void CUI_Storage::OnInActive()

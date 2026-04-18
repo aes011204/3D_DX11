@@ -19,6 +19,7 @@
 #include "UI_Controller.h"
 #include "EventBus.h"
 #include "MiniGameController.h"
+#include "Sky_Controller.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -28,6 +29,15 @@ CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11Devi
 
 HRESULT CLevel_GamePlay::Initialize()
 {
+
+
+	CSky_Controller::GetInstance()->Initialize(m_pDevice, m_pContext);
+	auto Sky = CSky_Controller::GetInstance();
+	if (Sky != nullptr)
+	{
+		
+		m_pGameInstance.lock()->Push_ManagerClass(L"SKY_CONTROLLER", Sky.get());
+	}
 
 	//CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "senechangedII");
 	//CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::WARNING, "senechangedWW");
@@ -114,15 +124,16 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 
 void CLevel_GamePlay::Update(_float fTimeDelta)
 {
+	auto pGameInstance = m_pGameInstance.lock();
 	if (GetKeyState(VK_NUMPAD1) & 0x8000)
 	{
-		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::LOGO))))
+		if (FAILED(pGameInstance->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::LOGO))))
 			return;
 	}
 
 
 
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
 	{
 		CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
 			make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
@@ -133,73 +144,34 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		//}
 
 	}
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_O))
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_O))
 	{
-		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
+		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_P))
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_P))
 	{
-		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
+		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_I))
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_I))
 	{
-		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
+		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
 
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_U))
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_U))
 	{
-		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
+		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 			return;
 	}
-	// �ϴ� ���� �ΰ� ���߿� �������� UIHander, UIController �� �̵�
-	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) // �ϴ� Ű�� ������ ��
-	//{
-	//	if (m_OnTab == false) // �����־��ٸ� �ѱ�
-	//	{
 
-	//		dynamic_pointer_cast<CUI_TabContainer>(m_TapUI)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE),TAB::INVEN);
-	//		m_HoldItem->UI_Active();
-	//		m_OnTab = true;
-	//	}
-	//	else // �����־��ٸ� ����
-	//	{
-	//		m_TapUI->UI_InActive();
-	//		m_HoldItem->UI_InActive();
-
-	//		m_OnTab = false;
-	//	}
-	//}
 	m_pInvenCntl->Update(fTimeDelta);
-
-	// 일단 테스트
-	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_M))
-	//{
-	//	
-	//	auto ui = dynamic_pointer_cast<CUI_NPC>(m_pNPC);
-	//	ui->UI_NPCActive("Mayer_start",);
-
-	//}
-	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_N))
-	//{
-	//
-	//	auto ui = dynamic_pointer_cast<CUI_MiniGame>(m_pMiniGame);
-	//	ui->UI_PanelActive(CUI_MiniGame::BASIC_CIRCLE,1002);
-	//
-	//}
-	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_B))
-	//{
-
-	//	auto ui = dynamic_pointer_cast<CUI_Village>(m_Village);
-	//	ui->UI_Active();
-
-	//}
+	CSky_Controller::GetInstance()->Update(fTimeDelta);
 
 }
 
@@ -221,7 +193,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
 	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))

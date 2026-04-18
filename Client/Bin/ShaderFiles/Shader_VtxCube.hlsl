@@ -12,20 +12,24 @@ float3 g_vSkyTopColor = float3(0.18f, 0.52f, 0.82f);
 
 
 float g_fTOD01;
-//
-float2 g_NightT;
-float2 g_MidNightT;
-float2 g_DayT;
-float2 g_SunsetT;
-float2 g_AfterSunsetT;
-float2 g_NightT2;
 
-// 색상 데이터 (Time Colors)
-float3 g_vNightColor;
-float3 g_vMidNightColor;
-float3 g_vDayColor;
-float3 g_vSunsetColor;
-float3 g_vAfterSunsetColor;
+float3 g_SkyColor;
+//
+//float2 g_NightT;
+//float2 g_MidNightT;
+//float2 g_DayT;
+//float2 g_SunsetT;
+//float2 g_AfterSunsetT;
+//float2 g_NightT2;
+//
+//// 색상 데이터 (Time Colors)
+//float3 g_vNightColor;
+//float3 g_vMidNightColor;
+//float3 g_vDayColor;
+//float3 g_vSunsetColor;
+//float3 g_vAfterSunsetColor;
+
+
 
 sampler DefaultSampler = sampler_state
 {
@@ -154,35 +158,42 @@ PS_OUT PS_MAIN(PS_IN In)
     cloud *= lerp(0.7f, 1.2f, horizonMask);
 
 
-// Sky Color
-
-    float3 newColor = g_vNightColor;
-    float wNight = smoothstep(g_NightT.x, g_NightT.y, g_fTOD01);
-    newColor = lerp(newColor, g_vNightColor, wNight);
-    float wMidNight = smoothstep(g_MidNightT.x, g_MidNightT.y, g_fTOD01);
-    newColor = lerp(newColor, g_vMidNightColor, wMidNight);
-    float wDay = smoothstep(g_DayT.x, g_DayT.y, g_fTOD01);
-    newColor = lerp(newColor, g_vDayColor, wDay);
-    float wSunSet = smoothstep(g_SunsetT.x, g_SunsetT.y, g_fTOD01);
-    newColor = lerp(newColor, g_vSunsetColor, wSunSet);
-    float wAfterSunSet = smoothstep(g_AfterSunsetT.x, g_AfterSunsetT.y, g_fTOD01);
-    newColor = lerp(newColor, g_vAfterSunsetColor, wAfterSunSet);
-    float wNight2 = smoothstep(g_NightT2.x, g_NightT2.y, g_fTOD01);
-    newColor = lerp(newColor, g_vNightColor, wNight2);
+    float t = g_fTOD01 ;
 
     float stepped = floor(skyTex.g * 4.0f) / 4.0f;
     float3 skyColor = lerp(g_vSkyBottomColor, g_vSkyTopColor, stepped);
     skyColor = lerp(skyColor, float3(0.7f, 0.75f, 0.8f), 0.2f);
 
 // Cloud Color
-    float3 cloudColor = float3(0.85f, 0.87f, 0.9f);
+    //float3 cloudColor = float3(0.85f, 0.87f, 0.9f);
+    
+//// Final
+//    float3 finalSky = lerp(skyColor,g_SkyColor, 0.7f);
+//    float3 finalColor = lerp(finalSky, cloudColor, cloud);
+//
+//    Out.vColor = float4(finalColor, 1.0f);
+//
 
-// Final
-    float3 finalSky = lerp(skyColor, newColor, 0.7f);
+
+
+// 낮 비율
+    float dayFactor = smoothstep(0.25f, 0.6f, t);
+
+
+
+    float3 finalSky = lerp(g_SkyColor, skyColor, 0.2f);
+    float cycle = 1.0f - abs(t * 2.0f - 1.0f); 
+
+
+    float brightness = lerp(0.2f, 1.0f, cycle);
+    finalSky *= brightness;
+    float3 cloudColor = lerp(float3(0.2f, 0.2f, 0.25f), float3(0.85f, 0.87f, 0.9f), brightness);
+
+// 구름
     float3 finalColor = lerp(finalSky, cloudColor, cloud);
 
     Out.vColor = float4(finalColor, 1.0f);
-    return Out;
+	return Out;
 }
 
 

@@ -182,7 +182,7 @@ void CUI_Box::OnUpdate(const _float& timeDelta)
 
 		if (t >= 1.f) t = 1.f;
 
-		m_vecAni = Vector2{ lerp(m_vecAni.x, 0.f, t),0.f };
+		m_vecAni = Vector2{ lerp(-m_vecAni.x, 0.f, t),0.f };
 		GetUITransform()->SetAnchoredPos(m_vecAni);
 		//LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
 

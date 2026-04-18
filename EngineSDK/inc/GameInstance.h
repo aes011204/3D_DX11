@@ -62,7 +62,7 @@ public: /*For.GameObject_Manager*/
 public:
 	/*For.Renderer*/
 	void Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<class CEntity> pNTT);
-
+	void Add_DebugenderGroup(shared_ptr<CComponent> pDebugComponent);
 
 public: /*For.Editor*/
 	const map<const _wstring, shared_ptr<CLayer>>& Get_GameObjects(_uint levelIndex) const;
@@ -107,6 +107,7 @@ public:/*For.PipeLine*/
 public:/*For.Light_Manager*/
 	const LIGHT_DESC* Get_LightDesc(_uint iIndex);
 	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
+	void Set_LightDesc(_uint iIndex, LIGHT_DESC Desc);
 
 public:/*For.Picking_Manager*/
 	_bool Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag = L"Layer_BackGround", _uint TerrainIndex = 0);
@@ -127,6 +128,22 @@ public:/*For.Font_Manager*/
 	public:/*For.Collison_Mgr*/
 		void Add_Collider(shared_ptr<class CCollider> coll);
 
+		public:/*For.Target_Manager_Mgr*/
+	HRESULT Add_RenderTarget(const _wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat,
+	                         const _float4& vClearColor);
+	HRESULT Bind_RT_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName,
+	                               const _wstring& strTargetTag);
+
+	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
+	HRESULT Begin_MRT(const _wstring& strMRTTag);
+	HRESULT End_MRT();
+#ifdef _DEBUG
+public:
+	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
+	HRESULT Render_RT_Debug(shared_ptr<CVIBuffer_Rect> pVIBuffer, shared_ptr<CShader> pShader, const _wstring& strMRTTag);
+#endif
+public:
+	HRESULT Render_Lights(shared_ptr<CShader> pShader, shared_ptr< CVIBuffer_Rect> pVIBuffer);
 
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
@@ -145,7 +162,7 @@ private:
 	unique_ptr<class CFont_Manager> m_pFont_Manager = { nullptr };
 	unique_ptr<class CTimeOfDay> m_pTimeOfDay = { nullptr };
 	unique_ptr<class CCollision_Manager> m_pCollision_Manager = { nullptr };
-
+	unique_ptr<class CTarget_Manager> m_pTarget_Manager = { nullptr };
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 
 	map<_wstring,CBase*> m_ManagerForImgui = {}; // rawPointer ÂüÁ¶¿ë

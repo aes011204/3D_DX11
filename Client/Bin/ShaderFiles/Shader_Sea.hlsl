@@ -31,7 +31,7 @@ float3 g_deepColor;
 float3 g_shallowColor;
 
 // 재질 정보
-//texture2D g_DiffuseTexture;
+texture2D g_DiffuseTexture;
 vector g_vMtrlAmbient = vector(0.5f, 0.5f, 0.5f, 1); // 주변광 반응 정도
 vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f); //하이라이트 강도
 
@@ -227,36 +227,39 @@ VS_OUT VS_MAIN(VS_IN In)
 PS_OUT PS_MAIN(PS_IN In)
 {
     PS_OUT Out;
+
+    float3 waterColor = lerp(g_shallowColor, g_deepColor, In.height01);
+    float Alpha = lerp(0.65f, 1.f, In.height01);
+
+    float3 Normal = normalize(In.vNormal.xyz);
+    float3 V = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
+    float3 L = normalize(-g_vLightDir.xyz);
 	//float3 waterColorsh = float3(0.05f, 0.2f, 0.4f);
-    float3 waterColor = lerp(g_shallowColor, g_deepColor, In.
-    height01);
-
-    float Alpha = lerp(0.5f, 1.f, In.height01);
-
-
-
-    //vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    //빛의 크기
-    vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, normalize(In.vNormal)), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
+    //float Alpha = lerp(0.2f, 0.6f, In.height01);
     
+    float NdotL = max(dot(Normal, L), 0.f);
+    float3 diffuse = g_vLightDiffuse.xyz * NdotL;
+    float3 ambient = g_vLightAmbient.xyz * g_vMtrlAmbient.xyz;
+    float3 light = diffuse + ambient;
+
+
     // 스팩큘러 (물체에 반사된 빛이 카메라에 들어오는 정도) 빛의 반사된 방향백터,카메라의 look
-    vector vLook = In.vWorldPos - g_vCamPosition;
-    vector vRelfect = reflect(normalize(g_vLightDir), In.vNormal);
-    //dot(normalize(g_vLightDir), normalize(In.vNormal))*normalize(In.vNormal)???? 모르겠음 낼 질문
-    float vSpecular = pow(max(dot(normalize(vLook) * -1, normalize(vRelfect)), 0.f), 100.f);
-    
-    vector vSpecularColor = g_vLightSpecular * g_vMtrlSpecular * vSpecular;
-    
-    float3 finalRGB = g_vLightDiffuse.xyz * waterColor * vShader.xyz + vSpecularColor.xyz;
+   
+    float3 Reflect = reflect(-L, Normal);
+    float vSpecular = pow(max(dot(V, Reflect), 0.f), 200.f);
+    float3 vSpecularColor = g_vLightSpecular.xyz * g_vMtrlSpecular.xyz * vSpecular;
+
+
+    float3 finalRGB =  waterColor * light + vSpecularColor.xyz;
     // 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트??
     //Out.vColor = float4(waterColor,1.f);
 
     // 프레넬
-    float3 viewDir = normalize(g_vCamPosition.xyz - In.vWorldPos.xyz);
-    float fresnel = pow(1.0f - saturate(dot(viewDir, In.vNormal.xyz)), 5.0f);
-
-    float finalAlpha = saturate(Alpha + vSpecularColor.x + fresnel);
-    Out.vColor = float4(finalRGB, finalAlpha);
+    float fresnel = pow(1.0f - saturate(dot(V, Normal)), 5.0f);
+    float finalAlpha = saturate(Alpha + fresnel * 0.5f);
+   // Out.vColor = float4(finalRGB, finalAlpha);
+    Out.vColor.rgb = finalRGB * finalAlpha;
+    Out.vColor.a = finalAlpha;
     //Out.vColor = float4(In.height01.xxx, 1);
     return Out;
 }

@@ -22,6 +22,18 @@ const LIGHT_DESC* CLight_Manager::Get_LightDesc(_uint iIndex)
     return  (*iter)->Get_LightDesc();
 }
 
+ void CLight_Manager::Set_LightDesc(_uint iIndex, LIGHT_DESC Desc)
+{
+    auto iter = m_Lights.begin();
+
+    for (_uint i = 0; i < iIndex; i++)
+    {
+        ++iter;
+    }
+
+    return  (*iter)->Set_LightDesc(Desc);
+}
+
 HRESULT CLight_Manager::Add_Light(const LIGHT_DESC& LightDesc)
 {
    shared_ptr<CLight>  pInstance = CLight::Create(LightDesc);
@@ -30,6 +42,20 @@ HRESULT CLight_Manager::Add_Light(const LIGHT_DESC& LightDesc)
 
    m_Lights.push_back(pInstance);
     return S_OK;
+}
+
+HRESULT CLight_Manager::Render_Light(shared_ptr<CShader> pShared, shared_ptr<CVIBuffer_Rect> pVIBuffer)
+{
+    for(auto& pLight :m_Lights)
+    {
+	    if(nullptr != pLight)
+	    {
+            pLight->Render(pShared, pVIBuffer);
+	    }
+    }
+
+    return S_OK;
+
 }
 
 unique_ptr<CLight_Manager> CLight_Manager::Create()

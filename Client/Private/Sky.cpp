@@ -1,5 +1,6 @@
 #include "Sky.h"
 #include "GameInstance.h"
+#include "Sky_Controller.h"
 
 CSky::CSky(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CGameObject(pDevice, pContext)
@@ -107,31 +108,34 @@ HRESULT CSky::Bind_ShaderResources()
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_fTOD01", &tod01, sizeof(float))))
 		return E_FAIL;
-	//
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT", &NightT, sizeof(_float2))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_MidNightT", &MidNightT, sizeof(_float2))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_DayT", &DayT, sizeof(_float2))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_SunsetT", &SunsetT, sizeof(_float2))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_AfterSunsetT", &AfterSunsetT, sizeof(_float2))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT2", &NightT2, sizeof(_float2))))
-		return E_FAIL;
-	// 3. 시간대별 색상 (float3) 바인딩
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vNightColor", &Night, sizeof(_float3))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vMidNightColor", &MidNight, sizeof(_float3))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vDayColor", &Day, sizeof(_float3))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vSunsetColor", &Sunset, sizeof(_float3))))
-		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vAfterSunsetColor", &AfterSunset, sizeof(_float3))))
-		return E_FAIL;
+	auto diffuse = CSky_Controller::GetInstance()->Get_Diffuse();
+	//
+	 if (FAILED(m_pShaderCom->Bind_RawValue("g_SkyColor", &diffuse, sizeof(_float3))))
+			return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT", &NightT, sizeof(_float2))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_MidNightT", &MidNightT, sizeof(_float2))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_DayT", &DayT, sizeof(_float2))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_SunsetT", &SunsetT, sizeof(_float2))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_AfterSunsetT", &AfterSunsetT, sizeof(_float2))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT2", &NightT2, sizeof(_float2))))
+	//	return E_FAIL;
+	//// 3. 시간대별 색상 (float3) 바인딩
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vNightColor", &Night, sizeof(_float3))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vMidNightColor", &MidNight, sizeof(_float3))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vDayColor", &Day, sizeof(_float3))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vSunsetColor", &Sunset, sizeof(_float3))))
+	//	return E_FAIL;
+	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vAfterSunsetColor", &AfterSunset, sizeof(_float3))))
+	//	return E_FAIL;
 	return S_OK;
 }
 

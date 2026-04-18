@@ -197,9 +197,9 @@ Item_Inst CInventory::AddItem(Item_Inst itemInst, _int BaseX, _int BaseY)
 
 _bool CInventory::Auto_Add(Item_Inst& itemInst)
 {
-	for (int j = 0; j < m_w; j++)
+	for (int i = 0; i < m_h; i++)     // y ¸ÕÀú
 	{
-		for (int i = 0; i < m_h; i++)
+		for (int j = 0; j < m_w; j++)
 		{
 			if (m_InvenSlot[i * m_w + j].ItemInst_ID == ID_Absence)
 			{
@@ -210,8 +210,7 @@ _bool CInventory::Auto_Add(Item_Inst& itemInst)
 					AddItem(itemInst, j, i);
 					return true;
 				}
-				else
-					continue;
+				
 			}
 		}
 

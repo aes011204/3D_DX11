@@ -45,9 +45,9 @@ void CPlayer_Storage::Enter()
 	eNextState = E_PLAYERSTATE::STORAGE;
 
 
-	Evt_OpenInventory e;
+	/*Evt_OpenInventory e;
 	e.inven = m_Owner.lock()->Get_StorageCom();
-	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+	m_pGameInstance.lock()->Get_EventBus()->Publish(e);*/
 
 
 	CPlayerState::Enter();

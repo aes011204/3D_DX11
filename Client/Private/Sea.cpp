@@ -11,9 +11,12 @@
 #include "Sea_Manager.h"
 #include <numbers>
 
+#include "Sky_Controller.h"
+
 
 CSea::CSea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CGameObject(pDevice, pContext), m_SeaManager(CSea_Manager::GetInstance())
+
 {
 }
 
@@ -32,6 +35,8 @@ HRESULT CSea::Initialize_Prototype()
 
 HRESULT CSea::Initialize(void* pArg)
 {
+
+	m_SkyContrl = (CSky_Controller::GetInstance());
 	/* 백그라운드의 멤버를 채워넣어야한다면 여기서 채운다. */
 	SEA_DESC			Desc{};
 
@@ -156,14 +161,17 @@ HRESULT CSea::Bind_ShaderResources()
 	const LIGHT_DESC* desc = m_pGameInstance.lock()->Get_LightDesc(0);
 	if (nullptr == desc)
 		return E_FAIL;
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &desc->vDirection, sizeof(_float4))))
+	const _float4& dir = m_SkyContrl->Get_Direction();
+	const _float4& diff = m_SkyContrl->Get_Diffuse();
+	const _float4& amb = m_SkyContrl->Get_Ambient();
+	const _float4& spec = m_SkyContrl->Get_Specular();
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &dir, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &desc->vDiffuse, sizeof(_float4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &diff, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &desc->vAmbient, sizeof(_float4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &amb, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &desc->vSpecular, sizeof(_float4))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &spec, sizeof(_float4))))
 		return E_FAIL;
 
 	///////Wave///////

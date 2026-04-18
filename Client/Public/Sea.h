@@ -48,7 +48,7 @@ private:
     shared_ptr<CVIBuffer_Sea> m_pVIBufferComCashing = { nullptr };
     shared_ptr<CTexture> m_pTextureCom = { nullptr };
 
-
+    shared_ptr<class CSky_Controller> m_SkyContrl = { nullptr };
    weak_ptr<class CSea_Manager> m_SeaManager = {};
  /*   float m_AccTime = {};
     int m_WaveCount = {};

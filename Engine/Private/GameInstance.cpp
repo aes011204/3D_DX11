@@ -432,6 +432,11 @@ HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
 	return m_pLight_Manager->Add_Light(LightDesc);
 }
 
+void CGameInstance::Set_LightDesc(_uint iIndex, LIGHT_DESC Desc)
+{
+	m_pLight_Manager->Set_LightDesc(iIndex, Desc);
+}
+
 _bool CGameInstance::Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag, _uint TerrainIndex)
 {
 
@@ -518,6 +523,30 @@ HRESULT CGameInstance::End_MRT()
 {
 	return m_pTarget_Manager->End_MRT();
 }
+
+#ifdef _DEBUG
+HRESULT CGameInstance::Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
+{
+	return m_pTarget_Manager->Ready_Debug(strTargetTag, fX, fY, fSizeX, fSizeY);
+}
+
+HRESULT CGameInstance::Render_RT_Debug(shared_ptr<CVIBuffer_Rect> pVIBuffer, shared_ptr < CShader> pShader, const _wstring& strMRTTag)
+{
+	return m_pTarget_Manager->Render(pVIBuffer, pShader, strMRTTag);
+}
+#endif
+
+HRESULT CGameInstance::Render_Lights(shared_ptr<CShader> pShader, shared_ptr< CVIBuffer_Rect> pVIBuffer)
+{
+	return m_pLight_Manager->Render_Light(pShader, pVIBuffer);
+}
+#ifdef _DEBUG
+void CGameInstance::Add_DebugenderGroup(shared_ptr<CComponent> pDebugComponent)
+{
+	m_Renderer->Add_DebugenderGroup(pDebugComponent);
+}
+#endif
+
 
 void CGameInstance::Free()
 {

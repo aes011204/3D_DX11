@@ -167,7 +167,7 @@ HRESULT CEmptyGObject::Bind_ShaderResources()
 	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
+	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
 	if (nullptr == pLightDesc)
 		return E_FAIL;
 
@@ -178,7 +178,7 @@ HRESULT CEmptyGObject::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
-		return E_FAIL;
+		return E_FAIL;*/
 
 
 

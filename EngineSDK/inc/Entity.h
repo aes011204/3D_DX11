@@ -55,6 +55,8 @@ public:
 
 	virtual void RebindCom() {};
 
+
+
 /// <IMGUI>
 
     map<const _wstring, class shared_ptr<CComponent> >& const Get_ComponentMap() {return m_Components;};

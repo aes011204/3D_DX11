@@ -132,17 +132,14 @@ HRESULT CMon_Tentacle::Render()
 
 
 
+
 #ifdef _DEBUG
 	if (m_pGameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-
-
-	
-		m_Btm_F_Collider->Render();
-	m_Btm_Collider->Render();
-
-	m_Top_Collider->Render();
-	m_Mid_Collider->Render();
+	m_pGameInstance.lock()->Add_DebugenderGroup(m_Btm_F_Collider);
+	m_pGameInstance.lock()->Add_DebugenderGroup(m_Btm_Collider);
+	m_pGameInstance.lock()->Add_DebugenderGroup(m_Top_Collider);
+	m_pGameInstance.lock()->Add_DebugenderGroup(m_Mid_Collider);
 
 #endif
 
@@ -225,7 +222,7 @@ HRESULT CMon_Tentacle::Bind_ShaderResources()
 	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
+	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
 	if (nullptr == pLightDesc)
 		return E_FAIL;
 
@@ -236,7 +233,7 @@ HRESULT CMon_Tentacle::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
-		return E_FAIL;
+		return E_FAIL;*/
 
 	return S_OK;
 }

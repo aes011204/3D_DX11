@@ -74,13 +74,6 @@ void CVillage::Late_Update(_float fTimeDelta)
 
 HRESULT CVillage::Render()
 {
-#ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
-		return S_OK;
-	m_pColliderCom->Render();
-
-
-#endif
 
 
 
@@ -101,6 +94,16 @@ HRESULT CVillage::Render()
 		if (FAILED(m_pModelCom->Render(i)))
 			return E_FAIL;
 	}
+
+
+#ifdef _DEBUG
+	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+		return S_OK;
+	m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+
+
+
+#endif
 
 
 
@@ -139,7 +142,7 @@ HRESULT CVillage::Bind_ShaderResources()
 	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
-	const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
+	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
 	if (nullptr == pLightDesc)
 		return E_FAIL;
 
@@ -150,7 +153,7 @@ HRESULT CVillage::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
-		return E_FAIL;
+		return E_FAIL;*/
 
 	////
 	

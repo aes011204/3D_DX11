@@ -11,9 +11,11 @@ public:
 
 public:
     const LIGHT_DESC* Get_LightDesc(_uint iIndex);
+    void Set_LightDesc(_uint iIndex, LIGHT_DESC Desc);
 
     HRESULT Add_Light(const LIGHT_DESC& LightDesc);
 
+    HRESULT Render_Light(shared_ptr<class CShader> pShared, shared_ptr<class CVIBuffer_Rect> pVIBuffer);
 private:
     list<shared_ptr<class CLight>> m_Lights;
 public:

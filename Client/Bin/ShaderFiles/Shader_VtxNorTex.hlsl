@@ -3,7 +3,7 @@
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 //texture2D g_Texture;
 
-//vector g_vCamPosition;
+vector g_vCamPosition;
 
 // 재질 정보
 texture2D g_DiffuseTexture;
@@ -11,11 +11,11 @@ texture2D g_DiffuseTexture;
 //vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f); //하이라이트 강도
 
 // 빛정보 (빛색, 세기 등)
-vector g_vLightDir;
-
-vector g_vLightDiffuse;
-vector g_vLightAmbient;
-vector g_vLightSpecular;
+//vector g_vLightDir;
+//
+//vector g_vLightDiffuse;
+//vector g_vLightAmbient;
+//vector g_vLightSpecular;
 
 
 vector g_vSandColor;
@@ -77,7 +77,7 @@ VS_OUT VS_MAIN(VS_IN In)
     matWVP = mul(matWV, g_ProjMatrix);
     
     Out.vPosition = mul(float4(In.vPosition, 1.f), matWVP);
-    Out.vTexcoord = In.vTexcoord*0.05;
+    Out.vTexcoord = In.vTexcoord*5;
     Out.vNormal = normalize(mul(float4(In.vNormal, 0.f),g_WorldMatrix)); //받아온 노말은 지역이라 월드좌표로 차원맞춰줘야함. 노말라이즈는 픽셀 쉐이더 에서 하는것보다 여기서 하는게 성능상 이점
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix); // 나중 계산을 위해 z 나누기, 뷰,투영 없는 거 저장 
     
@@ -94,12 +94,12 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    //
-    //float3 sand =  g_vSandColor.rgb;
-    //float3 algae =  g_vAlgaeColor.rgb;
-    //float3 rock =  g_vRockColor.rgb;
-    //
-    //float3 finalColor = (sand * vMtrlDiffuse.r) + (algae * vMtrlDiffuse.g) + (rock * vMtrlDiffuse.b);
+    
+    float3 sand =  g_vSandColor.rgb;
+    float3 algae =  g_vAlgaeColor.rgb;
+    float3 rock =  g_vRockColor.rgb;
+    
+    float3 finalColor = (sand * vMtrlDiffuse.r) + (algae * vMtrlDiffuse.g) + (rock * vMtrlDiffuse.b);
     //
     //vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, normalize(In.vNormal)), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
     //
@@ -113,8 +113,8 @@ PS_OUT PS_MAIN(PS_IN In)
     //Out.vColor = g_vLightDiffuse * float4(finalColor, 1.f) * vShader + vSpecularColor;
     //// 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트??
     ///
-    Out.vDiffuse = vMtrlDiffuse;
-    Out.vNormal = In.vNormal;
+    Out.vDiffuse = vector(finalColor.rgb, 1.f);
+    Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     return Out;
 }
 

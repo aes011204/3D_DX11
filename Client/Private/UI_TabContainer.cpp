@@ -175,6 +175,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 				break;
 			case TAB::STORAGE:
 				name = L"창고";
+
 				break;
 			case TAB::ETC:
 				name = L"기타";

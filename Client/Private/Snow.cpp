@@ -46,7 +46,7 @@ void CSnow::Update(_float fTimeDelta)
 
 void CSnow::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONLIGHT, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CSnow::Render()

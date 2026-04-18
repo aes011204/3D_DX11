@@ -21,6 +21,11 @@ public:
 	virtual void Clear();
 
 	ComPtr<ID3D11RenderTargetView>	Get_RTV() { return m_pRTV; }
+#ifdef _DEBUG
+public:
+	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
+	HRESULT Render(shared_ptr<class CVIBuffer_Rect> pVIBuffer, shared_ptr<class CShader> pShader);
+#endif
 protected:
 
 private:
@@ -35,6 +40,10 @@ private:
 
 private:
 	_float4			m_vClearColor = {};
+#ifdef _DEBUG
+private:
+	_float4x4		m_WorldMatrix = {};
+#endif
 public:
 	static shared_ptr<CRenderTarget> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, 
 		_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor);

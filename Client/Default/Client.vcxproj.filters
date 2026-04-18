@@ -230,7 +230,10 @@
     <ClInclude Include="..\Public\Mon_R_Act.h">
       <Filter>02.GameObject\01.Monster</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\UI_Box.h" />
+    <ClInclude Include="..\Public\UI_Box.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Sky_Controller.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -410,7 +413,10 @@
     <ClCompile Include="..\Private\Mon_R_Act.cpp">
       <Filter>02.GameObject\01.Monster</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UI_Box.cpp" />
+    <ClCompile Include="..\Private\UI_Box.cpp">
+      <Filter>03.UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Sky_Controller.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">
@@ -443,5 +449,6 @@
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxDonut.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxParticleRect.hlsl" />
     <FxCompile Include="..\Bin\ShaderFiles\Shader_VtxParticlePoint.hlsl" />
+    <FxCompile Include="..\Bin\ShaderFiles\Shader_Deferred.hlsl" />
   </ItemGroup>
 </Project>
