@@ -29,9 +29,26 @@ HRESULT CUI_Storage::Initialize_Prototype()
 	///발행이 나중에 되야함 
 	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenStrageInit_Data>([this](const Evt_InvenStrageInit_Data& e)
 		{
-			m_Inven = e.Inven_ptr;
-			if (m_Inven.lock() != nullptr)
-				Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+
+			if (e.inventype == INVENTYPE::SHOP)
+			{
+				if(m_shopTab == e.ShopTabType)
+				{
+					m_Inven = e.Inven_ptr;
+					if (m_Inven.lock() != nullptr)
+						Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+
+					return;
+				}
+				
+			}
+			else if (e.inventype == m_inventype)
+			{
+				m_Inven = e.Inven_ptr;
+				if (m_Inven.lock() != nullptr)
+					Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+			}
+
 		});
 
 	return S_OK;
@@ -40,8 +57,12 @@ HRESULT CUI_Storage::Initialize_Prototype()
 
 HRESULT CUI_Storage::OnInit(void* pArg)
 {
-	
+
 	STORAGE_DESC* pDesc = static_cast<STORAGE_DESC*>(pArg);
+	m_inventype = pDesc->Inventype;
+	m_shopTab = pDesc->shopTab;
+
+
 	HRESULT hr = {};
 
 
@@ -98,7 +119,7 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 	hr = __super::OnInit(pDesc);
 
 
-    return hr;
+	return hr;
 }
 
 void CUI_Storage::OnActive()
@@ -214,7 +235,7 @@ void CUI_Storage::OnLateUpdate()
 HRESULT CUI_Storage::OnRender()
 {
 
-    return __super::OnRender();
+	return __super::OnRender();
 }
 
 void CUI_Storage::OnClear()
@@ -386,7 +407,7 @@ _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 			break;
 		}
-		
+
 	}
 
 
@@ -440,7 +461,7 @@ _float2 CUI_Storage::Calculate_RenderPos(const Item_Inst& item)
 
 
 	return center;
-	
+
 }
 
 
@@ -496,6 +517,11 @@ void CUI_Storage::Render_Item()
 		}
 	}
 
+}
+
+void CUI_Storage::Set_SlotNum(_uint col, _uint row)
+{
+	Rebuild_InventorySlot(col, row, m_Inven.lock()->Get_Invenslot());
 }
 
 

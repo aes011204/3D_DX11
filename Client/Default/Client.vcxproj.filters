@@ -234,6 +234,9 @@
       <Filter>03.UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sky_Controller.h" />
+    <ClInclude Include="..\Public\UI_RepairShop.h" />
+    <ClInclude Include="..\Public\Box.h" />
+    <ClInclude Include="..\Public\Player_Interact.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -417,6 +420,9 @@
       <Filter>03.UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sky_Controller.cpp" />
+    <ClCompile Include="..\Private\UI_RepairShop.cpp" />
+    <ClCompile Include="..\Private\Box.cpp" />
+    <ClCompile Include="..\Private\Player_Interact.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

@@ -53,13 +53,14 @@ private:
 	//TAB m_Active = TAB::NONE;
 
 	//shared_ptr<CUIImage> m_Line = {};
-	//shared_ptr<CUIImage> m_TextIMG = {};
+	shared_ptr<CUIImage> m_NameBase = {};
 
 	shared_ptr<CUIText> m_Name_Text = {};
 
 	/*shared_ptr<CUIButton> m_ButtonContents[32] = {};*/
 	//shared_ptr<CUIPanel> m_TabContents[32] = {};
 	shared_ptr<CUIPanel> m_Storage = {};
+	shared_ptr<class CUI_Storage> m_Box = {};
 
 
 	Vector2 m_vecAni = {};

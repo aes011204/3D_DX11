@@ -4,6 +4,7 @@
 #include "State.h"
 #include "PlayerState.h"
 #include "Player_FishShop.h"
+#include "Player_Interact.h"
 #include "Player_MiniGame.h"
 #include "Player_RepairShop.h"
 #include "Player_Sea.h"
@@ -147,7 +148,10 @@ HRESULT CPlayerStateMachine::Init_PlayerStates()
     m_vecState[ETOI(E_PLAYERSTATE::FISH_SHOP)] = pState;
     pState->Init_State();
 
-
+    if (nullptr == (pState = CPlayer_Interact::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        return E_FAIL;
+    m_vecState[ETOI(E_PLAYERSTATE::INTERACT)] = pState;
+    pState->Init_State();
 
     return S_OK;
 }

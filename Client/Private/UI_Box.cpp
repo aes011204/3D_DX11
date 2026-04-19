@@ -47,21 +47,26 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 	if(IsStorage == true)
 	{
 		m_Name_Text->Set_Text(L"내 물품 보관함");
-
+		m_Storage->UI_Active();
+		m_pUITransformCom->SetLocalScale(_float2(2.56f, 3.21f));
 	}
 	else
 	{
 		m_Name_Text->Set_Text(L"발견한 아이템");
+		m_Box->UI_Active();
+		m_Box->Get_InvenPanel()->Set_Transparent(true);
+		m_pUITransformCom->SetLocalScale(_float2(2.56f, 1.7f));
+
 	}
 
 
 	//m_Children.clear();
-	_uint numPanel = {};
+//	_uint numPanel = {};
 	// 일단 기본적으로 패널 은 다 inactive, 버튼은 iTabfig 에 따라 active
 	//::OnActive() 에서 클릭한 거만 활성화
-	
+	m_NameBase->UI_Active();
 	m_Name_Text->UI_Active();
-	m_Storage->UI_Active();
+	/*m_Storage->UI_Active();*/
 
 
 
@@ -109,7 +114,7 @@ HRESULT CUI_Box::OnInit(void* pArg)
 	shared_ptr<CUIImage> NameBase = CUIImage::Create(m_pDevice, m_pContext);
 	NameBase->Initialize(&nameBaseDesc);
 	Add_Child(NameBase, L"NameBase", false);
-
+	m_NameBase = NameBase;
 	{
 		CUIText::TEXT_DESC nameDesc = {};
 		nameDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
@@ -125,11 +130,12 @@ HRESULT CUI_Box::OnInit(void* pArg)
 
 	
 
-		// 일단 테스트 인벤 3개
+		// 인벤
 		CUI_Storage::STORAGE_DESC StorageDesc = {};
 		StorageDesc.IsFullScreen = false;
 		StorageDesc.IsTransparent = true;
 		StorageDesc.bSetParentSize = true;
+		StorageDesc.Inventype = INVENTYPE::STORAGE;
 
 		shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
 		pStorage->Initialize(&StorageDesc);
@@ -140,6 +146,22 @@ HRESULT CUI_Box::OnInit(void* pArg)
 		pStorage->UI_InActive();
 	
 
+		//////////////////////////////////////////
+
+		// 인벤
+		CUI_Storage::STORAGE_DESC boxDesc = {};
+		boxDesc.IsFullScreen = false;
+		boxDesc.IsTransparent = true;
+		boxDesc.bSetParentSize = true;
+		boxDesc.Inventype = INVENTYPE::CHEST;
+	
+		shared_ptr<CUI_Storage> pBox = CUI_Storage::Create(m_pDevice, m_pContext);
+		pBox->Initialize(&boxDesc);
+
+
+		Add_Child(pBox, L"Box", false);
+		m_Box = pBox;
+		pBox->UI_InActive();
 
 	
 	return hr;
@@ -182,7 +204,7 @@ void CUI_Box::OnUpdate(const _float& timeDelta)
 
 		if (t >= 1.f) t = 1.f;
 
-		m_vecAni = Vector2{ lerp(-m_vecAni.x, 0.f, t),0.f };
+		m_vecAni = Vector2{ lerp(-600.f, 0.f, t),0.f };
 		GetUITransform()->SetAnchoredPos(m_vecAni);
 		//LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
 

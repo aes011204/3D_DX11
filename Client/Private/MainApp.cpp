@@ -497,7 +497,27 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	//
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/lumber.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Mat/lumber.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
 
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/cloth.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Mat/cloth.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/research_item.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Mat/research_item.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
 
 	///////////////////////LOADING//////////////////////////////
 
@@ -679,8 +699,9 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	//
 
-
+	
 	////////////////////////ICON///////////////////////////
 
 	//Prototype_Component_Texture_ShipIcon
@@ -835,6 +856,39 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	//Prototype_Component_Texture_StorageIcon
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StorageIcon"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/StorageIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//shop
+	//Prototype_Component_Texture_Shop_Engine
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Engine"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/EngineIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	
+	//Prototype_Component_Texture_Shop_Rod
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Rod"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/RodIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_Shop_Net
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Net"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/TrawlIcon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//Prototype_Component_Texture_Shop_Light
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Light"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/LightIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;

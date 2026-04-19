@@ -142,6 +142,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\BackGround.h" />
+    <ClInclude Include="..\Public\Box.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Public\Explosion.h" />
     <ClInclude Include="..\Public\Fish.h" />
     <ClInclude Include="..\Public\MiniGameController.h" />
@@ -176,6 +179,7 @@
     <ClInclude Include="..\Public\PlayerBoat.h" />
     <ClInclude Include="..\Public\PlayerState.h" />
     <ClInclude Include="..\Public\Player_FishShop.h" />
+    <ClInclude Include="..\Public\Player_Interact.h" />
     <ClInclude Include="..\Public\Player_MiniGame.h" />
     <ClInclude Include="..\Public\Player_RepairShop.h" />
     <ClInclude Include="..\Public\Player_Sea.h" />
@@ -194,6 +198,9 @@
     <ClInclude Include="..\Public\UI_HUD.h" />
     <ClInclude Include="..\Public\UI_Item.h" />
     <ClInclude Include="..\Public\UI_NPC.h" />
+    <ClInclude Include="..\Public\UI_RepairShop.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\Public\UI_Skill.h" />
     <ClInclude Include="..\Public\UI_Storage.h" />
     <ClInclude Include="..\Public\UI_Inventory.h" />
@@ -212,6 +219,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Private\BackGround.cpp" />
+    <ClCompile Include="..\Private\Box.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Private\Explosion.cpp" />
     <ClCompile Include="..\Private\Fish.cpp" />
     <ClCompile Include="..\Private\MiniGameController.cpp" />
@@ -243,6 +253,7 @@
     <ClCompile Include="..\Private\PlayerBoat.cpp" />
     <ClCompile Include="..\Private\PlayerState.cpp" />
     <ClCompile Include="..\Private\Player_FishShop.cpp" />
+    <ClCompile Include="..\Private\Player_Interact.cpp" />
     <ClCompile Include="..\Private\Player_MiniGame.cpp" />
     <ClCompile Include="..\Private\Player_RepairShop.cpp" />
     <ClCompile Include="..\Private\Player_Sea.cpp" />
@@ -261,6 +272,9 @@
     <ClCompile Include="..\Private\UI_HUD.cpp" />
     <ClCompile Include="..\Private\UI_Item.cpp" />
     <ClCompile Include="..\Private\UI_NPC.cpp" />
+    <ClCompile Include="..\Private\UI_RepairShop.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Private\UI_Skill.cpp" />
     <ClCompile Include="..\Private\UI_Storage.cpp" />
     <ClCompile Include="..\Private\UI_Inventory.cpp" />

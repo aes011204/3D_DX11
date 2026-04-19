@@ -221,6 +221,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 			StorageDesc.IsFullScreen = false;
 			StorageDesc.IsTransparent = true;
 			StorageDesc.bSetParentSize = true;
+			StorageDesc.Inventype = INVENTYPE::STORAGE;
 
 			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
 			pStorage->Initialize(&StorageDesc);

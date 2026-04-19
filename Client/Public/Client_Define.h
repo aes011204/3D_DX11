@@ -22,6 +22,9 @@ namespace Client
 
 	enum class LEVEL { STATIC, LOADING, LOGO, GAMEPLAY, EDITOR, END };
 	enum class TAB : unsigned int { NONE = 0, INVEN = 1 << 0, STORAGE = 1 << 1, ETC = 1 << 2 };
+
+	
+
 }
 
 

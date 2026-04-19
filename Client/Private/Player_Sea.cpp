@@ -46,7 +46,7 @@ void CPlayer_Sea::Enter()
 
 void CPlayer_Sea::Exit()
 {
-	//m_NextState = E_PLAYERSTATE::SEA;
+	m_NextState = E_PLAYERSTATE::SEA;
 	CPlayerState::Exit();
 }
 
@@ -132,9 +132,7 @@ void CPlayer_Sea::Render_State()
 
 void CPlayer_Sea::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-
-
-	// 돌이랑 충돌하면 0 아님 - 로 _CurrentSpeed 이거 나중에 충돌체쪽으로 옮기기
+	
 }
 
 void CPlayer_Sea::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
@@ -185,6 +183,13 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 	}
 
+	if (other->Get_MyLayer() == COLLISION_LAYER::ITEM)
+	{
+		if (m_Input_Manager->KeyDown(DIK_F))
+		{
+			m_NextState = E_PLAYERSTATE::INTERACT;
+		}
+	}
 
 
 }

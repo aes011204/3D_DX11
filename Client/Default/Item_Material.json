@@ -1,25 +1,25 @@
 {
     "Items": [
-        {
-            "ItemID": 3001,
-            "ItemType": "MATERIAL",
-            "ItemName": "목재",
-            "ItemDesc": "물에 젖은 나무 판자입니다. 누군가에게는 유용할지도요.",
-            "TexturePath": "//pass//",
-            "ItemShape": {
-                "Width": 3,
-                "Height": 1,
-                "Shape_Mask": [
-                    [ 1, 1, 1 ]
-                ]
-            },
-            "SizeNum": 3,
-
-            "Cost": 5
-
-
-
+      {
+        "ItemID": 3001,
+        "ItemType": "MATERIAL",
+        "ItemName": "목재",
+        "ItemDesc": "물에 젖은 나무 판자입니다. 누군가에게는 유용할지도요.",
+        "TexturePath": "../Bin/Resources/Textures/Item/Mat/lumber.png",
+        "ItemShape": {
+          "Width": 3,
+          "Height": 1,
+          "Shape_Mask": [
+            [ 1, 1, 1 ]
+          ]
         },
+        "SizeNum": 3,
+
+        "Cost": 5
+
+
+
+      },
         {
             "ItemID": 3002,
             "ItemType": "MATERIAL",
@@ -36,22 +36,25 @@
             "Cost": 7
            
         },
-        {
-            "ItemID": 3003,
-            "ItemType": "MATERIAL",
-            "ItemName": "옷감 한 필",
-            "ItemDesc": "적당한 길이의 옷감입니다. 축축하게 젖어 있긴 하지만 아직 변질되진 않았습니다. 선박 개조에 사용할 수 있습니다.",
-            "TexturePath": "//pass//",
-            "ItemShape": {
-                "Width": 1,
-                "Height": 2,
-                "Shape_Mask": [ [ 1 ], [ 1 ] ]
-            },
-            "SizeNum": 2,
-
-            "Cost": 10
-
+      {
+        "ItemID": 3003,
+        "ItemType": "MATERIAL",
+        "ItemName": "옷감 한 필",
+        "ItemDesc": "적당한 길이의 옷감입니다. 축축하게 젖어 있긴 하지만 아직 변질되진 않았습니다. 선박 개조에 사용할 수 있습니다.",
+        "TexturePath": "../Bin/Resources/Textures/Item/Mat/cloth.png",
+        "ItemShape": {
+          "Width": 1,
+          "Height": 2,
+          "Shape_Mask": [
+            [ 1 ],
+            [ 1 ]
+          ]
         },
+        "SizeNum": 2,
+
+        "Cost": 10
+
+      },
         {
             "ItemID": 3004,
             "ItemType": "MATERIAL",
@@ -71,22 +74,22 @@
             "Cost": 500
 
         },
-        {
-            "ItemID": 3005,
-            "ItemType": "MATERIAL",
-            "ItemName": "연구 부품",
-            "ItemDesc": "호기심을 자극하게 생긴 부품입니다. 새로운 장비를 개발하는 데 사용할 수 있지만 먼저 부두에서 조사해봐야 합니다.",
-            "TexturePath": "//pass//",
-            "ItemShape": {
-                "Width": 1,
-                "Height": 1,
-                "Shape_Mask": [ [ 1 ] ]
-            },
-            "SizeNum": 1,
-
-            "Cost": 350
-
+      {
+        "ItemID": 3005,
+        "ItemType": "MATERIAL",
+        "ItemName": "연구 부품",
+        "ItemDesc": "호기심을 자극하게 생긴 부품입니다. 새로운 장비를 개발하는 데 사용할 수 있지만 먼저 부두에서 조사해봐야 합니다.",
+        "TexturePath": "../Bin/Resources/Textures/Item/Mat/research_item.png",
+        "ItemShape": {
+          "Width": 1,
+          "Height": 1,
+          "Shape_Mask": [ [ 1 ] ]
         },
+        "SizeNum": 1,
+
+        "Cost": 350
+
+      },
         {
             "ItemID": 3006,
             "ItemType": "MATERIAL",

@@ -30,23 +30,36 @@ HRESULT CInventory::Initialize(void* pArg)
 	if (pArg != nullptr)
 	{
 
-		if (inven_desc->invenType == INVENTYPE::PLAYER)
+		switch (inven_desc->invenType)
+		{
+		case INVENTYPE::PLAYER:
 		{
 			Init_BoatUpgrade();
 			Upgrade_Boat(0);
+			break;
 		}
-		else if (inven_desc->invenType == INVENTYPE::SHOP)
+		case INVENTYPE::SHOP:
 		{
-			m_w = inven_desc->width;
-			m_h = inven_desc->height;
-
+			m_w = 8;
+			m_h = 8;
+			break;
 		}
-		else if (inven_desc->invenType == INVENTYPE::STORAGE)
+		case INVENTYPE::STORAGE:
 		{
-	
 			m_w = 7;
 			m_h = 8;
-
+			break;
+		}
+		case INVENTYPE::CHEST:
+		{
+			m_w = 3;
+			m_h = 3;
+			break;
+		}
+		default:
+		{
+			break;
+		}
 		}
 	}
 
@@ -66,34 +79,84 @@ HRESULT CInventory::Initialize(void* pArg)
 	// 이거 플레이어 보트로 옮김 
 
 
+	switch (inven_desc->invenType)
+	{
+	case INVENTYPE::PLAYER:
+	{
+		Fish_Inst instfish = {};
+		Item_Inst inst1 = Create_ItemInstance(1001, instfish, 3);
 
+		inst1.BaseXY = { 2,2 };
+		AddItem(inst1, 2, 2);
+
+		Item_Inst inst = Create_ItemInstance(1001, instfish, 1);
+
+		inst.BaseXY = { 0,2 };
+		AddItem(inst, 0, 2);
+
+		Item_Inst inst2 = Create_ItemInstance(1002, instfish, 0);
+
+		inst2.BaseXY = { 2,0 };
+		AddItem(inst2, 2, 0);
+
+
+		Equip_Inst instEquip = {};
+		Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
+		AddItem(inst3, 1, 3);
+
+		Item_Inst inst4 = Create_ItemInstance(2003, instEquip, 1);
+		AddItem(inst4, 5, 3);
+		break;
+	}
+	case INVENTYPE::SHOP:
+	{
+		Equip_Inst instEquip = {};
+		Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
+		AddItem(inst3, 1, 3);
+
+		Item_Inst inst4 = Create_ItemInstance(2003, instEquip, 1);
+		AddItem(inst4, 5, 3);
+	
+		break;
+	}
+	case INVENTYPE::STORAGE:
+	{
+		Fish_Inst instfish = {};
+		Item_Inst inst1 = Create_ItemInstance(1001, instfish, 3);
+
+		inst1.BaseXY = { 2,2 };
+		AddItem(inst1, 2, 2);
+
+		Item_Inst inst = Create_ItemInstance(1001, instfish, 1);
+		break;
+	}
+	case INVENTYPE::CHEST:
+	{
+		
+		Item_Inst inst3 = Create_ItemInstance(3001, monostate{}, 0);
+		AddItem(inst3, 0, 0);
+
+
+		inst3 = Create_ItemInstance(3003, monostate{}, 1);
+		AddItem(inst3, 0, 1);
+
+		inst3 = Create_ItemInstance(3005, monostate{}, 0);
+		AddItem(inst3, 2, 1);
+
+		inst3 = Create_ItemInstance(3001, monostate{}, 0);
+		AddItem(inst3, 0, 2);
+		break;
+	}
+	default:
+	{
+		break;
+	}
+	}
 
 	//test
 	//
 	//
-	Fish_Inst instfish = {};
-	Item_Inst inst1 = Create_ItemInstance(1001, instfish, 3);
-
-	inst1.BaseXY = { 2,2 };
-	AddItem(inst1, 2, 2);
-
-	Item_Inst inst = Create_ItemInstance(1001, instfish, 1);
-
-	inst.BaseXY = { 0,2 };
-	AddItem(inst, 0, 2);
-
-	Item_Inst inst2 = Create_ItemInstance(1002, instfish, 0);
-
-	inst2.BaseXY = { 2,0 };
-	AddItem(inst2, 2, 0);
-
-
-	Equip_Inst instEquip = {};
-	Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
-	AddItem(inst3, 1, 3);
-
-	Item_Inst inst4 = Create_ItemInstance(2003, instEquip, 1);
-	AddItem(inst4, 5, 3);
+	
 	return S_OK;
 }
 Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, variant<monostate, Fish_Inst, Equip_Inst>  TypeDefInst, int rot)

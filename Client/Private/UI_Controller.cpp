@@ -16,6 +16,7 @@
 #include "EventBus.h"
 #include "DialogueDB.h"
 #include "UI_Box.h"
+#include "UI_RepairShop.h"
 
 IMPLEMENT_SINGLETON(CUI_Controller)
 
@@ -151,6 +152,10 @@ void CUI_Controller::End_StateUI()
 
 		auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
 		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+
+
+		auto m_repair = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"repairShop");
+		dynamic_pointer_cast<CUI_RepairShop>(m_repair)->UI_InActive();
 	}
 
 	if (m_PendingUIState == E_PLAYERSTATE::STORAGE)
@@ -167,7 +172,20 @@ void CUI_Controller::End_StateUI()
 		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
 		dynamic_pointer_cast<CUI_Box>(Box)->UI_InActive();
 	}
+	if (m_PendingUIState == E_PLAYERSTATE::INTERACT)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		(Tab)->UI_InActive();
 
+		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+		m_HoldItem->UI_InActive();
+
+		auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+
+		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
+		dynamic_pointer_cast<CUI_Box>(Box)->UI_InActive();
+	}
 }
 
 void CUI_Controller::StateUI()
@@ -212,6 +230,9 @@ void CUI_Controller::StateUI()
 
 		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
 		m_HoldItem->UI_Active();
+
+		auto m_repair = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"repairShop");
+		dynamic_pointer_cast<CUI_RepairShop>(m_repair)->UI_PanelActive();
 	}
 
 	if (m_PendingUIState == E_PLAYERSTATE::STORAGE)
@@ -224,7 +245,17 @@ void CUI_Controller::StateUI()
 
 		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
 		dynamic_pointer_cast<CUI_Box>(Box)->UI_PanelActive(true);
+	}
+	if (m_PendingUIState == E_PLAYERSTATE::INTERACT)
+	{
+		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
+		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
 
+		auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+		m_HoldItem->UI_Active();
+
+		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
+		dynamic_pointer_cast<CUI_Box>(Box)->UI_PanelActive(false);
 	}
 }
 
@@ -367,8 +398,15 @@ HRESULT CUI_Controller::Ready_UI()
 	Box->Initialize(&pDescBox);
 	m_pGameInstance.lock()->UI_InsertToPool(L"Box", Box);
 
+	/////////////shop//////////////
 
+	CUI_RepairShop::REPAIR_DESC pRepairDesc= {};
+	shared_ptr<CUI_RepairShop> repair = CUI_RepairShop::Create(m_pDevice, m_pContext);
+	if (repair == nullptr)
+		return E_FAIL;
 
+	repair->Initialize(&pRepairDesc);
+	m_pGameInstance.lock()->UI_InsertToPool(L"repairShop", repair);
 
 
 

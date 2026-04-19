@@ -269,7 +269,7 @@ namespace Client
         Test1,
     };
 
-    enum class INVENTYPE { PLAYER, CHEST, SHOP,STORAGE, END };
+    enum class INVENTYPE { PLAYER, CHEST, SHOP,STORAGE, END, NONE };
 
 
     struct Evt_InvenPlayerInit_Data
@@ -277,11 +277,21 @@ namespace Client
         weak_ptr<class CInventory> Inven_ptr = {};
     };
 
+    enum class SHOPTAB { ROT, ENGINE, NET, LIGHT, END , NONE};
     struct Evt_InvenStrageInit_Data
     {
+        INVENTYPE inventype = { INVENTYPE ::NONE};
+        SHOPTAB ShopTabType = {  };
         weak_ptr<class CInventory> Inven_ptr = {};
     };
 
+
+
+    struct Evt_InvenShopInit_Data
+    {
+        SHOPTAB m_ShopTabTYpe = {  };
+        weak_ptr<class CInventory> Inven_ptr = {};
+    };
     struct  Evt_MouseToIndex_Data
     {
         _bool IsOnSlot = { false };
@@ -324,7 +334,9 @@ namespace Client
 
     enum class LOCATIONSTATE { REPAIR_SHOP, SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP, VILLAGE, END };
 
-    enum class E_PLAYERSTATE { REPAIR_SHOP, FISH_SHOP, FISHING, SEA, STORAGE, VILLAGE, END };
+    enum class E_PLAYERSTATE { REPAIR_SHOP, FISH_SHOP, FISHING, SEA, STORAGE, VILLAGE,INTERACT, END };
+
+
 
 
     struct Wave_Desc

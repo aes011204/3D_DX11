@@ -66,6 +66,8 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 		}
 		break;
 	case ITEM_TYPE::EQUIP:
+		{
+	
 		Equip_Inst* EquipInst = get_if<Equip_Inst>(&itemInst.TypeDef);
 		Equip_Def* EquipDef = get_if<Equip_Def>(&itemDef.TypeDef);
 
@@ -95,8 +97,17 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 		}
 		DescInfo = S2W(itemDef.ItemDesc);
 		cost = EquipDef->Cost;
-
 		break;
+		}
+	case ITEM_TYPE::MATERIAL:
+		{
+		Material_Def* MatDef = get_if<Material_Def>(&itemDef.TypeDef);
+		NameInfo = S2W(itemDef.ItemName);
+		DescInfo = S2W(itemDef.ItemDesc);
+		cost = MatDef->Cost;
+		break;
+
+		}
 	}
 	m_NameText->Set_Text(NameInfo); //위치조정 필요 없음
 	m_NameText->UI_Active();

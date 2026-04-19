@@ -2,6 +2,9 @@
 #include "GameInstance.h"
 #include "Model.h"
 #include "Bounding_AABB.h"
+#include "Inventory.h"
+#include "Client_Enum.h"
+#include "EventBus.h"
 
 CVillage::CVillage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CGameObject{ pDevice ,pContext }
@@ -48,6 +51,19 @@ HRESULT CVillage::Initialize(void* pArg)
 	m_pTransformCom->Set_Position(XMVectorSet(-3.3f, 2.2f, 0.f, 1.f));
 	m_pTransformCom->Set_RotationDegree(_float3{ -180.f, -1.3f, 180.f });
 	m_pTransformCom->Set_Scale(_float3{ 3.5f, 3.5f, 3.5f });
+
+
+
+
+
+	for (_uint i = 0; i < ETOI(SHOPTAB::END); i++)
+	{
+		Evt_InvenStrageInit_Data e = {};
+		e.Inven_ptr = m_pShopCom[i];
+		e.inventype = m_pShopCom[i]->Get_Inventype();
+		e.ShopTabType = static_cast<SHOPTAB>(i);
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
+	}
 
 	return S_OK;
 }
@@ -189,6 +205,18 @@ HRESULT CVillage::Ready_Components()
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_Collider"), &m_pColliderCom, &AABBDesc)))
 		return E_FAIL;
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+
+
+	for(_uint i =0; i < ETOI(SHOPTAB::END) ; i++)
+	{
+		CInventory::INVEN_DESC storage_desc = {};
+		storage_desc.invenType = INVENTYPE::SHOP;
+		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pShopCom[i], &storage_desc)))
+			return E_FAIL;
+
+	}
+
+
 
 
 	return S_OK;

@@ -1,5 +1,6 @@
 #include "Level_GamePlay.h"
 
+#include "Box.h"
 #include "GameInstance.h"
 #include "PlayerBoat.h"
 #include "Level_Loading.h"
@@ -116,7 +117,7 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Box", false, nullptr);
 	//m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
-
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"repairShop", false, nullptr);
 
 
 	return S_OK;
@@ -211,7 +212,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _wstring& strLayerTag)
 
 
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sky"),
-		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		ETOI(LEVEL::GAMEPLAY), strLayerTag )))
 		return E_FAIL;
 
 
@@ -275,6 +276,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Box"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+		return E_FAIL;
 
 
 
