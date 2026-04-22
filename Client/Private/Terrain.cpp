@@ -93,11 +93,11 @@ void CTerrain::OnGui()
 
 HRESULT CTerrain::Ready_Components()
 {
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"),& m_pVIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"),& m_pVIBufferCom, nullptr)))
 		return E_FAIL;
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"),& m_pShaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"),& m_pTextureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"),& m_pTextureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;

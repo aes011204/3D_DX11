@@ -74,7 +74,8 @@ HRESULT CLevel_GamePlay::Initialize()
 	if (FAILED(Ready_Layer_Effect(TEXT("Layer_Effect"))))
 		return E_FAIL;
 
-
+	//m_pGameInstance.lock()->Load(SAVETYPE::GAMEOBJECT, "Lasst_1.json");
+	m_pGameInstance.lock()->Load(SAVETYPE::UI, "MINI_GAME_5.json");
 	
 	return S_OK;
 }
@@ -142,6 +143,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	if(m_Flag ==false)
 	{
 		CGameInstance::GetInstance()->Change_Camera(L"Client_CAM");
+		m_pGameInstance.lock()->Load(SAVETYPE::GAMEOBJECT, "Lasst_2.json");
 		m_Flag = true;
 	}
 
@@ -199,6 +201,9 @@ HRESULT CLevel_GamePlay::Render()
 HRESULT CLevel_GamePlay::Ready_Lights()
 {
 
+	m_pGameInstance.lock()->Clear_Light();
+
+
 	LIGHT_DESC LightDesc{};
 
 	LightDesc.eType = LIGHT::DIRECTIONAL;
@@ -208,28 +213,28 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 	LightDesc.vAmbient = _float4(0.2f, 0.2f, 0.2f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
+	if (nullptr==(m_pGameInstance.lock()->Add_Light(LightDesc)))
 		return E_FAIL;
 
 
 
 	LightDesc.eType = LIGHT::POINT;
-	LightDesc.vPosition = _float4(20.f, 5.f, 20.f, 1.f);
-	LightDesc.fRange = 15.f;
-	LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
-	LightDesc.vAmbient = _float4(0.4f, 0.f, 0.f, 1.f);
+	LightDesc.vPosition = _float4(0.f, 20.f, 0.f, 1.f);
+	LightDesc.fRange = 20.f;
+	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
-
-	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
+	
+	if (nullptr == (m_pGameInstance.lock()->Add_Light(LightDesc)))
 		return E_FAIL;
 
 	LightDesc.eType = LIGHT::POINT;
-	LightDesc.vPosition = _float4(30.f, 5.f, 20.f, 1.f);
+	LightDesc.vPosition = _float4(35.f, 12.3f, 17.f, 1.f);
 	LightDesc.fRange = 15.f;
-	LightDesc.vDiffuse = _float4(0.f, 1.f, 0.f, 1.f);
-	LightDesc.vAmbient = _float4(0.f, 0.4f, 0.f, 1.f);
+	LightDesc.vDiffuse = _float4(1.0f, 0.9f, 0.6f, 1.f);
+	LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
-	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
+	if (nullptr == (m_pGameInstance.lock()->Add_Light(LightDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -237,7 +242,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Terrain"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 
@@ -275,7 +280,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 
 
-	CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
+	/*CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
 	FRCamDesc.fFar = 500.f;
 	FRCamDesc.fNear = 0.1f;
 	FRCamDesc.fFovY = XMConvertToRadians(60.f);
@@ -290,7 +295,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::GAMEPLAY), L"FREE_CAM", freeCamera);
+	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::GAMEPLAY), L"FREE_CAM", freeCamera);*/
 
 
 //	CGameInstance::GetInstance()->Change_Camera(L"Client_CAM");

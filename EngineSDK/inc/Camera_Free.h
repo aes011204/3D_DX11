@@ -26,10 +26,13 @@ public:
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
 
+    void Set_Stop(_bool stop) { m_stop = stop; };
+
+
     void OnGui() override;
 private:
     _float	m_fMouseSensor = {};
-
+    _bool m_stop = {false};
 public:
     //void* pArg : 사본객체의 추가적인 초기화가 필요 할수 있음 런타임 할당 되는 주소 같은거
     static shared_ptr<CCamera_Free> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

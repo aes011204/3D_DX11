@@ -26,7 +26,7 @@ public:
 	int Update(_float fTimeDelta);
 
 	HRESULT Render();
-
+	HRESULT Ready_Game();
 
 
 public:

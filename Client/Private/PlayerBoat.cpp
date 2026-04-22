@@ -64,7 +64,19 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
 	}
 
+	LIGHT_DESC LightDesc = {};
 
+	LightDesc.eType = LIGHT::POINT;
+	LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+	LightDesc.fRange = 5.f;
+	LightDesc.vDiffuse = _float4(1.0f, 0.8f, 0.5f, 1.f);
+	LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	m_LightObj = (m_pGameInstance.lock()->Add_Light(LightDesc));
+	if (m_LightObj == nullptr)
+		return E_FAIL;
+	m_LightObj->Set_Active(false);
 	return S_OK;
 }
 
@@ -102,6 +114,22 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	//}
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
+	if (dinput->MouseDown(DIMB::RBUTTON) && m_LightObj)
+	{
+		On_Light = !On_Light;
+		m_LightObj->Set_Active(On_Light);
+	}
+	if(m_LightObj->Get_Active()== true)
+	{
+		XMVECTOR vPos = m_pTransformCom->Get_Position();
+		XMVECTOR vLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
+
+		XMVECTOR vFinal = vPos + vLook * 1.5f + XMVectorSet(0.f, 0.9f, 0.f, 0.f);
+		_float3 finalPos;
+		XMStoreFloat3(&finalPos, vFinal);
+
+		m_LightObj->Set_Position(finalPos.x, finalPos.y, finalPos.z);
+	}
 	__super::Update(fTimeDelta);
 	//m_pModelCom->Play_Animation(fTimeDelta);
 }

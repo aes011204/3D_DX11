@@ -63,7 +63,7 @@ struct PS_OUT_BACKBUFFER
 struct PS_OUT_LIGHT
 {
     vector vShade : SV_TARGET0;
-    vector vSpecular : SV_TARGET1;
+   // vector vSpecular : SV_TARGET1;
 };
 
 
@@ -191,7 +191,7 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
 
 
 
-    Out.vColor = vDiffuse * vShade + vEmissive+vBloom*5.f;
+    Out.vColor = vDiffuse * vShade + vEmissive; //+vBloom*5.f;
 
     return Out;
 }

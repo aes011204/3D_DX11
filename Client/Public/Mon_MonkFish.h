@@ -47,6 +47,7 @@ protected:
 
   
     const _float4x4* m_pSocketMatrix = { nullptr };
+    const _float4x4* m_pSocketMatrix_Light = { nullptr };
     //const _float4x4* m_pSocketMatrix_LefttHand = { nullptr };
 
     XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
@@ -73,6 +74,9 @@ private:
     shared_ptr<CTexture> m_pTextureCom = { nullptr };
     shared_ptr<CCollider> m_pColliderCom = { nullptr };
     weak_ptr<CGameObject>  m_pPlayer = {  };
+
+
+    shared_ptr<CLight> m_LightObj = { nullptr };
 
     _float m_LenghtNear = {};
     _float m_LenghtAttack = {};

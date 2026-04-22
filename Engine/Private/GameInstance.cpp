@@ -101,6 +101,8 @@ if (nullptr == m_pCamera_Manager)
 	m_pLight_Manager = CLight_Manager::Create();
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
+	Push_ManagerClass(L"Light_Manager", m_pLight_Manager.get());
+
 
 	//m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iMaxLevelNum);
 	//if (nullptr == m_pCamera_Manager)
@@ -190,6 +192,8 @@ void CGameInstance::Clear_Resources(_uint iLevelIndex)
 	}
 
 	m_UI_Manager->Detach_All();
+
+	//m_pLight_Manager->clear_light();
 
 	if (FAILED(m_pCamera_Manager->Clear_Camera(iLevelIndex)))
 	{
@@ -431,7 +435,7 @@ const LIGHT_DESC* CGameInstance::Get_LightDesc(_uint iIndex)
 	return m_pLight_Manager->Get_LightDesc(iIndex);
 }
 
-HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
+shared_ptr<CLight> CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
 {
 	return m_pLight_Manager->Add_Light(LightDesc);
 }
@@ -439,6 +443,11 @@ HRESULT CGameInstance::Add_Light(const LIGHT_DESC& LightDesc)
 void CGameInstance::Set_LightDesc(_uint iIndex, LIGHT_DESC Desc)
 {
 	m_pLight_Manager->Set_LightDesc(iIndex, Desc);
+}
+
+void CGameInstance::Clear_Light()
+{
+	return m_pLight_Manager->clear_light();
 }
 
 _bool CGameInstance::Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag, _uint TerrainIndex)

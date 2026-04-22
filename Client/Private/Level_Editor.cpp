@@ -71,7 +71,7 @@ HRESULT CLevel_Editor::Ready_Lights()
 	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
+	if (nullptr==(m_pGameInstance.lock()->Add_Light(LightDesc)))
 		return E_FAIL;
 
 	return S_OK;

@@ -90,7 +90,7 @@ HRESULT CRenderer::Initialize()
 		return E_FAIL;
 	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Shade"), 450.f, 150.f, 300.f, 300.f)))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Blur2"), 450.f, 450.f, 300.f, 300.f)))
+	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Emissive"), 450.f, 450.f, 300.f, 300.f)))
 		return E_FAIL;
 #endif
 
@@ -210,10 +210,15 @@ void CRenderer::Render_Blend()
 void CRenderer::Render_Lights()
 {
 	//shade
+	ID3D11ShaderResourceView* nullSRV[16] = {};
+	m_pContext->PSSetShaderResources(0, 16, nullSRV);
+	m_pContext->VSSetShaderResources(0, 16, nullSRV);
+	m_pContext->GSSetShaderResources(0, 16, nullSRV);
 
 	if(FAILED(m_pGameInstance.lock()->Begin_MRT(TEXT("MRT_LightAcc"))))
 		return;
 
+	m_pContext->OMSetDepthStencilState(nullptr, 0);
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
 		return;
@@ -258,8 +263,8 @@ void CRenderer::Render_Combined()
 {
 
 
-	ID3D11ShaderResourceView* nullSRV[16] = {};
-	m_pContext->PSSetShaderResources(0, 16, nullSRV);
+	//ID3D11ShaderResourceView* nullSRV[16] = {};
+	//m_pContext->PSSetShaderResources(0, 16, nullSRV);
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
 		return;

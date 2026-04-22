@@ -68,7 +68,7 @@
             "ColorLamp2": 0.8240000009536743,
             "Components": [
                 {
-                    "ComProtoLevel": 3,
+                    "ComProtoLevel": 0,
                     "ComProtoTag": "Prototype_Component_Model_Island_Collector",
                     "ComponentTag": "Com_Model"
                 },

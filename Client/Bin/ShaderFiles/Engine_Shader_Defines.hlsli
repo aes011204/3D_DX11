@@ -80,9 +80,14 @@ BlendState BS_AlphaBlend
 BlendState BS_Blend
 {
     BlendEnable[0] = true;
-    BlendEnable[1] = true;
 
-    SrcBlend = one;
-    DestBlend = one;
-    BlendOp = Add;
+    SrcBlend[0] = One;
+    DestBlend[0] = One;
+    BlendOp[0] = Add;
+
+    SrcBlendAlpha[0] = One;
+    DestBlendAlpha[0] = One;
+    BlendOpAlpha[0] = Add;
+
+    RenderTargetWriteMask[0] = 0x0F;
 };

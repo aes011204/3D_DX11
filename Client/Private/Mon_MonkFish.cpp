@@ -44,7 +44,7 @@ HRESULT CMon_MonkFish::Initialize(void* pArg)
 	_float3 targetPos = {};
 	XMStoreFloat3(&targetPos, m_pPlayer.lock()->Get_TransformCom()->Get_Position());
 
-	_vector finalPos = XMVectorSet(targetPos.x + 10.f, 0.f, targetPos.z + 10.f, 1.f);
+	_vector finalPos = XMVectorSet(targetPos.x + 40.f, 0.f, targetPos.z + 30.f, 1.f);
 
 	m_pTransformCom->Set_Position(finalPos);
 
@@ -56,6 +56,24 @@ HRESULT CMon_MonkFish::Initialize(void* pArg)
 	m_pTransformCom->Set_Speed(2.f);
 
 	m_pSocketMatrix = m_pModelCom_Mon->Get_BoneMatrixPtr("jaw2_jnt");
+
+	m_pSocketMatrix_Light = m_pModelCom_Mon->Get_BoneMatrixPtr("feeler6_jnt");
+
+
+	LIGHT_DESC LightDesc = {};
+
+	LightDesc.eType = LIGHT::POINT;
+	LightDesc.vPosition = _float4(0.f, 0.2f, 0.f, 1.f);
+	LightDesc.fRange = 5.f;
+	LightDesc.vDiffuse = _float4(2.f, 1.8f, 1.4f, 1.f);
+	LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	m_LightObj = (m_pGameInstance.lock()->Add_Light(LightDesc));
+	if (m_LightObj == nullptr)
+		return E_FAIL;
+
+
 	return S_OK;
 }
 
@@ -166,8 +184,12 @@ void CMon_MonkFish::Update(_float fTimeDelta)
 
 	}
 
+	XMMATRIX final = CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_Light));
 
+	_float3 pos;
+	XMStoreFloat3(&pos, final.r[3]);
 
+	m_LightObj->Set_Position(pos.x, pos.y+0.5f, pos.z);
 
 
 
@@ -210,6 +232,9 @@ void CMon_MonkFish::EnterState(STATE newState)
 		m_pModelCom_Mon->Set_Animation(0, true);
 		break;
 	}
+
+
+
 
 }
 

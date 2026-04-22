@@ -107,7 +107,7 @@ PS_OUT PS_MAIN(PS_IN In)
 // Planar
     //float fPlanarDiv = max(vDir.y, 0.2f);
     //float2 baseUV = vDir.xz / fPlanarDiv;
-    float fPlanarDiv = max(vDir.y, 0.15f); // 0.2 → 0.5
+    float fPlanarDiv = max(vDir.y, 0.1f); // 0.2 → 0.5
     float2 baseUV = vDir.xz / fPlanarDiv;
 // 방향5
 
@@ -154,8 +154,8 @@ PS_OUT PS_MAIN(PS_IN In)
     cloud *= 0.75f;
 
 // 지평선
-    float horizonMask = saturate(1.0f - vDir.y * 1.5f);
-    cloud *= lerp(0.7f, 1.2f, horizonMask);
+    float horizonMask = saturate(1.0f - vDir.y * 1.f);
+    cloud *= lerp(0.7f, 1.f, horizonMask);
 
 
     float t = g_fTOD01 ;
@@ -180,9 +180,9 @@ PS_OUT PS_MAIN(PS_IN In)
     float dayFactor = smoothstep(0.25f, 0.6f, t);
 
 
-
-    float3 finalSky = lerp(g_SkyColor, skyColor, 0.2f);
     float cycle = 1.0f - abs(t * 2.0f - 1.0f); 
+    float3 finalSky = lerp(skyColor, g_SkyColor, dayFactor);
+    finalSky = lerp(g_SkyColor, skyColor, cycle);
 
 
     float brightness = lerp(0.2f, 1.0f, cycle);

@@ -42,7 +42,7 @@ HRESULT CBox::Initialize(void* pArg)
 		e.inventype = m_pStorageCom->Get_Inventype();
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
 	}
-	_float3 pos = _float3(30.f, 0.f, 0.f);
+	_float3 pos = _float3(49.5f, -0.4f, -19.f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
 	
 	return S_OK;
@@ -207,9 +207,9 @@ HRESULT CBox::Ready_Components()
 
 
 	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
-	OBBDesc.vExtents = _float3(2.f, 1.f, 2.f);
+	OBBDesc.vExtents = _float3(4.f, 1.5f, 3.f);
 	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
-	OBBDesc.vCenter = _float3(0.f, 0.f, 5.f);
+	OBBDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	OBBDesc.MyLayer = COLLISION_LAYER::ITEM;
 	OBBDesc.OtherMask = COLLISION_LAYER::PLAYER;
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))

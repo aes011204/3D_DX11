@@ -5,6 +5,7 @@
 NS_BEGIN(Engine)
 class CCollider;
 class CDInput_Manager;
+class CLight;
 NS_END
 
 NS_BEGIN(Client)
@@ -86,6 +87,8 @@ private:
    SEA_MASK m_SeaMask = {}; // d이거 왜 있음
    float m_InvenMoney = {}; // d이거 왜 있음
 
+   shared_ptr<CLight> m_LightObj = { nullptr };
+   _bool On_Light = { false };
     LOCATIONSTATE m_Loacation = { LOCATIONSTATE:: SEA };
 
     shared_ptr<class CPlayerStateMachine> m_pPlayerStateMachine = {};

@@ -37,6 +37,10 @@ HRESULT CMonster::Initialize(void* pArg)
 	m_pSocketMatrix_RightHand = m_pModelCom->Get_BoneMatrixPtr("r_botclaw_jnt");
 	m_pSocketMatrix_LefttHand= m_pModelCom->Get_BoneMatrixPtr("l_botclaw_jnt");
 
+
+	_float3 pos = _float3(142.3f, -0.1f, -3.8f);
+	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
+
 	return S_OK;
 }
 
@@ -215,9 +219,9 @@ HRESULT CMonster::Ready_Components()
 
 
 	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
-	OBBDesc.vExtents = _float3(2.f, 1.f, 2.f);
+	OBBDesc.vExtents = _float3(3.39f, 1.f, 2.f);
 	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
-	OBBDesc.vCenter = _float3(0.f, 0.f, 5.f);
+	OBBDesc.vCenter = _float3(0.f, 0.f, 2.333f);
 	OBBDesc.MyLayer = COLLISION_LAYER::TRIGGER;
 	OBBDesc.OtherMask = COLLISION_LAYER::PLAYER;
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))

@@ -1,4 +1,5 @@
 #pragma once
+#include "Light.h"
 #include "Prototype_Manager.h"
 
 
@@ -107,9 +108,9 @@ public:/*For.PipeLine*/
 
 public:/*For.Light_Manager*/
 	const LIGHT_DESC* Get_LightDesc(_uint iIndex);
-	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
+	shared_ptr<CLight> Add_Light(const LIGHT_DESC& LightDesc);
 	void Set_LightDesc(_uint iIndex, LIGHT_DESC Desc);
-
+	void Clear_Light();
 public:/*For.Picking_Manager*/
 	_bool Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag = L"Layer_BackGround", _uint TerrainIndex = 0);
 	_bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
@@ -121,7 +122,7 @@ public:/*For.Camera_Manager*/
 	float Get_Far();
 
 public:/*For.Font_Manager*/
-	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
+	HRESULT Add_Font(const _wstring& strFontTag , const _tchar* pFontFilePath);
 	void Font_Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor = { 1.f,1.f,1.f,1.f });
 	_float2 Measure_String(const _wstring& strFontTag, const _tchar* pText);
 

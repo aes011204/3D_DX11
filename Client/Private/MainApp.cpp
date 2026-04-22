@@ -2,7 +2,10 @@
 
 #include <UIImage.h>
 #include <VIBuffer_Cube.h>
+#include <VIBuffer_Particle_Point.h>
 
+#include "Body_Player.h"
+#include "Box.h"
 #include "GameInstance.h"
 #include "Client_Define.h"
 #include "Data_Manager.h"
@@ -15,15 +18,30 @@
 #include "Camera_Free.h"
 #include "DialogueDB.h"
 #include "Engine_Struct.h"
+#include "Explosion.h"
 #include "Island.h"
 #include "ItemDB.h"
+#include "Monster.h"
+#include "Monster_Anim.h"
+#include "Mon_MonkFish.h"
+#include "Mon_R.h"
+#include "Mon_R_Act.h"
+#include "Mon_Tentacle.h"
+#include "PlayerBoat.h"
 #include "Sea.h"
 #include "Texture.h"
 
 #include "UI_Controller.h"
 #include "Sea_Manager.h"
 #include "Sky.h"
+#include "Snow.h"
+#include "Terrain.h"
 #include "VIBuffer_Sea.h"
+#include "Village.h"
+
+#include "VIBuffer_Particle_Rect.h"
+#include "VIBuffer_Terrain.h"
+#include "Fish.h"
 CMainApp::CMainApp()
 	: m_pGameInstance{ CGameInstance::GetInstance() },
 	m_pEditorInstance{ CEditorInstance::GetInstance() }
@@ -67,6 +85,13 @@ HRESULT CMainApp::Initialize()
 		return E_FAIL;
 	if (FAILED(Ready_Menu_Prototype_For_Static_Level()))
 		return E_FAIL;
+
+
+	//if (FAILED(Ready_Game()))
+	//	return E_FAIL;
+
+
+
 	// UI Pool 채우기 / ready_UI 역할
 	CUI_Controller::GetInstance()->Initialize(m_pDevice, m_pContext);
 	auto SeaManager = CSea_Manager::GetInstance();
@@ -83,7 +108,7 @@ HRESULT CMainApp::Initialize()
 	if (FAILED(Ready_StartLevel(LEVEL::LOGO)))
 		return E_FAIL;
 
-
+	
 
 
 	//아이템은 아이템 UI 다 프로토 타입 만든후 사용
@@ -284,8 +309,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
-
-
+	
 	///////////////////UItexture/////////////////////
 
 	// 메인메뉴 //
@@ -983,6 +1007,15 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Sea");
 		return E_FAIL;
 	}
+	/* Prototype_Component_VIBuffer_Terrain */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_1500.raw")))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Terrain");
+		return E_FAIL;
+	}
+
+
 
 	//Prototype_Component_Texture_TerrainHeight
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"),
@@ -991,7 +1024,13 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
-
+	/* Prototype_Component_Texture_Terrain */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_RGB.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
+		return E_FAIL;
+	}
 
 
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
@@ -1071,6 +1110,14 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+	/* Prototype_Component_Model_Island_Collector */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) /** XMMatrixRotationY(XMConvertToRadians(180.f))*/;
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island_Collector"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/Island_collector.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
 
 
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_LightHouse"),
@@ -1115,90 +1162,464 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype :GameObject_Sea");
 		return E_FAIL;
 	}
+
+
+
+	/* Prototype_GameObject_Terrain */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Terrain"),
+		CTerrain::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype :GameObject_Terrain");
+		return E_FAIL;
+	}
+
+
+	
 }
 
-//HRESULT CMainApp::Ready_UI()
-//{
-//
-//
-//	{
-//
-//		CUIPanel::UIPANEL_DESC LoadingDesc;
-//		LoadingDesc.IsFullScreen = true;
-//		LoadingDesc.TextureProtoName = L"Prototype_Component_Texture_Black";
-//		LoadingDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-//		LoadingDesc.IsFullScreen = true;
-//		shared_ptr<CUIPanel> pInstance = CUIPanel::Create(m_pDevice, m_pContext);
-//		pInstance->Initialize(&LoadingDesc);
-//
-//		CUIImage::UIIMAGE_DESC LoadingIconDesc;
-//		LoadingIconDesc.vPivot = _float2{1.f,0.f};
-//		LoadingIconDesc.vAnchorPoint = _float2{ 1.f,0.f };
-//		LoadingIconDesc.vAnchoredPos = _float2{ -40.f,40.f };
-//		LoadingIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-//		LoadingIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-//		LoadingIconDesc.TextureProtoName = L"Prototype_Component_Texture_LoadingIcon";
-//		shared_ptr<CUIImage> pIcon = CUIImage::Create(m_pDevice, m_pContext);
-//		pIcon->Initialize(&LoadingIconDesc);
-//		pIcon->m_behavior.push_back(make_shared<CRotationModifier>(200.f));
-//		pInstance->Add_Child(pIcon, L"ICON_LOADING",false);
-//
-//
-//		CUIText::TEXT_DESC TextDesc;
-//		//TextDesc.TextColor = _float4{ 1.f,0.f };
-//		TextDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
-//		TextDesc.strText = L"심해로부터";
-//		
-//		shared_ptr<CUIText> text = CUIText::Create(m_pDevice, m_pContext);
-//		text->Initialize(&TextDesc);
-//		pInstance->Add_Child(text, L"text", false);
-//
-//
-//		m_pGameInstance.lock()->UI_InsertToPool(L"Loading", pInstance);
-//
-//		
-//	}
-//
-//
-//	CUI_MainMenu::MAINMENU_DESC pDescPanel;
-//	pDescPanel.IsFullScreen = true;
-//	pDescPanel.IsTransparent = true;
-//
-//	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_pDevice, m_pContext);
-//	pInstance->Initialize(&pDescPanel);
-//	m_pGameInstance.lock()->UI_InsertToPool(L"MainMenu", pInstance);
-//	///
-//	///
-//	///
-//	CUI_TabContainer::TABCONTAINER_DESC pDescTap = {};
-//	shared_ptr<CUI_TabContainer> TabContainer = CUI_TabContainer::Create(m_pDevice, m_pContext);
-//	if (TabContainer == nullptr)
-//		return E_FAIL;
-//	TabContainer->Initialize(&pDescTap);
-//	m_pGameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);
-//
-//
-//
-//	CUI_Item::ITEM_DESC pDescitem = {};
-//	//CUI_Item::ITEM_DESC pDescitem = {};
-//	shared_ptr<CUI_Item>  holdItem =CUI_Item::Create(m_pDevice, m_pContext);
-//	if (holdItem == nullptr)
-//		return E_FAIL;
-//	holdItem->Initialize(&pDescitem);
-//	m_pGameInstance.lock()->UI_InsertToPool(L"HoldItem", holdItem);
-//
-//	////////////HUD///////////////
-//	CUI_HUD::HUD_DESC pDescHUD;
-//	pDescHUD.IsFullScreen = true;
-//	pDescHUD.IsTransparent = true;
-//
-//	shared_ptr<CUI_HUD> HUD = CUI_HUD::Create(m_pDevice, m_pContext);
-//	HUD->Initialize(&pDescHUD);
-//	m_pGameInstance.lock()->UI_InsertToPool(L"HUD", HUD);
-//
-//
-//	return S_OK;
-//}
+HRESULT CMainApp::Ready_Game()
+{
+
+	//lstrcpy(m_szLoadingText, TEXT("텍스쳐를 로딩 중 입니다."));
+	/* Prototype_Component_Texture_Terrain */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_RGB.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_Snow*/
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Snow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Snow Texture");
+		return E_FAIL;
+	}
+
+
+	//lstrcpy(m_szLoadingText, TEXT("셰이더를 로딩 중 입니다."));
+
+	
+	/* Prototype_Component_Shader_VtxParticleRect */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxParticleRect"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxParticleRect.hlsl"), VTXPARTICLE_RECTINSTANCE_DESC::Elements, VTXPARTICLE_RECTINSTANCE_DESC::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxCube");
+		return E_FAIL;
+	}
+
+
+
+	/* Prototype_Component_Shader_VtxParticlePoint */
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxParticlePoint"),
+		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxParticlePoint.hlsl"), VTXPARTICLE_POINTINSTANCE_DESC::Elements, VTXPARTICLE_POINTINSTANCE_DESC::iNumElements))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Shader_VtxParticlePoint");
+		return E_FAIL;
+	}
+
+	//lstrcpy(m_szLoadingText, TEXT("사운드를 로딩 중 입니다."));
+
+
+	//strcpy(m_szLoadingText, TEXT("모델를 로딩 중 입니다."));
+	/* Prototype_Component_VIBuffer_Terrain */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_1500.raw")))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Terrain");
+		return E_FAIL;
+	}
+	CVIBuffer_Particle_Rect::PARTICLE_RECT_DESC		SnowDesc{};
+	SnowDesc.iNumInstances = 5000;
+	SnowDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	SnowDesc.vRange = _float3(129.f, 1.f, 129.f);
+	SnowDesc.vScale = _float2(0.2f, 0.5f);
+	SnowDesc.vSpeed = _float2(3.0f, 7.0f);
+	SnowDesc.vLifeTime = _float2(3.f, 5.0f);
+	SnowDesc.isLoop = true;
+	/* Prototype_Component_VIBuffer_Particle_Rect_Snow */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Particle_Rect_Snow"),
+		CVIBuffer_Particle_Rect::Create(m_pDevice, m_pContext, &SnowDesc))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
+		return E_FAIL;
+	}
+
+
+
+	CVIBuffer_Particle_Point::PARTICLE_POINT_DESC		ExploDesc{};
+	ExploDesc.iNumInstances = 500;
+	ExploDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	ExploDesc.vRange = _float3(0.3f, 0.3f, 0.3f);
+	ExploDesc.vScale = _float2(0.1f, 0.2f);
+	ExploDesc.vSpeed = _float2(3.0f, 7.0f);
+	ExploDesc.vLifeTime = _float2(1.f, 2.0f);
+	ExploDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	ExploDesc.isLoop = false;
+
+
+	/* Prototype_Component_VIBuffer_Particle_Point_Explosion */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Particle_Point_Explosion"),
+		CVIBuffer_Particle_Point::Create(m_pDevice, m_pContext, &ExploDesc))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
+		return E_FAIL;
+	}
+
+	///* Prototype_Component_VIBuffer_Sea */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"),
+	//	CVIBuffer_Sea::Create(m_pDevice, m_pContext,128,4))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : VIBuffer_Sea");
+	//	return E_FAIL;
+	//}
+
+
+	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
+
+
+	/* Prototype_Component_Model_FullBoatCrab */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_FullBoatCrab"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/FullBoatCrab/FullBoatCrab.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Model_Tentacle */
+	PreLocalTransformMatrix = XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Tentacle"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tentacle/Tentacle_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Model_R_Act */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(45.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_R_Act"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R/R.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Model_R_Act_One */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_R_Act_One"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R_Act/R_Act_oNE.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Model_R_Act_Etc */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f)) * XMMatrixTranslation(0.f, 10.f, 0.f);
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_R_Act_Etc"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R_Act/Rffffffff_Act_Fix.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+
+
+
+	/* Prototype_Component_Model_Marrow_Mon */
+	PreLocalTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f) * XMMatrixRotationZ(XMConvertToRadians(180.f)) * XMMatrixRotationX(XMConvertToRadians(-90.f)) * XMMatrixRotationY(XMConvertToRadians(-30.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Marrow_Mon"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Marrow_Mon/Marrow_Mon_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Model_Marrow_Boat */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Marrow_Boat"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Marrow_Mon/Marrow_Boat_Tex.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Model_HalfBoat */
+	PreLocalTransformMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_HalfBoat"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/HalfBoat/HalfBoat_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
+		return E_FAIL;
+	}
+
+
+
+
+
+
+
+
+
+	PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
+	/*Prototype_Component_Model_Fiona_Anim*/
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Fiona_Anim"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Fiona/Fiona.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Model_Fiona");
+		return E_FAIL;
+	}
+
+	///* Prototype_Component_Model_ForkLift */
+	//PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_ForkLift"),
+	//	CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/ForkLift/ForkLift.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Model_ForkLift");
+	//	return E_FAIL;
+	//}
+
+	/* Prototype_Component_Model_PlayerBoat */
+	PreLocalTransformMatrix = XMMatrixScaling(0.008f, 0.008f, 0.008f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_PlayerBoat"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Boat/PlayerBoat4.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : PlayerBoat");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Model_Town */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Town"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/GM_TOWN/GM_Town_tx.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Model_Island_Collector */
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) /** XMMatrixRotationY(XMConvertToRadians(180.f))*/;
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island_Collector"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/Island_collector.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GM_Town");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Model_Fish */
+	PreLocalTransformMatrix = XMMatrixScaling(0.001f, 0.001f, 0.001f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Fish"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Fish/Fish.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Fish");
+		return E_FAIL;
+	}
+
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_ForkLift"),
+		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/ForkLift/ForkLift.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Model_ForkLift");
+		return E_FAIL;
+	}
+
+
+
+	//lstrcpy(m_szLoadingText, TEXT("객체원형를 로딩 중 입니다."));////////////////////////////////
+	/* Prototype_GameObject_Terrain */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Terrain"),
+		CTerrain::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype :GameObject_Terrain");
+		return E_FAIL;
+	}
+
+	///* Prototype_GameObject_Sea */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sea"),
+	//	CSea::Create(m_pDevice, m_pContext))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype :GameObject_Sea");
+	//	return E_FAIL;
+	//}
+
+	///* Prototype_Component_VIBuffer_Cube */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"),
+	//	CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : VIBuffer_Cube");
+	//	return E_FAIL;
+	//}
+
+
+	/* Prototype_GameObject_Monster */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Monster"),
+		CMonster::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Monster");
+		return E_FAIL;
+	}
+
+
+	/* Prototype_GameObject_Monster_Anim */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Monster_Anim"),
+		CMonster_Anim::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Prototype_GameObject_Monster_Anim");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_PlayerBoat */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_PlayerBoat"),
+		CPlayerBoat::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : PlayerBoat");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_Body_Player */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Body_Player"),
+		CBody_Player::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Body_Player");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_Village */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Village"),
+		CVillage::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Villsge");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_Fish */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Fish"),
+		CFish::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : fish");
+		return E_FAIL;
+	}
+
+
+
+
+
+
+	/* Prototype_GameObject_R */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_R"),
+		CMon_R::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_R_Act */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_R_Act"),
+		CMon_R_Act::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_Tentacle */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Tentacle"),
+		CMon_Tentacle::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+
+
+	/* Prototype_GameObject_MonkFish */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_MonkFish"),
+		CMon_MonkFish::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+
+
+
+
+	/* Prototype_GameObject_Box */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Box"),
+		CBox::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	///* Prototype_GameObject_Sky */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sky"),
+	//	CSky::Create(m_pDevice, m_pContext))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : GameObject_Sky");
+	//	return E_FAIL;
+	//}
+
+	/* Prototype_GameObject_Snow */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Snow"),
+		CSnow::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Snow");
+		return E_FAIL;
+	}
+	/* Prototype_GameObject_Explosion */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Explosion"),
+		CExplosion::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_Explosion");
+		return E_FAIL;
+	}
+
+	//lstrcpy(m_szLoadingText, TEXT("충돌체를 로딩 중 입니다."));
+	/* Prototype_Component_Collider_AABB */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Collider_AABB"),
+		CCollider::Create(m_pDevice, m_pContext, COLLIDER::AABB))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_AABB");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Collider_OBB */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Collider_OBB"),
+		CCollider::Create(m_pDevice, m_pContext, COLLIDER::OBB))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_OBB");
+		return E_FAIL;
+	}
+	/* Prototype_Component_Collider_Sphere*/
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Collider_Sphere"),
+		CCollider::Create(m_pDevice, m_pContext, COLLIDER::SPHERE))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_Sphere");
+		return E_FAIL;
+	}
+
+
+
+	//lstrcpy(m_szLoadingText, TEXT("로딩이 완료되었습니다."));
+
+	//m_bFinished = true;
+
+	return S_OK;
+
+	return S_OK;
+}
 
 unique_ptr<CMainApp> CMainApp::Create()
 {

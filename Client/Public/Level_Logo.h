@@ -12,6 +12,10 @@ public:
 	virtual ~CLevel_Logo() = default;
 
 public:
+	HRESULT Ready_Layer_Camera(const wchar_t* str);
+	HRESULT Ready_Layer_Wave(const wchar_t* str);
+	HRESULT Ready_Lights();
+
 	virtual HRESULT Initialize() override;
 	virtual HRESULT Post_Initialize()override;
 	virtual void Update(_float fTimeDelta) override;
@@ -19,7 +23,7 @@ public:
 
 private:
 	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
-
+	_bool  m_Flag = { false };
 public:
 	static shared_ptr<CLevel_Logo> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	virtual void Free() override;
