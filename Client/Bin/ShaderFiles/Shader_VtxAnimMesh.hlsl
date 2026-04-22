@@ -1,3 +1,4 @@
+
 #include "Engine_Shader_Defines.hlsli"
 
 
@@ -7,7 +8,7 @@ float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
 vector g_vCamPosition;
 
 // 재질 정보
-texture2D g_DiffuseTexture;
+Texture2D g_DiffuseTexture;
 //vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1); // 주변광 반응 정도
 //vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f); //하이라이트 강도
 //
@@ -18,7 +19,12 @@ texture2D g_DiffuseTexture;
 //vector g_vLightAmbient;
 //vector g_vLightSpecular;
 
+
+float g_Far;
+Texture2D g_EmissiveTexture;
+float g_EmissiveStrength ;
 // 본
+
 matrix g_BoneMatrices[512];
 float g_Alpha = 1.f;
 
@@ -53,6 +59,7 @@ struct VS_OUT
     float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
+    float4 vProjPos : TEXCOORD2;
 };
 
 struct PS_IN
@@ -61,12 +68,16 @@ struct PS_IN
     float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
+    float4 vProjPos : TEXCOORD2;
+
 };
 
 struct PS_OUT
 {
     vector vDiffuse : SV_TARGET0;
     vector vNormal : SV_TARGET1;
+    vector vDepth : SV_TARGET2;
+    vector vEmissive : SV_TARGET3;
 };
 
 
@@ -99,7 +110,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vTexcoord = In.vTexcoord;
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix);
     // 나중 계산을 위해 z 나누기, 뷰,투영 없는 거 저장 
-    
+    Out.vProjPos = Out.vPosition;
     
     return Out;
 }
@@ -113,27 +124,14 @@ PS_OUT PS_MAIN(PS_IN In)
     PS_OUT Out;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    //빛의 크기
-    //vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, In.vNormal), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
-    ////dot(nomalize한 빛의 방향의 반대방향, 노멀라이즈 한 노멀) = 세타각 을 알수 있음 // 사인그래프를 그린다 왜냐 그게 더 자연스럽거든
-    //// -1*빛의 방향과 노멀의 각의 차이가 +-90이상 이면 0으로 : 왜냐 안보이니까 빛은 0 (없다, 안보인다),0~+-90 까지는 0 젤 밝음 ~점점 어두워짐 
-    //// 근데 빛을 직접적으로 안받는다고 0 이면 검은색 이 어색함 -> + g_vLightAmbient(엠비언트 강도) * g_vMtrlAmbient(엠비언트 색) 을 통해 보정
-    //// 더하면  1~0 보다 초과 될수 있으니saturate() 로 범위 1~0로 제한
-    //
-    //// 스팩큘러 (물체에 반사된 빛이 카메라에 들어오는 정도) 빛의 반사된 방향백터,카메라의 look
-    //vector vLook = In.vWorldPos - g_vCamPosition;
-    //vector vRelfect = reflect(normalize(g_vLightDir), In.vNormal);
-    ////dot(normalize(g_vLightDir), normalize(In.vNormal))*normalize(In.vNormal)???? 모르겠음 낼 질문
-    //float vSpecular = pow(max(dot(normalize(vLook) * -1, normalize(vRelfect)), 0.f), 100.f);
-    //
-    //vector vSpecularColor = g_vLightSpecular * g_vMtrlSpecular * vSpecular;
-    //
-    //Out.vColor = g_vLightDiffuse * vMtrlDiffuse * vShader + vSpecularColor;
-    // 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트??
+    
     Out.vDiffuse = vector(vMtrlDiffuse.rgb, 1.f);
     //Out.vNormal = float4(1, 0, 0, 1);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
-    return Out;
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / g_Far, 0.f, 1.f);
+    float3 emissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vEmissive = float4(emissive * g_EmissiveStrength, 1.0f);
+	return Out;
 }
 
 PS_OUT PS_MAINAlpha(PS_IN In)
@@ -141,28 +139,15 @@ PS_OUT PS_MAINAlpha(PS_IN In)
     PS_OUT Out;
     
     vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    //빛의 크기
-    //vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, In.vNormal), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
-    ////dot(nomalize한 빛의 방향의 반대방향, 노멀라이즈 한 노멀) = 세타각 을 알수 있음 // 사인그래프를 그린다 왜냐 그게 더 자연스럽거든
-    //// -1*빛의 방향과 노멀의 각의 차이가 +-90이상 이면 0으로 : 왜냐 안보이니까 빛은 0 (없다, 안보인다),0~+-90 까지는 0 젤 밝음 ~점점 어두워짐 
-    //// 근데 빛을 직접적으로 안받는다고 0 이면 검은색 이 어색함 -> + g_vLightAmbient(엠비언트 강도) * g_vMtrlAmbient(엠비언트 색) 을 통해 보정
-    //// 더하면  1~0 보다 초과 될수 있으니saturate() 로 범위 1~0로 제한
-    //
-    //// 스팩큘러 (물체에 반사된 빛이 카메라에 들어오는 정도) 빛의 반사된 방향백터,카메라의 look
-    //vector vLook = In.vWorldPos - g_vCamPosition;
-    //vector vRelfect = reflect(normalize(g_vLightDir), In.vNormal);
-    ////dot(normalize(g_vLightDir), normalize(In.vNormal))*normalize(In.vNormal)???? 모르겠음 낼 질문
-    //float vSpecular = pow(max(dot(normalize(vLook) * -1, normalize(vRelfect)), 0.f), 100.f);
-    //
-    //vector vSpecularColor = g_vLightSpecular * g_vMtrlSpecular * vSpecular;
-    //
-    //Out.vColor = g_vLightDiffuse * vMtrlDiffuse * vShader + vSpecularColor;
-    // 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트??
+   
     Out.vDiffuse = vector(vMtrlDiffuse.rgb, 1.f);
     //Out.vNormal = float4(1, 0, 0, 1);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDiffuse.a = vMtrlDiffuse.a * g_Alpha;
-    return Out;
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / g_Far, 0.f, 1.f);
+    float3 emissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
+    Out.vEmissive = float4(emissive * g_EmissiveStrength, 1.0f);
+	return Out;
 }
 
 technique11 DefaultTechnique

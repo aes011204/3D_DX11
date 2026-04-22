@@ -103,7 +103,7 @@ HRESULT CVillage::Render()
 	{
 		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-
+		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 		if (FAILED(m_pShaderCom->Begin(0)))
 			return E_FAIL;
 
@@ -172,6 +172,9 @@ HRESULT CVillage::Bind_ShaderResources()
 		return E_FAIL;*/
 
 	////
+	float fFar = m_pGameInstance.lock()->Get_Far();
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+		return E_FAIL;
 	
 	return S_OK;
 }

@@ -147,6 +147,11 @@ HRESULT CIsland::Bind_ShaderResources()
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_GrassColor", &m_GrassColor, sizeof(_float4))))
 		return E_FAIL;
+
+	float fFar = m_pGameInstance.lock()->Get_Far();
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+
+
 	return S_OK;
 }
 

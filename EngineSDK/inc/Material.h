@@ -16,7 +16,7 @@ public:
 private:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };
     ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-
+    ComPtr<ID3D11ShaderResourceView> m_pBlackSRV = { nullptr };
     vector<ComPtr<ID3D11ShaderResourceView>> m_MaterialTextures[AI_TEXTURE_TYPE_MAX];
     _char m_szMatName[MAX_PATH];
 public:

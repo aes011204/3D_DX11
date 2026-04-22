@@ -2,6 +2,8 @@
 #include "DInput_Manager.h"
 #include "PlayerBoat.h"
 #include "EventBus.h"
+#include "Fish.h"
+#include "PlayerStateMachine.h"
 #include "UI_Item.h"
 #include "UI_MiniGame.h"
 #include "UI_TabContainer.h"
@@ -61,6 +63,16 @@ void CPlayer_MiniGame::Exit()
 	auto MiniGame = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
 	auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
 	ui->UI_InActive();*/
+
+	if(m_pStateMachine.lock()->Get_TargetShared() != nullptr)
+	{
+		auto fish = dynamic_pointer_cast<CFish>(m_pStateMachine.lock()->Get_TargetShared());
+		if(fish->GetFishCount() == 0)
+		{
+			fish->Mark_Destroy();
+		}
+	}
+
 	Evt_EndState e = {};
 	//e.playerstate = E_PLAYERSTATE::VILLAGE;
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(e);

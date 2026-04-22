@@ -24,10 +24,29 @@ HRESULT CShader::Initialize_Prototype(const _tchar* pShaderFilePath, const D3D11
 	iHlslFlag |= D3DCOMPILE_OPTIMIZATION_LEVEL1
 #endif
 
-	if (FAILED(D3DX11CompileEffectFromFile(pShaderFilePath, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iHlslFlag, 0,
-		m_pDevice.Get(), &m_pEffect, nullptr)))
-		return E_FAIL;
+	//if (FAILED(D3DX11CompileEffectFromFile(pShaderFilePath, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, iHlslFlag, 0,
+	//	m_pDevice.Get(), &m_pEffect, nullptr)))
+	//	return E_FAIL;
+		ID3DBlob* errorBlob = nullptr;
 
+	HRESULT hr = D3DX11CompileEffectFromFile(
+		pShaderFilePath,
+		nullptr,
+		D3D_COMPILE_STANDARD_FILE_INCLUDE,
+		iHlslFlag,
+		0,
+		m_pDevice.Get(),
+		&m_pEffect,
+		&errorBlob);
+
+	if (FAILED(hr))
+	{
+		if (errorBlob)
+		{
+			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+		}
+		return E_FAIL;
+	}
 	ComPtr<ID3DX11EffectTechnique> pTechnique = m_pEffect->GetTechniqueByIndex(0);
 	if (nullptr == pTechnique.Get())
 		return E_FAIL;

@@ -22,14 +22,15 @@ CUI_MiniGame::CUI_MiniGame(const CUIPanel& prototype)
 	: CUIPanel(prototype)
 {
 }
-void CUI_MiniGame::UI_PanelActive(/*MINIGAME MiniGameState, _uint Defid*/)
+
+void CUI_MiniGame::UI_PanelActive()
 {
 	_uint  m_DefID = m_Logic->Get_DefID();
 	if (m_DefID == ID_Absence)
 		return;
 
+	m_MiniGameState = m_Logic->Get_MiniGameType();
 
-	
 
 
 	//m_DefID 
@@ -42,17 +43,40 @@ void CUI_MiniGame::UI_PanelActive(/*MINIGAME MiniGameState, _uint Defid*/)
 
 
 
-	//if (MiniGameState == MINIGAME::BASIC_CIRCLE)
-	//{
-	//	//Add_Child(m_ButtonContents[ETOI(TAB::INVEN)], L"BUTTON_INVEN", false);
-	//	(m_ButtonContents[ETOI(TAB::INVEN)]->UI_Active());
-	//	//Add_Child(m_TabContents[ETOI(TAB::INVEN)], L"INVEN", false);
-	//	m_TabContents[ETOI(TAB::INVEN)]->UI_InActive();
-	//	numPanel++;
-	//}
+	if (m_MiniGameState == MINIGAME::BASIC_CIRCLE)
+	{
+		m_Spinner->UI_Active();
+		m_pCircle->UI_Active();
+		m_pCircle->Set_Transparent(false);
+	}
+	else if (m_MiniGameState == MINIGAME::DIAMOND)
+	{
+		m_zoneCount = 0;
+		m_pSizeCircleIn->UI_Active();
+		m_pCircle->UI_Active();
+		m_pCircle->Set_Transparent(true);
+	}
+	else if (m_MiniGameState == MINIGAME::BALL)
+	{
+		m_pBallCircle->UI_Active();
+
+	}
+
 	Item_Def def = CItemDB::GetInstance()->GetItemByID(m_DefID);
-	m_FishIcon->Change_Texture(def.pTexture);
+
+	m_nameTex->UI_Active();
 	m_nameTex->Set_Text(S2W(def.ItemName));
+	m_amountTex->UI_Active();
+	m_locationTex->UI_Active();
+
+	m_pCircleEff->UI_Active();
+	m_FishIcon->Change_Texture(def.pTexture);
+	m_FishIcon->UI_Active();
+	m_Depth->UI_Active();
+	//m_PrograssIcon->UI_Active();
+	m_Button->UI_Active();
+	m_Base->UI_Active();
+
 	Set_ActiveForCustom();
 
 	m_bRenderReady = false;
@@ -64,10 +88,10 @@ void CUI_MiniGame::UI_PanelActive(/*MINIGAME MiniGameState, _uint Defid*/)
 	OnActive();
 
 	// 일단 이건 임시
-	for (auto& it : m_Children)
-	{
-		it->UI_Active();
-	}
+//	for (auto& it : m_Children)
+//	{
+//		it->UI_Active();
+//	}
 
 
 }
@@ -80,32 +104,32 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 	/*m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
 		[this](const Evt_FishingData& e) {
-			
+
 		}
 	);*/
 
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MiniGame>(
-		[this](const Evt_MiniGame& e) {
+	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MiniGame>(
+	//	[this](const Evt_MiniGame& e) {
 
-			if(e.IsOnZoon ==true)
-			{
-				m_prograssBar01 += 0.2;
-				m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
-				m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+	//		if(e.IsOnZoon ==true)
+	//		{
+	//			m_prograssBar01 += 0.2;
+	//			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+	//			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
 
-			}
-			else
-			{
+	//		}
+	//		else
+	//		{
 
-				m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
-				m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
-				m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
-				m_changeColor = true;
-				colortime = .5f;
-			}
-		}
-	);
+	//			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+	//			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+	//			m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+	//			m_changeColor = true;
+	//			colortime = .5f;
+	//		}
+	//	}
+	//);
 
 	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>(
 		[this](const Evt_GetFish& e) {
@@ -149,7 +173,7 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	BorderDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUIBorders";
 	shared_ptr<CUIImage> Border = CUIImage::Create(m_pDevice, m_pContext);
 	Border->Initialize(&BorderDesc);
-
+	m_Base = Border;
 	Add_Child(Border, L"Border", false);
 
 	CUIImage::UIIMAGE_DESC CircleDesc = {};
@@ -209,7 +233,7 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	DepthBarnDesc.TextureProtoName = L"Prototype_Component_Texture_CrabPotDepthBar";
 	shared_ptr<CUIImage> DepthBar = CUIImage::Create(m_pDevice, m_pContext);
 	DepthBar->Initialize(&DepthBarnDesc);
-
+	m_Depth = DepthBar;
 	Add_Child(DepthBar, L"DepthBar", false);
 
 	CUIImage::UIIMAGE_DESC FishIconDesc = {};
@@ -227,19 +251,21 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	CUIButton::UIBUTTON_DESC ButDesc = {};
 	ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 	ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
-	ButDesc.bUseDark = false;
+	ButDesc.bUseDark =true;
+
 	ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
 	ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 	ButDesc.ClickEvent = [this](CUIButton* pThis)
 		{
-			if (!m_bStart) { m_bStart = true; m_AccTime = 0.f; }
-			else {}
+			if (m_Logic)
+				m_Logic->OnInput();
 		};
 	shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
 	button->Initialize(&ButDesc);
 
+	button->Set_SelectState(false);
+	m_Button = button;
 	{
-
 		CUIText::TEXT_DESC text_Desc = {};
 		text_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
 		text_Desc.strText = L"당기기";
@@ -296,6 +322,92 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 		}
 	}
+	//////////////////////////////////////////////////////////
+
+	CUIImage::UIIMAGE_DESC SizeCircleInDesc = {};
+	SizeCircleInDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+	SizeCircleInDesc.TextureProtoName = L"Prototype_Component_Texture_InnerTargetUI";
+	shared_ptr<CUIImage> SizeCircleIn = CUIImage::Create(m_pDevice, m_pContext);
+	SizeCircleIn->Initialize(&SizeCircleInDesc);
+
+
+	Add_Child(SizeCircleIn, L"SizeCircleIn", false);
+	m_pSizeCircleIn = SizeCircleIn;
+
+	{
+		CUIImage::UIIMAGE_DESC SizeCircleOutDesc = {};
+		SizeCircleOutDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		SizeCircleOutDesc.TextureProtoName = L"Prototype_Component_Texture_OuterTargetUI";
+		shared_ptr<CUIImage> SizeCircleOut = CUIImage::Create(m_pDevice, m_pContext);
+		SizeCircleOut->Initialize(&SizeCircleOutDesc);
+
+
+		SizeCircleIn->Add_Child(SizeCircleOut, L"SizeCircleOut", false);
+		//m_pSizeCircleOut = SizeCircleIn;
+
+		{
+
+			CUIImage::UIIMAGE_DESC SizeCircleDesc = {};
+			SizeCircleDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+			SizeCircleDesc.TextureProtoName = L"Prototype_Component_Texture_DiamondMinigame";
+			shared_ptr<CUIImage> SizeCircle = CUIImage::Create(m_pDevice, m_pContext);
+			SizeCircle->Initialize(&SizeCircleDesc);
+
+			SizeCircle->Set_UseColorMix(true);
+			SizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+			//CircleEff->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+
+			SizeCircleOut->Add_Child(SizeCircle, L"SizeCircleEff", false);
+			m_pSizeCircle = SizeCircle;
+			m_pCircleEff->Set_Zorder(4);
+			//m_CircleShader = dynamic_pointer_cast<CShader>(CircleEff->Get_Component(L"Com_Shader"));
+
+		}
+	}
+
+	///////////////////////////////////
+
+	CUIImage::UIIMAGE_DESC BallCircleInDesc = {};
+	BallCircleInDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+	BallCircleInDesc.TextureProtoName = L"Prototype_Component_Texture_InnerTargetUI";
+	BallCircleInDesc.shaderType = CUIRenderable::UIShaderType::Radial;
+	shared_ptr<CUIImage> BallCircleIn = CUIImage::Create(m_pDevice, m_pContext);
+	BallCircleIn->Initialize(&BallCircleInDesc);
+
+
+	Add_Child(BallCircleIn, L"BallCircleIn", false);
+	m_pBallCircle = BallCircleIn;
+
+	{
+		CUIImage::UIIMAGE_DESC BallStartDesc = {};
+		BallStartDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		BallStartDesc.TextureProtoName = L"Prototype_Component_Texture_OuterTargetUI";
+		BallStartDesc.shaderType = CUIRenderable::UIShaderType::Radial;
+		shared_ptr<CUIImage> BallStart = CUIImage::Create(m_pDevice, m_pContext);
+		BallStart->Initialize(&BallStartDesc);
+
+
+		BallCircleIn->Add_Child(BallStart, L"BallStart", false);
+		//m_pSizeCircleOut = SizeCircleIn;
+
+
+
+
+		CUIImage::UIIMAGE_DESC BallDesc = {};
+		BallDesc.TextureComLevel = ETOI(LEVEL::STATIC);
+		BallDesc.TextureProtoName = L"Prototype_Component_Texture_DiamondMinigame";
+		shared_ptr<CUIImage> Ball = CUIImage::Create(m_pDevice, m_pContext);
+		Ball->Initialize(&BallDesc);
+		
+		//CircleEff->Set_BaseColor(_float4{ 81 / 255.f, 50 / 255.f, 43 / 255.f, 1.f });
+		//CircleEff->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+
+		BallCircleIn->Add_Child(Ball, L"Ball", false);
+		m_pBall = Ball;
+
+		//m_CircleShader = dynamic_pointer_cast<CShader>(CircleEff->Get_Component(L"Com_Shader"));
+
+	}
 
 	//////////////////////TEST//////////////////////////////
 	//m_zoneCount = 3;
@@ -312,6 +424,27 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 }
 
+void CUI_MiniGame::Is_OnZoon(_bool IsOnZoon)
+{
+	if (IsOnZoon == true)
+	{
+		m_prograssBar01 += 0.2;
+		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+
+	}
+	else
+	{
+
+		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+		m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+		m_changeColor = true;
+		colortime = .5f;
+	}
+}
+
+
 void CUI_MiniGame::OnActive()
 {
 
@@ -319,7 +452,7 @@ void CUI_MiniGame::OnActive()
 	m_prograssBar01 = 0;
 	m_bFin = false;
 
-	
+
 
 	CUIPanel::OnActive();
 }
@@ -342,28 +475,143 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 	if (!m_Logic)
 		return;
 
-	m_zoneCount = m_Logic->GetZoneCount();
-	memcpy(m_zones, m_Logic->GetZones(), sizeof(Zone) * m_zoneCount);
 
-	//bool m_chose = false;
-	//if(m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F))
-	//{
-	//	if (/*m_bFin == true &&*/ m_InvenCtrl.lock()->Is_Dragging() == true)
-	//	{ m_bStart = false; }
-	//	else if (m_bFin == true && m_FishCount == 0)
-	//	{m_bStart = false;}
-	//	else if (!m_bStart && m_InvenCtrl.lock()->Is_Dragging() != true )
-	//	{
-	//		m_bStart = true; m_AccTime = 0.f; m_prograssBar01 = 0.f; m_bFin = false;
-	//	}
-	//	else { m_chose = true; }
+	switch(m_MiniGameState)
+	{
+	case MINIGAME::BASIC_CIRCLE:
+		{
+		m_zoneCount = m_Logic->GetZoneCount();
+		memcpy(m_zones, m_Logic->GetZones(), sizeof(Zone) * m_zoneCount);
 
+		
 
-	//}
+		auto result = m_Logic->ConsumeInputResult();
+		if (result == INPUT_RESULT::SUCCESS)
+		{
+			// 초록 효과
+			m_prograssBar01 += 0.2;
 
+			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+		
+		}
+		else if (result == INPUT_RESULT::FAIL)
+		{
+			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+			m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+			m_changeColor = true;
+			colortime = .5f;
+			// 빨강 효과
+		}
+
+		m_Spinner->GetUITransform()->SetRotation(-(m_Logic->GetAngle()));
+
+		
+		if (m_changeColor == true)
+		{
+			m_AccTime2 += timeDelta;
+			if (m_AccTime2 >= colortime)
+			{
+				m_AccTime2 = 0;
+				m_changeColor = false;
+				m_pCircle->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+
+			}
+		}
+
+		}
+
+		break;
+	case MINIGAME::DIAMOND:
+		{
+	
+
+			auto result = m_Logic->ConsumeInputResult();
+
+		
+			m_pSizeCircle->GetUITransform()->SetLocalScale(_float2{ m_Logic->GetSize(), m_Logic->GetSize() });
+		m_pSizeCircle->GetUITransform()->SetRotation(m_Logic->GetAngle());
+		
+			/*if(m_Logic->GetSize() > 1.f)
+			{
+				m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+
+			}*/
+			if(result == INPUT_RESULT::START)
+			{
+				m_pSizeCircle->UI_Active();
+;				//m_pSizeCircle->GetUITransform()->SetLocalScale(_float2{ 0.f,0.f });
+				m_pSizeCircle->m_behavior.clear();
+				m_pSizeCircle->Set_Alpha(1.f);
+
+				m_pSizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+			}
+
+		if (result == INPUT_RESULT::SUCCESS)
+		{
+			// 초록 효과
+			m_prograssBar01 += 0.2;
+			m_pSizeCircle->m_behavior.clear();
+			m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, true));
+			m_pSizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+
+			//m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT,1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+			LOG(LOG_LEVEL::INFO, "SUCCES");
+		}
+		else if (result == INPUT_RESULT::FAIL)
+		{
+			m_pSizeCircle->m_behavior.clear();
+			m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT,.5f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, true));
+			m_pSizeCircle->Set_ColorMix(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+			//
+			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+			m_changeColor = true;
+			colortime = .5f;
+			// 빨강 효과
+		}
+
+		if (m_changeColor == true)
+		{
+			m_AccTime2 += timeDelta;
+			if (m_AccTime2 >= colortime)
+			{
+				m_AccTime2 = 0;
+				m_changeColor = false;
+				//m_pCircle->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+
+			}
+		}
+		
+		}
+
+		break;
+	case MINIGAME::BALL:
+
+		auto result = m_Logic->ConsumeInputResult();
+		if (result == INPUT_RESULT::SUCCESS)
+		{
+			// 초록 효과
+			m_prograssBar01 += 0.2;
+
+			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+
+		}
+		else if (result == INPUT_RESULT::FAIL)
+		{
+			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+			m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+			m_changeColor = true;
+			colortime = .5f;
+			// 빨강 효과
+		}
+		break;
+	}
 
 	float progress = m_Logic->GetProgress01();
-
 	m_PrograssIcon->GetUITransform()->SetAnchoredPos(
 		_float2{
 			m_PrograssIcon->GetUITransform()->Get_AnchoredPos().x,
@@ -371,99 +619,9 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		}
 	);
 
-	
-
-
-	m_Spinner->GetUITransform()->SetRotation(-(m_Logic->GetAngle()));
-
-
-	//float angle01={};
-	//if (m_bStart == true )
-	//{
-		//m_prograssBar01 += m_RodSpeed * timeDelta;
-		//
-
-		//////////////////////////////////////
-		//m_AccTime += timeDelta;
-		//m_Angle = m_Speed * m_AccTime;
-		//// 쉐이더는 오른쪽이 증가인데 로직은 + 가ㅏ 왼쪽 회전이라 바꿈 
-		//m_Spinner->GetUITransform()->SetRotation(-m_Angle);
-
-		//float currentAngle = fmod(m_Angle, 360.f);
-		//if (currentAngle < 0) currentAngle += 360.f;
-
-		//angle01 = (currentAngle / 360.f);
-		//LOG_F(LOG_LEVEL::INFO, "angle %f", angle01);
-
-		//if (m_chose == true)
-		//{
-		//	bool isSuccess = false;
-		//	for (int i = 0; i < m_zoneCount; i++)
-		//	{
-		//		if (m_zones[i].start <= angle01 && m_zones[i].end >= angle01)
-		//		{
-		//			isSuccess = true;
-		//			break;
-		//		}
-		//	}
-
-		//	if(isSuccess == true)
-		//	{
-		//		// 효과 초록 원 이팩트 밖으로 커짐
-		//	//m_bStart = false;
-
-		//		m_prograssBar01 += 0.2;
-		//		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f },false));
-		//		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{1.f,1.f}, false)));
-
-		//	}
-		//	else
-		//	{
-		//		// 초록 영역 붉어지고 빨간 원 이팩트 밖으로 커짐 아주 짧게
-
-		//		m_prograssBar01 -= 0.2;
-
-		//		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f },false));
-		//		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
-		//		m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
-		//		m_changeColor = true;
-		//		colortime = .5f;
-		//	}
-	//	}
-	//}
-
-	//if(m_prograssBar01 >= 1.f && !m_bFin)
-	//{
-	//	//진짜 성공 반환
-	//	m_bStart = false;
-	//	
-	//		m_bFin = true;
-	//
-	//	m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
-	//	m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
-
-	//	Evt_GetFish  e = {};
-	//	e.DefID = m_DefID;
-	//	e.fishInst.size = 20;
-	//	e.fishInst.mutation_ID = 2;
-	////	m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
-
-	//	m_FishCount--;
-	//}
-	
 	m_amountTex->Set_Text(format(L"{}", m_Logic->GetFishCount()));
+	
 
-	if(m_changeColor == true)
-	{
-		m_AccTime2 += timeDelta;
-		if(m_AccTime2 >= colortime)
-		{
-			m_AccTime2 = 0;
-			m_changeColor = false;
-			m_pCircle->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
-
-		}
-	}
 
 	CUIPanel::OnUpdate(timeDelta);
 }

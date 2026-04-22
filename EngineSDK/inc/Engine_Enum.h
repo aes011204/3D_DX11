@@ -7,7 +7,7 @@ namespace Engine
 
 	enum class PROTOTYPE { GAMEOBJECT, COMPONENT};
 
-	enum class RENDERGROUP { PRIORITY, NONBLEND, BLEND, SEA, NONLIGHT, UI, END };
+	enum class RENDERGROUP { PRIORITY, NONBLEND, BLEND, NONLIGHT, SEA, UI, END };
 
 	enum class UI_LAYER { OVERRIDE, WINDOW, STACK, HUD, END };
 
@@ -29,7 +29,7 @@ namespace Engine
 
 	enum class COLLIDER { AABB, OBB, SPHERE, END };
 
-
+	enum class DEFERRED { DEBUG, DIRECTIONAL, POINT, COMBINED,  BLUR_H, BLUR_V,END };
 	//// Dynamic 컴포넌트 경우 매 프레임마다 갱신해야하는 컴포넌트 집단
 	//enum COMPONENTID { ID_DYNAMIC, ID_STATIC, ID_END };
 

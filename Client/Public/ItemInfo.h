@@ -28,7 +28,7 @@ public:
 	~CItemInfo() = default;
 
 public:
-	void UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE PlayerState);
+	void UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE PlayerState, _bool IsPlayer);
 	virtual void UI_Active() override; //  UI 활성활시 호출되는 함수// 이 패널은 다 켜지면 안되기떄문에 오버라이딩으로 호출뻇고 여기서 처리
 	HRESULT OnInit(void* pArg) override;
 	void OnActive()override;

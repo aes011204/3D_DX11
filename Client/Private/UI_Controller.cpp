@@ -93,7 +93,7 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 			if (e.locationState == LOCATIONSTATE::END)
 				ui->UI_InActive();
-			ui->UI_PanelActive(e.isHold, e.itemInst, m_PendingUIState);
+			ui->UI_PanelActive(e.isHold, e.itemInst, m_PendingUIState, e.IsPlayer);
 		});
 
 

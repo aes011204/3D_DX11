@@ -2,8 +2,10 @@
 #include "GameInstance.h"
 
 #include "Fish.h"
+#include "MiniGame_Logic_Ball.h"
+#include "MiniGame_Logic_Diamond.h"
 #include "UI_MiniGame.h"
-#include "../../Engine/Public/EventBus.h"
+#include "EventBus.h"
 
 Client::CMiniGameController::CMiniGameController()
 	: m_pGameInstance(CGameInstance::GetInstance())
@@ -38,31 +40,71 @@ void Client::CMiniGameController::Update(const _float& timeDelta)
 
 void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_ptr<class CInventory_Controller> InvenCtrl, float RodSpeeed)
 {
-	CMiniGame_Logic::MINIGAEMELOGIC_DESC pLogicDesc = { };
-	pLogicDesc.pInvenCtrl = InvenCtrl.lock();
+	shared_ptr<CMiniGame>  pInstance = {};
+	auto minigame  = m_pFish.lock()->GetMiniGameType();
+	switch (minigame)
+	{
+	case MINIGAME::BASIC_CIRCLE:
+	{
+		CMiniGame_Logic::MINIGAEMELOGIC_DESC pLogicDesc = { };
+		pLogicDesc.pInvenCtrl = InvenCtrl.lock();
 
-	pLogicDesc.FishCount = m_pFish.lock()->GetFishCount();
-	pLogicDesc.DefID = m_pFish.lock()->Get_fish_DefID();
-	pLogicDesc.RodSpeed = RodSpeeed;
-	pLogicDesc.zoneCount = static_cast<int>(m_pGameInstance.lock()->Random(2.f,5.f));
-	float baseSegment = 1.f / pLogicDesc.zoneCount;
-	float minRatio = 0.3f;
-	float maxRatio = 0.8f;
+		pLogicDesc.FishCount = m_pFish.lock()->GetFishCount();
+		pLogicDesc.DefID = m_pFish.lock()->Get_fish_DefID();
+		pLogicDesc.RodSpeed = RodSpeeed;
+		pLogicDesc.zoneCount = static_cast<int>(m_pGameInstance.lock()->Random(2.f, 4.f));
+		float baseSegment = 1.f / pLogicDesc.zoneCount;
+		float minRatio = 0.05f;
+		float maxRatio = 0.3f;
 
-	pLogicDesc.zoneSize = _float2(
-		baseSegment * minRatio,
-		baseSegment * maxRatio);
+		pLogicDesc.zoneSize = _float2(
+			baseSegment * minRatio,
+			baseSegment * maxRatio);
+		pLogicDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
 
-	auto pInstance = CMiniGame_Logic::Create(&pLogicDesc);
-	m_pFish.lock()->SetMiniGameLogic(pInstance);
 
-	auto miniGameUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
-	auto ui = dynamic_pointer_cast<CUI_MiniGame>(miniGameUI);
+		pInstance = CMiniGame_Logic::Create(&pLogicDesc);
+		m_pFish.lock()->SetMiniGameLogic(pInstance);
+
+		break;
+	}
+
+	case MINIGAME::DIAMOND:
+	{
+		CMiniGame_Logic_Diamond::MINIGAEMELOGIC_DIAMOND_DESC pLogicDesc = { };
+		pLogicDesc.pInvenCtrl = InvenCtrl.lock();
+
+		pLogicDesc.FishCount = m_pFish.lock()->GetFishCount();
+		pLogicDesc.DefID = m_pFish.lock()->Get_fish_DefID();
+		pLogicDesc.RodSpeed = RodSpeeed;
+		pLogicDesc.MiniGameType = MINIGAME::DIAMOND;
+		
+		pInstance = CMiniGame_Logic_Diamond::Create(&pLogicDesc);
+		m_pFish.lock()->SetMiniGameLogic(pInstance);
+
+		break;
+	}
+	case MINIGAME::BALL:
+	{
+		/*CMiniGame_Logic_Ball::MINIGAEMELOGIC_BALL_DESC pLogicDesc = { };
+		desc.level = 1;
+
+		logic = CHackingLogic::Create(&desc);*/
+		break;
+	}
+	}
+	
+	
 
 	Evt_BindMiniGameLogic e;
 	e.logic = pInstance;
 
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+
+	auto miniGameUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
+	auto ui = dynamic_pointer_cast<CUI_MiniGame>(miniGameUI);
+	
+	
 }
 
 shared_ptr<Client::CMiniGameController> Client::CMiniGameController::Create()

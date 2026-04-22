@@ -104,6 +104,7 @@ public:/*For.PipeLine*/
 	HRESULT Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName);
 	HRESULT Bind_TransformMatrix(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
 	HRESULT Bind_TransformMatrix_Inverse(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
+
 public:/*For.Light_Manager*/
 	const LIGHT_DESC* Get_LightDesc(_uint iIndex);
 	HRESULT Add_Light(const LIGHT_DESC& LightDesc);
@@ -112,10 +113,12 @@ public:/*For.Light_Manager*/
 public:/*For.Picking_Manager*/
 	_bool Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag = L"Layer_BackGround", _uint TerrainIndex = 0);
 	_bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
+
 public:/*For.Camera_Manager*/
 	HRESULT Add_Camera(_uint camLevel, _wstring key, shared_ptr<class CCamera> cam);
 	_bool Change_Camera(_wstring key);
 	void CAM_Manger_OnGui();
+	float Get_Far();
 
 public:/*For.Font_Manager*/
 	HRESULT Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath);
@@ -125,6 +128,7 @@ public:/*For.Font_Manager*/
 	public:/*For.TimeOfDay*/
 		void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
 		_float Get_TOD01();
+
 	public:/*For.Collison_Mgr*/
 		void Add_Collider(shared_ptr<class CCollider> coll);
 
@@ -135,7 +139,7 @@ public:/*For.Font_Manager*/
 	                               const _wstring& strTargetTag);
 
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
-	HRESULT Begin_MRT(const _wstring& strMRTTag);
+	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true);
 	HRESULT End_MRT();
 #ifdef _DEBUG
 public:

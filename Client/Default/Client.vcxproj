@@ -147,8 +147,11 @@
     </ClInclude>
     <ClInclude Include="..\Public\Explosion.h" />
     <ClInclude Include="..\Public\Fish.h" />
+    <ClInclude Include="..\Public\MiniGame.h" />
     <ClInclude Include="..\Public\MiniGameController.h" />
     <ClInclude Include="..\Public\MiniGame_Logic.h" />
+    <ClInclude Include="..\Public\MiniGame_Logic_Ball.h" />
+    <ClInclude Include="..\Public\MiniGame_Logic_Diamond.h" />
     <ClInclude Include="..\Public\Mon_R_Act.h" />
     <ClInclude Include="..\Public\Monster_Tantacle.h" />
     <ClInclude Include="..\Public\Mon_MonkFish.h" />
@@ -224,8 +227,11 @@
     </ClCompile>
     <ClCompile Include="..\Private\Explosion.cpp" />
     <ClCompile Include="..\Private\Fish.cpp" />
+    <ClCompile Include="..\Private\MiniGame.cpp" />
     <ClCompile Include="..\Private\MiniGameController.cpp" />
     <ClCompile Include="..\Private\MiniGame_Logic.cpp" />
+    <ClCompile Include="..\Private\MiniGame_Logic_Ball.cpp" />
+    <ClCompile Include="..\Private\MiniGame_Logic_Diamond.cpp" />
     <ClCompile Include="..\Private\Monster_Tantacle.cpp" />
     <ClCompile Include="..\Private\Mon_MonkFish.cpp" />
     <ClCompile Include="..\Private\Mon_R.cpp" />

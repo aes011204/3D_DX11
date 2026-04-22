@@ -65,35 +65,36 @@ void CUIButton::OnUpdate(const _float& timeDelta)
     ProcessInput();
 
 
-    if(m_bButtonState== true)
+    if (m_bButtonState == true)
     {
-    switch (m_UIState)
-    {
-    case BUTTON_STATE::CLICK:
-        if (bUseDark)
-        Set_Dark01 ( 0.f);
+        switch (m_UIState)
+        {
+        case BUTTON_STATE::CLICK:
+            if (bUseDark)
+                Set_Dark01(0.f);
 
-        break;
-    case BUTTON_STATE::SELECT:
-        if (bUseDark)
-            Set_Dark01(0.f);
+            break;
 
-        break;
-    case BUTTON_STATE::HOVER:
-        if (bUseDark)
-            Set_Dark01(0.6f);
+        case BUTTON_STATE::SELECT:
+            if (bUseDark)
+                Set_Dark01(0.f);
 
-        break;
-    case BUTTON_STATE::NORMAL:
-        if (bUseDark)
-            Set_Dark01(0.8f);
-    	break;
-    case BUTTON_STATE::DISABLE: // 상점등에서 보이는데 돈이 없어서 클릭 할수 없는 상태
-        break;
+            break;
+        case BUTTON_STATE::HOVER:
+            if (bUseDark)
+                Set_Dark01(0.6f);
 
+            break;
+        case BUTTON_STATE::NORMAL:
+            if (bUseDark)
+                Set_Dark01(0.8f);
+            break;
+        case BUTTON_STATE::DISABLE: // 상점등에서 보이는데 돈이 없어서 클릭 할수 없는 상태
+            break;
+
+        }
     }
-	    
-    }
+    
     __super::OnUpdate(timeDelta);
 }
 
@@ -172,7 +173,10 @@ void CUIButton::ProcessInput()
         if (mouseUp && m_ClickInside/*&& m_UIState == BUTTON_STATE::CLICK*/) // 안에서 클릭한 상태에서 안에서 뗏는지
         {
             m_ClickInside = false;
-            m_UIState = BUTTON_STATE::SELECT;
+            if (m_bUseSelect)
+                m_UIState = BUTTON_STATE::SELECT;
+            else
+                m_UIState = BUTTON_STATE::HOVER; // 또는 NORMAL
 
             if (m_ClickEvent) // 콜백 실행
             {
@@ -201,7 +205,7 @@ void CUIButton::ProcessInput()
                 m_ClickInside = false;
 
             m_UIState = BUTTON_STATE::NORMAL;
-
+           
             if (m_OverlapEndEvent) // 콜백 실행
             {
                 m_OverlapEndEvent(this);

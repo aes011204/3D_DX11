@@ -50,7 +50,7 @@ protected:
 	
 	CDInput_Manager* m_Input_Manager = { nullptr };
 
-	weak_ptr<CGameObject> m_pTarget = {};
+
 
 
 	list<string> m_VecDialogue;

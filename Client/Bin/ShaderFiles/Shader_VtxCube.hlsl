@@ -105,11 +105,11 @@ PS_OUT PS_MAIN(PS_IN In)
     float4 skyTex = g_Texture.Sample(DefaultSampler, vSkyUV);
 
 // Planar
-    float fPlanarDiv = max(vDir.y, 0.2f);
+    //float fPlanarDiv = max(vDir.y, 0.2f);
+    //float2 baseUV = vDir.xz / fPlanarDiv;
+    float fPlanarDiv = max(vDir.y, 0.15f); // 0.2 → 0.5
     float2 baseUV = vDir.xz / fPlanarDiv;
-
-
-// 방향
+// 방향5
 
     float2 dir = normalize(float2(1.0f, 0.2f));
     float2 move = dir * g_Acc * 0.0025f;
@@ -193,6 +193,23 @@ PS_OUT PS_MAIN(PS_IN In)
     float3 finalColor = lerp(finalSky, cloudColor, cloud);
 
     Out.vColor = float4(finalColor, 1.0f);
+
+
+
+
+
+
+
+    float heightMask = saturate(1.0f - vDir.y);
+
+// 범위 줄이기
+    float fogMask = smoothstep(0.6f, 1.0f, heightMask);
+
+//  기존 finalColor 유지하면서 덮기
+    finalColor = lerp(finalColor, g_SkyColor, fogMask);
+
+    Out.vColor = float4(finalColor, 1.f);
+
 	return Out;
 }
 

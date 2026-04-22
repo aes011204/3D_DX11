@@ -31,9 +31,15 @@ public:
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) ;
 
 
-
-
-
+  
+    void Set_Target(const shared_ptr<CGameObject>& target)
+    {
+        m_pTarget = target;
+    }
+    shared_ptr<CGameObject> Get_TargetShared() const
+    {
+        return m_pTarget.lock();
+    }
 	_int GetCurStateNum();
 
     weak_ptr<CState> Get_CurState() { return m_CurState; }
@@ -44,6 +50,9 @@ public:
 private:
    weak_ptr<class CPlayerBoat> m_pOwner;
    virtual void Change_State(_uint changeStateKey); // 내부용 밖에서 불러도 안바뀜
+
+   weak_ptr< CGameObject> m_pTarget = {};
+
 
 protected:
     HRESULT Init_PlayerStates();

@@ -75,7 +75,7 @@ HRESULT CLevel_GamePlay::Initialize()
 		return E_FAIL;
 
 
-
+	
 	return S_OK;
 }
 
@@ -84,16 +84,22 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"TabContainer", false , nullptr);
 	m_TapUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 
-	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"HoldItem", false, nullptr);
- 	m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"repairShop", false, nullptr);
+
 
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::HUD, L"HUD", true, nullptr);
+
+
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"NPC_Panel", false, nullptr);
 	m_pNPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"ToolTip", false, nullptr);
+
+
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"HoldItem", false, nullptr);
+	m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
 
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"MiniGame", false, nullptr);
@@ -117,7 +123,7 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Box", false, nullptr);
 	//m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
-	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"repairShop", false, nullptr);
+	
 
 
 	return S_OK;
@@ -133,6 +139,11 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	}
 
 
+	if(m_Flag ==false)
+	{
+		CGameInstance::GetInstance()->Change_Camera(L"Client_CAM");
+		m_Flag = true;
+	}
 
 	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
 	{
@@ -200,6 +211,27 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
 		return E_FAIL;
 
+
+
+	LightDesc.eType = LIGHT::POINT;
+	LightDesc.vPosition = _float4(20.f, 5.f, 20.f, 1.f);
+	LightDesc.fRange = 15.f;
+	LightDesc.vDiffuse = _float4(1.f, 0.f, 0.f, 1.f);
+	LightDesc.vAmbient = _float4(0.4f, 0.f, 0.f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+
+	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
+		return E_FAIL;
+
+	LightDesc.eType = LIGHT::POINT;
+	LightDesc.vPosition = _float4(30.f, 5.f, 20.f, 1.f);
+	LightDesc.fRange = 15.f;
+	LightDesc.vDiffuse = _float4(0.f, 1.f, 0.f, 1.f);
+	LightDesc.vAmbient = _float4(0.f, 0.4f, 0.f, 1.f);
+	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	if (FAILED(m_pGameInstance.lock()->Add_Light(LightDesc)))
+		return E_FAIL;
+
 	return S_OK;
 }
 
@@ -261,7 +293,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::GAMEPLAY), L"FREE_CAM", freeCamera);
 
 
-
+//	CGameInstance::GetInstance()->Change_Camera(L"Client_CAM");
 	return S_OK;
 }
 
@@ -331,16 +363,35 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc.Radius = _float2(1.f, 2.f);
 	fishDesc.AlphaTime = _float2(1.f, 2.f);
 	fishDesc.Speed = _float2(1.f, 2.f);
+	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
 
-
-	fishDesc.vPosition = _float3(10.f, -2.f, 0.f);
-
-
+	fishDesc.vPosition = _float3(10.f, -1.f, 0.f);
 
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
 		return E_FAIL;
 
+
+	//
+	CFish::FISH_DESC fishDesc2 = {};
+
+	fishDesc2.fish_DefID = 1001;
+	fishDesc2.FishCount = 5;
+	fishDesc2.Size = _float2(0.1f, .2f);
+	fishDesc2.Height = _float2(-.1f, .1f);
+	fishDesc2.Radius = _float2(1.f, 2.f);
+	fishDesc2.AlphaTime = _float2(1.f, 2.f);
+	fishDesc2.Speed = _float2(1.f, 2.f);
+	fishDesc2.MiniGameType = MINIGAME::DIAMOND;
+
+
+	fishDesc2.vPosition = _float3(10.f, -1.f, 10.f);
+
+
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc2)))
+		return E_FAIL;
 
 	return S_OK;
 }

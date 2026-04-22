@@ -145,6 +145,9 @@ HRESULT CTerrain::Bind_ShaderResources()
 	m_pShaderCom->Bind_RawValue("g_vRockColor", &vRockColor, sizeof(_float4));
 	//m_pShaderCom->Bind_RawValue("g_fTiling", &fTiling, sizeof(_float));
 
+	float fFar = m_pGameInstance.lock()->Get_Far();
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+
 	return S_OK;
 }
 

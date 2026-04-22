@@ -13,6 +13,7 @@ vector g_GrassColor;
 
 // 재질 정보
 texture2D g_DiffuseTexture;
+float g_Far;
 //vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1); // 주변광 반응 정도
 //vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f); //하이라이트 강도
 //
@@ -51,6 +52,7 @@ struct VS_OUT
     float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
+    float4 vProjPos : TEXCOORD2;
 };
 
 struct PS_IN
@@ -59,12 +61,14 @@ struct PS_IN
     float4 vNormal : NORMAL;
     float2 vTexcoord : TEXCOORD0;
     float4 vWorldPos : TEXCOORD1;
+    float4 vProjPos : TEXCOORD2;
 };
 
 struct PS_OUT
 {
     vector vDiffuse : SV_TARGET0;
     vector vNormal : SV_TARGET1;
+    vector vDepth : SV_TARGET2;
 };
 
 
@@ -83,7 +87,7 @@ VS_OUT VS_MAIN(VS_IN In)
     Out.vTexcoord = In.vTexcoord;
     Out.vNormal = normalize(mul(float4(In.vNormal, 0.f),g_WorldMatrix)); //받아온 노말은 지역이라 월드좌표로 차원맞춰줘야함. 노말라이즈는 픽셀 쉐이더 에서 하는것보다 여기서 하는게 성능상 이점
     Out.vWorldPos = mul(float4(In.vPosition, 1.f), g_WorldMatrix); // 나중 계산을 위해 z 나누기, 뷰,투영 없는 거 저장 
-    
+    Out.vProjPos = Out.vPosition;
     
     return Out;
 }
@@ -107,7 +111,7 @@ PS_OUT PS_MAIN(PS_IN In)
     float rockUp = step(g_ColorLamp2, In.vNormal.y);
     float4 finalColor = lerp(g_RockColor, SandGlassColor, rockUp);
 
-    In.vTexcoord = finalColor;
+    //In.vTexcoord = finalColor;
     vector vMtrlDiffuse = finalColor;
     //vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
     //빛의 크기
@@ -119,7 +123,7 @@ PS_OUT PS_MAIN(PS_IN In)
     //Out.vColor = g_vLightDiffuse * vMtrlDiffuse * vShader + vSpecularColor;
     Out.vDiffuse = vector(vMtrlDiffuse.rgb, 1.f);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
-
+    Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / g_Far, 0.f, 1.f);
     return Out;
 }
 

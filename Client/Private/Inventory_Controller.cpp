@@ -140,7 +140,14 @@ void CInventory_Controller::Update(float TimeDelta)
 				Evt_ItemHovered e = {};
 				e.isHold = false;
 				e.itemInst = inst;
-		
+				if (Get_CurrentInven() == m_PlayerInven.lock())
+				{
+					e.IsPlayer = true;
+				}
+				else
+				{
+					e.IsPlayer = false;
+				}
 				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 				m_PrevSlotX = m_SlotX;
@@ -218,6 +225,15 @@ void CInventory_Controller::Update(float TimeDelta)
 			Evt_ItemHovered e = {};
 			e.isHold = false;
 			e.itemInst = emptyinst;
+			if(Get_CurrentInven() == m_PlayerInven.lock())
+			{
+				e.IsPlayer = true;
+			}
+			else
+			{
+				e.IsPlayer = false;
+			}
+
 			
 			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 

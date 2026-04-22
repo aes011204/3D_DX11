@@ -30,6 +30,11 @@ HRESULT CLight::Render(shared_ptr<CShader> pShader, shared_ptr<CVIBuffer_Rect> p
 	}
 	else if(LIGHT::POINT == m_LightDesc.eType)
 	{
+
+		if (FAILED(pShader->Bind_RawValue("g_vLightPos", &m_LightDesc.vPosition, sizeof m_LightDesc.vPosition)))
+			return E_FAIL;
+		if (FAILED(pShader->Bind_RawValue("g_fLightRange", &m_LightDesc.fRange, sizeof m_LightDesc.fRange)))
+			return E_FAIL;
 		iShaderPass = ETOI(DEFERRED::POINT);
 	}
 
@@ -38,7 +43,8 @@ HRESULT CLight::Render(shared_ptr<CShader> pShader, shared_ptr<CVIBuffer_Rect> p
 		return E_FAIL;
 	if (FAILED(pShader->Bind_RawValue("g_vLightAmbient", &m_LightDesc.vAmbient, sizeof m_LightDesc.vAmbient)))
 		return E_FAIL;
-
+	//if (FAILED(pShader->Bind_RawValue("g_vLightSpecular", &m_LightDesc.vSpecular, sizeof m_LightDesc.vSpecular)))
+	//	return E_FAIL;
 
 
 	pShader->Begin(iShaderPass);

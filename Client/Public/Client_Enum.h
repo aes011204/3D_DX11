@@ -11,7 +11,8 @@ namespace Engine
 
 namespace Client
 {
-    class CInventory;
+	class CMiniGame;
+	class CInventory;
 	class CMiniGame_Logic;
 	class CFish;
 	enum class LOCATIONSTATE;
@@ -326,6 +327,7 @@ namespace Client
         _bool isHold = {};
         Item_Inst itemInst = {};
         LOCATIONSTATE locationState = {};
+        _bool IsPlayer = {};
     };
 
     enum class HUD { SKILL, COMPASS, TOP, BOAT, ETC, END };
@@ -466,7 +468,7 @@ namespace Client
 
     struct Evt_BindMiniGameLogic
     {
-        shared_ptr<CMiniGame_Logic> logic;
+        shared_ptr<CMiniGame> logic;
     };
     struct Evt_OpenInventory
     {
@@ -478,5 +480,12 @@ namespace Client
     struct Evt_MoveTo_Storage
     {
     };
-
+    enum class INPUT_RESULT
+    {
+        NONE,
+        SUCCESS,
+        FAIL,
+        START
+    };
+    enum class MINIGAME { BASIC_CIRCLE, DIAMOND,BALL ,END };
 }

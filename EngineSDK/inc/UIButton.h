@@ -27,6 +27,7 @@ public:
     _uint Get_TypeIndex();
 
     void Set_ButtonState(_bool useButtonState) { m_bButtonState = useButtonState; };
+    void Set_SelectState(_bool useSelectState) { m_bUseSelect = useSelectState; };
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
     HRESULT OnInit(void* pArg)override;
@@ -48,6 +49,8 @@ protected:
     void Load_FromJson(nlohmann::json& j)override;
 
 private:
+
+    _bool m_bUseSelect = {true};
     _uint m_TypeIndex = {};
 
     bool  m_ClickInside = { false };

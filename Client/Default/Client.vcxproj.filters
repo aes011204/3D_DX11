@@ -173,8 +173,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Sea.h" />
     <ClInclude Include="..\Public\Sea_Manager.h" />
-    <ClInclude Include="..\Public\PlayerStateMachine.h" />
-    <ClInclude Include="..\Public\PlayerState.h" />
     <ClInclude Include="..\Public\UI_Village.h">
       <Filter>03.UI</Filter>
     </ClInclude>
@@ -235,8 +233,21 @@
     </ClInclude>
     <ClInclude Include="..\Public\Sky_Controller.h" />
     <ClInclude Include="..\Public\UI_RepairShop.h" />
-    <ClInclude Include="..\Public\Box.h" />
-    <ClInclude Include="..\Public\Player_Interact.h" />
+    <ClInclude Include="..\Public\MiniGame_Logic_Diamond.h" />
+    <ClInclude Include="..\Public\MiniGame_Logic_Ball.h" />
+    <ClInclude Include="..\Public\MiniGame.h" />
+    <ClInclude Include="..\Public\Player_Interact.h">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerState.h">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\PlayerStateMachine.h">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\Box.h">
+      <Filter>02.GameObject</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -359,8 +370,6 @@
     </ClCompile>
     <ClCompile Include="..\Private\Sea.cpp" />
     <ClCompile Include="..\Private\Sea_Manager.cpp" />
-    <ClCompile Include="..\Private\PlayerStateMachine.cpp" />
-    <ClCompile Include="..\Private\PlayerState.cpp" />
     <ClCompile Include="..\Private\UI_Village.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
@@ -420,9 +429,24 @@
       <Filter>03.UI</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Sky_Controller.cpp" />
-    <ClCompile Include="..\Private\UI_RepairShop.cpp" />
-    <ClCompile Include="..\Private\Box.cpp" />
-    <ClCompile Include="..\Private\Player_Interact.cpp" />
+    <ClCompile Include="..\Private\MiniGame_Logic_Ball.cpp" />
+    <ClCompile Include="..\Private\MiniGame_Logic_Diamond.cpp" />
+    <ClCompile Include="..\Private\MiniGame.cpp" />
+    <ClCompile Include="..\Private\Player_Interact.cpp">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerState.cpp">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\PlayerStateMachine.cpp">
+      <Filter>02.GameObject\00.Player\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\UI_RepairShop.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\Box.cpp">
+      <Filter>02.GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

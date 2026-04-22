@@ -131,6 +131,8 @@ HRESULT CMon_R::Render()
 
 		for (size_t i = 0; i < iNumMesh; i++)
 		{
+			m_pModelCom_One->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+
 			m_pModelCom_One->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 			m_pModelCom_One->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
@@ -149,6 +151,8 @@ HRESULT CMon_R::Render()
 		
 			for (size_t i = 0; i < iNumMesh; i++)
 			{
+				m_pModelCom_Etc->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+
 				m_pModelCom_Etc->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 				m_pModelCom_Etc->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 		
@@ -296,6 +300,10 @@ HRESULT CMon_R::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
+
+	float fFar = m_pGameInstance.lock()->Get_Far();
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+		return E_FAIL;
 	return S_OK;
 }
 

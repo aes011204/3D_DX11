@@ -259,10 +259,10 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 			m_bRenderReady = true;
 
 
-		for (auto& it : m_Children)
-		{
-			it->Late_Update(fTimeDelta);
-		}
+		//for (auto& it : m_Children)
+		//{
+		//	it->Late_Update(fTimeDelta);
+		//}
 	}
 
 }

@@ -76,3 +76,13 @@ BlendState BS_AlphaBlend
     
     RenderTargetWriteMask[0] = 0x0F;
 };
+
+BlendState BS_Blend
+{
+    BlendEnable[0] = true;
+    BlendEnable[1] = true;
+
+    SrcBlend = one;
+    DestBlend = one;
+    BlendOp = Add;
+};

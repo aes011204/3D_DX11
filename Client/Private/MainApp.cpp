@@ -783,7 +783,55 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
+
 	}
+
+
+		//
+		//Prototype_Component_Texture_InnerTargetUI
+		if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_InnerTargetUI"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigame_InnerTargetUI.png"), 1))))
+		{
+			MSG_BOX("Faild to Add_Prototype : Texture");
+			return E_FAIL;
+		}
+		//Prototype_Component_Texture_OuterTargetUI
+		if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_OuterTargetUI"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigame_OuterTargetUI.png"), 1))))
+		{
+			MSG_BOX("Faild to Add_Prototype : Texture");
+			return E_FAIL;
+		}
+		//Prototype_Component_Texture_DiamondMinigame
+		if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DiamondMinigame"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigameDiamond.png"), 1))))
+		{
+			MSG_BOX("Faild to Add_Prototype : Texture");
+			return E_FAIL;
+		}
+		//
+			//Prototype_Component_Texture_BallCatcherBall
+		if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherBall"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherBall_%d.png"), 2))))
+		{
+			MSG_BOX("Faild to Add_Prototype : Texture");
+			return E_FAIL;
+		}
+		//Prototype_Component_Texture_BallCatcherArrows
+		if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherArrows"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherArrows.png"), 1))))
+		{
+			MSG_BOX("Faild to Add_Prototype : Texture");
+			return E_FAIL;
+		}
+		//Prototype_Component_Texture_BallCatcherBG
+		if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherBG"),
+			CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherBG.png"), 1))))
+		{
+			MSG_BOX("Faild to Add_Prototype : Texture");
+			return E_FAIL;
+		}
+
 	/////////////////////////TEST//////////////////////////
 
 	//{

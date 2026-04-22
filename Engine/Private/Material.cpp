@@ -68,6 +68,36 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 	}*/
 
 
+
+	{
+		ComPtr<ID3D11Texture2D> tex = nullptr;
+
+		D3D11_TEXTURE2D_DESC desc = {};
+		desc.Width = 1;
+		desc.Height = 1;
+		desc.MipLevels = 1;
+		desc.ArraySize = 1;
+		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		desc.SampleDesc.Count = 1;
+		desc.Usage = D3D11_USAGE_DEFAULT;
+		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+		UINT black = 0x00000000;
+
+		D3D11_SUBRESOURCE_DATA data = {};
+		data.pSysMem = &black;
+		data.SysMemPitch = sizeof(UINT);
+
+		m_pDevice->CreateTexture2D(&desc, &data, tex.GetAddressOf());
+
+		ID3D11ShaderResourceView* srv = nullptr;
+		m_pDevice->CreateShaderResourceView(tex.Get(), nullptr, &srv);
+
+		m_pBlackSRV = srv;
+	}
+
+
+
 		// 2. 재질 이름 읽기 (MAX_PATH만큼 고정 크기)
 		_char szMatName[MAX_PATH] = {};
 		InFile.read(szMatName, MAX_PATH);
@@ -133,14 +163,20 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 HRESULT CMaterial::Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, Cvt_TexType eMaterialType,
 	_uint iTextureIndex)
 {
+	ComPtr<ID3D11ShaderResourceView> srv = nullptr;
+
 	//if (nullptr == m_MaterialTextures[eMaterialType][iTextureIndex] ||
 	//	iTextureIndex >= m_MaterialTextures[eMaterialType].size())
 	//	return E_FAIL;
-	if (iTextureIndex >= m_MaterialTextures[eMaterialType].size() ||
-		nullptr == m_MaterialTextures[eMaterialType][iTextureIndex])
-		return E_FAIL;
-	pShader->Bind_SRV(pConstantName, m_MaterialTextures[eMaterialType][iTextureIndex]);
+	if (iTextureIndex < m_MaterialTextures[eMaterialType].size())
+		srv = m_MaterialTextures[eMaterialType][iTextureIndex];
+	
+		if (srv == nullptr)
+			srv = m_pBlackSRV; // 
 
+		pShader->Bind_SRV(pConstantName, srv);
+	
+	
 	return S_OK;
 }
 

@@ -14,7 +14,7 @@ public:
 
     HRESULT Initialize(_uint iNumLevels);
     void Apply_To_PipeLine();
-   
+    float Get_Far();
 public:
 
 public:

@@ -1,6 +1,7 @@
 #pragma once
-#include "Base.h"
+
 #include "Client_Enum.h"
+#include "MiniGame.h"
 
 
 namespace Engine
@@ -11,19 +12,15 @@ namespace Engine
 NS_BEGIN(Client)
 
 	class CMiniGame_Logic :
-	public CBase
+	public CMiniGame
 {
 public:
-	enum MINIGAME { BASIC_CIRCLE, END };
-	struct MINIGAEMELOGIC_DESC 
+	
+	struct MINIGAEMELOGIC_DESC :public CMiniGame::MINIGAEME_L_DESC
 	{
 		int zoneCount = {};
 		_float2 zoneSize = {};
-		_uint DefID = {};
-		float RodSpeed = {};
-		_uint FishCount = {};
-
-		weak_ptr<class CInventory_Controller> pInvenCtrl;
+	
 
 	};
 protected:
@@ -42,22 +39,28 @@ public:
 	void ResetZoon();
 
 
-	_uint GetFishCount() const{return m_FishCount;}
-	float GetProgress01() const { return m_prograssBar01; }
+	//_uint GetFishCount() const{return m_FishCount;}
+	//float GetProgress01() const { return m_prograssBar01; }
 
-	float GetAngle() const { return m_Angle; }
+	virtual float GetAngle() const override { return m_Angle; }
 
 
-	const Zone* GetZones() const { return m_zones; }
-	int GetZoneCount() const { return m_zoneCount; }
+	virtual const Zone* GetZones() const  override { return m_zones; }
+	virtual int GetZoneCount() const override { return m_zoneCount; }
 
 
 	bool IsStart() const { return m_bStart; }
 	bool IsFinish() const { return m_bFin; }
 
-	_uint Get_DefID() { return m_DefID; };
+	//_uint Get_DefID() { return m_DefID; };
 
+	void OnInput()override;
+
+
+	MINIGAME Get_MiniGameType() { return m_MiniGameType; }
 public:
+	
+
 	Zone m_zones[8];
 	int m_zoneCount;
 	float m_AccTime = { 0 };
@@ -75,20 +78,20 @@ public:
 	float colortime = { 0 };
 
 	///
-	float m_prograssBar01 = { 0 };
-	float m_RodSpeed = {};
+	//float m_prograssBar01 = { 0 };
+	//float m_RodSpeed = {};
 
 
 	//
-	_uint m_DefID = { ID_Absence };
+	//_uint m_DefID = { ID_Absence };
 	_bool m_bFin = { false };
 
 	//
-	_uint m_FishCount = {};
+	//_uint m_FishCount = {};
 private:
-	weak_ptr<CGameInstance> m_pGameInstance = {};
+	//weak_ptr<CGameInstance> m_pGameInstance = {};
 	//
-	weak_ptr<class CInventory_Controller> m_InvenCtrl = {};
+	//weak_ptr<class CInventory_Controller> m_InvenCtrl = {};
 public:
 	static shared_ptr<CMiniGame_Logic> Create(void* pArg);
 	void Free() override;

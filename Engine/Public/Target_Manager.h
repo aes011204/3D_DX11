@@ -20,7 +20,7 @@ public:
 
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
 
-	HRESULT Begin_MRT(const _wstring& strMRTTag);
+	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true);
 	HRESULT End_MRT();
 
 #ifdef _DEBUG

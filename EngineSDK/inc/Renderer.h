@@ -48,6 +48,7 @@ private:
     void Render_Lights();
     void Render_Combined();
     void Render_UI();
+    void RenderBloom();
 
 
 private:
@@ -56,6 +57,9 @@ private:
     void Render_Debug();
 
 #endif
+
+
+    _float2 m_WinSize = {};
 public:
     static unique_ptr<CRenderer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_pContext);
     void Free()override;

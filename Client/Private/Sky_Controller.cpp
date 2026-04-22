@@ -27,8 +27,8 @@ CSky_Controller::CSky_Controller()
 
 CSky_Controller::~CSky_Controller()
 {
-	//Free();
-	MSG_BOX("DF");
+	Free();
+
 }
 
 HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

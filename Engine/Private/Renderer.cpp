@@ -1,4 +1,6 @@
 #include "Renderer.h"
+
+#include "DInput_Manager.h"
 #include "GameInstance.h"
 #include "Entity.h"
 
@@ -20,6 +22,8 @@ HRESULT CRenderer::Initialize()
 
 	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
 
+	m_WinSize = { ViewportDesc.Width, ViewportDesc.Height };
+
 	/* For.RenderTargets */
 	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Diffuse"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
@@ -30,17 +34,41 @@ HRESULT CRenderer::Initialize()
 	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Shade"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
+	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Depth"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Emissive"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
+
+	{
+
+		if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Blur1"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+			return E_FAIL;
+
+		if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Blur2"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+			return E_FAIL;
+	}
+
 
 	/* For.MRTs */
 	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Diffuse"))))
 		return E_FAIL;
 	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Normal"))))
 		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Depth"))))
+		return E_FAIL;
 
 	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
 		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Emissive"))))
+		return E_FAIL;
 
-
+	{
+		if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_Blur1"), TEXT("Target_Blur1"))))
+			return E_FAIL;
+		if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_Blur2"), TEXT("Target_Blur2"))))
+			return E_FAIL;
+	}
 	m_pVIBuffer = CVIBuffer_Rect::Create(m_pDevice, m_pContext);
 	if (nullptr == m_pVIBuffer)
 		return E_FAIL;
@@ -62,8 +90,8 @@ HRESULT CRenderer::Initialize()
 		return E_FAIL;
 	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Shade"), 450.f, 150.f, 300.f, 300.f)))
 		return E_FAIL;
-
-
+	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Blur2"), 450.f, 450.f, 300.f, 300.f)))
+		return E_FAIL;
 #endif
 
 	return S_OK;
@@ -89,7 +117,9 @@ void CRenderer::Draw()
 	Render_NonBlend();
 	Render_Lights();
 
+	//RenderBloom();
 	Render_Combined();
+
 	Render_NonLight();
 	
 
@@ -98,8 +128,13 @@ void CRenderer::Draw()
 
 	Render_UI();
 
+
+
 #ifdef _DEBUG
-	//Render_Debug();
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyPress(DIK_SPACE) == true)
+	{
+		Render_Debug();
+	}
 #endif
 }
 
@@ -191,7 +226,23 @@ void CRenderer::Render_Lights()
 	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return;
 
+	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInverse", m_pGameInstance.lock()->Get_InverseTransfrom(D3DTS::VIEW))))
+		return;
+
+	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInverse", m_pGameInstance.lock()->Get_InverseTransfrom(D3DTS::PROJ))))
+		return;
+
+
 	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_NormalTexture", TEXT("Target_Normal"))))
+		return;
+
+	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_DepthTexture", TEXT("Target_Depth"))))
+		return;
+
+	if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", m_pGameInstance.lock()->Get_CamPositon(), sizeof(_float4))))
+		return;
+	auto fFar = m_pGameInstance.lock()->Get_Far();
+	if (FAILED(m_pShader->Bind_RawValue("g_Far",& fFar, sizeof(_float))))
 		return;
 
 	m_pVIBuffer->Bind_Resources();
@@ -205,6 +256,10 @@ void CRenderer::Render_Lights()
 
 void CRenderer::Render_Combined()
 {
+
+
+	ID3D11ShaderResourceView* nullSRV[16] = {};
+	m_pContext->PSSetShaderResources(0, 16, nullSRV);
 
 	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
 		return;
@@ -221,7 +276,10 @@ void CRenderer::Render_Combined()
 		return;
 	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_ShadeTexture", TEXT("Target_Shade"))))
 		return;
-
+	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_EmissiveTexture", TEXT("Target_Emissive"))))
+		return;
+	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_BloomTexture", TEXT("Target_Blur2"))))
+		return;
 
 	m_pShader->Begin(ETOI(DEFERRED::COMBINED));
 
@@ -266,6 +324,92 @@ void CRenderer::Render_UI()
 
 	m_RenderObject[ETOI(RENDERGROUP::UI)].clear();
 }
+
+void CRenderer::RenderBloom()
+{
+
+	ID3D11ShaderResourceView* nullSRV[16] = {};
+	m_pContext->PSSetShaderResources(0, 16, nullSRV);
+	m_pContext->VSSetShaderResources(0, 16, nullSRV);
+	m_pContext->GSSetShaderResources(0, 16, nullSRV);
+
+	if (FAILED(m_pGameInstance.lock()->Begin_MRT(TEXT("MRT_Blur1"),false)))
+		return;
+
+
+	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_InputTexture", TEXT("Target_Emissive"))))
+		return;
+
+
+	_float4x4 identity;
+	XMStoreFloat4x4(&identity, XMMatrixIdentity());
+
+	//m_pShader->Bind_Matrix("g_WorldMatrix", &identity);
+	//m_pShader->Bind_Matrix("g_ViewMatrix", &identity);
+	//m_pShader->Bind_Matrix("g_ProjMatrix", &identity);
+	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return;
+
+
+	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+		return;
+
+
+	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+
+	if (FAILED(m_pShader->Bind_RawValue("g_WinSize", &m_WinSize, sizeof(_float2))))
+		return;
+
+	m_pShader->Begin(4);
+
+	m_pVIBuffer->Bind_Resources();
+
+
+	m_pVIBuffer->Render();
+
+	//if (FAILED(m_pGameInstance.lock()->Render_Lights(m_pShader, m_pVIBuffer)))
+	//	return;
+	m_pGameInstance.lock()->End_MRT();
+	//////////////////////////////////////////////////////
+	ID3D11ShaderResourceView* nullSRV2[16] = {};
+	m_pContext->PSSetShaderResources(0, 16, nullSRV2);
+	m_pContext->VSSetShaderResources(0, 16, nullSRV);
+	m_pContext->GSSetShaderResources(0, 16, nullSRV);
+	if (FAILED(m_pGameInstance.lock()->Begin_MRT(TEXT("MRT_Blur2"),false)))
+		return;
+	
+	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_InputTexture", TEXT("Target_Blur1"))))
+		return;
+
+      identity;
+	XMStoreFloat4x4(&identity, XMMatrixIdentity());
+
+	//m_pShader->Bind_Matrix("g_WorldMatrix", &identity);
+	//m_pShader->Bind_Matrix("g_ViewMatrix", &identity);
+	//m_pShader->Bind_Matrix("g_ProjMatrix", &identity);
+	if (FAILED(m_pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix)))
+		return;
+
+
+	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
+		return;
+
+
+	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
+
+
+	if (FAILED(m_pShader->Bind_RawValue("g_WinSize", &m_WinSize, sizeof(_float2))))
+		return;
+
+	m_pShader->Begin(5);
+
+	m_pVIBuffer->Bind_Resources();
+
+
+	m_pVIBuffer->Render();
+
+	m_pGameInstance.lock()->End_MRT();
+}
 #ifdef _DEBUG
 void CRenderer::Render_Debug()
 {
@@ -290,7 +434,10 @@ void CRenderer::Render_Debug()
 
 	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_LightAcc"))))
 		return;
-
+	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Blur2"))))
+		return;
+	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Blur1"))))
+		return;
 }
 #endif
 

@@ -49,12 +49,12 @@ public:
 
 private:
 
-	shared_ptr<CUIImage> m_Line = {};
-	shared_ptr<CUIImage> m_Line2 = {};
-	shared_ptr<CUIImage> m_TextIMG = {};
-	shared_ptr<CUIText> m_TextFont = {};
-
-	shared_ptr<CUIText> m_FixButton = {};
+	shared_ptr<CUIImage> m_Line = { nullptr };
+	shared_ptr<CUIImage> m_Line2 = { nullptr };
+	shared_ptr<CUIImage> m_TextIMG = { nullptr };
+	shared_ptr<CUIText> m_TextFont = { nullptr };
+	shared_ptr<CUIButton> m_BtnFix = { nullptr };
+	shared_ptr<CUIText> m_FixButtonTex = { nullptr };
 	float m_repairPrice = {};
 
 	shared_ptr<CUIButton> m_ButtonContents[ETOI(SHOPTAB::END)] = {};

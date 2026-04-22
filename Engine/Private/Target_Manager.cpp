@@ -65,7 +65,7 @@ HRESULT CTarget_Manager::Add_MRT(const _wstring& strMRTTag, const _wstring& strT
 
 }
 
-HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag)
+HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 {
 
 	list <shared_ptr<CRenderTarget>>* pMRTList = Find_MRT(strMRTTag);
@@ -86,6 +86,10 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag)
 	//}
 	//
 	//m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets->GetAddressOf(), m_pOriginalDSV.Get());
+
+	ID3D11ShaderResourceView* nullSRV[16] = {};
+	m_pContext->PSSetShaderResources(0, 16, nullSRV);
+
 	ID3D11RenderTargetView* pRenderTargets[8] = { nullptr };
 
 	_uint       iNumRenderTargets = { 0 };
@@ -96,7 +100,10 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag)
 		pRenderTargets[iNumRenderTargets++] = pRenderTarget->Get_RTV().Get();
 	}
 
-	m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets, m_pOriginalDSV.Get());
+	if (useDepth)
+		m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets, m_pOriginalDSV.Get());
+	else
+		m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets, nullptr);
 	return S_OK;
 }
 

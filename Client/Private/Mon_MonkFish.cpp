@@ -243,9 +243,11 @@ HRESULT CMon_MonkFish::Render()
 
 		for (size_t i = 0; i < iNumMesh; i++)
 		{
+			m_pModelCom_Mon->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 
 			m_pModelCom_Mon->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 			m_pModelCom_Mon->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+
 
 			if (m_Alpha_Anim < 1.f)
 				m_pShaderCom->Begin(1); // Alpha
@@ -269,6 +271,7 @@ HRESULT CMon_MonkFish::Render()
 		for (size_t j = 0; j < iNumMesh; j++)
 		{
 			m_pModelCom_Boat->Bind_Material(m_pShaderCom_Mesh, "g_DiffuseTexture", j, TextureType_DIFFUSE, 0);
+			m_pModelCom_Boat->Bind_Material(m_pShaderCom, "g_EmissiveTexture", j, TextureType_EMISSIVE, 0);
 
 
 			if (FAILED(m_pShaderCom_Mesh->Begin(1)))
@@ -384,6 +387,10 @@ HRESULT CMon_MonkFish::Bind_ShaderResources()
 
 
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_Alpha_Anim, sizeof(_float))))
+		return E_FAIL;
+
+	float fFar = m_pGameInstance.lock()->Get_Far();
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
 
 	return S_OK;

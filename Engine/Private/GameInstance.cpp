@@ -55,6 +55,10 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	if (nullptr == m_pObject_Manager)
 		return E_FAIL;
 
+	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iMaxLevelNum);
+if (nullptr == m_pCamera_Manager)
+	return E_FAIL;
+
 
 	// ·»´õ·¯ Àü¿¡
 	m_pTarget_Manager = CTarget_Manager::Create(ppDevice.Get(), ppContext.Get());
@@ -98,9 +102,9 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	if (nullptr == m_pLight_Manager)
 		return E_FAIL;
 
-	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iMaxLevelNum);
-	if (nullptr == m_pCamera_Manager)
-		return E_FAIL;
+	//m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iMaxLevelNum);
+	//if (nullptr == m_pCamera_Manager)
+	//	return E_FAIL;
 
 	m_pPicking_Manager = CPicking_Manager::Create(ppDevice.Get(), ppContext.Get());
 	if (nullptr == m_pPicking_Manager)
@@ -468,6 +472,11 @@ void CGameInstance::CAM_Manger_OnGui()
 	m_pCamera_Manager->OnGui();
 }
 
+float CGameInstance::Get_Far()
+{
+	return m_pCamera_Manager->Get_Far();
+}
+
 HRESULT CGameInstance::Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath)
 {
 	return m_pFont_Manager->Add_Font(strFontTag, pFontFilePath);
@@ -514,9 +523,9 @@ HRESULT CGameInstance::Add_MRT(const _wstring& strMRTTag, const _wstring& strTar
 	return m_pTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
 }
 
-HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag)
+HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 {
-	return m_pTarget_Manager->Begin_MRT(strMRTTag);
+	return m_pTarget_Manager->Begin_MRT(strMRTTag, useDepth);
 }
 
 HRESULT CGameInstance::End_MRT()

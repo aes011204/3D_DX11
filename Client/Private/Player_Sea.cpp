@@ -72,10 +72,10 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 
 
 
-	if(m_Input_Manager->KeyDown(DIK_F) && m_pTarget.lock() != nullptr)
+	if(m_Input_Manager->KeyDown(DIK_F) && m_pStateMachine.lock()->Get_TargetShared()!= nullptr)
 	{
 
-		if(auto Target =dynamic_pointer_cast<CFish>(m_pTarget.lock()))
+		if(auto Target =dynamic_pointer_cast<CFish>(m_pStateMachine.lock()->Get_TargetShared()))
 		{
 			Target->Change_Cam(m_Owner.lock());
 
@@ -145,8 +145,8 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 
 	if (other->Get_MyLayer() == COLLISION_LAYER::FISH)
 	{
-		// "너를 내 타겟으로 찜했다" (포인터만 저장)
-		m_pTarget = other->Get_GOwner();
+		
+		m_pStateMachine.lock()->Set_Target(other->Get_GOwner());// = other->Get_GOwner();
 	}
 	
 	if (m_Input_Manager->KeyDown(DIK_F) && !m_bIsDocking && other->Get_MyLayer() == TRIGGER)

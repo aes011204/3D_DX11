@@ -37,6 +37,16 @@ void CCamera_Manager::Apply_To_PipeLine()
 		XMLoadFloat4x4(m_CurCam->Get_CamTSMatrices(D3DTS::PROJ)));
 }
 
+float CCamera_Manager::Get_Far()
+{
+	if (m_CurCam != nullptr)
+	{
+		return m_CurCam->Get_Far();
+	}
+	else
+		return 500.f;
+}
+
 void CCamera_Manager::OnGui()
 {
 	

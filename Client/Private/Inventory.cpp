@@ -136,7 +136,6 @@ HRESULT CInventory::Initialize(void* pArg)
 		Item_Inst inst3 = Create_ItemInstance(3001, monostate{}, 0);
 		AddItem(inst3, 0, 0);
 
-
 		inst3 = Create_ItemInstance(3003, monostate{}, 1);
 		AddItem(inst3, 0, 1);
 

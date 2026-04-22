@@ -28,7 +28,7 @@ public:
 
     _float4x4* Get_CamTSMatrices(D3DTS eTransformState) { return &m_CamTSMatrices[ETOI(eTransformState)]; };
    
-
+    float Get_Far() {return m_fFar;}
 
  protected:
      _float						m_fFovy{}, m_fNear{}, m_fFar{}, m_fAspect{};

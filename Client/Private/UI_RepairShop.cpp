@@ -63,9 +63,10 @@ void CUI_RepairShop::UI_PanelActive()
 	m_Line->UI_Active();
 	m_Line2->UI_Active();
 //	m_TextIMG->UI_Active();
-	m_FixButton->UI_Active();
+	m_BtnFix->UI_Active();
+	m_FixButtonTex->UI_Active();
 	_wstring strTag = format(L"모두 수리[{:.2f}]", m_repairPrice);
-	m_FixButton->Set_Text(strTag);
+	m_FixButtonTex->Set_Text(strTag);
 	Change_LayoutRawCol( 4,1);
 
 	//m_Active = Active;
@@ -245,13 +246,13 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 				shared_ptr<CUIText> Text_storage = CUIText::Create(m_pDevice, m_pContext);
 				Text_storage->Initialize(&text_Desc);
 				button->Add_Child(Text_storage, L"Text_repairPrice", false);
-				m_FixButton = Text_storage;
+				m_FixButtonTex = Text_storage;
 			}
 
 			//Add_Child(pChild, NameTag, false);
 			wstring NameTag = L"BUTTON_repair";
-			Add_Layout_Child(button, NameTag, false);
-			
+			Add_Child(button, NameTag, false);
+			m_BtnFix = button;
 	}
 
 	return hr;

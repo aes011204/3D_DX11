@@ -5,6 +5,7 @@
 #include "Client_Define.h"
 #include "MiniGame_Logic.h"
 NS_BEGIN(Client)
+class CMiniGame;
 
 	class CFish :
     public CGameObject
@@ -22,6 +23,7 @@ public:
         _float2 Radius = {};
 
         _uint fish_DefID = {};
+        MINIGAME MiniGameType = {};
 
     };
 
@@ -56,13 +58,14 @@ public:
     virtual void OnGui() override;
 
     int GetFishCount() const { return m_FishCount; }
-    shared_ptr<CMiniGame_Logic> GetMiniGameLogic() const {return m_MiniGame_Logic;}
-    void SetMiniGameLogic(shared_ptr<CMiniGame_Logic> logic) {m_MiniGame_Logic = logic;}
+    shared_ptr<CMiniGame> GetMiniGameLogic() const {return m_MiniGame_Logic;}
+    void SetMiniGameLogic(shared_ptr<class CMiniGame> logic) {m_MiniGame_Logic = logic;}
 
 	virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
+    MINIGAME GetMiniGameType() const{return m_MiniGameType;}
 
     void Change_Cam(shared_ptr<CGameObject> m_Player);
 
@@ -82,7 +85,7 @@ private:
 
 private:
 
-
+    MINIGAME m_MiniGameType = {};
    // _uint m_CurFishCount = {};
 
     _uint m_FishCount = {};
@@ -91,7 +94,7 @@ private:
     _uint fish_DefID = {};
 
 
-    shared_ptr<class CMiniGame_Logic> m_MiniGame_Logic = { nullptr };
+    shared_ptr<class CMiniGame> m_MiniGame_Logic = { nullptr };
 
 public:
     static shared_ptr<CFish> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
