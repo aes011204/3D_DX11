@@ -269,9 +269,13 @@ void CUI_RepairShop::OnActive()
 	//m_ButtonContents[ETOI(m_Active)]->Set_Zorder(2);
 
 	GetUITransform()->SetAnchoredPos(Vector2{ GetUITransform()->Get_FinalSize().x, 0.f });
-	m_vecAni = Vector2{ GetUITransform()->Get_FinalSize().x, 0.f };
+	//m_vecAni = Vector2{ GetUITransform()->Get_FinalSize().x, 0.f };
+	m_vecAni = Vector2{ -1200.f,0.f };
 	m_bStart = true;
 	m_fDuration = 1.5f;
+
+	m_ButtonContents[ETOI(SHOPTAB::ROT)]->ChangeState(BUTTON_STATE::SELECT);
+
 
 	CUIPanel::OnActive();
 }
@@ -300,8 +304,7 @@ void CUI_RepairShop::OnUpdate(const _float& timeDelta)
 		float t = m_TimeAcc / m_fDuration;
 
 		if (t >= 1.f) t = 1.f;
-
-		m_vecAni = Vector2{ lerp(-1200.f, -600.f, t),0.f };
+		m_vecAni = Vector2{ lerp(m_vecAni.x,  -600.f, t),0.f };
 		GetUITransform()->SetAnchoredPos(m_vecAni);
 		//LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
 

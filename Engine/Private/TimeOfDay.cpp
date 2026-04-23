@@ -44,6 +44,15 @@ void CTimeOfDay::ComputeTime(_uint& iDay,_float& fHour, _float& fMinute, _float&
 	fSecond = fmod(fmod(fGameSecond, 3600.f) , 60.f);
 }
 
+void CTimeOfDay::Set_TOD01(_float tod)
+{
+	{
+		m_fTOD01 = clamp(tod, 0.f, 1.f);
+		m_Second = m_fTOD01 * m_SecondPerDay;
+	}
+
+}
+
 void CTimeOfDay::OnGui()
 {
 	CBase::OnGui();

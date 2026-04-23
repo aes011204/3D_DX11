@@ -2,7 +2,9 @@
 #include "Client_Define.h"
 #include "Level.h"
 NS_BEGIN(Engine)
-class CUI;
+
+class CCamera;
+	class CUI;
 class CGameObject;
 
 NS_END
@@ -46,7 +48,7 @@ private:
 	shared_ptr<class CUI> m_Village = {};
 
 	shared_ptr<class CMiniGameController> m_pMiniGame_Controller = { nullptr };
-
+	shared_ptr<CCamera> ClientCamera = {nullptr};
 	_bool m_Flag = false;
 
 public:

@@ -7,6 +7,7 @@
 #include "PlayerBoat.h"
 #include "Sea_Manager.h"
 #include "EventBus.h"
+#include "Camera_Play.h"
 
 CPlayer_Village::CPlayer_Village(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
 	: CPlayerState(owner, pStateMachine)
@@ -19,6 +20,40 @@ CPlayer_Village::~CPlayer_Village()
 
 void CPlayer_Village::Enter()
 {
+
+	float duration = 2.f;
+	if(m_Flag !=  true)
+	{
+		// 시간 6시로 
+		 m_pGameInstance.lock()->Set_TOD01(0.25);
+
+		 Evt_ChangeCam event = {};
+		 auto pLerp = make_shared<CAM_LERP_DESC>();
+		 pLerp->eMode = CAM_MODE::LERP;
+		 pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
+		 pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
+		 pLerp->fDuration = 0.f;
+		 pLerp->fFov = 30.f;
+		 pLerp->OnComplete = [this]() {
+
+			 Evt_Cam_Arrived e = {};
+			 e.playerstate = E_PLAYERSTATE::VILLAGE;
+			 CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
+			 //		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+			 //m_Village->UI_Active();
+			 };
+		 event.commands.push_back(pLerp);
+
+		 auto pStop = make_shared<CAM_DESC>();
+		 pStop->eMode = CAM_MODE::STOP;
+		 event.commands.push_back(pStop);
+	
+		return;
+	
+	}
+	
+	
+
 	CDialogueDB::GetInstance()->Set_PendingDialogue(m_VecDialogue);
 
 
@@ -27,7 +62,7 @@ void CPlayer_Village::Enter()
 	pLerp->eMode = CAM_MODE::LERP;
 	pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
 	pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
-	pLerp->fDuration = 2.0f;
+	pLerp->fDuration = duration;
 	pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
 
@@ -84,6 +119,51 @@ HRESULT CPlayer_Village::Init_State()
 
 int CPlayer_Village::Update_State(const _float& timeDelta)
 {
+	if (m_Flag != true)
+	{
+		m_Acc += timeDelta;
+
+
+
+
+		if(m_Acc > 4.f)
+		{
+
+			CDialogueDB::GetInstance()->Set_PendingDialogue(m_VecDialogue);
+
+
+			Evt_ChangeCam event = {};
+			auto pLerp = make_shared<CAM_LERP_DESC>();
+			pLerp->eMode = CAM_MODE::LERP;
+			pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
+			pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
+			pLerp->fDuration = 5.f;
+			pLerp->fFov = 30.f;
+			pLerp->OnComplete = [this]() {
+
+				Evt_Cam_Arrived e = {};
+				e.playerstate = E_PLAYERSTATE::VILLAGE;
+				CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
+				//		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+				//m_Village->UI_Active();
+				};
+			event.commands.push_back(pLerp);
+
+			auto pStop = make_shared<CAM_DESC>();
+			pStop->eMode = CAM_MODE::STOP;
+			event.commands.push_back(pStop);
+
+
+
+			CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
+
+
+
+
+		m_Flag = true;
+		}
+	}
+
 
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{

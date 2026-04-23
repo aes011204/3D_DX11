@@ -15,6 +15,7 @@ public:
     {
         _float	fMouseSensor = {};
     	weak_ptr<CGameObject> target = { };
+        _float3 vDir = {};
 
     };
 protected:

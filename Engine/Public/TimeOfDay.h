@@ -19,6 +19,8 @@ public:
 
     _float Get_TOD01() { return m_fTOD01; }
 
+    void Set_TOD01(_float tod);
+   
     void OnGui() override;
 private:
     _float m_SecondPerDay = 1200; // 스케일이 1 일떄 게임의 하루는 현실 20분

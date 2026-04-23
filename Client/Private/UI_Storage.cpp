@@ -129,6 +129,8 @@ void CUI_Storage::OnActive()
 	Evt_OpenInventory e;
 	e.inven = m_Inven;
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+
+	//m_shopTab = SHOPTAB::ENGINE;
 }
 
 void CUI_Storage::OnInActive()

@@ -283,8 +283,8 @@ void CRenderer::Render_Combined()
 		return;
 	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_EmissiveTexture", TEXT("Target_Emissive"))))
 		return;
-	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_BloomTexture", TEXT("Target_Blur2"))))
-		return;
+	//if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_BloomTexture", TEXT("Target_Blur2"))))
+	//	return;
 
 	m_pShader->Begin(ETOI(DEFERRED::COMBINED));
 
@@ -439,10 +439,10 @@ void CRenderer::Render_Debug()
 
 	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_LightAcc"))))
 		return;
-	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Blur2"))))
-		return;
-	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Blur1"))))
-		return;
+//	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Blur2"))))
+//		return;
+//	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Blur1"))))
+//		return;
 }
 #endif
 

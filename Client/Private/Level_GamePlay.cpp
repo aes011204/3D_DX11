@@ -144,6 +144,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	{
 		CGameInstance::GetInstance()->Change_Camera(L"Client_CAM");
 		m_pGameInstance.lock()->Load(SAVETYPE::GAMEOBJECT, "Lasst_2.json");
+	//ClientCamera->Get_TransformCom()->Set_RotationDegree(_float3{ -12.44f,-1.98f, 0.f });
 		m_Flag = true;
 	}
 
@@ -219,7 +220,7 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 
 
 	LightDesc.eType = LIGHT::POINT;
-	LightDesc.vPosition = _float4(0.f, 20.f, 0.f, 1.f);
+	LightDesc.vPosition = _float4(0.f, 16.0f, 2.4f, 1.f);
 	LightDesc.fRange = 20.f;
 	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
 	LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
@@ -263,28 +264,30 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CLCamDesc.fFar = 500.f;
 	CLCamDesc.fNear = 0.1f;
 	CLCamDesc.fFovY = XMConvertToRadians(60.f);
-	CLCamDesc.vAt = { 60.f, 0.f, 60.f, 1.f };
-	CLCamDesc.vEyes = { 60.f, 60.f, -30.f, 1.f };
+	CLCamDesc.vEyes = _float4(34.48f, 6.587f, 6.038f, 1.f);
+	CLCamDesc.vAt = _float4(34.13f, 8.43f, 15.80f, 1.f);
+	//CLCamDesc.vDir = _float3(-12.44f, -1.98f, 0.f);
 	CLCamDesc.fSpeedPerSec = 10.f;
 	CLCamDesc.fDegreePerSec = 180.f;
 	CLCamDesc.fMouseSensor = 0.05f;
 	CLCamDesc.target = m_pPlayer;
 
-	shared_ptr<CCamera> ClientCamera = dynamic_pointer_cast<CCamera>(m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Play"),
+	ClientCamera = dynamic_pointer_cast<CCamera>(m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Play"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag, &CLCamDesc));
 
 	if (nullptr == ClientCamera)
 		return E_FAIL;
+	//ClientCamera->Get_TransformCom()->Set_RotationDegree(_float3{ -12.44f,-1.98f, 0.f });
 	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::GAMEPLAY), L"Client_CAM", ClientCamera);
 
 
 
 
-	/*CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
+	CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
 	FRCamDesc.fFar = 500.f;
 	FRCamDesc.fNear = 0.1f;
 	FRCamDesc.fFovY = XMConvertToRadians(60.f);
-	FRCamDesc.vEyes = _float4(0.f, 10.f, -7.f, 1.f);
+	FRCamDesc.vEyes = _float4(34.48f,6.587f,6.038f,1.f);
 	FRCamDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
 	FRCamDesc.fSpeedPerSec = 10.f;
 	FRCamDesc.fDegreePerSec = 180.f;
@@ -295,8 +298,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::GAMEPLAY), L"FREE_CAM", freeCamera);*/
+	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::GAMEPLAY), L"FREE_CAM", freeCamera);
 
+	
 
 //	CGameInstance::GetInstance()->Change_Camera(L"Client_CAM");
 	return S_OK;

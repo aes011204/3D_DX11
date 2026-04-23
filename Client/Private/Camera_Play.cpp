@@ -64,6 +64,11 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 	//m_MinDistance = 15.f;
 	//m_MaxDistance = 35.f;
 	m_fDistance = 18.f;
+
+
+
+	//_pTransformCom->Set_RotationDegree(pDesc->vDir);
+	//_pTransformCom->Update_WorldMatrix();
 	return S_OK;
 }
 

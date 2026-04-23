@@ -11,7 +11,6 @@ Texture2D g_ShadeTexture;
 Texture2D g_EmissiveTexture;
 //texture2D g_SpecularTexture;
 Texture2D g_DepthTexture;
-Texture2D g_BloomTexture;
 
 vector g_vLightDir;
 vector g_vLightPos;
@@ -32,8 +31,8 @@ float g_Far;
 sampler DefaultSampler = sampler_state
 {
     Filter = MIN_MAG_MIP_LINEAR;
-    AddressU = Clamp;
-    AddressV = Clamp;
+    AddressU = Wrap;
+    AddressV = Wrap;
 };
 
 struct VS_IN
@@ -63,7 +62,7 @@ struct PS_OUT_BACKBUFFER
 struct PS_OUT_LIGHT
 {
     vector vShade : SV_TARGET0;
-   // vector vSpecular : SV_TARGET1;
+    vector vSpecular : SV_TARGET1;
 };
 
 
@@ -126,8 +125,8 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
     //vWorldPos *= fViewZ;
     //
     //// 월드위치 * 뷰행렬 
+    //vWorldPos = mul(vWorldPos, g_ProjMatrixInverse);
     //vWorldPos = mul(vWorldPos, g_ViewMatrixInverse);
-    //
     //float4 vLook = vWorldPos - g_vCamPosition;
     //
     //float fSpecular = pow(max(dot(normalize(vLook) * -1, normalize(vReflect)), 0.f), 50.f);
@@ -141,13 +140,15 @@ PS_OUT_LIGHT PS_MAIN_DIRECTIONAL(PS_IN In)
 
 PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
 {
-        PS_OUT_LIGHT Out;
+    PS_OUT_LIGHT Out;
     vector vNormalDesc = g_NormalTexture.Sample(DefaultSampler, In.vTexcoord);
 
     vector vNormal = vector(vNormalDesc.xyz * 2.f - 1.f, 0.f);
-	vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
     float fViewZ = vDepthDesc.y * g_Far;
-
+    
+    float4 vReflect = reflect(normalize(g_vLightDir), vNormal);
+    
     float4 vWorldPos;
     
     //투영공간상의 위치를 구한다. 
@@ -163,15 +164,20 @@ PS_OUT_LIGHT PS_MAIN_POINT(PS_IN In)
     
     // 월드위치 * 뷰행렬 
     vWorldPos = mul(vWorldPos, g_ProjMatrixInverse);
-
     vWorldPos = mul(vWorldPos, g_ViewMatrixInverse);
-    vector vLightDir = vWorldPos - g_vLightPos;
+
+    vector vLightDir = g_vLightPos - vWorldPos;
     float fDistance = length(vLightDir);
-    
+
+    vLightDir = normalize(vLightDir);
+
     float fAtt = saturate((g_fLightRange - fDistance) / g_fLightRange);
 
-   // Out.vShade = g_vLightDiffuse * (max(dot(normalize(g_vLightDir) * -1.f, normalize(vNormal)), 0.f) + (g_vLightAmbient * g_vMtrlAmbient));
-    Out.vShade = (g_vLightDiffuse * (max(dot(normalize(vLightDir) * -1.f, normalize(vNormal)), 0.f) + (g_vLightAmbient * g_vMtrlAmbient))) * fAtt;
+    Out.vShade =
+    (g_vLightDiffuse *
+     (max(dot(vLightDir, normalize(vNormal)), 0.f)
+     + (g_vLightAmbient * g_vMtrlAmbient)))
+    * fAtt;
     return Out;
 }
 
@@ -187,73 +193,11 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
 
     vector vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    vector vBloom = g_BloomTexture.Sample(DefaultSampler, In.vTexcoord);
-
-
-
-    Out.vColor = vDiffuse * vShade + vEmissive; //+vBloom*5.f;
+    Out.vColor = vDiffuse * vShade + vEmissive;
 
     return Out;
 }
 
-////////////
-///
-Texture2D g_InputTexture;
-float2 g_WinSize;
-float weights[5] = { 0.227, 0.194, 0.121, 0.054, 0.016 };
-///
-///
-///
-///
-float4 PS_BLUR_H(PS_IN In) : SV_TARGET
-{
-    float2 texel = float2(1.0 / g_WinSize.x, 0);
-
-    float3 result = g_InputTexture.Sample(DefaultSampler, In.vTexcoord).rgb * weights[0];
-
-    for (int i = 1; i < 5; i++)
-    {
-        float2 uv1 = saturate(In.vTexcoord + texel * i);
-        float2 uv2 = saturate(In.vTexcoord - texel * i);
-
-        float3 s1 = g_InputTexture.Sample(DefaultSampler, uv1).rgb;
-        float3 s2 = g_InputTexture.Sample(DefaultSampler, uv2).rgb;
-
-    // 밝은 것만 퍼뜨림
-        s1 = max(s1 - 0.1, 0);
-        s2 = max(s2 - 0.1, 0);
-
-        result += (s1 + s2) * weights[i];
-    }
-
-
-    return float4(result, 1);
-}
-
-float4 PS_BLUR_V(PS_IN In) : SV_TARGET
-{
-    float2 texel = float2(0, 1.0 / g_WinSize.y);
-
-    float3 result = g_InputTexture.Sample(DefaultSampler, In.vTexcoord).rgb * weights[0];
-
-    for (int i = 1; i < 5; i++)
-    {
-        float2 uv1 = saturate(In.vTexcoord + texel * i);
-        float2 uv2 = saturate(In.vTexcoord - texel * i);
-
-        float3 s1 = g_InputTexture.Sample(DefaultSampler, uv1).rgb;
-        float3 s2 = g_InputTexture.Sample(DefaultSampler, uv2).rgb;
-
-    // 밝은 것만 퍼뜨림
-        s1 = max(s1 - 0.1, 0);
-        s2 = max(s2 - 0.1, 0);
-
-        result += (s1 + s2) * weights[i];
-    }
-
-
-    return float4(result, 1);
-}
 technique11 DefaultTechnique
 {
     pass Debug
@@ -296,26 +240,4 @@ technique11 DefaultTechnique
         VertexShader = compile vs_5_0 VS_MAIN();
         PixelShader = compile ps_5_0 PS_MAIN_COMBINED();
     }
-
-
-////////////////////////////////////////
-    pass BULR_H
-    {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_MAIN();
-        PixelShader = compile ps_5_0 PS_BLUR_H();
-    }
-    pass BULR_V
-    {
-        SetRasterizerState(RS_Default);
-        SetDepthStencilState(DSS_None, 0);
-        SetBlendState(BS_Default, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
-
-        VertexShader = compile vs_5_0 VS_MAIN();
-        PixelShader = compile ps_5_0 PS_BLUR_V();
-    }
-  
 }

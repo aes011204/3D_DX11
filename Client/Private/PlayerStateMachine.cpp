@@ -24,7 +24,7 @@ HRESULT CPlayerStateMachine::Init_StateMachine()
 {
     Init_PlayerStates();
 
-    m_CurState = m_vecState[ETOI(E_PLAYERSTATE::SEA)];
+    m_CurState = m_vecState[ETOI(E_PLAYERSTATE::VILLAGE)];
 
     m_CurState->Enter();
 

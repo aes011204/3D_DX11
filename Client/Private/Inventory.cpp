@@ -110,17 +110,59 @@ HRESULT CInventory::Initialize(void* pArg)
 	}
 	case INVENTYPE::SHOP:
 	{
-		Equip_Inst instEquip = {};
-		Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
-		AddItem(inst3, 1, 3);
 
-		Item_Inst inst4 = Create_ItemInstance(2003, instEquip, 1);
-		AddItem(inst4, 5, 3);
+		Equip_Inst instEquip = {};
+
+		if (inven_desc->EquipType == EQUIP_TYPE::ENGINE)
+		{
+			Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
+			AddItem(inst3, 0, 0);
+
+			Item_Inst inst4 = Create_ItemInstance(2006, instEquip, 0);
+			AddItem(inst4, 1, 0);
+
+			Item_Inst inst5 = Create_ItemInstance(2007, instEquip, 0);
+			AddItem(inst5, 3, 0);
+
+			
+		}
+		else if (inven_desc->EquipType == EQUIP_TYPE::LIGHT)
+		{
+			Item_Inst inst3 = Create_ItemInstance(2002, instEquip, 0);
+			AddItem(inst3, 0, 0);
+
+			Item_Inst inst4 = Create_ItemInstance(2008, instEquip, 0);
+			AddItem(inst4, 1, 0);
+
+			Item_Inst inst5 = Create_ItemInstance(2009, instEquip, 0);
+			AddItem(inst5, 2, 0);
+
+			Item_Inst inst6 = Create_ItemInstance(2010, instEquip, 0);
+			AddItem(inst6, 4, 0);
+		}
+		else if (inven_desc->EquipType == EQUIP_TYPE::NET)
+		{
+
+		}
+		else if (inven_desc->EquipType == EQUIP_TYPE::ROD)
+		{
+			Item_Inst inst3 = Create_ItemInstance(2003, instEquip, 0);
+			AddItem(inst3, 0, 0);
+
+			Item_Inst inst4 = Create_ItemInstance(2011, instEquip, 0);
+			AddItem(inst4, 2, 0);
+
+			Item_Inst inst5 = Create_ItemInstance(2012, instEquip, 0);
+			AddItem(inst5, 4, 0);
+
+		}
+		
 	
 		break;
 	}
 	case INVENTYPE::STORAGE:
 	{
+		
 		Fish_Inst instfish = {};
 		Item_Inst inst1 = Create_ItemInstance(1001, instfish, 3);
 

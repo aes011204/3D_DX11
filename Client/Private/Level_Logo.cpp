@@ -50,7 +50,7 @@ void CLevel_Logo::Update(_float fTimeDelta)
 {
 	if (m_Flag == false)
 	{
-		CGameInstance::GetInstance()->Change_Camera(L"FREE_CAM");
+		CGameInstance::GetInstance()->Change_Camera(L"STOP_CAM");
 		m_pGameInstance.lock()->Load(SAVETYPE::GAMEOBJECT, "Lasst_2.json");
 		m_Flag = true;
 	}
@@ -90,7 +90,7 @@ HRESULT CLevel_Logo::Ready_Layer_Camera(const wchar_t* str)
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::LOGO), L"FREE_CAM", freeCamera);
+	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::LOGO), L"STOP_CAM", freeCamera);
 
 	freeCamera->Get_TransformCom()->Set_RotationDegree(_float3{-7.55f,33.0f, 0.f});
 

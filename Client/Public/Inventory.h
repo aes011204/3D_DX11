@@ -15,6 +15,7 @@ public:
         _uint width = {};
         _uint height = {};
         INVENTYPE invenType = {};
+        EQUIP_TYPE EquipType = {};
         //vector<_char> type = {};
     };
 

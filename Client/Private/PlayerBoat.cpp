@@ -68,7 +68,7 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 
 	LightDesc.eType = LIGHT::POINT;
 	LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
-	LightDesc.fRange = 5.f;
+	LightDesc.fRange = 3.f;
 	LightDesc.vDiffuse = _float4(1.0f, 0.8f, 0.5f, 1.f);
 	LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
 	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
@@ -77,6 +77,11 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 	if (m_LightObj == nullptr)
 		return E_FAIL;
 	m_LightObj->Set_Active(false);
+
+	_float3 pos = _float3(1.987f, 0.f, -0.189f);
+	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
+	m_pTransformCom->Set_RotationDegree(_float3{0.f, 90.f,0.f});
+
 	return S_OK;
 }
 

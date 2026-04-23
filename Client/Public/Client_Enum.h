@@ -22,7 +22,7 @@ namespace Client
 	enum class TIME { DAY, NIGHT, END };
     enum class FRESHNESS { FRESH, STALE, ROTTING, INFECTED, END };
     enum class SLOT_TYPE { ANY, ENGINE, LIGHT, ROT, NET, END };
-    enum class EQUIP_TYPE { ENGINE, LIGHT, ROD, NET , POT ,CRAP ,END };
+    enum class EQUIP_TYPE { ROD,  ENGINE, NET , LIGHT, POT, CRAP, END };
 
 	enum class SEA_TYPE : _ubyte { COASTAL, SHALLOW, OCEANIC, ABYSSAL, HADAL, MANGROVE, VOLCANIC, ICE, CRAB, END };
 	// 비트 플레그로쓸거임 //uint8_t : “하나 선택” → 8비트로 충분

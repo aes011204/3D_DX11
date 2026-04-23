@@ -23,7 +23,7 @@ void CPlayer_Storage::Enter()
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CAM_LERP_DESC>();
 	pLerp->eMode = CAM_MODE::LERP;
-	pLerp->vTargetPos = _float3(4.516f, 3.944f, 0.87f);
+	pLerp->vTargetPos = _float3(3.016f, 2.944f, 0.87f);
 	pLerp->vTargetRot = _float3(33.84f, -55.60f, 0.f);
 	pLerp->fDuration = 2.0f;
 	pLerp->fFov = 30.f;

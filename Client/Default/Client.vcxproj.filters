@@ -232,7 +232,6 @@
       <Filter>03.UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Sky_Controller.h" />
-    <ClInclude Include="..\Public\UI_RepairShop.h" />
     <ClInclude Include="..\Public\MiniGame_Logic_Diamond.h" />
     <ClInclude Include="..\Public\MiniGame_Logic_Ball.h" />
     <ClInclude Include="..\Public\MiniGame.h" />
@@ -247,6 +246,9 @@
     </ClInclude>
     <ClInclude Include="..\Public\Box.h">
       <Filter>02.GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Public\UI_RepairShop.h">
+      <Filter>03.UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

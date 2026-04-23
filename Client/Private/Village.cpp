@@ -214,6 +214,7 @@ HRESULT CVillage::Ready_Components()
 	{
 		CInventory::INVEN_DESC storage_desc = {};
 		storage_desc.invenType = INVENTYPE::SHOP;
+		storage_desc.EquipType = static_cast<EQUIP_TYPE>(i);
 		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pShopCom[i], &storage_desc)))
 			return E_FAIL;
 

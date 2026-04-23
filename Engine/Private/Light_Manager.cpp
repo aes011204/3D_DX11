@@ -87,6 +87,8 @@ void CLight_Manager::OnGui()
             ImGui::DragFloat3("Direction", (float*)&desc.vDirection, 0.1f);
         }
 
+
+
         ImGui::ColorEdit3("Diffuse", (float*)&desc.vDiffuse);
         ImGui::ColorEdit3("Ambient", (float*)&desc.vAmbient);
 
@@ -96,8 +98,6 @@ void CLight_Manager::OnGui()
         ImGui::PopID();
     }
 
-    
-    
 }
 
 void CLight_Manager::clear_light()

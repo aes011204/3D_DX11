@@ -113,16 +113,10 @@ PS_OUT PS_MAIN(PS_IN In)
     float rockUp = step(g_ColorLamp2, In.vNormal.y);
     float4 finalColor = lerp(g_RockColor, SandGlassColor, rockUp);
 
-    //In.vTexcoord = finalColor;
-    vector vMtrlDiffuse = finalColor;
-    //vector vMtrlDiffuse = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
-    //ºûÀÇ Å©±â
-    //vector vShader = saturate(max(dot(normalize(g_vLightDir) * -1, normalize(In.vNormal)), 0.f) + g_vLightAmbient * g_vMtrlAmbient);
-    //vector vLook = In.vWorldPos - g_vCamPosition;
-    //vector vRelfect = reflect(normalize(g_vLightDir), In.vNormal);
-    //float vSpecular = pow(max(dot(normalize(vLook) * -1, normalize(vRelfect)), 0.f), 100.f);
-    //vector vSpecularColor = g_vLightSpecular * g_vMtrlSpecular * vSpecular;
-    //Out.vColor = g_vLightDiffuse * vMtrlDiffuse * vShader + vSpecularColor;
+
+    //vector texColor = g_DiffuseTexture.Sample(DefaultSampler, In.vTexcoord);
+    vector vMtrlDiffuse = finalColor; // * texColor;
+
     Out.vDiffuse = vector(vMtrlDiffuse.rgb, 1.f);
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / g_Far, 0.f, 1.f);
