@@ -2,8 +2,9 @@
 #include "ContainerObject.h"
 #include "Client_Define.h"
 
+
 NS_BEGIN(Engine)
-class CCollider;
+	class CCollider;
 class CDInput_Manager;
 class CLight;
 NS_END
@@ -42,6 +43,7 @@ public:
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
     void Get_Demage();
+    _uint Get_DemageFixPrice() { return (m_MAXHp - m_Hp) * 80.f; };
 
     float Get_RodSpeed() const{return m_RodSpeed;}
     shared_ptr<CInventory> GetInventory() const{return m_pInvenCom;}
@@ -59,6 +61,17 @@ protected:
 public:
     //_float Get_Money() { return m_Money; }
     void Add_Money(_float money);
+
+    int GetMoney() const
+    {
+        return m_Money;
+    }
+
+    void SetHPFull();
+
+    bool MinusMoney(int amount);
+ 
+
    /* void Set_BoatSpeed(_uint speed) { m_BoatSpeed = speed; }
     void Set_FishingSpeed(_uint speed) { m_RodSpeed = speed; }
     void Set_Light(_uint light) { m_Light = light; }

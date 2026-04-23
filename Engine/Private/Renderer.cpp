@@ -276,7 +276,28 @@ void CRenderer::Render_Combined()
 
 	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrix", &m_ProjMatrix)))
 		return;
+	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrixInverse", m_pGameInstance.lock()->Get_InverseTransfrom(D3DTS::VIEW))))
+		return;
 
+	if (FAILED(m_pShader->Bind_Matrix("g_ProjMatrixInverse", m_pGameInstance.lock()->Get_InverseTransfrom(D3DTS::PROJ))))
+		return;
+	if (FAILED(m_pShader->Bind_RawValue("g_vCamPosition", m_pGameInstance.lock()->Get_CamPositon(), sizeof(_float4))))
+		return;
+	auto fFar = m_pGameInstance.lock()->Get_Far();
+	if (FAILED(m_pShader->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+		return;
+	//float tod01 = m_pGameInstance.lock()->Get_TOD01();
+	//
+	//if (FAILED(m_pShader->Bind_RawValue("g_fTOD01", &tod01, sizeof(float))))
+	//	return E_FAIL;
+	//auto diffuse = CSky_Controller::GetInstance()->Get_Diffuse();
+	auto diffuse = m_pGameInstance.lock()->Get_SkyColor();
+	//
+	if (FAILED(m_pShader->Bind_RawValue("g_SkyColor", &diffuse, sizeof(_float3))))
+		return ;
+
+	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_DepthTexture", TEXT("Target_Depth"))))
+		return;
 	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_DiffuseTexture", TEXT("Target_Diffuse"))))
 		return;
 	if (FAILED(m_pGameInstance.lock()->Bind_RT_ShaderResource(m_pShader, "g_ShadeTexture", TEXT("Target_Shade"))))

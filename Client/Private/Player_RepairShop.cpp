@@ -69,6 +69,9 @@ HRESULT CPlayer_RepairShop::Init_State()
 		});
 
 
+
+
+
 	return CPlayerState::Init_State();
 }
 

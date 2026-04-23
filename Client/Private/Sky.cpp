@@ -111,8 +111,13 @@ HRESULT CSky::Bind_ShaderResources()
 
 	auto diffuse = CSky_Controller::GetInstance()->Get_Diffuse();
 	//
-	 if (FAILED(m_pShaderCom->Bind_RawValue("g_SkyColor", &diffuse, sizeof(_float3))))
-			return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_SkyColor", &diffuse, sizeof(_float3))))
+		return E_FAIL;
+
+		 auto SkyColor = CSky_Controller::GetInstance()->Get_SkyColor();
+	 //
+	 if (FAILED(m_pShaderCom->Bind_RawValue("g_SkyColorOrigin", &SkyColor, sizeof(_float3))))
+		 return E_FAIL;
 	//if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT", &NightT, sizeof(_float2))))
 	//	return E_FAIL;
 	//if (FAILED(m_pShaderCom->Bind_RawValue("g_MidNightT", &MidNightT, sizeof(_float2))))

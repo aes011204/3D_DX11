@@ -35,7 +35,7 @@
                                 0.5,
                                 0.5
                             ],
-                            "RotationRadian": -45.60976791381836,
+                            "RotationRadian": -35.33445739746094,
                             "SetParentSize": false,
                             "SizeDelta": [
                                 85.33333587646484,
@@ -310,7 +310,7 @@
                                 1.0
                             ],
                             "AnchoredPos": [
-                                0.0,
+                                -69.97333526611328,
                                 0.0
                             ],
                             "ComProtoLevel": 0,
@@ -5385,7 +5385,7 @@
                                         0.5
                                     ],
                                     "AnchoredPos": [
-                                        25.100000381469727,
+                                        76.30000305175781,
                                         0.0
                                     ],
                                     "ComProtoLevel": 0,
@@ -5396,13 +5396,13 @@
                                         1.0
                                     ],
                                     "Pivot": [
-                                        0.0,
+                                        1.0,
                                         0.5
                                     ],
                                     "RotationRadian": 0.0,
                                     "SetParentSize": false,
                                     "SizeDelta": [
-                                        26.0,
+                                        42.0,
                                         30.890668869018555
                                     ]
                                 }
@@ -10519,7 +10519,7 @@
             "IsFullScreen": false,
             "IsUseLayout": true,
             "LayoutDesc": {
-                "Col": 1,
+                "Col": 2,
                 "Offset": [
                     0.0,
                     0.0
@@ -12187,7 +12187,7 @@
                                         0.5,
                                         0.5
                                     ],
-                                    "RotationRadian": -0.9153122901916504,
+                                    "RotationRadian": -2.268404006958008,
                                     "SetParentSize": false,
                                     "SizeDelta": [
                                         376.0,
@@ -12775,7 +12775,7 @@
                                 0.5
                             ],
                             "AnchoredPos": [
-                                0.002009868621826172,
+                                0.002893209457397461,
                                 0.0
                             ],
                             "ComProtoLevel": 0,
@@ -22968,8 +22968,8 @@
                                             "ComProtoTag": "",
                                             "ComponentTag": "Com_UITransform",
                                             "LocalScale": [
-                                                4.010447978973389,
-                                                2.0104477405548096
+                                                4.0039215087890625,
+                                                2.0039217472076416
                                             ],
                                             "Pivot": [
                                                 0.5,
@@ -23238,8 +23238,8 @@
                                             "ComProtoTag": "",
                                             "ComponentTag": "Com_UITransform",
                                             "LocalScale": [
-                                                3.988424062728882,
-                                                1.9884239435195923
+                                                4.010365962982178,
+                                                2.010366201400757
                                             ],
                                             "Pivot": [
                                                 0.5,
@@ -40904,8 +40904,8 @@
                                                 0.5
                                             ],
                                             "AnchoredPos": [
-                                                -180.66668701171875,
-                                                0.0
+                                                -216.80001831054688,
+                                                252.933349609375
                                             ],
                                             "ComProtoLevel": 0,
                                             "ComProtoTag": "",
@@ -40921,8 +40921,8 @@
                                             "RotationRadian": -0.0,
                                             "SetParentSize": false,
                                             "SizeDelta": [
-                                                68.26667022705078,
-                                                140.53334045410156
+                                                140.53334045410156,
+                                                68.26667022705078
                                             ]
                                         },
                                         {
@@ -40958,8 +40958,8 @@
                                                 0.5
                                             ],
                                             "AnchoredPos": [
-                                                108.39999389648438,
-                                                0.0
+                                                -72.26667022705078,
+                                                252.933349609375
                                             ],
                                             "ComProtoLevel": 0,
                                             "ComProtoTag": "",
@@ -40972,7 +40972,7 @@
                                                 0.5,
                                                 0.5
                                             ],
-                                            "RotationRadian": -1.5707963705062866,
+                                            "RotationRadian": -0.0,
                                             "SetParentSize": false,
                                             "SizeDelta": [
                                                 140.53334045410156,
@@ -41552,8 +41552,8 @@
                                                 0.5
                                             ],
                                             "AnchoredPos": [
-                                                0.0,
-                                                0.0
+                                                36.133331298828125,
+                                                180.66668701171875
                                             ],
                                             "ComProtoLevel": 0,
                                             "ComProtoTag": "",
@@ -41566,11 +41566,11 @@
                                                 0.5,
                                                 0.5
                                             ],
-                                            "RotationRadian": 0.0,
+                                            "RotationRadian": -0.0,
                                             "SetParentSize": false,
                                             "SizeDelta": [
-                                                100.0,
-                                                100.0
+                                                68.26667022705078,
+                                                212.80001831054688
                                             ]
                                         },
                                         {
@@ -46400,7 +46400,7 @@
             "IsFullScreen": false,
             "IsUseLayout": true,
             "LayoutDesc": {
-                "Col": 8,
+                "Col": 4,
                 "Offset": [
                     0.0,
                     0.0
@@ -46409,7 +46409,7 @@
                     0.0,
                     0.0
                 ],
-                "Raw": 8,
+                "Raw": 1,
                 "SlotSize": 20.0,
                 "Spacing": [
                     0.0,

@@ -137,7 +137,7 @@ void CPlayer_Sea::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollide
 
 void CPlayer_Sea::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-
+	m_pStateMachine.lock()->Set_Target(nullptr);
 }
 
 void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)

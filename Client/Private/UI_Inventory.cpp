@@ -76,6 +76,16 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 			}
 		});
 
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_FixAll_Done>(
+		[this](const Evt_FixAll_Done& e)
+		{
+			
+			for (_uint i = 0; i < m_DemageSlot.size(); i++)
+			{
+				m_DemageSlot[i]->Set_TextureIndex(0);
+			}
+		});
+
 	return CUIPanel::Initialize_Prototype();
 }
 
@@ -362,10 +372,19 @@ void CUI_Inventory::OnUpdate(const _float& timeDelta)
 			break;
 		}
 
-		if(InvenSlot[index].IsBroken == true)
+
+		if(InvenSlot[index].IsLock == false)
 		{
-			m_Slot[index]->Set_TextureIndex(1);
+			if (InvenSlot[index].IsBroken == true)
+			{
+				m_Slot[index]->Set_TextureIndex(1);
+			}
+			else
+			{
+				m_Slot[index]->Set_TextureIndex(0);
+			}
 		}
+		
 	}
 
 

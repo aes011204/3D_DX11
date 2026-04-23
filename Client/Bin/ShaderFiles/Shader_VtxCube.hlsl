@@ -14,6 +14,7 @@ float3 g_vSkyTopColor = float3(0.18f, 0.52f, 0.82f);
 float g_fTOD01;
 
 float3 g_SkyColor;
+float3 g_SkyColorOrigin;
 //
 //float2 g_NightT;
 //float2 g_MidNightT;
@@ -181,8 +182,8 @@ PS_OUT PS_MAIN(PS_IN In)
 
 
     float cycle = 1.0f - abs(t * 2.0f - 1.0f); 
-    float3 finalSky = lerp(skyColor, g_SkyColor, dayFactor);
-    finalSky = lerp(g_SkyColor, skyColor, cycle);
+   // float3 finalSky = lerp(skyColor, g_SkyColor, dayFactor);
+    float3 finalSky = lerp(g_SkyColor, skyColor, cycle);
 
 
     float brightness = lerp(0.2f, 1.0f, cycle);
@@ -192,24 +193,20 @@ PS_OUT PS_MAIN(PS_IN In)
 // 구름
     float3 finalColor = lerp(finalSky, cloudColor, cloud);
 
-    Out.vColor = float4(finalColor, 1.0f);
-
-
-
-
 
 
 
     float heightMask = saturate(1.0f - vDir.y);
-
+ 
 // 범위 줄이기
     float fogMask = smoothstep(0.6f, 1.0f, heightMask);
-
+ 
 //  기존 finalColor 유지하면서 덮기
-    finalColor = lerp(finalColor, g_SkyColor, fogMask);
-
+    float3 fogColor = lerp(g_SkyColorOrigin, float3(0.7, 0.7, 0.7), 0.3);
+    finalColor = lerp(finalColor, fogColor, fogMask);
+ 
     Out.vColor = float4(finalColor, 1.f);
-
+   
 	return Out;
 }
 

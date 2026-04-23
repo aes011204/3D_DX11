@@ -298,6 +298,31 @@ void CPlayerBoat::Add_Money(_float money)
 	}
 }
 
+void CPlayerBoat::SetHPFull()
+{
+	{
+        m_Hp = m_MAXHp;
+        Evt_RepairCoat e = {};
+        e.cost = Get_DemageFixPrice();
+        m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+    };
+}
+
+bool CPlayerBoat::MinusMoney(int amount)
+{
+	  {    if (m_Money < amount)
+		return false;
+
+	m_Money -= amount;
+
+	Evt_AddMoney e = {};
+	e.money = m_Money;
+	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+
+	return true;
+	}
+}
+
 void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask, _float InvenMoney)
 {
 
@@ -336,8 +361,12 @@ void CPlayerBoat::Get_Demage()
 	//e.DeAc = 0.1f;
 	e.DemageCount = m_MAXHp - m_Hp;
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
-	// ÀÎ¹ê ÇÑ Ä­ ·»µ© »èÁ¦ 
+	// ÀÎ¹ê ÇÑ Ä­ ·»µ© »èÁ¦
 
+
+	Evt_RepairCoat e1 = {};
+	e1.cost = Get_DemageFixPrice();
+	m_pGameInstance.lock()->Get_EventBus()->Publish(e1);
 
 }
 

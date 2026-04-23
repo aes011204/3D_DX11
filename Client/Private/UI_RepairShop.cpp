@@ -65,8 +65,8 @@ void CUI_RepairShop::UI_PanelActive()
 //	m_TextIMG->UI_Active();
 	m_BtnFix->UI_Active();
 	m_FixButtonTex->UI_Active();
-	_wstring strTag = format(L"모두 수리[{:.2f}]", m_repairPrice);
-	m_FixButtonTex->Set_Text(strTag);
+	/*_wstring strTag = format(L"모두 수리[{:.2f}]", m_repairPrice);
+	m_FixButtonTex->Set_Text(strTag);*/
 	Change_LayoutRawCol( 4,1);
 
 	//m_Active = Active;
@@ -86,8 +86,12 @@ void CUI_RepairShop::UI_PanelActive()
 
 HRESULT CUI_RepairShop::OnInit(void* pArg)
 {
-	
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_RepairCoat>([this](const Evt_RepairCoat& e)
+		{
+			_wstring strTag = format(L"모두 수리[${}]", e.cost);
+			m_FixButtonTex->Set_Text(strTag);
 
+		});
 
 
 	HRESULT hr = E_FAIL;
@@ -231,11 +235,16 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 			ButDesc.ClickEvent = [this](CUIButton* pThis)
 				{
 					// 전체수리
+
+					Evt_FixAll event{};
+					
+					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 				};
 			shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
 			button->Initialize(&ButDesc);
 			button->Set_Zorder(2);
 			button->UI_InActive();
+			button->Set_SelectState(false);
 
 			{
 			
@@ -313,6 +322,8 @@ void CUI_RepairShop::OnUpdate(const _float& timeDelta)
 			m_TimeAcc = 0;
 		}
 	}
+
+	
 
 	CUIPanel::OnUpdate(timeDelta);
 }

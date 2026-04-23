@@ -480,6 +480,21 @@ namespace Client
     struct Evt_MoveTo_Storage
     {
     };
+    struct Evt_Village_Btn
+    {
+        _uint type={};
+    };
+    struct Evt_FixAll
+    {
+    };
+    struct Evt_FixAll_Done
+    {
+    };
+    struct Evt_RepairCoat
+    {
+        _uint cost = {};
+    };
+
     enum class INPUT_RESULT
     {
         NONE,

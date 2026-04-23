@@ -109,8 +109,25 @@ HRESULT CPlayer_Village::Init_State()
 
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeState>([this](const Evt_ChangeState& e)
-	{
+		{
 			eNextState = e.playerstate;
+		});
+
+
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe < Evt_Village_Btn>([this](const Evt_Village_Btn& e)
+	{
+		if(e.type ==0)
+		{
+			eNextState = E_PLAYERSTATE::SEA;
+		}
+		else if(e.type == 1)
+		{
+			// ¿·¿⁄±‚
+		}
+		else if (e.type == 2)
+		{
+			//
+		}
 	});
 
 

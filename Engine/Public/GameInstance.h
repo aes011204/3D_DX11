@@ -33,8 +33,11 @@ public:
 	void SetImguiContext(ImGuiContext* imgContext);
 
 	bool m_bDebug = {true};
+	_float3 m_SyColor = {};
 	bool Get_IsDebug() { return m_bDebug; };
 
+	const _float3& Get_SkyColor() const{return m_SyColor;}
+	void Set_SkyColor(const _float3& vColor){m_SyColor = vColor;}
 public:  /* For.Graphic_Device */
 	HRESULT Clear_Buffers(const _float4* pClearColor);
 	HRESULT Bind_BackBufferRenderTarget(HWND hwnd);

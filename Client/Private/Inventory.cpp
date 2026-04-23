@@ -888,6 +888,14 @@ void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY,
 
 
 }
+void CInventory::FixAll()
+{
+	for(auto& it : m_InvenSlot)
+	{
+		it.IsBroken = false;
+	}
+	dynamic_pointer_cast<CPlayerBoat>(m_pGOwner.lock())->SetHPFull();
+}
 
 shared_ptr<CInventory> CInventory::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {

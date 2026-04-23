@@ -3,7 +3,7 @@
 #include "Inventory.h"
 #include "GameInstance.h"
 #include "EventBus.h"
-#include "Event_Struct.h"
+
 #include "Client_Enum.h"
 #include "DInput_Manager.h"
 #include "UI_Item.h"
@@ -70,6 +70,22 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 	//p.m_contrl_Pointer = tmppointer;
 	//m_pGameInstance.lock()->Get_EventBus()->Publish(p);
 
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_FixAll>([this](const Evt_FixAll& e)
+		{
+			auto player = dynamic_pointer_cast<CPlayerBoat>(m_PlayerInven.lock()->Get_GOwner());
+			if (player->GetMoney() >= player->Get_DemageFixPrice())
+			{
+				player->MinusMoney(player->Get_DemageFixPrice());
+				m_PlayerInven.lock()->FixAll();
+
+				Evt_FixAll_Done event{};
+
+				CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
+
+			}
+		});
+
+
 	return S_OK;
 }
 void CInventory_Controller::Make_Hold(Item_Inst inst)
@@ -116,17 +132,47 @@ void CInventory_Controller::Update(float TimeDelta)
 			if (dInput->MouseDown(DIMB::LBUTTON) /* + ui 가 클릭은 반환*/)
 			{
 				//잡고 있는 아이템이 없을경우
-				// 집기
-				tmpInst = CurInven->TryMove_Item(m_SlotX, m_SlotY);
+				//
+				if(CurInven->Get_Inventype() == INVENTYPE::SHOP)
+				{
+					Item_Inst inst = CurInven->Peek_Itme(m_SlotX, m_SlotY);
+					const Item_Def def = CItemDB::GetInstance()->GetItemByID(inst.ItemDef_ID);
+					
+						if (auto* equip = get_if<Equip_Def>(&def.TypeDef))
+						{
+							auto player = dynamic_pointer_cast<CPlayerBoat>(m_PlayerInven.lock()->Get_GOwner());
+							if(player->GetMoney() >= equip->Cost)
+							{
+								player->MinusMoney(equip->Cost);
+								// 집기
+								tmpInst = CurInven->TryMove_Item(m_SlotX, m_SlotY);
 
-				if (tmpInst.ItemInst_ID == ID_Absence)
-					return;
-				//MSG_BOX("Faild : TryMove_Item");
+								if (tmpInst.ItemInst_ID == ID_Absence)
+									return;
+								//MSG_BOX("Faild : TryMove_Item");
 
-			//m_HoldItem = tmpInst;
-				m_UIHoldItem->HoldItem(tmpInst);
+							//m_HoldItem = tmpInst;
+								m_UIHoldItem->HoldItem(tmpInst);
 
-				m_bDragging = true;
+								m_bDragging = true;
+							}
+						}
+				}
+				else
+				{
+					// 집기
+					tmpInst = CurInven->TryMove_Item(m_SlotX, m_SlotY);
+
+					if (tmpInst.ItemInst_ID == ID_Absence)
+						return;
+					//MSG_BOX("Faild : TryMove_Item");
+
+				//m_HoldItem = tmpInst;
+					m_UIHoldItem->HoldItem(tmpInst);
+
+					m_bDragging = true;
+				}
+
 			}
 			else if (dInput->KeyDown(DIK_Z) /* + 일정 시간 이상 누르고 있을떄*/)
 			{

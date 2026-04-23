@@ -25,7 +25,7 @@ vector g_vMtrlAmbient = float4(1.f, 1.f, 1.f, 1.f);
 vector g_vCamPosition;
 
 float g_Far;
-
+float3 g_SkyColor;
 
 
 sampler DefaultSampler = sampler_state
@@ -193,8 +193,37 @@ PS_OUT_BACKBUFFER PS_MAIN_COMBINED(PS_IN In)
 
     vector vEmissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord);
 
-    Out.vColor = vDiffuse * vShade + vEmissive;
+    vector finalColor= vDiffuse * vShade + vEmissive;
+    /////역산 //////
+    vector vDepthDesc = g_DepthTexture.Sample(DefaultSampler, In.vTexcoord);
+    float fViewZ = vDepthDesc.y * g_Far;
+    
+    float4 vWorldPos;
+  
+    vWorldPos.x = In.vTexcoord.x * 2.f - 1.f;
+    vWorldPos.y = In.vTexcoord.y * -2.f + 1.f;
+    vWorldPos.z = vDepthDesc.x;
+    vWorldPos.w = 1.f;
 
+    vWorldPos *= fViewZ;
+ 
+    vWorldPos = mul(vWorldPos, g_ProjMatrixInverse);
+    vWorldPos = mul(vWorldPos, g_ViewMatrixInverse);
+
+    vector vDir = g_vCamPosition - vWorldPos;
+    float fDistance = length(vDir);
+
+    //////안개///////////
+    float fogDst = smoothstep(50.f, 300.f, fDistance);
+
+    float heightFog = saturate((vWorldPos.y + 2.0) /40.0);
+    heightFog = 1.0 - heightFog;
+    float fogFactor = fogDst * heightFog;
+
+    fogFactor = pow(fogFactor, 1.5);
+    float3 fogColor = lerp(g_SkyColor, float3(0.7, 0.7, 0.7), 0.3);
+  
+    Out.vColor = float4(lerp(finalColor, fogColor, fogFactor), 1.f);
     return Out;
 }
 

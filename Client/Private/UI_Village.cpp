@@ -222,7 +222,10 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			m_Select_boat[pThis->Get_TypeIndex()]->Set_Zorder(2);
 	
 			};
-		pDesc.ClickEvent = [this](CUIButton* pThis) {
+		pDesc.ClickEvent = [this,i](CUIButton* pThis) {
+			Evt_Village_Btn e = {};
+			e.type = i;
+				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 			};
 		shared_ptr<CUIButton> BoatOP = CUIButton::Create(m_pDevice, m_pContext);

@@ -103,6 +103,9 @@ void CSky_Controller::Update(float TimeDelta)
 	light.vSpecular = m_Specular;
 	pGameInstance->Set_LightDesc(0, light);
 
+
+	pGameInstance->Set_SkyColor(m_SkyColor);
+
 }
 
 

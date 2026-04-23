@@ -4,6 +4,7 @@
 #include "Collider.h"
 #include "PlayerBoat.h"
 #include "EventBus.h"
+#include "Client_Enum.h"
 #include "Inventory.h"
 
 
