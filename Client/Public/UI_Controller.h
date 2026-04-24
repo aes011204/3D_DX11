@@ -33,10 +33,17 @@ public:
 
    // void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl);
 
+    void ActiveTime(_uint time, _bool isSleep);
+    void InActiveTime();
+
+    void ActiveHover();
+    void InActiveHover();
+
+
     void End_StateUI();
 private:
     shared_ptr<CUI> m_Loading = {nullptr};
-
+    shared_ptr < class CUI_Time > m_pTime = { nullptr };
 
     shared_ptr<class CUI_MiniGame> m_miniGame = { nullptr };
 

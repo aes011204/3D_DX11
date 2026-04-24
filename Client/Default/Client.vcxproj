@@ -210,9 +210,11 @@
     <ClInclude Include="..\Public\UI_MainMenu.h" />
     <ClInclude Include="..\Public\UI_MiniGame.h" />
     <ClInclude Include="..\Public\UI_TabContainer.h" />
+    <ClInclude Include="..\Public\UI_Time.h" />
     <ClInclude Include="..\Public\UI_Top.h" />
     <ClInclude Include="..\Public\UI_Village.h" />
     <ClInclude Include="..\Public\Village.h" />
+    <ClInclude Include="..\Public\WaterEff.h" />
     <ClInclude Include="EmptyUObject.h" />
     <ClInclude Include="Client.h" />
     <ClInclude Include="CScaleModifier.h" />
@@ -287,9 +289,11 @@
     <ClCompile Include="..\Private\UI_MainMenu.cpp" />
     <ClCompile Include="..\Private\UI_MiniGame.cpp" />
     <ClCompile Include="..\Private\UI_TabContainer.cpp" />
+    <ClCompile Include="..\Private\UI_Time.cpp" />
     <ClCompile Include="..\Private\UI_Top.cpp" />
     <ClCompile Include="..\Private\UI_Village.cpp" />
     <ClCompile Include="..\Private\Village.cpp" />
+    <ClCompile Include="..\Private\WaterEff.cpp" />
     <ClCompile Include="EmptyUObject.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="CScaleModifier.cpp" />

@@ -133,6 +133,7 @@ public:/*For.Font_Manager*/
 		void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
 		_float Get_TOD01();
 		void Set_TOD01(_float tod);
+		void Set_TimeScale(_float timeScale);
 
 	public:/*For.Collison_Mgr*/
 		void Add_Collider(shared_ptr<class CCollider> coll);

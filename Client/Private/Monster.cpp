@@ -40,6 +40,7 @@ HRESULT CMonster::Initialize(void* pArg)
 
 	_float3 pos = _float3(142.3f, -0.1f, -3.8f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
+	m_pTransformCom->Set_RotationDegree(_float3(0.f,-68.f,0.f));
 
 	return S_OK;
 }

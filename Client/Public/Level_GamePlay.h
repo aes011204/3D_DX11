@@ -45,7 +45,7 @@ private:
 	weak_ptr<CGameObject> m_pPlayer = {};
 	weak_ptr<class CInventory> m_PlayerInven = {};
 
-	shared_ptr<class CUI> m_Village = {};
+	shared_ptr<class CUI> m_Time = {};
 
 	shared_ptr<class CMiniGameController> m_pMiniGame_Controller = { nullptr };
 	shared_ptr<CCamera> ClientCamera = {nullptr};

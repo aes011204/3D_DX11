@@ -24,6 +24,9 @@ public:
 private:
 	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
 	_bool  m_Flag = { false };
+	LEVEL m_NextLevel = {};
+	_bool ChangeNextLevel = { false };
+	_float m_Acc = {};
 public:
 	static shared_ptr<CLevel_Logo> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	virtual void Free() override;

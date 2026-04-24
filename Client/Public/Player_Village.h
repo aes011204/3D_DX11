@@ -33,7 +33,7 @@ private:
 
     _float m_Acc = {};
     //weak_ptr<class CSea_Manager> m_pSea_Manager = {};
- 
+    _bool IsSleep = { false };
 public:
     static shared_ptr<CPlayer_Village> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
    

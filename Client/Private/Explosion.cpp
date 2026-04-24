@@ -127,7 +127,7 @@ HRESULT CExplosion::Ready_Components()
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
 
-		if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Snow"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Snow"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 			return E_FAIL;
 	
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_Explosion"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))

@@ -48,6 +48,7 @@ public:
     void SetRotation(_float _fDegree) { m_RotationDegreeView = _fDegree; m_RotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
    // void SetTurn(_float fTimeDelta) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
 
+    _bool SetRotationTo(_float _fTargetDegree, _float fTimeDelta);
 
 
     Rect Get_WorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }

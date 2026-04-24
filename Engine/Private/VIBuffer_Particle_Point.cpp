@@ -11,13 +11,18 @@ CVIBuffer_Particle_Point::CVIBuffer_Particle_Point(const CVIBuffer_Particle_Poin
 	//, m_pSpeeds{ Prototype.m_pSpeeds }
 	//, m_pInstanceVertices{ Prototype.m_pInstanceVertices }
 	, m_isLoop{ Prototype.m_isLoop }
-	
+
 {
 	//m_isLoop = Prototype.m_isLoop;
+	m_Pivot = Prototype.m_Pivot;
+	m_Range = Prototype.m_Range;
+	m_SizeRange = Prototype.m_SizeRange;
+	m_LifeTimeRange = Prototype.m_LifeTimeRange;
+	m_SpeedRange = Prototype.m_SpeedRange;
+	m_Angle = Prototype.m_Angle;
 
-
-	m_pInstanceVertices = std::make_unique<VTXPARTICLE_INSTANCE[]>(m_iNumInstances);
-	m_pSpeeds = std::make_unique<_float[]>(m_iNumInstances);
+	m_pInstanceVertices = make_unique<VTXPARTICLE_INSTANCE[]>(m_iNumInstances);
+	m_pSpeeds = make_unique<_float[]>(m_iNumInstances);
 
 	memcpy(m_pInstanceVertices.get(), Prototype.m_pInstanceVertices.get(),
 		sizeof(VTXPARTICLE_INSTANCE) * m_iNumInstances);
@@ -32,6 +37,12 @@ HRESULT CVIBuffer_Particle_Point::Initialize_Prototype(const CVIBuffer_Instance:
 
 	m_isLoop = pDesc->isLoop;
 	m_Pivot = pDesc->vPivot;
+	m_Range = pDesc->vRange;
+	m_SpeedRange = pDesc->vSpeed;
+	m_LifeTimeRange = pDesc->vLifeTime;
+	m_SizeRange = pDesc->vSizeRange;
+	m_Angle = pDesc->Angle;
+
 
 	/* For.Vertices */
 	m_iNumVertexBuffers = 2;
@@ -70,11 +81,11 @@ HRESULT CVIBuffer_Particle_Point::Initialize_Prototype(const CVIBuffer_Instance:
 
 
 	//Index Buffer
-	
+
 	/* Instance Buffer */
 
 
-	
+
 	m_InstanceBufferDesc.ByteWidth = m_iInstanceStride * m_iNumInstances;
 	m_InstanceBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	m_InstanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
@@ -87,8 +98,8 @@ HRESULT CVIBuffer_Particle_Point::Initialize_Prototype(const CVIBuffer_Instance:
 	ZeroMemory(m_pInstanceVertices.get(), sizeof(VTXPARTICLE_INSTANCE) * m_iNumInstances);
 	m_pSpeeds = std::make_unique<_float[]>(m_iNumInstances);
 
-	 auto pGameInstance = m_pGameInstance.lock();
-	for(size_t i=0; i<m_iNumInstances;i++)
+	auto pGameInstance = m_pGameInstance.lock();
+	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
 		_float		fScale = pGameInstance->Random(pDesc->vScale.x, pDesc->vScale.y);
 		m_pSpeeds[i] = pGameInstance->Random(pDesc->vSpeed.x, pDesc->vSpeed.y);
@@ -103,7 +114,7 @@ HRESULT CVIBuffer_Particle_Point::Initialize_Prototype(const CVIBuffer_Instance:
 			1.f
 		);
 		m_pInstanceVertices[i].vLifeTime = _float2(m_pGameInstance.lock()->Random(pDesc->vLifeTime.x, pDesc->vLifeTime.y), 0.f);
-	
+
 	}
 
 
@@ -185,6 +196,69 @@ void CVIBuffer_Particle_Point::Spread(_float fTimeDelta)
 	m_pContext->Unmap(m_pVBInstance.Get(), 0);
 }
 
+void CVIBuffer_Particle_Point::Spawn(_float fTimeDelta)
+{
+	auto pGameInstance = m_pGameInstance.lock();
+	D3D11_MAPPED_SUBRESOURCE		MappedSubResource{};
+
+	m_pContext->Map(m_pVBInstance.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &MappedSubResource);
+
+	auto		pVertexInstance = static_cast<VTXPARTICLE_INSTANCE*>(MappedSubResource.pData);
+
+	_matrix matRot = XMMatrixRotationRollPitchYaw(
+		XMConvertToRadians(m_Angle.x),
+		XMConvertToRadians(m_Angle.y),
+		XMConvertToRadians(m_Angle.z)
+	);
+	for (size_t i = 0; i < m_iNumInstances; i++)
+	{
+
+		pVertexInstance[i].vLifeTime.y += fTimeDelta;
+		// y 가 현제 시간 / x가 전체 시간
+
+		if (pVertexInstance[i].vLifeTime.y >= pVertexInstance[i].vLifeTime.x &&
+			true == m_isLoop)
+		{
+			pVertexInstance[i].vLifeTime.y = 0.f;
+			pVertexInstance[i].vTranslation = _float4(
+				pGameInstance->Random(m_Pivot.x - m_Range.x * 0.5f, m_Pivot.x + m_Range.x * 0.5f),
+				pGameInstance->Random(m_Pivot.y - m_Range.y * 0.5f, m_Pivot.y + m_Range.y * 0.5f),
+				pGameInstance->Random(m_Pivot.z - m_Range.z * 0.5f, m_Pivot.z + m_Range.z * 0.5f),
+				1.f
+			);
+
+			pVertexInstance[i].vLifeTime.x = pGameInstance->Random(m_LifeTimeRange.x, m_LifeTimeRange.y);
+
+			//m_pSpeeds[i] = pGameInstance->Random(m_SpeedRange.x, m_SpeedRange.y);
+
+
+
+		}
+
+
+		float lifeRatio = pVertexInstance[i].vLifeTime.y / pVertexInstance[i].vLifeTime.x;
+		lifeRatio = min(lifeRatio, 1.f);
+
+
+		float fScale = m_SizeRange.x + (m_SizeRange.y - m_SizeRange.x) * lifeRatio;
+
+		//float fAlpha = 1.f - lifeRatio;
+
+		_vector vRight = XMVector3TransformNormal(XMVectorSet(fScale, 0.f, 0.f, 0.f), matRot);
+		_vector vUp = XMVector3TransformNormal(XMVectorSet(0.f, fScale, 0.f, 0.f), matRot);
+		_vector vLook = XMVector3TransformNormal(XMVectorSet(0.f, 0.f, fScale, 0.f), matRot);
+
+		// 3. 인스턴스 버퍼에 그대로 대입 (GPU 전달)
+		XMStoreFloat4(&pVertexInstance[i].vRight, vRight);
+		XMStoreFloat4(&pVertexInstance[i].vUp, vUp);
+		XMStoreFloat4(&pVertexInstance[i].vLook, vLook);
+
+	}
+
+	m_pContext->Unmap(m_pVBInstance.Get(), 0);
+}
+
+
 HRESULT CVIBuffer_Particle_Point::Bind_Resources()
 {
 	ID3D11Buffer* pVertexBuffers[] = {
@@ -223,7 +297,7 @@ shared_ptr<CVIBuffer_Particle_Point> CVIBuffer_Particle_Point::Create(ComPtr<ID3
 	if (FAILED(pInstance->Initialize_Prototype(pParticleDesc)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
-	
+
 	}
 	return pInstance;
 }

@@ -15,6 +15,7 @@ public:
 	CFadeModifier( FADE fadeType, _float duration, _bool useColor, _float4 color,bool Inactive = true);
 	virtual ~CFadeModifier();
 
+	void SetEvent(function<void()> event) { EndEvent = event; };
 
 	// IModifier을(를) 통해 상속됨
 	void Tick(float fDeltaTime, CUI* pOwner) override;
@@ -26,6 +27,7 @@ public:
 	virtual bool IsFinished() override { return m_Finished; };
 
 private:
+	function<void()> EndEvent = nullptr;
 	CUIRenderable* m_This = {nullptr};
 
 	FADE m_fadeType = FADE_END;

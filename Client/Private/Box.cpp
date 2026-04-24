@@ -45,6 +45,7 @@ HRESULT CBox::Initialize(void* pArg)
 	}
 	_float3 pos = _float3(49.5f, -0.4f, -19.f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
+	m_pTransformCom->Set_RotationDegree(_float3(9.5f,8.9f,0.f));
 	
 	return S_OK;
 }

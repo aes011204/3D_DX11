@@ -47,14 +47,25 @@ void CUIButton::OnActive()
 
 void CUIButton::OnInActive()
 {
+
+    if (m_UIState == BUTTON_STATE::HOVER || m_UIState == BUTTON_STATE::CLICK)
+    {
+        if (m_OverlapEndEvent)
+            m_OverlapEndEvent(this);
+    }
+
     m_UIState = BUTTON_STATE::NORMAL;
+    m_ClickInside = false;
+
     __super::OnInActive();
+
+  
 }
 
 void CUIButton::OnDisabled()
 {
     m_UIState = BUTTON_STATE::DISABLE;
-    __super::OnInActive();
+    __super::OnDisabled();
 
 }
 
@@ -63,7 +74,14 @@ void CUIButton::OnUpdate(const _float& timeDelta)
     _bool bUseDark = Get_IsDark();
 
     ProcessInput();
+  /*  if(!m_bUseSelect)
+    {
 
+        if(m_UIState == BUTTON_STATE::SELECT)
+        {
+            m_UIState = BUTTON_STATE::HOVER;
+        }
+    }*/
 
     if (m_bButtonState == true)
     {
@@ -78,7 +96,7 @@ void CUIButton::OnUpdate(const _float& timeDelta)
         case BUTTON_STATE::SELECT:
             if (bUseDark)
                 Set_Dark01(0.f);
-
+        
             break;
         case BUTTON_STATE::HOVER:
             if (bUseDark)
@@ -158,33 +176,48 @@ void CUIButton::ProcessInput()
         {
             return;
         }
-
+     /*   if (m_bHovered && mouseUp)
+        {
+            if (m_ClickEvent)
+                m_ClickEvent(this);
+        }*/
 
     //CLog_Manager::GetInstance()->Add_Log_F(LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
 
     if (m_bHovered) // 젤최상위에서 처리
     {
-        if (mouseDown&& m_UIState != BUTTON_STATE::CLICK&& m_UIState != BUTTON_STATE::SELECT) // 방금 클릭
+        if (mouseUp && m_ClickInside) // 안에서 클릭한 상태에서 안에서 뗏는지
+        {
+            m_ClickInside = false;
+            if (m_bUseSelect)
+            {
+                m_UIState = BUTTON_STATE::SELECT;
+	            
+            }
+            else
+            {
+                if (m_OverlapEndEvent) // 콜백 실행
+                    m_OverlapEndEvent(this);
+	            
+                m_UIState = BUTTON_STATE::NORMAL; // 또는 NORMAL
+            }
+
+            if (m_ClickEvent) // 콜백 실행
+            {
+                m_ClickEvent(this);
+
+            }
+          
+            
+            return;
+        }
+        if (mouseDown&&m_UIState != BUTTON_STATE::CLICK&& m_UIState != BUTTON_STATE::SELECT) // 방금 클릭
         {
             m_ClickInside = true;
             m_UIState = BUTTON_STATE::CLICK;
             return;
         }
-        if (mouseUp && m_ClickInside/*&& m_UIState == BUTTON_STATE::CLICK*/) // 안에서 클릭한 상태에서 안에서 뗏는지
-        {
-            m_ClickInside = false;
-            if (m_bUseSelect)
-                m_UIState = BUTTON_STATE::SELECT;
-            else
-                m_UIState = BUTTON_STATE::HOVER; // 또는 NORMAL
-
-            if (m_ClickEvent) // 콜백 실행
-            {
-                m_ClickEvent(this);
-            }
-            return;
-        }
-        if (!mouseDown && !mouseUp&& m_UIState != BUTTON_STATE::HOVER && m_UIState != BUTTON_STATE::SELECT) // 호버링 중인가
+        if (!mouseDown && !mouseUp && m_UIState == BUTTON_STATE::NORMAL /* && m_UIState != BUTTON_STATE::HOVER && m_UIState != BUTTON_STATE::SELECT*/) // 호버링 중인가
         {
             m_UIState = BUTTON_STATE::HOVER;
 
@@ -202,7 +235,11 @@ void CUIButton::ProcessInput()
         if (m_UIState != BUTTON_STATE::NORMAL && m_UIState != BUTTON_STATE::SELECT)
         {
             if (mouseUp)
+            {
                 m_ClickInside = false;
+
+               
+            }
 
             m_UIState = BUTTON_STATE::NORMAL;
            

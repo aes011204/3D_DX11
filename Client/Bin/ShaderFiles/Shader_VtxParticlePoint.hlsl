@@ -78,25 +78,28 @@ void GS_MAIN(point GS_IN In[1], inout TriangleStream<GS_OUT> OutStream)
 {
     GS_OUT Out[4];
     
-    float3 vLook = g_vCamPosition.xyz - In[0].vPosition.xyz;
-    float3 vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook)) * In[0].vPSize.x * 0.5f;
-    float3 vUp = normalize(cross(vLook, vRight)) * In[0].vPSize.y * 0.5f;
-    
+    //float3 vLook = g_vCamPosition.xyz - In[0].vPosition.xyz;
+   /// float3 vRight = normalize(cross(float3(0.f, 1.f, 0.f), vLook)) * In[0].vPSize.x * 0.5f;
+   // float3 vUp = normalize(cross(vLook, vRight)) * In[0].vPSize.y * 0.5f;
+
+    float3 vRight = float3(1.f, 0.f, 0.f) * In[0].vPSize.x * 0.5f;
+    float3 vUp = float3(0.f, 0.f, 1.f) * In[0].vPSize.y * 0.5f;
+
     matrix matVP = mul(g_ViewMatrix, g_ProjMatrix);
     
-    Out[0].vPosition = mul(vector(In[0].vPosition.xyz + vRight + vUp, 1.f), matVP);
+    Out[0].vPosition = mul(vector(In[0].vPosition.xyz - vRight + vUp, 1.f), matVP);
     Out[0].vTexcoord = float2(0.f, 0.f);
     Out[0].vLifeTime = In[0].vLifeTime;
     
-    Out[1].vPosition = mul(vector(In[0].vPosition.xyz - vRight + vUp, 1.f), matVP);
+    Out[1].vPosition = mul(vector(In[0].vPosition.xyz + vRight + vUp, 1.f), matVP);
     Out[1].vTexcoord = float2(1.f, 0.f);
     Out[1].vLifeTime = In[0].vLifeTime;
     
-    Out[2].vPosition = mul(vector(In[0].vPosition.xyz - vRight - vUp, 1.f), matVP);
+    Out[2].vPosition = mul(vector(In[0].vPosition.xyz + vRight - vUp, 1.f), matVP);
     Out[2].vTexcoord = float2(1.f, 1.f);
     Out[2].vLifeTime = In[0].vLifeTime;
     
-    Out[3].vPosition = mul(vector(In[0].vPosition.xyz + vRight - vUp, 1.f), matVP);
+    Out[3].vPosition = mul(vector(In[0].vPosition.xyz - vRight - vUp, 1.f), matVP);
     Out[3].vTexcoord = float2(0.f, 1.f);
     Out[3].vLifeTime = In[0].vLifeTime;
     
@@ -124,9 +127,12 @@ PS_OUT PS_MAIN(PS_IN In)
     if (Out.vColor.a < 0.3f)
         discard;
     
-    Out.vColor.r = In.vLifeTime.y;
-    
-    Out.vColor.a = In.vLifeTime.x - In.vLifeTime.y;
+    float lifeRatio = In.vLifeTime.y / max(In.vLifeTime.x, 0.0001f);
+
+
+    Out.vColor.a *= (1.0f - lifeRatio);
+    Out.vColor.xyz *= Out.vColor*0.6f;
+
     
     return Out;
 

@@ -9,6 +9,7 @@
 #include "UI_Item.h"
 #include "ItemDB.h"
 #include "PlayerBoat.h"
+#include "UI_Controller.h"
 #include "UI_Inventory.h"
 
 
@@ -92,7 +93,7 @@ void CInventory_Controller::Make_Hold(Item_Inst inst)
 {
 	
 		m_UIHoldItem->HoldItem(inst);
-
+		m_HoldItemFrom = INVENTYPE::NONE;
 		m_bDragging = true;
 	
 }
@@ -136,6 +137,9 @@ void CInventory_Controller::Update(float TimeDelta)
 				if(CurInven->Get_Inventype() == INVENTYPE::SHOP)
 				{
 					Item_Inst inst = CurInven->Peek_Itme(m_SlotX, m_SlotY);
+					if(inst.ItemInst_ID != 0)
+					{
+						
 					const Item_Def def = CItemDB::GetInstance()->GetItemByID(inst.ItemDef_ID);
 					
 						if (auto* equip = get_if<Equip_Def>(&def.TypeDef))
@@ -153,10 +157,11 @@ void CInventory_Controller::Update(float TimeDelta)
 
 							//m_HoldItem = tmpInst;
 								m_UIHoldItem->HoldItem(tmpInst);
-
+								m_HoldItemFrom = CurInven->Get_Inventype();
 								m_bDragging = true;
 							}
 						}
+					}
 				}
 				else
 				{
@@ -169,7 +174,7 @@ void CInventory_Controller::Update(float TimeDelta)
 
 				//m_HoldItem = tmpInst;
 					m_UIHoldItem->HoldItem(tmpInst);
-
+					m_HoldItemFrom = CurInven->Get_Inventype();
 					m_bDragging = true;
 				}
 
@@ -224,18 +229,50 @@ void CInventory_Controller::Update(float TimeDelta)
 				case PLACE_COLOR::GREEN:
 					tmpInst = DestInven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
 					//m_HoldItem = tmpInst;// 이건 빈 인스턴스
+
+					if (DestInven->Get_Inventype() == INVENTYPE::PLAYER && m_HoldItemFrom == INVENTYPE::SHOP)
+					{
+						if (m_UIHoldItem->Get_HoldItem().ItemType == ITEM_TYPE::EQUIP)
+						{
+
+							auto curitem = CItemDB::GetInstance()->GetItemByID(m_UIHoldItem->Get_HoldItem().ItemDef_ID);
+							if (auto pEquipDef = get_if<Equip_Def>(&curitem.TypeDef))
+							{
+								CUI_Controller::GetInstance()->ActiveTime(pEquipDef->InstallTime, false);
+							}
+						}
+					}
+
 					m_UIHoldItem->ReleaseItem();
 					m_bDragging = false;
+
+					
+
+
+
+
 					break;
 				case PLACE_COLOR::ORANGE:
 					tmpInst = DestInven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
+					if (DestInven->Get_Inventype() == INVENTYPE::PLAYER && m_HoldItemFrom == INVENTYPE::SHOP)
+					{
+						if (m_UIHoldItem->Get_HoldItem().ItemType == ITEM_TYPE::EQUIP)
+						{
 
+							auto curitem = CItemDB::GetInstance()->GetItemByID(m_UIHoldItem->Get_HoldItem().ItemDef_ID);
+							if (auto pEquipDef = get_if<Equip_Def>(&curitem.TypeDef))
+							{
+								CUI_Controller::GetInstance()->ActiveTime(pEquipDef->InstallTime, false);
+							}
+						}
+					}
 					if (tmpInst.ItemInst_ID == ID_Absence)
 						return;
 					//MSG_BOX("Faild : Get Swap Item from AddItem");
 
 				//m_HoldItem = tmpInst;
 					m_UIHoldItem->HoldItem(tmpInst);
+					m_HoldItemFrom = DestInven->Get_Inventype();
 					m_bDragging = true;
 					break;
 				case PLACE_COLOR::RED:
@@ -245,6 +282,9 @@ void CInventory_Controller::Update(float TimeDelta)
 
 					break;
 				}
+
+
+
 
 			}
 

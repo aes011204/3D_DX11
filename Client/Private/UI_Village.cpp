@@ -120,13 +120,19 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 			pDesc.ClickEvent = [this, ePlayerState](CUIButton* pThis)
 				{
+
+					/*m_Select[pThis->Get_TypeIndex()]->UI_InActive();
+					m_Select[pThis->Get_TypeIndex()]->m_behavior.clear();*/
 					Evt_ChangeState event{};
 					event.playerstate = ePlayerState;
 
 					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
+
+					
 				};
 			shared_ptr<CUIButton> pBut = CUIButton::Create(m_pDevice, m_pContext);
 			pBut->Initialize(&pDesc);
+			pBut->Set_SelectState(false);
 
 			//
 			{
@@ -232,6 +238,8 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		BoatOP->Initialize(&pDesc);
 		BoatOP->Set_ColorFlat(_float4{0.f,0.f,0.f,1.f});
 		underBar->Add_Child(BoatOP, L"BoatOP" + to_wstring(i), false);
+		BoatOP->Set_SelectState(false);
+
 
 		{
 			CUIImage::UIIMAGE_DESC selectImage{};
@@ -299,6 +307,7 @@ void CUI_Village::OnDisabled()
 
 void CUI_Village::OnUpdate(const _float& timeDelta)
 {
+	
 	//for (auto& it : m_Select_boat)
 	//{
 	//	it->Set_Zorder(4);

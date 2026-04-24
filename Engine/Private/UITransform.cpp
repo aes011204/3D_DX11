@@ -77,6 +77,33 @@ void CUITransform::SetParent(weak_ptr<CUITransform> newParent, bool keepWorldRec
     MarkDirtyRecursive();
 }
 
+_bool CUITransform::SetRotationTo(_float _fTargetDegree, _float fTimeDelta)
+{
+    _float fRatio = 0.1f; // 보간 속도 (0.0 ~ 1.0)
+    _float degree = XMConvertToDegrees(m_RotationRadian);
+    if (degree != _fTargetDegree)
+    {
+        _float Diff = _fTargetDegree - degree;
+
+       
+        if (abs(Diff) < 0.1f)
+        {
+            degree = _fTargetDegree;
+        	SetRotation(degree);
+            return true;
+        }
+        else
+        {
+            degree += Diff * fRatio;
+        }
+    }
+
+   
+    SetRotation(degree);
+    return false;
+
+}
+
 void CUITransform::UpdateLayoutIfDirty()
 {
     if (!m_Dirty)

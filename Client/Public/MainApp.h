@@ -27,8 +27,7 @@ public:
 
 	HRESULT Render();
 	HRESULT Ready_Game();
-
-
+	
 public:
 
 	static unique_ptr<CMainApp> Create();

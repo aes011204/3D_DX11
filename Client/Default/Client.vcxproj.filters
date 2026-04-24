@@ -250,6 +250,10 @@
     <ClInclude Include="..\Public\UI_RepairShop.h">
       <Filter>03.UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\WaterEff.h" />
+    <ClInclude Include="..\Public\UI_Time.h">
+      <Filter>03.UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -448,6 +452,10 @@
     </ClCompile>
     <ClCompile Include="..\Private\Box.cpp">
       <Filter>02.GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Private\WaterEff.cpp" />
+    <ClCompile Include="..\Private\UI_Time.cpp">
+      <Filter>03.UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

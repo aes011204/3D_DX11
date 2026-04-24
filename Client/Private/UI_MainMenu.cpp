@@ -13,6 +13,7 @@
 #include "Engine_Helper.h"
 #include "FadeModifier.h"
 #include "UI_Controller.h"
+#include "EventBus.h"
 
 CUI_MainMenu::CUI_MainMenu(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
     :CUIPanel(pDevice, pContext)
@@ -80,9 +81,10 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 				//it->m_bIsDirtyCom = true;
 				it->m_behavior.push_back((make_shared<CScaleModifier>(0.1f, 2.f, 0.f, tmp)));
 			}
-			CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
-				make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .1f, false, _float4{ 0.f,0.f,0.f,0.f }));
+			//CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
+			//	make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .1f, false, _float4{ 0.f,0.f,0.f,0.f }));
 				};
+
 			pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			for (auto& it : ch)
 			{
@@ -91,9 +93,22 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 				it->m_behavior.clear();
 			}
 				};
+
 			pDesc.ClickEvent = [this, i, eLevel](CUIButton* pThis) {
-				if(eLevel!= LEVEL::END)
-				m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eLevel));
+				//if (eLevel != LEVEL::END)
+				//	m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eLevel));
+				
+				shared_ptr <CFadeModifier> eff = make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .2f, false, _float4{ 0.f,0.f,0.f,0.f });
+				CUI_Controller::GetInstance()->Get_LoadingUI()->UI_Active();
+				CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(eff
+				);
+
+				//eff->SetEvent([this, i, eLevel]() {
+					Evt_ChangeLevel e = {};
+					e.IsChange = true;
+					e.level = ETOI(eLevel);
+					m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+					//});
 			};
 			shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
 			pChild->Initialize(&pDesc);

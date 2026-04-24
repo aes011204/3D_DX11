@@ -127,7 +127,7 @@ HRESULT CSnow::Ready_Components()
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticleRect"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
 
-		if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Snow"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Rain"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 			return E_FAIL;
 	
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Rect_Snow"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))

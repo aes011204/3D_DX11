@@ -8,8 +8,10 @@
 #include "DInput_Manager.h"
 #include "Camera_Free.h"
 #include "UI.h"
+#include "UIRenderable.h"
 
 #include "Level_Loading.h"
+#include "EventBus.h"
 
 CLevel_Logo::CLevel_Logo(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CLevel{ pDevice, pContext }
@@ -37,6 +39,25 @@ HRESULT CLevel_Logo::Initialize()
 
 
 	m_pGameInstance.lock()->Load(SAVETYPE::UI, "MINI_GAME_5.json");
+
+
+
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ChangeLevel>([this](const Evt_ChangeLevel& e)
+		{
+			/*auto pLoadingUI = dynamic_pointer_cast<CUIRenderable>(CUI_Controller::GetInstance()->Get_LoadingUI());
+			
+			pLoadingUI->Set_Alpha(1.f);
+
+			shared_ptr<CFadeModifier> eff = make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .2f, false, _float4{ 0.f,0.f,0.f,0.f });
+			pLoadingUI->m_behavior.push_back(eff);*/
+
+		ChangeNextLevel = e.IsChange;
+			m_NextLevel = static_cast<LEVEL>(e.level);
+
+			m_Acc = 0.f;
+		});
+
+		
 	return S_OK;
 }
 
@@ -48,6 +69,9 @@ HRESULT CLevel_Logo::Post_Initialize()
 
 void CLevel_Logo::Update(_float fTimeDelta)
 {
+
+
+	m_Acc += fTimeDelta;
 	if (m_Flag == false)
 	{
 		CGameInstance::GetInstance()->Change_Camera(L"STOP_CAM");
@@ -64,15 +88,27 @@ void CLevel_Logo::Update(_float fTimeDelta)
 		//	pChild->m_behavior.push_back(
 		//		make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
 		//}
-
+	
 	}
+	
 
 	if(GetKeyState(VK_SPACE) & 0x8000)
 	{
+	
+
 		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::GAMEPLAY))))
 			return;
 	}
+
+	if (ChangeNextLevel == true&& m_Acc >= 1.f)
+	{
+		m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, m_NextLevel));
+		ChangeNextLevel = false;
+		m_Acc = 0;
+	}
+
 }
+
 HRESULT CLevel_Logo::Ready_Layer_Camera(const wchar_t* str)
 {
 	CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};

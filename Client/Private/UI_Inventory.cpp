@@ -321,6 +321,33 @@ void CUI_Inventory::OnActive()
 
 void CUI_Inventory::OnInActive()
 {
+
+	Evt_MouseToIndex_Data e = {};
+	e.IsOnSlot = false; // 기본 false
+
+	//if (m_Inven.lock()->Get_Inventype() == INVENTYPE::PLAYER)
+	//{
+		e.IsPlayer = true;
+	//}
+	//else
+	//{
+	//	e.IsPlayer = false;
+	//}
+
+	
+
+
+	
+
+	e.x = 0;
+		e.y = 0;
+			e.IsOnSlot = false;
+
+
+
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+	
+
 	__super::OnInActive();
 
 }
@@ -614,7 +641,7 @@ _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
 
 void CUI_Inventory::Render_Item()
 {
-
+	
 
 	//이 함수는 유아이가 추가되거나 줄었을떄 신호받으면 그떄 한번씩 하는거임
 

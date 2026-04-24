@@ -35,6 +35,7 @@ public:
     virtual HRESULT Render() override;
 
     void Location_Sea(_float fTimeDelta, CDInput_Manager* dinput);
+    void Dead();
 
 
 
@@ -88,6 +89,7 @@ private:
     shared_ptr<class CInventory> m_pStorageCom = { nullptr };
     shared_ptr< CCollider> m_pColliderCom = { nullptr };
 
+    float m_fInvincibleTime = {};
 
 private:
     int curBoatLevel = {};

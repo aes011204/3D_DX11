@@ -19,8 +19,11 @@
 #include "UI_Village.h"
 #include "UI_Controller.h"
 #include "EventBus.h"
+#include "ItemInfo.h"
 #include "MiniGameController.h"
 #include "Sky_Controller.h"
+#include "UI_Time.h"
+#include "WaterEff.h"
 
 
 CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -97,7 +100,9 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pNPC = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"ToolTip", false, nullptr);
-
+	auto ToolTip = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"ToolTip");
+	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
+	ui->UI_InActive();
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"HoldItem", false, nullptr);
 	m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
@@ -109,7 +114,7 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	//CUI_Controller::GetInstance()->Set_InvenCtrl(m_pInvenCntl);
 
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Village", false, nullptr);
-	m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
+	//m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 
 
 
@@ -125,6 +130,9 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Box", false, nullptr);
 	//m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 	
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Time", false, nullptr);
+
+	m_Time = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Time");
 
 
 	return S_OK;
@@ -183,6 +191,15 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 			return;
+	}
+
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_M))
+	{
+		dynamic_pointer_cast<CUI_Time>(m_Time)->UI_Active();
+	}
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_N))
+	{
+		dynamic_pointer_cast<CUI_Time>(m_Time)->UI_InActive();
 	}
 
 	m_pInvenCntl->Update(fTimeDelta);
@@ -414,12 +431,18 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& strLayerTag)
 
 	
 
-	if (nullptr == ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
-		ETOI(LEVEL::GAMEPLAY), strLayerTag))))
+	//if (nullptr == ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
+	//	ETOI(LEVEL::GAMEPLAY), strLayerTag))))
+	//	return E_FAIL;
+
+	CWaterEff::EffDESC eff = {};
+	eff.eType = EFFTYPE::PLAYER;
+	eff.Target = dynamic_pointer_cast<CPlayerBoat>(m_pPlayer.lock());
+
+	auto Eff = ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(LEVEL::GAMEPLAY), strLayerTag,& eff)));
+	if (Eff==nullptr)
 		return E_FAIL;
-
-
-
+	
 	return  S_OK;
 }
 

@@ -461,11 +461,13 @@ void CItemInfo::GetButtonInfo(_uint buttonInfo, _uint& Texindex, wstring& str, _
 void CItemInfo::OnActive()
 {
 	CUIPanel::OnActive();
+
 }
 
 void CItemInfo::OnInActive()
 {
 	CUIPanel::OnInActive();
+
 }
 
 void CItemInfo::OnDisabled()

@@ -81,7 +81,7 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 	_float3 pos = _float3(1.987f, 0.f, -0.189f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
 	m_pTransformCom->Set_RotationDegree(_float3{0.f, 90.f,0.f});
-
+	m_pTransformCom->Update_WorldMatrix();
 	return S_OK;
 }
 
@@ -93,7 +93,9 @@ void CPlayerBoat::Priority_Update(_float fTimeDelta)
 void CPlayerBoat::Update(_float fTimeDelta)
 {
 	m_pPlayerStateMachine->Update_StateMachine(fTimeDelta);
-	
+
+	if (m_fInvincibleTime > 0.f)
+		m_fInvincibleTime -= fTimeDelta;
 
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 	//테스트
@@ -343,12 +345,21 @@ int i = {};
 
 void CPlayerBoat::Get_Demage()
 {
+	if (m_fInvincibleTime > 0.f)
+		return;
+
+	
+	m_fInvincibleTime = 2.f;
+	
+
+
 	// 채력 하나 줄고
-	//if(m_Hp <= 0)
-	//{
-	////만일 채력이 0 이면 죽음 상태
-	//	return;
-	//}
+	if(m_Hp <= 0)
+	{
+	//만일 채력이 0 이면 죽음 상태
+		Dead();
+		return;
+	}
 	m_Hp--;
 
 	// 외형 변경
@@ -472,6 +483,14 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 
 
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+
+}
+
+void CPlayerBoat::Dead()
+{
+	SetHPFull();
+	_float3 pos = _float3(0.f, 5.f, 10.f);
+	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
 
 }
 

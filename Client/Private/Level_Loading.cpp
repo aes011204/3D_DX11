@@ -55,7 +55,7 @@ HRESULT CLevel_Loading::Post_Initialize()
 	}
 	else
 	{
-		lodingUI->UI_Active();
+		//lodingUI->UI_Active();
 	}
 
 	return S_OK;

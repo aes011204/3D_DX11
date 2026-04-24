@@ -1012,6 +1012,15 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
+
+	//
+	//Prototype_Component_Texture_Timer
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Timer"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Time/hourglass_icon.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
 	return S_OK;
 }
 
@@ -1024,7 +1033,32 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Cube");
 		return E_FAIL;
 	}
+	/* Prototype_Component_Texture_Snow*/
 
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Snow"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Snow Texture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_Rain*/
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Rain"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Rainy.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Snow Texture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_WaterEff*/
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_WaterEff"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/WaterBubble_Texture.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Snow Texture");
+		return E_FAIL;
+	}
 	/* Prototype_Component_Texture_Sky */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_RGB.png"), 4))))
@@ -1240,6 +1274,24 @@ HRESULT CMainApp::Ready_Game()
 
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Snow"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Snow Texture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_Rain*/
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Rain"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Rainy.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Snow Texture");
+		return E_FAIL;
+	}
+
+	/* Prototype_Component_Texture_WaterEff*/
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_WaterEff"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/WaterBubble_Texture.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Snow Texture");
 		return E_FAIL;

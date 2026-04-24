@@ -5,6 +5,7 @@
 #include "DInput_Manager.h"
 #include "EventBus.h"
 #include "MiniGame_Logic.h"
+#include "WaterEff.h"
 
 CFish::CFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CGameObject{ pDevice ,pContext }
@@ -51,6 +52,16 @@ HRESULT CFish::Initialize(void* pArg)
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
+
+
+	CWaterEff::EffDESC eff = {};
+	eff.eType = EFFTYPE::FISH;
+	eff.Target = static_pointer_cast<CFish>(shared_from_this());
+
+	auto Eff = ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(LEVEL::GAMEPLAY), L"Layer_Effect", &eff)));
+	if (Eff == nullptr)
+		return E_FAIL;
+
 
 
 

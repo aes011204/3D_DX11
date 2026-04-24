@@ -25,6 +25,7 @@
 #include "VIBuffer_Particle_Rect.h"
 #include "Village.h"
 #include "Box.h"
+#include "WaterEff.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: m_pDevice(pDevice), m_pContext(pContext),
@@ -155,14 +156,14 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	//	return E_FAIL;
 	//}
 
-	/* Prototype_Component_Texture_Snow*/
-
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Snow"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Snow Texture");
-		return E_FAIL;
-	}
+	///* Prototype_Component_Texture_Snow*/
+	//
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Snow"),
+	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : Snow Texture");
+	//	return E_FAIL;
+	//}
 	
 
 
@@ -226,7 +227,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	ExploDesc.vSpeed = _float2(3.0f, 7.0f);
 	ExploDesc.vLifeTime = _float2(1.f, 2.0f);
 	ExploDesc.vPivot = _float3(0.f, 0.f, 0.f);
-	ExploDesc.isLoop = false;
+	ExploDesc.isLoop = true;
 
 
 	/* Prototype_Component_VIBuffer_Particle_Point_Explosion */
@@ -237,7 +238,50 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 
-	
+	CVIBuffer_Particle_Point::PARTICLE_POINT_DESC		WaterDesc{};
+	WaterDesc.iNumInstances = 15;
+	WaterDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	WaterDesc.vRange = _float3(2.f, 0.f, 2.f);
+	WaterDesc.vSizeRange = _float2(0.3f, 0.6f);
+	WaterDesc.vScale = _float2(0.1f, 0.2f);
+	WaterDesc.Angle = _float3(0.f,0.f,0.0f);
+	WaterDesc.vSpeed = _float2(3.0f, 7.0f);
+	WaterDesc.vLifeTime = _float2(0.2f, 1.0f);
+	WaterDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	WaterDesc.isLoop = true;
+
+
+	/* Prototype_Component_VIBuffer_Particle_Point_Explosion */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_WaterEff"),
+		CVIBuffer_Particle_Point::Create(m_pDevice, m_pContext, &WaterDesc))))
+	{
+		MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
+		return E_FAIL;
+	}
+
+
+
+	//CVIBuffer_Particle_Point::PARTICLE_POINT_DESC		WaterDescF{};
+	//WaterDescF.iNumInstances = 15;
+	//WaterDescF.vCenter = _float3(0.f, 0.f, 0.f);
+	//WaterDescF.vRange = _float3(2.f, 0.f, 2.f);
+	//WaterDescF.vSizeRange = _float2(0.3f, 0.6f);
+	//WaterDescF.vScale = _float2(0.1f, 0.2f);
+	//WaterDescF.Angle = _float3(0.f, 0.f, 0.0f);
+	//WaterDescF.vSpeed = _float2(3.0f, 7.0f);
+	//WaterDescF.vLifeTime = _float2(0.2f, 1.0f);
+	//WaterDescF.vPivot = _float3(0.f, 0.2f, 0.f);
+	//WaterDescF.isLoop = true;
+	//
+	//
+	///* Prototype_Component_VIBuffer_Particle_Point_Explosion */
+	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_WaterEff"),
+	//	CVIBuffer_Particle_Point::Create(m_pDevice, m_pContext, &WaterDescF))))
+	//{
+	//	MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
+	//	return E_FAIL;
+	//}
+
 
 
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
@@ -488,7 +532,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 
-
+	/* Prototype_GameObject_WaterEff */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"),
+		CWaterEff::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : GameObject_WaterEff");
+		return E_FAIL;
+	}
 
 	/* Prototype_GameObject_Snow */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),

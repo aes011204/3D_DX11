@@ -17,6 +17,7 @@
 #include "DialogueDB.h"
 #include "UI_Box.h"
 #include "UI_RepairShop.h"
+#include "UI_Time.h"
 
 IMPLEMENT_SINGLETON(CUI_Controller)
 
@@ -410,10 +411,51 @@ HRESULT CUI_Controller::Ready_UI()
 
 
 
+	/////////////Time//////////////
 
+	CUI_Time::UITIME_DESC pTimeDesc = {};
+	shared_ptr<CUI_Time> time = CUI_Time::Create(m_pDevice, m_pContext);
+	if (time == nullptr)
+		return E_FAIL;
+
+	time->Initialize(&pTimeDesc);
+	m_pGameInstance.lock()->UI_InsertToPool(L"Time", time);
+	m_pTime = time;
 
 
 	return S_OK;
+}
+
+void CUI_Controller::ActiveTime(_uint time ,  _bool isSleep)
+{
+	m_pTime->UIPannelActive(time, isSleep);
+}
+
+void CUI_Controller::InActiveTime()
+{
+	m_pTime->UI_InActive();
+}
+
+void CUI_Controller::ActiveHover()
+{
+	auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+	m_HoldItem->UI_Active();
+//
+//	auto ToolTip = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"ToolTip");
+//	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
+//	ui->UI_Active();
+
+}
+
+void CUI_Controller::InActiveHover()
+{
+	auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
+	m_HoldItem->UI_InActive();
+
+	auto ToolTip = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"ToolTip");
+	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
+	ui->UI_InActive();
+
 }
 
 //void CUI_Controller::Set_InvenCtrl(shared_ptr<CInventory_Controller> invenCtrl)

@@ -90,7 +90,11 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		if (fRatio >= 1.f)
 		{
-
+			m_This->Set_Alpha(1.f);
+			if(EndEvent != nullptr )
+			{
+				EndEvent();
+			}
 			//pOwner->UI_InActive(); // UI ²ô±â
 
 			m_Finished = true;

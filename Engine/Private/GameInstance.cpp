@@ -517,6 +517,12 @@ void CGameInstance::Set_TOD01(_float tod)
 	return m_pTimeOfDay->Set_TOD01(tod);
 }
 
+void CGameInstance::Set_TimeScale(_float timeScale)
+{
+	m_pTimeOfDay->Set_TimeScale(timeScale);
+}
+
+
 void CGameInstance::Add_Collider(shared_ptr<CCollider> coll)
 {
 	m_pCollision_Manager->Add_Collider(coll);

@@ -8,6 +8,7 @@
 #include "Sea_Manager.h"
 #include "EventBus.h"
 #include "Camera_Play.h"
+#include "UI_Controller.h"
 
 CPlayer_Village::CPlayer_Village(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
 	: CPlayerState(owner, pStateMachine)
@@ -123,6 +124,8 @@ HRESULT CPlayer_Village::Init_State()
 		else if(e.type == 1)
 		{
 			// ÀáÀÚ±â
+			CUI_Controller::GetInstance()->ActiveTime(999, true);
+			IsSleep = true;
 		}
 		else if (e.type == 2)
 		{
@@ -184,6 +187,11 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
+		if(IsSleep == true)
+		{
+			CUI_Controller::GetInstance()->InActiveTime();
+			return ETOI(eNextState);
+		}
 
 		return  ETOI(E_PLAYERSTATE::SEA);
 	}

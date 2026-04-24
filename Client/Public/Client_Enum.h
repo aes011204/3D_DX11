@@ -324,7 +324,7 @@ namespace Client
 
     struct Evt_ItemHovered
     {
-        _bool isHold = {};
+        _bool isHold = {false};
         Item_Inst itemInst = {};
         LOCATIONSTATE locationState = {};
         _bool IsPlayer = {};
@@ -494,6 +494,12 @@ namespace Client
     {
         _uint cost = {};
     };
+    struct Evt_ChangeLevel
+    {
+        _bool IsChange = false;
+        _uint level = {};
+    };
+   
 
     enum class INPUT_RESULT
     {
@@ -502,5 +508,6 @@ namespace Client
         FAIL,
         START
     };
-    enum class MINIGAME { BASIC_CIRCLE, DIAMOND,BALL ,END };
+    enum class MINIGAME { BASIC_CIRCLE, DIAMOND, BALL, END };
+    enum class EFFTYPE { PLAYER,FISH,END };
 }
