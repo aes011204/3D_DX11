@@ -39,6 +39,10 @@ void CManagerWin::Render()
 
 	ImGui::Begin("MangerWin");
 
+	ImGuiIO& io = ImGui::GetIO();
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+
+
 	ImGui::Separator();
 
 	auto& Manager = CGameInstance::GetInstance()->Get_ManagerClass();

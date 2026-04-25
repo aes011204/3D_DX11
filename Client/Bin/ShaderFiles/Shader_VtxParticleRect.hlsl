@@ -46,24 +46,62 @@ struct PS_OUT
 VS_OUT VS_MAIN(VS_IN In)
 {
     VS_OUT Out;
+    float3 vWorldPos = In.vTranslation.xyz;
 
-    float4x4 TransformMatrix = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
-
-    vector vPosition = mul(float4(In.vPosition, 1.f), TransformMatrix);
-
-
+    float fScaleX = length(In.vRight.xyz);
+    float fScaleY = length(In.vUp.xyz);
 
 
-    /////
-    float4x4 matWV, matWVP;
-    
-    matWV = mul(g_WorldMatrix, g_ViewMatrix);
-    matWVP = mul(matWV, g_ProjMatrix);
-    
+    float3 vLook = g_vCamPosition.xyz - vWorldPos;
+
+
+    vLook.y = 0.f;
+    vLook = normalize(vLook);
+
+
+    float3 vUp = float3(0.f, 1.f, 0.f);
+
+
+    float3 vRight = normalize(cross(vUp, vLook));
+
+
+    vLook = normalize(cross(vRight, vUp));
+
+    float4x4 BillboardMatrix = float4x4(
+    float4(vRight * fScaleX, 0.f),
+    float4(vUp * fScaleY, 0.f),
+    float4(vLook, 0.f),
+    float4(vWorldPos, 1.f)
+);
+    float4 vPosition = mul(float4(In.vPosition, 1.f), BillboardMatrix);
+
+    float4x4 matWVP = mul(mul(g_WorldMatrix, g_ViewMatrix), g_ProjMatrix);
     Out.vPosition = mul(vPosition, matWVP);
+
     Out.vTexcoord = In.vTexcoord;
     Out.vLifeTime = In.vLifeTime;
+
     return Out;
+//    VS_OUT Out;
+//
+//    float4x4 TransformMatrix = float4x4(In.vRight, In.vUp, In.vLook, In.vTranslation);
+//
+//    vector vPosition = mul(float4(In.vPosition, 1.f), TransformMatrix);
+//
+//
+//
+//
+//    /////
+//    float4x4 matWV, matWVP;
+//    
+//    matWV = mul(g_WorldMatrix, g_ViewMatrix);
+//    matWVP = mul(matWV, g_ProjMatrix);
+//    
+//    Out.vPosition = mul(vPosition, matWVP);
+//    Out.vTexcoord = In.vTexcoord;
+//    Out.vLifeTime = In.vLifeTime;
+//    return Out;
+
 }
 
 PS_OUT PS_MAIN(PS_IN In)
@@ -76,9 +114,12 @@ PS_OUT PS_MAIN(PS_IN In)
     if (Out.vColor.a < 0.3f)
         discard;
     
-    Out.vColor.rgb = In.vLifeTime.y * 0.3f;
-    
-    Out.vColor.a = In.vLifeTime.x - In.vLifeTime.y;
+   // Out.vColor.rgb = In.vLifeTime.y * 0.3f;
+    Out.vColor.rgb *= 0.8f;
+
+    float alpha = lerp(0.8f, 0.f, 1 - (In.vLifeTime.x - In.vLifeTime.y));
+    Out.vColor.a = alpha;
+;
     
     return Out;
 
@@ -89,7 +130,7 @@ technique11 DefaultTechnique
 {
     pass DefaultTechnique
     {
-        SetRasterizerState(RS_Default);
+        SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_Default, 0);
         SetBlendState(BS_AlphaBlend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
 

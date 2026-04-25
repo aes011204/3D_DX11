@@ -4,7 +4,7 @@
       "ItemID": 2001,
       "ItemType": "EQUIP",
       "ItemName": "기이한 엔진",
-      "ItemDesc": "누군가가 이 엔진을 낯선 방식으로 개조했습니다.어떻게 손봤는지는 모르겠지만 일반적인 엔진보다 동력이 세진 것 같습니다.",
+      "ItemDesc": "누군가가 이 엔진을 낯선\n방식으로 개조했다.어떻게\n손봤는지는 모르겠지만\n일반적인 엔진보다 동력이\n세진 것 같다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/engine1.png",
       "ItemShape": {
         "Width": 1,
@@ -32,7 +32,7 @@
       "ItemID": 2006,
       "ItemType": "EQUIP",
       "ItemName": "세련된 선외기",
-      "ItemDesc": "고품질 부품과 뛰어난 기술력으로 탄생한, 선원들이 신뢰하는 믿음직한 엔진입니다.",
+      "ItemDesc": "고품질 부품과 뛰어난\n기술력으로 탄생한,\n선원들이 신뢰하는\n믿음직한 엔진.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/engine3.png",
       "ItemShape": {
         "Width": 2,
@@ -59,8 +59,8 @@
     {
       "ItemID": 2007,
       "ItemType": "EQUIP",
-      "ItemName": "쌍발 프로펠러 엔진",
-      "ItemDesc": "이 엔진은 속도를 높이기 위해 이중 프로펠러 시스템을 갖추고 있습니다.",
+      "ItemName": "쌍발 프로펠러\n엔진",
+      "ItemDesc": "이 엔진은 속도를 높이기\n위해 이중 프로펠러\n시스템을 갖추고 있다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/engine5.png",
       "ItemShape": {
         "Width": 2,
@@ -89,7 +89,7 @@
       "ItemID": 2002,
       "ItemType": "EQUIP",
       "ItemName": "금이 간 전구",
-      "ItemDesc": "촛불보단 낫습니다. 그뿐입니다.",
+      "ItemDesc": "촛불보단 낫습니다.\n그뿐이다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/light1.png",
       "ItemShape": {
         "Width": 1,
@@ -113,7 +113,7 @@
       "ItemID": 2008,
       "ItemType": "EQUIP",
       "ItemName": "흐린 렌즈",
-      "ItemDesc": "암울한 상황 속에서도 빛을 발하려는 훌륭한 노력을 기울인다.",
+      "ItemDesc": "암울한 상황 속에서도\n빛을 발하려는\n훌륭한 노력을 기울인다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/light2.png",
       "ItemShape": {
         "Width": 1,
@@ -135,8 +135,8 @@
     {
       "ItemID": 2009,
       "ItemType": "EQUIP",
-      "ItemName": "할로겐 스포트라이트",
-      "ItemDesc": "기본적이지만 매우 밝은 조명입니다. 긴 조사 거리 덕분에 야간에 위험 요소를 발견하는 데 이상적입니다.",
+      "ItemName": "할로겐\n스포트라이트",
+      "ItemDesc": "기본적이지만 매우 밝은\n조명, 긴 조사 거리 덕분에\n야간에 위험 요소를\n발견하는 데 이상적이다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/light3.png",
       "ItemShape": {
         "Width": 2,
@@ -158,7 +158,7 @@
       "ItemID": 2010,
       "ItemType": "EQUIP",
       "ItemName": "텅스텐 투광등",
-      "ItemDesc": "고강도 전구를 여러 개 사용하여 조명에 탁월한 선택입니다.",
+      "ItemDesc": "고강도 전구를 여러 개\n사용한 조명,\n탁월한 선택이다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/light4.png",
       "ItemShape": {
         "Width": 2,
@@ -181,7 +181,7 @@
       "ItemID": 2003,
       "ItemType": "EQUIP",
       "ItemName": "기본 낚싯대",
-      "ItemDesc": "깨지고 부서지기 쉬운 낚싯대로 아주 작은 물고기만 잡을 수 있습니다.",
+      "ItemDesc": "깨지고 부서지기 쉬운\n낚싯대로 아주 작은\n물고기만 잡을 수 있다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/rod1.png",
       "ItemShape": {
         "Width": 2,
@@ -206,7 +206,7 @@
       "ItemID": 2011,
       "ItemType": "EQUIP",
       "ItemName": "심플 스키머",
-      "ItemDesc": "얕은 물에 사는 물고기를 잡기에 적합한 가벼운 낚싯대입니다. 다만 스풀이 작아 릴링 속도가 제한적입니다.",
+      "ItemDesc": "얕은 물에 사는 물고기를\n잡기에 적합한 가벼운\n낚싯대, 다만 스풀이 작아\n릴링속도가 제한적이다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/rod2.png",
       "ItemShape": {
         "Width": 2,
@@ -232,7 +232,7 @@
       "ItemID": 2012,
       "ItemType": "EQUIP",
       "ItemName": "유연한 낚싯대",
-      "ItemDesc": "하이브리드 디자인은 더욱 다양한 낚시 스타일을 가능하게 합니다.",
+      "ItemDesc": "하이브리드 디자인은\n더욱 다양한 낚시 스타일을\n가능하게 한다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/rod4.png",
       "ItemShape": {
         "Width": 1,
@@ -263,7 +263,7 @@
       "ItemID": 2004,
       "ItemType": "EQUIP",
       "ItemName": "기본 트롤망",
-      "ItemDesc": "간단한 제품으로 설치해두면 기본적인 어종이 잡힐 겁니다.바다를 탐험하고자 하는 이들에게 현명한 투자입니다.",
+      "ItemDesc": "간단한 제품으로 설치해두면\n기본적인 어종이 잡힐 겁니다.바다를 탐험하고자 하는 이들에게 현명한 투자입니다.",
       "TexturePath": "//pass//",
       "ItemShape": {
         "Width": 2,

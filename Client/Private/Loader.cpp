@@ -206,8 +206,8 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	SnowDesc.vCenter = _float3(0.f, 0.f, 0.f);
 	SnowDesc.vRange = _float3(129.f, 1.f, 129.f);
 	SnowDesc.vScale = _float2(0.2f, 0.5f);
-	SnowDesc.vSpeed = _float2(3.0f, 7.0f);
-	SnowDesc.vLifeTime = _float2(3.f, 5.0f);
+	SnowDesc.vSpeed = _float2(9.0f, 11.0f);
+	SnowDesc.vLifeTime = _float2(.5f, 4.0f);
 	SnowDesc.isLoop = true;
 	/* Prototype_Component_VIBuffer_Particle_Rect_Snow */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Rect_Snow"),
@@ -225,7 +225,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	ExploDesc.vRange = _float3(0.3f, 0.3f, 0.3f);
 	ExploDesc.vScale = _float2(0.1f, 0.2f);
 	ExploDesc.vSpeed = _float2(3.0f, 7.0f);
-	ExploDesc.vLifeTime = _float2(1.f, 2.0f);
+	ExploDesc.vLifeTime = _float2(0.3f, .6f);
 	ExploDesc.vPivot = _float3(0.f, 0.f, 0.f);
 	ExploDesc.isLoop = true;
 
@@ -239,9 +239,9 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	}
 
 	CVIBuffer_Particle_Point::PARTICLE_POINT_DESC		WaterDesc{};
-	WaterDesc.iNumInstances = 15;
+	WaterDesc.iNumInstances = 10;
 	WaterDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	WaterDesc.vRange = _float3(2.f, 0.f, 2.f);
+	WaterDesc.vRange = _float3(1.5f, 0.f, 1.5f);
 	WaterDesc.vSizeRange = _float2(0.3f, 0.6f);
 	WaterDesc.vScale = _float2(0.1f, 0.2f);
 	WaterDesc.Angle = _float3(0.f,0.f,0.0f);

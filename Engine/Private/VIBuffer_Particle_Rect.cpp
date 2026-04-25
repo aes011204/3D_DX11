@@ -124,19 +124,30 @@ HRESULT CVIBuffer_Particle_Rect::Initialize_Prototype(const CVIBuffer_Instance::
 	 auto pGameInstance = m_pGameInstance.lock();
 	for(size_t i=0; i<m_iNumInstances;i++)
 	{
-		_float		fScale = pGameInstance->Random(pDesc->vScale.x, pDesc->vScale.y);
-		m_pSpeeds[i] = pGameInstance->Random(pDesc->vSpeed.x, pDesc->vSpeed.y);
+		
 
-		m_pInstanceVertices[i].vRight = _float4(fScale, 0.f, 0.f, 0.f);
-		m_pInstanceVertices[i].vUp = _float4(0.f, fScale, 0.f, 0.f);
-		m_pInstanceVertices[i].vLook = _float4(0.f, 0.f, fScale, 0.f);
+
+		m_pSpeeds[i] = pGameInstance->Random(pDesc->vSpeed.x, pDesc->vSpeed.y);
+		_float fScaleX = .02f;
+		_float fScaleY = pGameInstance->Random(0.4f, 0.6f);
+	//	_float fScaleZ = pGameInstance->Random(pDesc->vScaleZ.x, pDesc->vScaleZ.y); // 필요하면
+
+		_float life = m_pGameInstance.lock()->Random(pDesc->vLifeTime.x, pDesc->vLifeTime.y);
+		_float start = m_pGameInstance.lock()->Random(0.f, life);
+
+		m_pInstanceVertices[i].vLifeTime = _float2(life, start);
+
+
+		m_pInstanceVertices[i].vRight = _float4(fScaleX, 0.f, 0.f, 0.f);
+		m_pInstanceVertices[i].vUp = _float4(0.f, fScaleY, 0.f, 0.f);
+		m_pInstanceVertices[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
 		m_pInstanceVertices[i].vTranslation = _float4(
 			pGameInstance->Random(pDesc->vCenter.x - pDesc->vRange.x * 0.5f, pDesc->vCenter.x + pDesc->vRange.x * 0.5f),
 			pGameInstance->Random(pDesc->vCenter.y - pDesc->vRange.y * 0.5f, pDesc->vCenter.y + pDesc->vRange.y * 0.5f),
 			pGameInstance->Random(pDesc->vCenter.z - pDesc->vRange.z * 0.5f, pDesc->vCenter.z + pDesc->vRange.z * 0.5f),
 			1.f
 		);
-		m_pInstanceVertices[i].vLifeTime = _float2(m_pGameInstance.lock()->Random(pDesc->vLifeTime.x, pDesc->vLifeTime.y), 0.f);
+	//	m_pInstanceVertices[i].vLifeTime = _float2(m_pGameInstance.lock()->Random(pDesc->vLifeTime.x, pDesc->vLifeTime.y), 0.f);
 	
 	}
 
@@ -169,9 +180,9 @@ void CVIBuffer_Particle_Rect::Drop(_float fTimeDelta)
 
 	auto pVertexInstance = static_cast<VTXPARTICLE_INSTANCE*>(MappedSubResource.pData);
 
-
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
+
 		pVertexInstance[i].vTranslation.y -= m_pSpeeds[i] * fTimeDelta;
 
 		pVertexInstance[i].vLifeTime.y += fTimeDelta;

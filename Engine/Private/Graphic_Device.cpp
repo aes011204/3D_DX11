@@ -109,7 +109,7 @@ HRESULT CGraphic_Device::Present()
 
 	/* 전면 버퍼와 후면 버퍼를 교체하여 후면 버퍼를 전면으로 보여주는 역할을 한다. */
 	/* 후면 버퍼를 직접 화면에 보여줄게. */
-	return m_pSwapChain->Present(0, 0);
+	return m_pSwapChain->Present(1, 0);
 }
 
 HRESULT CGraphic_Device::Bind_BackBufferRenderTarget(HWND hWnd)

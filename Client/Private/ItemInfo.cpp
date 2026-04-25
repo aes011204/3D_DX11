@@ -285,7 +285,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 
 	//m_bInteractable = true;
 	OnActive();
-
+	
 	
 }
 
@@ -478,7 +478,7 @@ void CItemInfo::OnDisabled()
 void CItemInfo::OnUpdate(const _float& timeDelta)
 {
 
-	GetUITransform()->SetLocalScale({ GetUITransform()->Get_LocalScale().x, m_Targetsize.y / GetUITransform()->Get_SizeDelta().y });
+	GetUITransform()->SetLocalScale({ 1.4f, m_Targetsize.y / GetUITransform()->Get_SizeDelta().y });
 	m_LineImg->GetUITransform()->SetLocalScale({ GetUITransform()->Get_FinalSize().x/ m_LineImg->GetUITransform()->Get_SizeDelta().x, 0.5f});
 
 		
@@ -507,6 +507,8 @@ _float CItemInfo::Active_ButtonInfo(BUTTONINFO btnInfo, _float2 AnchoredPos, _fl
 	wstring str = L"";
 	_uint TexIndex = {};
 
+	AnchoredPos.x = 100.f;
+
 	GetButtonInfo(btnInfo, TexIndex, str, cost);
 	m_vecIcon[ETOI(btnInfo)]->Set_TextureIndex(TexIndex);
 	m_vecIcon[ETOI(btnInfo)]->GetUITransform()->SetPivot(Pivot);
@@ -518,7 +520,12 @@ _float CItemInfo::Active_ButtonInfo(BUTTONINFO btnInfo, _float2 AnchoredPos, _fl
 	
 	//m_vecIcon[ETOI(btnInfo)]->GetUITransform()->Set
 
-	return m_vecIcon[ETOI(btnInfo)]->GetUITransform()->Get_FinalSize().y;// 사이즈 
+
+
+	
+
+
+	return m_vecIcon[ETOI(btnInfo)]->GetUITransform()->Get_FinalSize().y;// 사이즈
 }
 
 shared_ptr<CItemInfo> CItemInfo::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
