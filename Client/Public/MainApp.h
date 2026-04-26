@@ -26,7 +26,7 @@ public:
 	int Update(_float fTimeDelta);
 
 	HRESULT Render();
-	HRESULT Ready_Game();
+
 	
 public:
 
@@ -39,7 +39,8 @@ private:
 	HRESULT Ready_StartLevel(LEVEL eStartLevelID);
 	HRESULT Ready_Prototype_For_Static_Level();
 	HRESULT Ready_Menu_Prototype_For_Static_Level();
-
+	HRESULT Ready_Sound();
+	
 	//HRESULT Ready_UI();
 	shared_ptr<class CInventory_Controller> m_Contr = {};
 private:

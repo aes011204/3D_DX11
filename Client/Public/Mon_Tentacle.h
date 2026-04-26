@@ -59,6 +59,7 @@ private:
 
     _uint m_AnimIndex = {};
     STATE m_State = {};
+    _bool m_Flag = false ;
 private:
 
     shared_ptr<CShader> m_pShaderCom = { nullptr };

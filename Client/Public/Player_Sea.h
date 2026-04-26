@@ -2,6 +2,11 @@
 #include "PlayerState.h"
 
 
+namespace Engine
+{
+	class CLight;
+}
+
 NS_BEGIN(Client)
 
 	class CPlayerBoat;
@@ -54,8 +59,10 @@ private:
     bool m_bIsDocking = false;
     bool m_bFinDock = false;
     _float3 m_targetPos = {};
-
+    weak_ptr<CLight> m_LightObj = {  };
     bool m_OnTab = false;
+    bool On_Light = false;
+    bool bPlaying = false;
 
     weak_ptr<class CUI_TabContainer> m_TapUI={};
 public:

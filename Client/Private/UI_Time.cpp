@@ -21,7 +21,7 @@ void CUI_Time::UIPannelActive(_uint time ,_bool IsSleep)
 
 	
 
-
+	m_pGameInstance.lock()->Play_Loop(L"Hold_Active");
 
 	m_IsSleep = IsSleep;
 
@@ -137,8 +137,9 @@ void CUI_Time::OnInActive()
 {
 	__super::OnInActive();
 	CUI_Controller::GetInstance()->ActiveHover();
-	m_pGameInstance.lock()->Set_TimeScale(1.f); 
+	m_pGameInstance.lock()->Set_TimeScale(1.f);
 
+	m_pGameInstance.lock()->Stop(L"Hold_Active");
 	
 }
 
@@ -185,6 +186,8 @@ void CUI_Time::OnUpdate(const _float& timeDelta)
 				fRatio = 1.f;
 
 				UI_InActive();
+				
+				m_pGameInstance.lock()->Play_Once(L"Hold_Complete");
 					return; // 즉시 리컨
 			}
 	}

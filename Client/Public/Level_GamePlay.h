@@ -51,6 +51,8 @@ private:
 	shared_ptr<CCamera> ClientCamera = {nullptr};
 	_bool m_Flag = false;
 
+
+	_bool m_prevIsNight = true;
 public:
 	static shared_ptr<CLevel_GamePlay> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
 	virtual void Free() override;

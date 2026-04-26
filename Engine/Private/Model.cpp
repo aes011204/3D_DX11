@@ -239,7 +239,7 @@ HRESULT CModel::Play_Animation(_float fTimeDelta)
 	//else
 	{
 	m_isFinish = m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_Bones, m_isAnimLoop);
-		
+	
 	}
 	// 현제 애니메이션에 맞는 상태대로 뼈의 Transformation을 갱신해준다
 
@@ -271,6 +271,8 @@ void CModel::Set_Animation(_uint iIndex, _bool isLoop)
 	if(m_isAnimLoop==false)
 	m_Animations[m_iCurrentAnimIndex]->ReStart();
 
+
+	m_iPrevFrame = 0;
 }
 
 _int CModel::Get_BoneIndex(const _char* pBoneName)
@@ -305,6 +307,35 @@ const _float4x4* CModel::Get_BoneMatrixPtr(const _char* pBoneName)
 
 	return (*iter)->Get_CombinedTransformationMatrixPtr();
 
+}
+
+
+_bool CModel::Check_AnimFrame(_int targetFrame)
+{
+
+	auto anim = m_Animations[m_iCurrentAnimIndex];
+
+	_int curFrame = anim->Get_CurrentFrame();
+
+	// 루프 처리
+	if (curFrame < m_iPrevFrame)
+		m_iPrevFrame = 0;
+
+	if (m_iPrevFrame < targetFrame && curFrame >= targetFrame)
+	{
+		m_iPrevFrame = curFrame;
+		return true;
+	}
+
+	m_iPrevFrame = curFrame;
+	return false;
+}
+
+_int CModel::Get_CurrentFrame() const
+{
+	{
+		return m_Animations[m_iCurrentAnimIndex]->Get_CurrentFrame();
+	}
 }
 
 shared_ptr<CModel> CModel::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix)

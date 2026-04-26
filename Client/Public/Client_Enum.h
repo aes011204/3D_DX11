@@ -499,7 +499,10 @@ namespace Client
         _bool IsChange = false;
         _uint level = {};
     };
-   
+    struct Evt_Boat_Light
+    {
+        _bool Light = false;
+    };
 
     enum class INPUT_RESULT
     {

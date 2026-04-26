@@ -90,6 +90,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 				//m_bStart = false;
 
 					m_prograssBar01 += 0.2;
+					m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
 
 					m_LastInputResult = INPUT_RESULT::SUCCESS;
 				}
@@ -100,6 +101,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 					m_prograssBar01 -= 0.2;
 
 					m_LastInputResult = INPUT_RESULT::FAIL;
+					m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
 
 					m_changeColor = true;
 					colortime = .5f;
@@ -132,6 +134,10 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 			e.fishInst.mutation_ID = 2;
 			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
+
+			m_pGameInstance.lock()->Play_Once(L"Fish_New");
+			m_pGameInstance.lock()->Stop(L"fishing_loop");
+
 			m_FishCount--;
 
 
@@ -153,17 +159,23 @@ void CMiniGame_Logic_Diamond::OnInput()
 	if (isDragging)
 	{
 		m_bStart = false;
+		m_pGameInstance.lock()->Stop(L"fishing_loop");
+
 		return;
 	}
 	if (m_bFin && m_FishCount == 0)
 	{
 		m_bStart = false;
+		m_pGameInstance.lock()->Play_Once(L"fishing_end");
+
 		return;
 	}
 
 	//½ÃÀÛ
 	if (!m_bStart)
 	{
+		m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
+
 		m_LastInputResult = INPUT_RESULT::START;
 		m_bStart = true;
 		m_AccTime = 0.f;

@@ -144,20 +144,19 @@ namespace Engine
         };
     }VTXPARTICLE_RECTINSTANCE_DESC;
 
-
     typedef struct tagVertexParticlePointInstanceDesc
     {
         static const unsigned int		iNumElements = { 6 };
 
         static constexpr D3D11_INPUT_ELEMENT_DESC	Elements[] = {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+   
+            { "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+            { "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+            { "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+            { "WORLD", 4, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 
-            { "WORLD", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-            { "WORLD", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-            { "WORLD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-            { "WORLD", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-
-            { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        	{ "TEXCOORD", 5, DXGI_FORMAT_R32G32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
         };
     }VTXPARTICLE_POINTINSTANCE_DESC;
 
@@ -232,6 +231,37 @@ namespace Engine
 
         _float2 m_Offset = { 0.f, 0.f };
     };
+
+
+
+    enum class SOUND_CATEGORY : _ubyte
+    {
+        BGM,
+        SFX,
+        UI,
+        VOICE,
+        AMBIENT,
+        END
+    };
+
+    // 사운드 로드 방식
+    enum class SOUND_LOAD_MODE : _ubyte
+    {
+        STATIC,
+        STREAM,
+        END
+    };
+
+    using SOUND_ASSET_DESC = struct tSoundAssetDesc
+    {
+        _wstring strSoundTag{};
+        _wstring strAssetPath{};
+        SOUND_CATEGORY eCategory{ SOUND_CATEGORY::SFX };
+        SOUND_LOAD_MODE eLoadMode{ SOUND_LOAD_MODE::STATIC };
+        _float fDefaultVolume{ 1.f };
+    };
+
+
 }
 
 

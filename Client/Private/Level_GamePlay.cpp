@@ -79,7 +79,10 @@ HRESULT CLevel_GamePlay::Initialize()
 
 	//m_pGameInstance.lock()->Load(SAVETYPE::GAMEOBJECT, "Lasst_1.json");
 	m_pGameInstance.lock()->Load(SAVETYPE::UI, "MINI_GAME_5.json");
+
 	
+
+
 	return S_OK;
 }
 
@@ -165,8 +168,33 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		//	pChild->m_behavior.push_back(
 		//		make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
 		//}
-
+		m_pGameInstance.lock()->Play_Loop(L"GM_BGM_Theme");
+		m_pGameInstance.lock()->Play_Loop(L"GM_BGM_Night");
 	}
+	_bool CurIsNight = m_pGameInstance.lock()->Get_IsNight();
+	
+
+	if(m_prevIsNight != CurIsNight)
+	{
+		if(m_pGameInstance.lock()->Get_IsNight() == true)
+		{
+			m_pGameInstance.lock()->Stop(L"GM_BGM_Day",1.5f);
+			m_pGameInstance.lock()->Play_Loop(L"GM_BGM_Night");
+
+		}
+		else
+		{
+			m_pGameInstance.lock()->Play_Loop(L"GM_BGM_Day");
+			m_pGameInstance.lock()->Stop(L"GM_BGM_Night", 1.5f);
+
+		}
+
+		m_prevIsNight = CurIsNight;
+	}
+	
+
+
+
 	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_O))
 	{
 		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),

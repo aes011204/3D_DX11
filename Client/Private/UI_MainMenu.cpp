@@ -68,7 +68,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			pDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
 			pDesc.vPivot = Vector2{ 0.5f, 0.5f };
 			pDesc.vScale = Vector2{ 1.3f, 1.0f };
-			pDesc.OverlapStartEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+			pDesc.OverlapStartEvent = [this](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			for (auto& it : ch)
 			{
 				if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
@@ -83,7 +83,9 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			}
 			//CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
 			//	make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .1f, false, _float4{ 0.f,0.f,0.f,0.f }));
-				};
+			m_pGameInstance.lock()->Play_Once(L"Hover");
+
+			};
 
 			pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			for (auto& it : ch)
@@ -109,6 +111,8 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 					e.level = ETOI(eLevel);
 					m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 					//});
+					m_pGameInstance.lock()->Play_Once(L"Click");
+
 			};
 			shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
 			pChild->Initialize(&pDesc);

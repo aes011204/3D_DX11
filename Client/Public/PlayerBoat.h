@@ -71,7 +71,7 @@ public:
     void SetHPFull();
 
     bool MinusMoney(int amount);
- 
+    weak_ptr<CLight> Get_Light() const {return m_LightObj;}
 
    /* void Set_BoatSpeed(_uint speed) { m_BoatSpeed = speed; }
     void Set_FishingSpeed(_uint speed) { m_RodSpeed = speed; }
@@ -103,7 +103,7 @@ private:
    float m_InvenMoney = {}; // d이거 왜 있음
 
    shared_ptr<CLight> m_LightObj = { nullptr };
-   _bool On_Light = { false };
+  // _bool On_Light = { false };
     LOCATIONSTATE m_Loacation = { LOCATIONSTATE:: SEA };
 
     shared_ptr<class CPlayerStateMachine> m_pPlayerStateMachine = {};

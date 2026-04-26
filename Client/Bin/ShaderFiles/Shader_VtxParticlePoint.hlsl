@@ -13,15 +13,15 @@ sampler DefaultSampler = sampler_state
 struct VS_IN
 {
     float3 vPosition : POSITION;
-    row_major float4x4 TransformMatrix : WORLD; 
-    float2 vLifeTime : TEXCOORD0; 
+    row_major float4x4 TransformMatrix : WORLD1;
+    float2 vLifeTime : TEXCOORD5;
 };
 
 struct VS_OUT
 {
     float4 vPosition : POSITION;
     float2 vPSize : PSIZE;
-    float2 vLifeTime : TEXCOORD0;
+    float2 vLifeTime : TEXCOORD5;
 
 };
 
@@ -29,21 +29,21 @@ struct GS_IN
 {
     float4 vPosition : POSITION;
     float2 vPSize : PSIZE;
-    float2 vLifeTime : TEXCOORD0;
+    float2 vLifeTime : TEXCOORD5;
 };
 
 struct GS_OUT
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
-    float2 vLifeTime : TEXCOORD1;
+    float2 vLifeTime : TEXCOORD5;
 };
 
 struct PS_IN
 {
     float4 vPosition : SV_POSITION;
     float2 vTexcoord : TEXCOORD0;
-    float2 vLifeTime : TEXCOORD1;
+    float2 vLifeTime : TEXCOORD5;
 };
 struct PS_OUT
 {
@@ -131,7 +131,7 @@ PS_OUT PS_MAIN(PS_IN In)
 
 
     Out.vColor.a *= (1.0f - lifeRatio);
-    Out.vColor.xyz *= Out.vColor*0.6f;
+    Out.vColor.xyz *= 0.6f;
 
     
     return Out;

@@ -17,6 +17,7 @@
 #include "Picking_Manager.h"
 #include "Font_Manager.h"
 #include "Collison_Manager.h"
+#include "SoundManager.h"
 #include "TimeOfDay.h"
 #include "Target_Manager.h"
 
@@ -56,8 +57,8 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 		return E_FAIL;
 
 	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iMaxLevelNum);
-if (nullptr == m_pCamera_Manager)
-	return E_FAIL;
+	if (nullptr == m_pCamera_Manager)
+		return E_FAIL;
 
 
 	// ·»´õ·¯ Àü¿¡
@@ -75,7 +76,7 @@ if (nullptr == m_pCamera_Manager)
 	if (nullptr == m_UI_Manager)
 		return E_FAIL;
 	Push_ManagerClass(L"UI_Manager", m_UI_Manager.get());
-	
+
 	// dInputManager »ý¼ºÇØ µÐ´Ù
 	m_pDInput_Manager = CDInput_Manager::Create(EngineDesc.hInst, EngineDesc.hWnd);
 	if (nullptr == m_pDInput_Manager)
@@ -126,6 +127,11 @@ if (nullptr == m_pCamera_Manager)
 	if (nullptr == m_pCollision_Manager)
 		return E_FAIL;
 
+	m_pSound_Manager = CSoundManager::Create();
+
+	if (nullptr == m_pCollision_Manager)
+		return E_FAIL;
+
 
 
 	return S_OK;
@@ -163,7 +169,7 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 	m_UI_Manager->Late_Update(fTimeDelta);
 
 	m_pLevel_Manager->Update(fTimeDelta);
-
+	m_pSound_Manager->Update_Audio(fTimeDelta);
 
 }
 
@@ -185,7 +191,7 @@ void CGameInstance::Clear_Resources(_uint iLevelIndex)
 		MSG_BOX("failed to Clear Resourse");
 		return;
 	}
-	if(FAILED(m_pProto_Manager->Clear_Prototype(iLevelIndex)))
+	if (FAILED(m_pProto_Manager->Clear_Prototype(iLevelIndex)))
 	{
 		MSG_BOX("failed to Clear Resourse");
 		return;
@@ -209,7 +215,13 @@ _float CGameInstance::Random(_float fMin, _float fMax)
 	return fMin + (static_cast<_float>(rand()) / RAND_MAX) * (fMax - fMin);
 }
 
+_int CGameInstance::RandomInt(_int iMin, _int iMax)
+{
+	if (iMin > iMax)
+		swap(iMin, iMax);
 
+	return iMin + rand() % (iMax - iMin + 1);
+}
 HRESULT CGameInstance::Resize(_uint g_RsizeWidth, _uint g_RsizeHeight)
 {
 
@@ -262,14 +274,14 @@ shared_ptr<CBase> CGameInstance::Clone_Prototype(PROTOTYPE ePrototy, _uint iLeve
 
 
 shared_ptr<CGameObject> CGameInstance::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
-                                                      _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
+	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
 {
 	return m_pObject_Manager->Add_GameObject(iPrototypeLevelIndex, strPrototypeTag, iLayerLevelIndex, strLayerTag, pArg);
 }
 
-shared_ptr<CGameObject> CGameInstance::Get_GameObject(_uint iLayerLevelIndex,const _wstring& strLayerTag, _uint GObjIndex)
+shared_ptr<CGameObject> CGameInstance::Get_GameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint GObjIndex)
 {
-	return m_pObject_Manager->Get_GameObject(iLayerLevelIndex,strLayerTag, GObjIndex);
+	return m_pObject_Manager->Get_GameObject(iLayerLevelIndex, strLayerTag, GObjIndex);
 }
 
 
@@ -312,9 +324,9 @@ CUI_Manager* CGameInstance::Get_UI_Manager() const
 {
 	{ return m_UI_Manager.get(); }
 }
-CGraphic_Device* CGameInstance::Get_GraphicDevice() const 
-{ 
-	return m_pGraphic_Device.get(); 
+CGraphic_Device* CGameInstance::Get_GraphicDevice() const
+{
+	return m_pGraphic_Device.get();
 }
 
 const map<_wstring, CBase*>& CGameInstance::Get_ManagerClass() const
@@ -454,7 +466,7 @@ _bool CGameInstance::Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstrin
 {
 
 
-	return m_pPicking_Manager-> Compute_HeightOnTerrain(  layerTag, TerrainIndex, pPos, Out);
+	return m_pPicking_Manager->Compute_HeightOnTerrain(layerTag, TerrainIndex, pPos, Out);
 }
 
 _bool CGameInstance::Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out)
@@ -522,6 +534,11 @@ void CGameInstance::Set_TimeScale(_float timeScale)
 	m_pTimeOfDay->Set_TimeScale(timeScale);
 }
 
+_bool CGameInstance::Get_IsNight()
+{
+	return m_pTimeOfDay->Get_IsNight();
+}
+
 
 void CGameInstance::Add_Collider(shared_ptr<CCollider> coll)
 {
@@ -575,7 +592,48 @@ void CGameInstance::Add_DebugenderGroup(shared_ptr<CComponent> pDebugComponent)
 	m_Renderer->Add_DebugenderGroup(pDebugComponent);
 }
 #endif
+HRESULT CGameInstance::Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundDescs)
+{
+	if (!m_pSound_Manager)
+		return E_FAIL;
 
+	return m_pSound_Manager->Register_Sounds(vecSoundDescs);
+}
+void CGameInstance::Play_Once(const _wstring& strSoundTag, _float fVolumeScale)
+{
+	if (!m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->Play_Once(strSoundTag, fVolumeScale);
+}
+void CGameInstance::Play_Loop(const _wstring& strSoundTag, _float fVolumeScale)
+{
+	if (!m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->Play_Loop(strSoundTag, fVolumeScale);
+}
+void CGameInstance::Stop(const _wstring& strSoundTag, float fadeOutTime)
+{
+	if (!m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->Stop_Sound(strSoundTag,  fadeOutTime);
+}
+void CGameInstance::Stop_All()
+{
+	if (!m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->Stop_AllSounds();
+}
+void CGameInstance::Set_CategoryVolume(SOUND_CATEGORY eCategory, _float fVolume)
+{
+	if (!m_pSound_Manager)
+		return;
+
+	m_pSound_Manager->Set_SoundCategoryVolume(eCategory, fVolume);
+}
 
 void CGameInstance::Free()
 {
@@ -583,7 +641,7 @@ void CGameInstance::Free()
 
 	m_ManagerForImgui.clear();
 
-	
+
 	m_pPicking_Manager.reset();
 	m_pCamera_Manager.reset();
 	m_pFont_Manager.reset();
@@ -601,11 +659,13 @@ void CGameInstance::Free()
 	m_pPipeLine.reset();
 	m_pLight_Manager.reset();
 
+	m_pSound_Manager->Free();
+	m_pSound_Manager.reset();
 
 	m_pGraphic_Device.reset();
-	
 
 
-//	m_pImgui_Manager.reset();
+
+	//	m_pImgui_Manager.reset();
 
 }

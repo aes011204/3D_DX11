@@ -58,6 +58,7 @@ HRESULT CPlayer_Sea::Init_State()
 	m_pSea_Manager = CSea_Manager::GetInstance();
 
 
+	m_LightObj = m_Owner.lock()->Get_Light();
 	
 	return CPlayerState::Init_State();
 }
@@ -69,6 +70,36 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 		return ETOI(E_PLAYERSTATE::VILLAGE);
 	Location_Sea(timeDelta);
 
+
+	if (m_Input_Manager->MouseDown(DIMB::RBUTTON) && m_LightObj.lock())
+	{
+		On_Light = !On_Light;
+		m_LightObj.lock()->Set_Active(On_Light);
+
+		{
+			Evt_Boat_Light e = {};
+			e.Light = On_Light;
+			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_Boat_Light>(e);
+		}
+
+
+		if(On_Light)
+		m_pGameInstance.lock()->Play_Once(L"light_on");
+		else
+			m_pGameInstance.lock()->Play_Once(L"light_off");
+
+	}
+	if (m_LightObj.lock()->Get_Active() == true)
+	{
+		XMVECTOR vPos = m_pOwnerTransformCom.lock()->Get_Position();
+		XMVECTOR vLook = XMVector3Normalize(m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK));
+
+		XMVECTOR vFinal = vPos + vLook * 1.5f + XMVectorSet(0.f, 0.9f, 0.f, 0.f);
+		_float3 finalPos;
+		XMStoreFloat3(&finalPos, vFinal);
+
+		m_LightObj.lock()->Set_Position(finalPos.x, finalPos.y, finalPos.z);
+	}
 
 
 
@@ -299,12 +330,30 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 
 	if (m_bIsDocking)
 	{
+		bool isPress = m_Input_Manager->KeyPress(DIK_F);
 		float dt = 0.f;
+		if (isPress)
+		{
+			if (!bPlaying)
+			{
+				m_pGameInstance.lock()->Play_Loop(L"Dock_Progress");
+				bPlaying = true;
+			}
 
-		if (m_Input_Manager->KeyPress(DIK_F))
-			dt = fTimeDelta;   // ´©¸£¸é ÁøÇà
+			dt = fTimeDelta;
+		}
 		else
-			dt = 0.f;          // ¶¼¸é ¸ØÃã
+		{
+			if (bPlaying)
+			{
+				m_pGameInstance.lock()->Stop(L"Dock_Progress");
+				bPlaying = false;
+			}
+
+			dt = 0.f;
+		}
+
+
 
 		m_pOwnerTransformCom.lock()->Lerp_To(dt);
 
@@ -325,6 +374,10 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 					m_CurSpeed = 0.f;
 			m_bFinDock = true;
 			m_bIsDocking = false;
+			isPress = false;
+			m_pGameInstance.lock()->Stop(L"Dock_Progress");
+			m_pGameInstance.lock()->Play_Once(L"Docked");
+
 			/*m_NextState = E_PLAYERSTATE::VILLAGE;*/
 			return ETOI(E_PLAYERSTATE::VILLAGE);
 		}

@@ -66,6 +66,13 @@ void CMon_Tentacle::Priority_Update(_float fTimeDelta)
 
 void CMon_Tentacle::Update(_float fTimeDelta)
 {
+	if(m_Flag==false)
+	{
+	m_pGameInstance.lock()->Play_Once(L"OozeTentacleAttack");
+	m_Flag = true;
+	}
+
+
 	m_pModelCom->Play_Animation(fTimeDelta);
 
 	_vector TargetPos = m_pPlayer.lock()->Get_TransformCom()->Get_Position();
@@ -91,6 +98,7 @@ void CMon_Tentacle::Update(_float fTimeDelta)
 		else
 		{
 			m_pModelCom->Set_Animation(m_AnimIndex, false);
+			m_Flag = false;
 		}
 	}
 	

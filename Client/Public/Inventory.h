@@ -64,7 +64,7 @@ public:// 아이템 넣고 뺴기
     void FixAll();
     void ThrowAwayFrom_Inven(_uint BaseX, _uint BaseY);// 이거는 칸으로 
     Item_Inst RemoveFrom_Inven(int inst_id);// 이거는 아이디로
-    Item_Inst Peek_Itme(_uint MusX, _uint MusY);
+    Item_Inst Peek_Item(_uint MusX, _uint MusY);
 
     void OnGui() override;
     Evt_ShipStat CalculateEquip();// 장비 인포 배에 업뎃

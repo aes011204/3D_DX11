@@ -231,6 +231,37 @@ namespace Engine
 
         _float2 m_Offset = { 0.f, 0.f };
     };
+
+
+
+    enum class SOUND_CATEGORY : _ubyte
+    {
+        BGM,
+        SFX,
+        UI,
+        VOICE,
+        AMBIENT,
+        END
+    };
+
+    // 사운드 로드 방식
+    enum class SOUND_LOAD_MODE : _ubyte
+    {
+        STATIC,
+        STREAM,
+        END
+    };
+
+    using SOUND_ASSET_DESC = struct tSoundAssetDesc
+    {
+        _wstring strSoundTag{};
+        _wstring strAssetPath{};
+        SOUND_CATEGORY eCategory{ SOUND_CATEGORY::SFX };
+        SOUND_LOAD_MODE eLoadMode{ SOUND_LOAD_MODE::STATIC };
+        _float fDefaultVolume{ 1.f };
+    };
+
+
 }
 
 

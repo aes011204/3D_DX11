@@ -82,6 +82,15 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
 	m_pTransformCom->Set_RotationDegree(_float3{0.f, 90.f,0.f});
 	m_pTransformCom->Update_WorldMatrix();
+
+
+
+
+
+	m_pPlayerStateMachine = CPlayerStateMachine::Create(dynamic_pointer_cast<CPlayerBoat>(shared_from_this()));
+
+
+
 	return S_OK;
 }
 
@@ -121,22 +130,7 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	//}
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
-	if (dinput->MouseDown(DIMB::RBUTTON) && m_LightObj)
-	{
-		On_Light = !On_Light;
-		m_LightObj->Set_Active(On_Light);
-	}
-	if(m_LightObj->Get_Active()== true)
-	{
-		XMVECTOR vPos = m_pTransformCom->Get_Position();
-		XMVECTOR vLook = XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK));
-
-		XMVECTOR vFinal = vPos + vLook * 1.5f + XMVectorSet(0.f, 0.9f, 0.f, 0.f);
-		_float3 finalPos;
-		XMStoreFloat3(&finalPos, vFinal);
-
-		m_LightObj->Set_Position(finalPos.x, finalPos.y, finalPos.z);
-	}
+	
 	__super::Update(fTimeDelta);
 	//m_pModelCom->Play_Animation(fTimeDelta);
 }
@@ -268,8 +262,6 @@ HRESULT CPlayerBoat::Ready_Components()
 
 
 
-	m_pPlayerStateMachine = CPlayerStateMachine::Create(dynamic_pointer_cast<CPlayerBoat>(shared_from_this()));
-
 
 
 
@@ -298,6 +290,7 @@ void CPlayerBoat::Add_Money(_float money)
 		e.money = m_Money;
 		m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 	}
+	m_pGameInstance.lock()->Play_Once(L"Money_Gained");
 }
 
 void CPlayerBoat::SetHPFull()
@@ -308,6 +301,7 @@ void CPlayerBoat::SetHPFull()
         e.cost = Get_DemageFixPrice();
         m_pGameInstance.lock()->Get_EventBus()->Publish(e);
     };
+	
 }
 
 bool CPlayerBoat::MinusMoney(int amount)
@@ -321,6 +315,7 @@ bool CPlayerBoat::MinusMoney(int amount)
 	e.money = m_Money;
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
+	  m_pGameInstance.lock()->Play_Once(L"Money_Spent");
 	return true;
 	}
 }
@@ -363,6 +358,10 @@ void CPlayerBoat::Get_Demage()
 	m_Hp--;
 
 	// 외형 변경
+	int ran = m_pGameInstance.lock()->RandomInt(1, 5);
+	wstring name = L"impact_" + std::to_wstring(ran);
+	m_pGameInstance.lock()->Play_Once(name);
+
 
 
 	// 카메라 쉐이크 -> 데미지 준쪽에서

@@ -59,14 +59,34 @@ void CMonster::Update(_float fTimeDelta)
 		int i = 0;
 	}
 
-	if(m_State == ATTACK && m_pModelCom->Get_IsFinishAnim()==true)
+
+	if (m_State == ATTACK)
 	{
-		m_AnimIndex = 2;
-		m_pModelCom->Set_Animation(m_AnimIndex, false);
-		m_State = STATE::RELEASE;
+		_int curFrame = m_pModelCom->Get_CurrentFrame();
+
+		if (m_iAttackPrevFrame < 80 && curFrame >= 80)
+			m_pGameInstance.lock()->Play_Once(L"WreckMonsterAttack1");
+
+		if (m_iAttackPrevFrame < 126 && curFrame >= 126)
+			m_pGameInstance.lock()->Play_Once(L"WreckMonsterSwipeAttack");
+
+		if (m_iAttackPrevFrame < 170 && curFrame >= 170)
+			m_pGameInstance.lock()->Play_Once(L"WreckMonsterSwipeAttack");
+
+		m_iAttackPrevFrame = curFrame;
+		
+		if (m_pModelCom->Get_IsFinishAnim())
+		{
+			m_AnimIndex = 2;
+			m_pModelCom->Set_Animation(m_AnimIndex, false);
+			m_State = STATE::RELEASE;
+		}
 	}
-	else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
+	 if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
 	{
+		m_pGameInstance.lock()->Play_Once(L"WreckMonsterRetreat");
+
+
 		m_AnimIndex = 1;
 		m_pModelCom->Set_Animation(m_AnimIndex, true);
 		m_State = STATE::IDLE;
@@ -126,6 +146,9 @@ void CMonster::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> 
 {
 	if(m_State != STATE::ATTACK &&  self == m_pColliderCom)
 	{
+
+		m_pGameInstance.lock()->Play_Once(L"WreckMonsterEmerge");
+
 	m_AnimIndex = 0;
 
 	m_pModelCom->Set_Animation(m_AnimIndex, false);

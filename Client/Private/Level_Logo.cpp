@@ -57,6 +57,8 @@ HRESULT CLevel_Logo::Initialize()
 			m_Acc = 0.f;
 		});
 
+
+	
 		
 	return S_OK;
 }
@@ -88,7 +90,7 @@ void CLevel_Logo::Update(_float fTimeDelta)
 		//	pChild->m_behavior.push_back(
 		//		make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
 		//}
-	
+		m_pGameInstance.lock()->Play_Loop(L"MainMenu_BGM");
 	}
 	
 

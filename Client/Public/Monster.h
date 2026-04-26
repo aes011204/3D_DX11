@@ -63,6 +63,8 @@ private:
 
     shared_ptr<CCollider> m_Hand_Collider_1 = { nullptr };
     shared_ptr<CCollider> m_Hand_Collider_2 = { nullptr };
+
+    _int m_iAttackPrevFrame = 0;
 public:
 
     static shared_ptr<CMonster> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

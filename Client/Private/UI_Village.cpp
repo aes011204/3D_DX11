@@ -50,6 +50,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 	VIllAGE_LOCATION eLevel = {};
 	E_PLAYERSTATE ePlayerState = {};
 	wstring tex = {};
+	wstring sound = {};
 	for (_uint i = 0; i < 3; i++)
 	{
 		switch (i)
@@ -59,12 +60,14 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			name = L"조선공";
 			tex = L"Prototype_Component_Texture_MerchantIcon";
 			ePlayerState = E_PLAYERSTATE::REPAIR_SHOP;
+			sound = L"Repair_Visit";
 			break;
 		case 1:
 			eLevel = VIllAGE_LOCATION::FISH;
 			name = L"생선장수";
 			tex = L"Prototype_Component_Texture_FishIconVill";
 			ePlayerState = E_PLAYERSTATE::FISH_SHOP;
+			sound = L"Fishmonger_Visit";
 
 			break;
 		case 2:
@@ -73,6 +76,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 			tex = L"Prototype_Component_Texture_StorageIcon";
 			ePlayerState = E_PLAYERSTATE::STORAGE;
+			sound = L"Storage_Visit";
 
 			break;
 			/*		case 3:
@@ -100,16 +104,11 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			pDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
 			pDesc.TypeIndex = i;
 			pDesc.OverlapStartEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-			
-			
 				m_Select[pThis->Get_TypeIndex()]->UI_Active();
-				//auto pTransform = dynamic_cast<CUITransform*>(it->Get_Component(g_strUITransformTag).get());
-				//if (pTransform) {
-				//	pTransform->SetLocalScale({ 3.f, 1.8f });
-				//}
 				_float2 tmp = { 4.f, 2.f };
 				m_Select[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 1.f, 0.f, tmp)));
-		
+
+				m_pGameInstance.lock()->Play_Once(L"Hover");
 				};
 			pDesc.OverlapEndEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			
@@ -118,7 +117,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		
 				};
 
-			pDesc.ClickEvent = [this, ePlayerState](CUIButton* pThis)
+			pDesc.ClickEvent = [this, ePlayerState,sound](CUIButton* pThis)
 				{
 
 					/*m_Select[pThis->Get_TypeIndex()]->UI_InActive();
@@ -128,7 +127,8 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-					
+					m_pGameInstance.lock()->Play_Once(sound);
+
 				};
 			shared_ptr<CUIButton> pBut = CUIButton::Create(m_pDevice, m_pContext);
 			pBut->Initialize(&pDesc);
@@ -198,12 +198,17 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		{
 		case 0:
 			tex = L"Prototype_Component_Texture_UndockIcon";
+			sound = L"Undocked";
 			break;
 		case 1:
 			tex = L"Prototype_Component_Texture_SleepIcon";
+			sound = L"Click";
+
 			break;
 		case 2:
 			tex = L"Prototype_Component_Texture_cog_icon";
+			sound = L"Click";
+
 			break;
 		}
 
@@ -219,7 +224,8 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			
 			m_Select_boat[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 1.f, 0.f, tmp)));
 			m_Select_boat[pThis->Get_TypeIndex()]->Set_Zorder(4);
-		
+			m_pGameInstance.lock()->Play_Once(L"Hover");
+
 			};
 		pDesc.OverlapEndEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 		
@@ -228,10 +234,11 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			m_Select_boat[pThis->Get_TypeIndex()]->Set_Zorder(2);
 	
 			};
-		pDesc.ClickEvent = [this,i](CUIButton* pThis) {
+		pDesc.ClickEvent = [this,i,sound](CUIButton* pThis) {
 			Evt_Village_Btn e = {};
 			e.type = i;
 				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+				m_pGameInstance.lock()->Play_Once(sound);
 
 			};
 		shared_ptr<CUIButton> BoatOP = CUIButton::Create(m_pDevice, m_pContext);

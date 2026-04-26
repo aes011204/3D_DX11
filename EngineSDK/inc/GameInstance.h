@@ -29,6 +29,7 @@ public:
 	void Clear_Resources(_uint iLevelIndex);
 
 	_float Random(_float fMin, _float fMax);
+	_int RandomInt(_int iMin, _int iMax);
 
 	void SetImguiContext(ImGuiContext* imgContext);
 
@@ -134,6 +135,7 @@ public:/*For.Font_Manager*/
 		_float Get_TOD01();
 		void Set_TOD01(_float tod);
 		void Set_TimeScale(_float timeScale);
+		_bool Get_IsNight();
 
 	public:/*For.Collison_Mgr*/
 		void Add_Collider(shared_ptr<class CCollider> coll);
@@ -155,6 +157,18 @@ public:
 public:
 	HRESULT Render_Lights(shared_ptr<CShader> pShader, shared_ptr< CVIBuffer_Rect> pVIBuffer);
 
+
+
+
+public:// SoundManager
+	HRESULT Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundDescs);
+	void Update(_float fTimeDelta);
+	void Play_Once(const _wstring& strSoundTag, _float fVolumeScale = 1.f);
+	void Play_Loop(const _wstring& strSoundTag, _float fVolumeScale = 1.f);
+	void Stop(const _wstring& strSoundTag, float fadeOutTime=0);
+	void Stop_All();
+	void Set_CategoryVolume(SOUND_CATEGORY eCategory, _float fVolume);
+
 private:
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
@@ -174,7 +188,7 @@ private:
 	unique_ptr<class CCollision_Manager> m_pCollision_Manager = { nullptr };
 	unique_ptr<class CTarget_Manager> m_pTarget_Manager = { nullptr };
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
-
+	unique_ptr<class CSoundManager>m_pSound_Manager = { nullptr };
 	map<_wstring,CBase*> m_ManagerForImgui = {}; // rawPointer ÂüÁ¶¿ë
 
 	unique_ptr<CEventBus> m_pEventBus;

@@ -37,6 +37,10 @@ using namespace DirectX;
 #include <imgui_impl_dx11.h>
 #include <imgui_impl_win32.h>
 
+//// ImGui
+#include "FMOD/fmod.hpp"
+
+
 #include <vector>
 #include <list>
 #include <map>

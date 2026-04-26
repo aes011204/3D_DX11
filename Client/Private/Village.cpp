@@ -80,6 +80,8 @@ void CVillage::Update(_float fTimeDelta)
 	}
 	int a = 1;
 
+	
+
 	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 }
 
@@ -153,7 +155,7 @@ HRESULT CVillage::Bind_ShaderResources()
 	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-
+	
 
 	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
 		return E_FAIL;
@@ -175,7 +177,11 @@ HRESULT CVillage::Bind_ShaderResources()
 	float fFar = m_pGameInstance.lock()->Get_Far();
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
-	
+	bool IsNight = m_pGameInstance.lock()->Get_IsNight();
+	_float emissivePower = IsNight ? 1.f : 0.f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissivePower, sizeof(_float))))
+		return E_FAIL;
+
 	return S_OK;
 }
 

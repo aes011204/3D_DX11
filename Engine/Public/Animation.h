@@ -28,7 +28,15 @@ public:
         iIndex = 0;
     }
     }
+    _int Get_CurrentFrame() const
+    {
+        return static_cast<_int>(m_fCurrentTrackPosition);
+    }
 
+    _int Get_TotalFrame() const
+    {
+        return static_cast<_int>(m_fDuration);
+    }
 public:
  
     _float m_fDuration = {};

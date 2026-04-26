@@ -38,7 +38,7 @@ private:
     shared_ptr<CModel> m_pModelCom = { nullptr };
     shared_ptr<CTexture> m_pTextureCom = { nullptr };
 
-
+    float  emissivePower = 0.f;
 protected:
   
 

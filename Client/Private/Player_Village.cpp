@@ -190,6 +190,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 		if(IsSleep == true)
 		{
 			CUI_Controller::GetInstance()->InActiveTime();
+			m_pGameInstance.lock()->Play_Once(L"Hold_Complete");
 			return ETOI(eNextState);
 		}
 

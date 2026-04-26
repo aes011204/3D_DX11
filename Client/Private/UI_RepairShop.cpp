@@ -142,11 +142,17 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 
 		ButDesc.vScale = Vector2{ 3.28f, 1.25f };
 		ButDesc.TypeIndex = ETOI(eTab);
-		ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
+		ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
+		{
+				m_pGameInstance.lock()->Play_Once(L"Hover");
+
+		};
 		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc.ClickEvent = [this,i](CUIButton* pThis)
 			{
 				SetActiveTab(i);
+				m_pGameInstance.lock()->Play_Once(L"Click");
+
 			};
 		shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
 		button->Initialize(&ButDesc);

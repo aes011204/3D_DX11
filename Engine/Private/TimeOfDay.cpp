@@ -25,8 +25,8 @@ void CTimeOfDay::Update(_float fDeltaTime)
 	m_fTOD01 = m_Second / m_SecondPerDay;
 
 
-	IsNight = (m_fTOD01 >= m_fSunset01) || (m_fTOD01 < m_fSunrise01); 
-	
+	//IsNight = (m_fTOD01 >= 0.75f) || (m_fTOD01 <= 0.25f);
+	IsNight = (m_fTOD01 >= m_fSunset01) || (m_fTOD01 < m_fSunrise01);
 }
 
 void CTimeOfDay::Set_TimeScale(_float timeScale)

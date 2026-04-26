@@ -106,6 +106,7 @@ int CPlayer_FishShop::Update_State(const _float& timeDelta)
 
 			m_Owner.lock()->Add_Money(money);
 			m_Owner.lock()->GetInventory()->RemoveFrom_Inven(m_ItemIdInst.ItemInst_ID);
+			
 
 		}
 
@@ -116,6 +117,7 @@ int CPlayer_FishShop::Update_State(const _float& timeDelta)
 		
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 
+		
 	}
 
 	return ETOI(eNextState);

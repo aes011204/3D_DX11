@@ -1,7 +1,6 @@
 #include "Body_Player.h"
 #include "Model.h"
-
-
+#include "../../Engine/Public/EventBus.h"
 
 
 CBody_Player::CBody_Player(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -30,6 +29,14 @@ HRESULT CBody_Player::Initialize(void* pArg)
 		return E_FAIL;
 
 	//m_pModelCom->Set_Animation(0,true)
+
+
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_Boat_Light>([this](const Evt_Boat_Light& e)
+	{
+			if (e.Light == true) emissivePower = 1;
+			else  emissivePower = 0;
+	});
+
 
 	return CPartObject::Initialize(pArg);
 }
@@ -101,6 +108,9 @@ HRESULT CBody_Player::Bind_ShaderResources()
 	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
+	float fFar = m_pGameInstance.lock()->Get_Far();
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+		return E_FAIL;
 
 
 	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
@@ -119,6 +129,9 @@ HRESULT CBody_Player::Bind_ShaderResources()
 	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 	//	return E_FAIL;
 
+	
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissivePower, sizeof(_float))))
+		return E_FAIL;
 	return S_OK;
 }
 

@@ -457,7 +457,7 @@ Item_Inst CInventory::RemoveFrom_Inven(int inst_id)
 	return inst;
 }
 
-Item_Inst CInventory::Peek_Itme(_uint MusX, _uint MusY)
+Item_Inst CInventory::Peek_Item(_uint MusX, _uint MusY)
 {
 	if (MusX >= m_w || MusY >= m_h)
 	{

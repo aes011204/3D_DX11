@@ -28,6 +28,7 @@ CLevel_Loading::CLevel_Loading(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11Device
 
 HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 {
+	m_pGameInstance.lock()->Stop_All();
 	m_eNextLevelID = eNextLevelID;
 	
 	// 로딩 화면을 구성해주기 위한 객체들을 생성한다
@@ -42,7 +43,6 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 		return E_FAIL;
 
 
-
 	return S_OK;
 }
 
@@ -52,6 +52,8 @@ HRESULT CLevel_Loading::Post_Initialize()
 	if(lodingUI == nullptr)
 	{
 		m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"Loading", true, nullptr);
+		
+
 	}
 	else
 	{

@@ -155,11 +155,15 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		//ButDesc.vPivot = Vector2{ 0.5f, 0.5f };
 		//ButDesc.vScale = Vector2{ 1.3f, 1.0f };
 		ButDesc.TypeIndex = ETOI(eTab);
-		ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
+		ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
+		{
+				m_pGameInstance.lock()->Play_Once(L"Hover");
+		};
 		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc.ClickEvent = [this](CUIButton* pThis)
 			{
 				SetActiveTab(static_cast<TAB>(pThis->Get_TypeIndex()));
+				m_pGameInstance.lock()->Play_Once(L"Click");
 			};
 		shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
 		button->Initialize(&ButDesc);
@@ -274,6 +278,8 @@ void CUI_TabContainer::OnActive()
 	m_vecAni = Vector2{ GetUITransform()->Get_FinalSize().x, 0.f };
 	m_bStart = true;
 	m_fDuration = 1.5f;
+
+	m_pGameInstance.lock()->Play_Once(L"Pursuits_OpenIndividual");
 
 	CUIPanel::OnActive();
 }

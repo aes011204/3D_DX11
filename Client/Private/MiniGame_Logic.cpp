@@ -142,6 +142,8 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 					if (m_zones[i].start + 0.01f <= angle01 && m_zones[i].end + 0.01f >= angle01)
 					{
 						isSuccess = true;
+						//m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
+
 						break;
 					}
 				}
@@ -152,6 +154,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 				//m_bStart = false;
 
 					m_prograssBar01 += 0.2;
+					m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
 
 					m_LastInputResult = INPUT_RESULT::SUCCESS;
 				}
@@ -160,6 +163,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 					// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
 
 					m_prograssBar01 -= 0.2;
+					m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
 
 					m_LastInputResult = INPUT_RESULT::FAIL;
 
@@ -235,6 +239,8 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 		e.fishInst.mutation_ID = 2;
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
+		m_pGameInstance.lock()->Play_Once(L"Fish_New");
+		m_pGameInstance.lock()->Stop(L"fishing_loop");
 		m_FishCount--;
 
 		ResetZoon();
@@ -285,16 +291,21 @@ void CMiniGame_Logic::OnInput()
 
 	if (m_bFin && m_FishCount > 0)
 	{
+		
+
 		m_bFin = false;
 	}
 	bool isDragging = m_InvenCtrl.lock()->Is_Dragging();
 	if (isDragging)
 	{
+		m_pGameInstance.lock()->Stop(L"fishing_loop");
 		m_bStart = false;
 		return;
 	}
 	if (m_bFin && m_FishCount == 0)
 	{
+		m_pGameInstance.lock()->Play_Once(L"fishing_end");
+
 		m_bStart = false;
 		return;
 	}
@@ -302,6 +313,7 @@ void CMiniGame_Logic::OnInput()
 	// ½ÃÀÛ
 	if (!m_bStart)
 	{
+		m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
 		m_bStart = true;
 		m_AccTime = 0.f;
 		m_prograssBar01 = 0.f;

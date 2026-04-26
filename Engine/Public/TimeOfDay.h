@@ -20,6 +20,7 @@ public:
     _float Get_TOD01() { return m_fTOD01; }
 
     void Set_TOD01(_float tod);
+    _bool Get_IsNight() { return IsNight; };
    
     void OnGui() override;
 private:
@@ -32,8 +33,8 @@ private:
 
 
     _float m_fTOD01 = 0.f; // 0~1
-    _float m_fSunrise01 = 6.f / 24.f;
-    _float m_fSunset01 = 18.f / 24.f;
+    _float m_fSunrise01 = 0.30f; // ¿ø·¡´Â 0.25
+    _float m_fSunset01 = 0.75f;
 
     _bool IsNight = { false };
 

@@ -34,6 +34,7 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 		[this](const Evt_OpenInventory& e)
 		{
 			m_TargetInven = e.inven;
+
 		});
 	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_CloseInventory>(
 		[this](const Evt_CloseInventory&)
@@ -57,10 +58,16 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_MoveTo_Storage>([this](const Evt_MoveTo_Storage e)
 		{
+			if (m_PlayerInven.lock()->Peek_Item(m_SlotX, m_SlotY).ItemType == ITEM_TYPE::FISH)
+				m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
+			else
+				m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
+
 			auto player = dynamic_pointer_cast<CPlayerBoat>(m_PlayerInven.lock()->Get_GOwner());
 			if (player == nullptr)
 				return;
 			m_PlayerInven.lock()->Auto_Move_To(player->Get_StorageCom(), m_SlotX, m_SlotY);
+
 		});
 	//auto tmppointer = dynamic_pointer_cast<CInventory_Controller>(shared_from_this());
 	//if(tmppointer == nullptr)
@@ -83,6 +90,9 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 				CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
+				m_pGameInstance.lock()->Play_Once(L"Repair_Kit");
+
+
 			}
 		});
 
@@ -95,6 +105,8 @@ void CInventory_Controller::Make_Hold(Item_Inst inst)
 		m_UIHoldItem->HoldItem(inst);
 		m_HoldItemFrom = INVENTYPE::NONE;
 		m_bDragging = true;
+
+	///
 	
 }
 shared_ptr<CInventory>  CInventory_Controller::Get_CurrentInven()
@@ -136,7 +148,7 @@ void CInventory_Controller::Update(float TimeDelta)
 				//
 				if(CurInven->Get_Inventype() == INVENTYPE::SHOP)
 				{
-					Item_Inst inst = CurInven->Peek_Itme(m_SlotX, m_SlotY);
+					Item_Inst inst = CurInven->Peek_Item(m_SlotX, m_SlotY);
 					if(inst.ItemInst_ID != 0)
 					{
 						
@@ -185,7 +197,7 @@ void CInventory_Controller::Update(float TimeDelta)
 				CurInven->ThrowAwayFrom_Inven(m_SlotX, m_SlotY);
 			}
 			//auto Inven = m_PlayerInven.lock();
-			Item_Inst inst = CurInven->Peek_Itme(m_SlotX, m_SlotY);
+			Item_Inst inst = CurInven->Peek_Item(m_SlotX, m_SlotY);
 			if(m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY|| inst.ItemInst_ID!= m_prevItemInstId)
 			{
 				Evt_ItemHovered e = {};
@@ -341,6 +353,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			//회전
 			_uint rot = m_UIHoldItem->Get_HoldItem().Rotation;
 			m_UIHoldItem->Set_Rotation(++rot);
+			m_pGameInstance.lock()->Play_Once(L"Rotate");
 		}
 		if (dInput->KeyDown(DIK_Z)/* + 일정 시간 이상 누르고 있을떄 */)
 		{

@@ -322,7 +322,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_R_Act_Etc */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f)) * XMMatrixTranslation(0.f, 10.f, 0.f);
+	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f)) * XMMatrixTranslation(0.f, 5.f, 0.f);
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"),
 		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R_Act/Rffffffff_Act_Fix.dat", MODEL::ANIM, PreLocalTransformMatrix))))
 	{

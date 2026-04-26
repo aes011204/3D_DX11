@@ -28,11 +28,23 @@ void CUI_Item::HoldItem(Item_Inst HoldItemInst)
 		Set_Transparent(false);
 		m_Children[0]->UI_Active();
 		static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(false);
+
+
+		if (HoldItemInst.ItemType == ITEM_TYPE::FISH)
+			m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
+		else
+			m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
 	
 }
 
 void CUI_Item::ReleaseItem()
 {
+
+	if (m_HoldItem.ItemType == ITEM_TYPE::FISH)
+		m_pGameInstance.lock()->Play_Once(L"OrganicItem_Place");
+	else
+		m_pGameInstance.lock()->Play_Once(L"InorganicItem_Place");
+
 	m_bIsHold = false;
 	/*m_HoldItem = HoldItem;*/
 	Item_Inst NoInst = {};
@@ -41,6 +53,7 @@ void CUI_Item::ReleaseItem()
 	Set_Transparent(true);
 	m_Children[0]->UI_InActive();
 	static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(true);
+
 }
 
 HRESULT CUI_Item::OnInit(void* pArg)

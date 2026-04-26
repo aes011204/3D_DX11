@@ -293,6 +293,7 @@
     <ClCompile Include="..\Private\VIBuffer_Particle_Rect.cpp">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\SoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Public\Base.h">
@@ -533,6 +534,7 @@
     <ClInclude Include="..\Public\VIBuffer_Particle_Rect.h">
       <Filter>01.Utility\04.Components\VIIBufer</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\SoundManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Bin\ShaderFiles\Engine_Shader_Defines.hlsli">

@@ -253,12 +253,19 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
 	ButDesc.bUseDark =true;
 
-	ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
+	ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
+	{
+			m_pGameInstance.lock()->Play_Once(L"Hover");
+
+	};
 	ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 	ButDesc.ClickEvent = [this](CUIButton* pThis)
 		{
 			if (m_Logic)
 				m_Logic->OnInput();
+
+			//m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
+			
 		};
 	shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
 	button->Initialize(&ButDesc);
@@ -490,6 +497,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		{
 			// 초록 효과
 			m_prograssBar01 += 0.2;
+			//m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
 
 			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
 			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
@@ -497,6 +505,8 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		}
 		else if (result == INPUT_RESULT::FAIL)
 		{
+			//m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
+
 			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
 			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
 			m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });

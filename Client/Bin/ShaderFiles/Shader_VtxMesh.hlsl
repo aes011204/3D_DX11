@@ -16,7 +16,7 @@ Texture2D g_DiffuseTexture;
 //vector g_vLightDiffuse;
 //vector g_vLightAmbient;
 //vector g_vLightSpecular;
-
+//bool g_EmissivePower;
 float g_Far;
 Texture2D g_EmissiveTexture;
 float g_EmissiveStrength = 1.f;
