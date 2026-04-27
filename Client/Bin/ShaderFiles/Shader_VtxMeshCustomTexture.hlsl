@@ -14,6 +14,8 @@ vector g_GrassColor;
 // 재질 정보
 texture2D g_EmissiveTexture;
 texture2D g_DiffuseTexture;
+
+float g_EmissiveStrength;
 float g_Far;
 //vector g_vMtrlAmbient = vector(0.3f, 0.3f, 0.3f, 1); // 주변광 반응 정도
 //vector g_vMtrlSpecular = vector(1.f, 1.f, 1.f, 1.f); //하이라이트 강도
@@ -121,7 +123,7 @@ PS_OUT PS_MAIN(PS_IN In)
     Out.vNormal = vector(In.vNormal.xyz * 0.5f + 0.5f, 1.f);
     Out.vDepth = vector(In.vProjPos.z / In.vProjPos.w, In.vProjPos.w / g_Far, 0.f, 1.f);
     float3 emissive = g_EmissiveTexture.Sample(DefaultSampler, In.vTexcoord).rgb;
-    Out.vEmissive = float4(emissive , 1.0f);
+    Out.vEmissive = float4(emissive *g_EmissiveStrength, 1.0f);
     return Out;
 }
 

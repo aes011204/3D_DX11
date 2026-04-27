@@ -72,6 +72,7 @@ private:
    weak_ptr<CGameInstance>m_pGameInstance = { };
    INVENTYPE m_HoldItemFrom;
 
+
 public:
     static shared_ptr<CInventory_Controller> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven,shared_ptr<CUI_Item> UIHoldItem);
     virtual void Free() override;

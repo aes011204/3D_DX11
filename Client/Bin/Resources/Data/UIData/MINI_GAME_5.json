@@ -35,7 +35,7 @@
                                 0.5,
                                 0.5
                             ],
-                            "RotationRadian": -28.66691780090332,
+                            "RotationRadian": -8.589334487915039,
                             "SetParentSize": false,
                             "SizeDelta": [
                                 85.33333587646484,
@@ -12028,7 +12028,7 @@
                                             "RotationRadian": 0.0,
                                             "SetParentSize": false,
                                             "SizeDelta": [
-                                                84.0,
+                                                85.0,
                                                 46.33599853515625
                                             ]
                                         }
@@ -12187,7 +12187,7 @@
                                         0.5,
                                         0.5
                                     ],
-                                    "RotationRadian": -0.1371898204088211,
+                                    "RotationRadian": -3.2548859119415283,
                                     "SetParentSize": false,
                                     "SizeDelta": [
                                         376.0,
@@ -22968,22 +22968,22 @@
                                 },
                                 {
                                     "AnchorPoint": [
-                                        0.0,
+                                        0.5,
                                         1.0
                                     ],
                                     "AnchoredPos": [
-                                        -8.899999618530273,
+                                        -101.0,
                                         0.0
                                     ],
                                     "ComProtoLevel": 0,
                                     "ComProtoTag": "",
                                     "ComponentTag": "Com_UITransform",
                                     "LocalScale": [
-                                        1.3478699922561646,
-                                        3.647869825363159
+                                        1.3195405006408691,
+                                        3.6195404529571533
                                     ],
                                     "Pivot": [
-                                        0.0,
+                                        0.5,
                                         0.0
                                     ],
                                     "RotationRadian": 0.0,
@@ -23038,8 +23038,8 @@
                                     "ComProtoTag": "",
                                     "ComponentTag": "Com_UITransform",
                                     "LocalScale": [
-                                        1.3362177610397339,
-                                        3.6362178325653076
+                                        1.307834506034851,
+                                        3.6078343391418457
                                     ],
                                     "Pivot": [
                                         0.5,
@@ -23069,7 +23069,7 @@
                             "UseNineSlice": true,
                             "X": 0.0,
                             "Y": 0.0,
-                            "ZOrder": 4
+                            "ZOrder": 2
                         },
                         {
                             "Children": [],
@@ -23086,22 +23086,22 @@
                                 },
                                 {
                                     "AnchorPoint": [
-                                        1.0,
+                                        0.5,
                                         1.0
                                     ],
                                     "AnchoredPos": [
-                                        7.800000190734863,
+                                        101.0,
                                         0.0
                                     ],
                                     "ComProtoLevel": 0,
                                     "ComProtoTag": "",
                                     "ComponentTag": "Com_UITransform",
                                     "LocalScale": [
-                                        1.305229663848877,
-                                        3.605229616165161
+                                        1.3078348636627197,
+                                        3.607834815979004
                                     ],
                                     "Pivot": [
-                                        1.0,
+                                        0.5,
                                         0.0
                                     ],
                                     "RotationRadian": 0.0,
@@ -23217,8 +23217,8 @@
                                             "ComProtoTag": "",
                                             "ComponentTag": "Com_UITransform",
                                             "LocalScale": [
-                                                4.0039215087890625,
-                                                2.0039217472076416
+                                                4.007842063903809,
+                                                2.0078420639038086
                                             ],
                                             "Pivot": [
                                                 0.5,
@@ -23487,8 +23487,8 @@
                                             "ComProtoTag": "",
                                             "ComponentTag": "Com_UITransform",
                                             "LocalScale": [
-                                                4.010365962982178,
-                                                2.010366201400757
+                                                4.074931621551514,
+                                                2.0749316215515137
                                             ],
                                             "Pivot": [
                                                 0.5,
@@ -23757,8 +23757,8 @@
                                             "ComProtoTag": "",
                                             "ComponentTag": "Com_UITransform",
                                             "LocalScale": [
-                                                4.024582386016846,
-                                                2.024582624435425
+                                                4.015550136566162,
+                                                2.015550136566162
                                             ],
                                             "Pivot": [
                                                 0.5,

@@ -90,7 +90,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 		{
 			_wstring strTag = format(L"모두 수리[${}]", e.cost);
 			m_FixButtonTex->Set_Text(strTag);
-
+			m_repairPrice = e.cost;
 		});
 
 

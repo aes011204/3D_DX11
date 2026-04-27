@@ -7,6 +7,8 @@
 #include "PlayerBoat.h"
 #include "Sea_Manager.h"
 #include "EventBus.h"
+#include "ItemDB.h"
+#include "Inventory.h"
 
 CPlayer_RepairShop::CPlayer_RepairShop(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
 	: CPlayerState(owner, pStateMachine)
@@ -69,7 +71,10 @@ HRESULT CPlayer_RepairShop::Init_State()
 		});
 
 
-
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ItemHovered>([this](const Evt_ItemHovered& e)
+		{
+			m_ItemIdInst = e.itemInst;
+		});
 
 
 	return CPlayerState::Init_State();
@@ -84,7 +89,36 @@ int CPlayer_RepairShop::Update_State(const _float& timeDelta)
 		return  ETOI(E_PLAYERSTATE::VILLAGE);
 	}
 
+	else if (m_Input_Manager->KeyDown(DIK_F) && !m_ItemIdInst.ItemInst_ID == ID_Absence)
+	{
+		if (m_ItemIdInst.ItemType == ITEM_TYPE::EQUIP)
+		{
+			float money = {};
+			if (m_ItemIdInst.IsMutaion == true)
+				money = m_ItemIdInst.MutaionCashing.MutCost;
+			else
+			{
+				auto def = CItemDB::GetInstance()->GetItemByID(m_ItemIdInst.ItemDef_ID).TypeDef;
 
+				money = get<Fish_Def>(def).Cost;
+
+			}
+
+			m_Owner.lock()->Add_Money(money);
+			m_Owner.lock()->GetInventory()->RemoveFrom_Inven(m_ItemIdInst.ItemInst_ID);
+
+
+		}
+
+	}
+	else if (m_Input_Manager->MouseDown(DIMB::WHEEL))
+	{
+		Evt_MoveTo_Storage e = {};
+
+		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
+
+
+	}
 	return ETOI(eNextState);
 }
 

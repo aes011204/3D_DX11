@@ -36,6 +36,8 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
 	virtual void Update(const _float& timeDelta);
+	_uint SelectMutationRandom(const Fish_Def& fishDef);
+	_uint SelectMutationNoRepeat(const Fish_Def& fishDef);
 
 	INPUT_RESULT ConsumeInputResult() {
 		INPUT_RESULT result = m_LastInputResult;
@@ -65,7 +67,6 @@ public:
 	/// diamond
 	virtual float GetSize() const { return 0.f; }
 	///
-
 	///
 protected:
 	INPUT_RESULT m_LastInputResult = INPUT_RESULT::NONE;
@@ -80,6 +81,7 @@ protected:
 	MINIGAME m_MiniGameType = {};
 	weak_ptr<class CInventory_Controller> m_InvenCtrl = {};
 	weak_ptr<CGameInstance> m_pGameInstance = {};
+	_uint m_PrevFishID = { ID_Absence };
 public:
 //	static shared_ptr<CMiniGame> Create(void* pArg);
 	void Free() override;

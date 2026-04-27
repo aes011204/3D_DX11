@@ -57,7 +57,13 @@ public:
 
     virtual void OnGui() override;
 
-    int GetFishCount() const { return m_FishCount; }
+    int GetInitFishCount() const { return m_InitFishCount; }
+    int GetCurFishCount() const {
+        if (m_MiniGame_Logic == nullptr)
+            return -1;
+
+        return m_MiniGame_Logic->GetFishCount();
+    }
     shared_ptr<CMiniGame> GetMiniGameLogic() const {return m_MiniGame_Logic;}
     void SetMiniGameLogic(shared_ptr<class CMiniGame> logic) {m_MiniGame_Logic = logic;}
 
@@ -73,7 +79,7 @@ public:
     HRESULT Bind_ShaderResources();
     _uint Get_fish_DefID() { return fish_DefID; };
 
-
+    //void Set_FishCount(_uint cunt) { m_CurFishCount = cunt; };
 
 protected:
     HRESULT Ready_Components();
@@ -86,9 +92,9 @@ private:
 private:
 
     MINIGAME m_MiniGameType = {};
-   // _uint m_CurFishCount = {};
+   //_uint m_CurFishCount = {};
 
-    _uint m_FishCount = {};
+    _uint m_InitFishCount = {};
     float m_acc = {};
     vector<FishSData> m_Fishs = {};
     _uint fish_DefID = {};

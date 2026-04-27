@@ -35,22 +35,22 @@ void CCamera_Free::Priority_Update(_float fTimeDelta)
 	{
 		CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 
-		if (dinput->KeyPress(DIK_W))
+		if (dinput->KeyPress(DIK_UP))
 		{
 			m_pTransformCom->Go_Forward(fTimeDelta);
 		}
 
-		if (dinput->KeyPress(DIK_S))
+		if (dinput->KeyPress(DIK_DOWN))
 		{
 			m_pTransformCom->Go_Backward(fTimeDelta);
 		}
 
-		if (dinput->KeyPress(DIK_A))
+		if (dinput->KeyPress(DIK_LEFT))
 		{
 			m_pTransformCom->Go_Left(fTimeDelta);
 		}
 
-		if (dinput->KeyPress(DIK_D))
+		if (dinput->KeyPress(DIK_RIGHT))
 		{
 			m_pTransformCom->Go_Right(fTimeDelta);
 		}
@@ -108,10 +108,10 @@ void CCamera_Free::OnGui()
 
 	_float3 euler;
 
-	// Pitch (XÃà È¸Àü)
+	// Pitch (Xì¶• íšŒì „)
 	euler.x = asinf(-mat._32);
 
-	// ¿ÀÂ÷ ¹üÀ§ Ã¼Å© (Gimbal Lock ¹æÁö)
+	// ì˜¤ì°¨ ë²”ìœ„ ì²´í¬ (Gimbal Lock ë°©ì§€)
 	if (cosf(euler.x) > 0.0001f)
 	{
 		euler.y = atan2f(mat._31, mat._33); // Yaw
@@ -123,7 +123,7 @@ void CCamera_Free::OnGui()
 		euler.z = atan2f(-mat._21, mat._11);
 	}
 
-	// ¶óµğ¾ÈÀ» Degree·Î º¯È¯
+	// ë¼ë””ì•ˆì„ Degreeë¡œ ë³€í™˜
 	euler.x = XMConvertToDegrees(euler.x);
 	euler.y = XMConvertToDegrees(euler.y);
 	euler.z = XMConvertToDegrees(euler.z);

@@ -12,6 +12,7 @@
 #include <numbers>
 
 #include "Sky_Controller.h"
+#include "PlayerBoat.h"
 
 
 CSea::CSea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -172,6 +173,38 @@ HRESULT CSea::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &amb, sizeof(_float4))))
 		return E_FAIL;
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &spec, sizeof(_float4))))
+		return E_FAIL;
+
+		_int iPlayerPointLightActive = 0;
+	_float4 vPlayerLightPos = _float4(0.f, 0.f, 0.f, 1.f);
+	_float fPlayerLightRange = 0.f;
+	_float4 vPlayerLightDiffuse = _float4(0.f, 0.f, 0.f, 1.f);
+	_float4 vPlayerLightSpecular = _float4(0.f, 0.f, 0.f, 1.f);
+
+	auto pPlayerObject = m_pGameInstance.lock()->Get_GameObject(m_pGameInstance.lock()->Get_Current_LevelIdx(), L"Layer_Player", 0);
+	auto pPlayerBoat = dynamic_pointer_cast<CPlayerBoat>(pPlayerObject);
+	auto pPlayerLight = pPlayerBoat ? pPlayerBoat->Get_Light().lock() : nullptr;
+	if (pPlayerLight != nullptr && pPlayerLight->Get_Active())
+	{
+		const LIGHT_DESC* pPlayerLightDesc = pPlayerLight->Get_LightDesc();
+		if (pPlayerLightDesc != nullptr && pPlayerLightDesc->eType == LIGHT::POINT)
+		{
+			iPlayerPointLightActive = 1;
+			vPlayerLightPos = pPlayerLightDesc->vPosition;
+			fPlayerLightRange = max(pPlayerLightDesc->fRange, 12.f);
+			vPlayerLightDiffuse = pPlayerLightDesc->vDiffuse;
+			vPlayerLightSpecular = pPlayerLightDesc->vSpecular;
+		}
+	}
+if (FAILED(m_pShaderCom->Bind_RawValue("g_iPlayerPointLightActive", &iPlayerPointLightActive, sizeof(_int))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vPlayerLightPos", &vPlayerLightPos, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_fPlayerLightRange", &fPlayerLightRange, sizeof(_float))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vPlayerLightDiffuse", &vPlayerLightDiffuse, sizeof(_float4))))
+		return E_FAIL;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_vPlayerLightSpecular", &vPlayerLightSpecular, sizeof(_float4))))
 		return E_FAIL;
 
 	///////Wave///////

@@ -38,9 +38,24 @@ public:
 
     void ActiveHover();
     void InActiveHover();
+    void CloseToolTip();
 
 
     void End_StateUI();
+    void CacheToolTip(const Evt_ItemHovered& e);
+private:
+    struct TOOLTIP_RESTORE_DESC
+    {
+        _bool bValid = false;
+        _bool isHold = false;
+        _bool IsPlayer = false;
+        Item_Inst itemInst = {};
+    };
+private:
+    void RestoreToolTip();
+
+
+    TOOLTIP_RESTORE_DESC m_ToolTipRestore = {};
 private:
     shared_ptr<CUI> m_Loading = {nullptr};
     shared_ptr < class CUI_Time > m_pTime = { nullptr };

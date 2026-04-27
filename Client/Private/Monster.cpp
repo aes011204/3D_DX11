@@ -41,6 +41,10 @@ HRESULT CMonster::Initialize(void* pArg)
 	_float3 pos = _float3(142.3f, -0.1f, -3.8f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
 	m_pTransformCom->Set_RotationDegree(_float3(0.f,-68.f,0.f));
+	m_pTransformCom->Update_WorldMatrix();
+
+	m_Hand_Collider_1->Set_CollisionActive(false);
+	m_Hand_Collider_2->Set_CollisionActive(false);
 
 	return S_OK;
 }
@@ -57,6 +61,7 @@ void CMonster::Update(_float fTimeDelta)
 	if(m_pModelCom->Get_IsFinishAnim() == true)
 	{
 		int i = 0;
+
 	}
 
 
@@ -65,7 +70,11 @@ void CMonster::Update(_float fTimeDelta)
 		_int curFrame = m_pModelCom->Get_CurrentFrame();
 
 		if (m_iAttackPrevFrame < 80 && curFrame >= 80)
+		{
 			m_pGameInstance.lock()->Play_Once(L"WreckMonsterAttack1");
+			m_Hand_Collider_1->Set_CollisionActive(true);
+			m_Hand_Collider_2->Set_CollisionActive(true);
+		}
 
 		if (m_iAttackPrevFrame < 126 && curFrame >= 126)
 			m_pGameInstance.lock()->Play_Once(L"WreckMonsterSwipeAttack");
@@ -80,12 +89,15 @@ void CMonster::Update(_float fTimeDelta)
 			m_AnimIndex = 2;
 			m_pModelCom->Set_Animation(m_AnimIndex, false);
 			m_State = STATE::RELEASE;
+			m_Hand_Collider_1->Set_CollisionActive(false);
+			m_Hand_Collider_2->Set_CollisionActive(false);
+			m_pGameInstance.lock()->Play_Once(L"WreckMonsterRetreat");
+
 		}
 	}
-	 if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
+	else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
 	{
-		m_pGameInstance.lock()->Play_Once(L"WreckMonsterRetreat");
-
+		
 
 		m_AnimIndex = 1;
 		m_pModelCom->Set_Animation(m_AnimIndex, true);
@@ -102,6 +114,8 @@ void CMonster::Update(_float fTimeDelta)
 
 void CMonster::Late_Update(_float fTimeDelta)
 {
+
+
 	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
@@ -132,9 +146,14 @@ HRESULT CMonster::Render()
 #ifdef _DEBUG
 	if (m_pGameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_Hand_Collider_1);
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_Hand_Collider_2);
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+	if (m_Hand_Collider_1->Get_CollisionActive())
+		m_pGameInstance.lock()->Add_DebugenderGroup(m_Hand_Collider_1);
+
+	if (m_Hand_Collider_2->Get_CollisionActive())
+		m_pGameInstance.lock()->Add_DebugenderGroup(m_Hand_Collider_2);
+
+	if (m_pColliderCom->Get_CollisionActive())
+		m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
 
 #endif
 
@@ -153,6 +172,8 @@ void CMonster::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> 
 
 	m_pModelCom->Set_Animation(m_AnimIndex, false);
 	m_State = ATTACK;
+
+
 	
 	}
 
@@ -227,7 +248,11 @@ HRESULT CMonster::Bind_ShaderResources()
 
 	float fFar = m_pGameInstance.lock()->Get_Far();
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
-
+		return E_FAIL;
+		
+	float emissive =0.f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
+		return E_FAIL;
 	return S_OK;
 }
 

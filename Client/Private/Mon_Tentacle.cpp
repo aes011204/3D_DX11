@@ -37,8 +37,8 @@ HRESULT CMon_Tentacle::Initialize(void* pArg)
 	_float3 targetPos = {};
 	XMStoreFloat3(&targetPos,m_pPlayer.lock()->Get_TransformCom()->Get_Position());
 
-	float x = m_pGameInstance.lock()->Random(-1, 1);
-	float z = m_pGameInstance.lock()->Random(-1, 1);
+	float x = m_pGameInstance.lock()->Random(-1.5, 1.5);
+	float z = m_pGameInstance.lock()->Random(-1.5, 1.5);
 	_vector finalPos =XMVectorSet(targetPos.x + x, 0.f, targetPos.z + z, 1.f);
 
 	m_pTransformCom->Set_Position(finalPos);
@@ -72,19 +72,28 @@ void CMon_Tentacle::Update(_float fTimeDelta)
 	m_Flag = true;
 	}
 
-
+	_vector dir;
 	m_pModelCom->Play_Animation(fTimeDelta);
 
+	_int curFrame = m_pModelCom->Get_CurrentFrame();
+	
 	_vector TargetPos = m_pPlayer.lock()->Get_TransformCom()->Get_Position();
+	if (curFrame < 140)
+	{
 
-	_vector dir = XMVector3Normalize(TargetPos - m_pTransformCom->Get_Position());
-	dir = XMVectorSetY(dir, 0.f);
-	dir = XMVector3Normalize(dir);
-
+		dir = XMVector3Normalize(TargetPos - m_pTransformCom->Get_Position());
+		dir = XMVectorSetY(dir, 0.f);
+		dir = XMVector3Normalize(dir);
+		m_LastDir = dir;
+	}
+	else
+	{
+		dir = m_LastDir;
+	}
 	_vector Look = m_pTransformCom->Get_State(Engine::STATE::LOOK);
 
 	_vector NewLook  = XMVector3Normalize(XMVectorLerp(Look, dir , fTimeDelta * m_TurnSpeed));
-
+	
 	m_pTransformCom->LookAt(m_pTransformCom->Get_Position() +NewLook);
 
 
@@ -248,6 +257,9 @@ HRESULT CMon_Tentacle::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
 
+	float emissive = 4.f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
+		return E_FAIL;
 	return S_OK;
 }
 

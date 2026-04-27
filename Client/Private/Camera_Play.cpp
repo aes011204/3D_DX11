@@ -204,12 +204,12 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 		if (dx == 0 && dy == 0)
 		{
 			float delta = NormalizeAngle(targetDegree - m_Yaw);
-			m_Yaw += delta * 5.f * fTimeDelta; // 추적 속도 (조절 가능)
+			m_Yaw += delta * 2.f * fTimeDelta; // 추적 속도 (조절 가능)
 		}
 		m_Yaw = NormalizeAngle(m_Yaw);
 
 
-		m_Pitch = clamp(m_Pitch, 1.f, 88.f);
+		m_Pitch = clamp(m_Pitch, 1.f, 80.f);
 		_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
 		m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
 

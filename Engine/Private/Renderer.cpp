@@ -131,7 +131,7 @@ void CRenderer::Draw()
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyPress(DIK_SPACE) == true)
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyPress(DIK_LCONTROL) == true)
 	{
 		Render_Debug();
 	}

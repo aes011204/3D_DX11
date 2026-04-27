@@ -59,7 +59,9 @@ HRESULT CMon_R::Initialize(void* pArg)
 	
 	
 
+	m_pGameInstance.lock()->Play_Loop(L"Leviathan_Rumble_Loop");
 
+	m_pGameInstance.lock()->Play_Loop(L"Leviathan_Distant_Call");
 
 	return S_OK;
 }
@@ -79,6 +81,7 @@ void CMon_R::Update(_float fTimeDelta)
 	
 	if(m_pModelCom_One->Get_IsFinishAnim() == true)
 	{
+		++m_Count;
 		if(m_Count == 1)
 		{
 
@@ -86,7 +89,6 @@ void CMon_R::Update(_float fTimeDelta)
 				ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 				return;
 		}
-		++m_Count;
 
 		
 	m_pModelCom_One->Set_Animation(m_AnimIndex, false);

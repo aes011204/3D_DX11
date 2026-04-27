@@ -52,8 +52,12 @@ void CCollision_Manager::Update()
 			if (ownerSrc == ownerDst)
 				continue;
 
-			if (Dst->Get_CollisionActive() == false) // 충돌체 Active가 꺼져있다면 무시
+			if (Src->Get_CollisionActive() == false)
 				continue;
+			if (Dst->Get_CollisionActive() == false)
+				continue;
+
+
 			if (Can_Collider(Src, Dst) == false)
 				continue;
 

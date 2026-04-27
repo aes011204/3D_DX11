@@ -60,6 +60,9 @@ private:
     _uint m_AnimIndex = {};
     STATE m_State = {};
     _bool m_Flag = false ;
+
+    _vector m_LastDir = {};
+
 private:
 
     shared_ptr<CShader> m_pShaderCom = { nullptr };
@@ -71,7 +74,6 @@ private:
     shared_ptr<CCollider> m_Mid_Collider = { nullptr };
     shared_ptr<CCollider> m_Btm_Collider = { nullptr };
     shared_ptr<CCollider> m_Btm_F_Collider = { nullptr };
-
 
     weak_ptr<CGameObject> m_pPlayer = {  };
 public:

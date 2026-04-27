@@ -18,7 +18,7 @@ public:
 	
 	struct MINIGAEMELOGIC_DESC :public CMiniGame::MINIGAEME_L_DESC
 	{
-		int zoneCount = {};
+		_float2 zoneCount = {};
 		_float2 zoneSize = {};
 	
 
@@ -39,7 +39,7 @@ public:
 	void ResetZoon();
 
 
-	//_uint GetFishCount() const{return m_FishCount;}
+	//_uint GetInitFishCount() const{return m_FishCount;}
 	//float GetProgress01() const { return m_prograssBar01; }
 
 	virtual float GetAngle() const override { return m_Angle; }
@@ -71,7 +71,7 @@ public:
 	float m_zoneSize = {};
 
 	_float2 m_InitZoonSize = {};
-
+	_float2 m_InitZoonCount = {};
 	///
 	bool m_changeColor = { false };
 	float m_AccTime2 = { 0 };

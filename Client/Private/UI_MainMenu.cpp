@@ -79,7 +79,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 				}
 				_float2 tmp = { 3.7f, 2.2f };
 				//it->m_bIsDirtyCom = true;
-				it->m_behavior.push_back((make_shared<CScaleModifier>(0.1f, 2.f, 0.f, tmp)));
+				it->m_behavior.push_back((make_shared<CScaleModifier>(0.075f, 5.f, 0.f, tmp)));
 			}
 			//CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
 			//	make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .1f, false, _float4{ 0.f,0.f,0.f,0.f }));

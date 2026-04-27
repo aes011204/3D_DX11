@@ -41,6 +41,7 @@ public:
 	void Start() { m_isLoop = true; };
 
 	void Set_Pivot(const _float3& pivot) { m_Pivot = pivot; }
+	_bool Is_Finished() { return m_bFinished; };
 protected:
 
 protected:
@@ -56,6 +57,8 @@ protected:
 
 
 	//_bool m_isKeep = {true};
+
+	_bool m_bFinished = {};
 public:
 	static shared_ptr<CVIBuffer_Particle_Point> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const CVIBuffer_Instance::INSTANCE_DESC* pParticleDesc);
 	virtual shared_ptr<CComponent> Clone(void* pArg);

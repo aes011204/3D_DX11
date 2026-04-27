@@ -59,6 +59,7 @@ HRESULT CGameInstance::Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ Co
 	m_pCamera_Manager = CCamera_Manager::Create(EngineDesc.iMaxLevelNum);
 	if (nullptr == m_pCamera_Manager)
 		return E_FAIL;
+    Push_ManagerClass(L"Camera_Manager", m_pCamera_Manager.get());
 
 
 	// ·»´õ·¯ Àü¿¡

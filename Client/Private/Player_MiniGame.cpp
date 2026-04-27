@@ -27,8 +27,8 @@ void CPlayer_MiniGame::Enter()
 
 	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
 	XMStoreFloat3(&pLerp->vTargetPos, m_pOwnerTransformCom.lock()->Get_Position()
-		- XMVector3Normalize(forward) * 3.f   // »ìÂ¦ µÚ·Î
-		+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // À§);
+		- XMVector3Normalize(forward) * 3.f   // ì‚´ì§ ë’¤ë¡œ
+		+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // ìœ„);
 	pLerp->m_Target = m_Owner;
 	pLerp->fDuration = 1.5f;
 	pLerp->OnComplete = [this]() {
@@ -67,7 +67,7 @@ void CPlayer_MiniGame::Exit()
 	if(m_pStateMachine.lock()->Get_TargetShared() != nullptr)
 	{
 		auto fish = dynamic_pointer_cast<CFish>(m_pStateMachine.lock()->Get_TargetShared());
-		if(fish->GetFishCount() == 0)
+		if(fish->GetCurFishCount() == 0)
 		{
 			fish->Mark_Destroy();
 		}

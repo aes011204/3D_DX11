@@ -22,7 +22,7 @@ Texture2D g_DiffuseTexture;
 
 float g_Far;
 Texture2D g_EmissiveTexture;
-float g_EmissiveStrength ;
+float g_EmissiveStrength = 4;
 // º»
 
 matrix g_BoneMatrices[512];

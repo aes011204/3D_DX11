@@ -25,6 +25,7 @@
 #include "VIBuffer_Particle_Rect.h"
 #include "Village.h"
 #include "Box.h"
+#include "ColliderObject.h"
 #include "WaterEff.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -519,6 +520,14 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	/* Prototype_GameObject_Box */
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Box"),
 		CBox::Create(m_pDevice, m_pContext))))
+	{
+		MSG_BOX("Faild to Add_Prototype : R");
+		return E_FAIL;
+	}
+
+	/* Prototype_GameObject_ColliderObject */
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_ColliderObject"),
+		CColliderObject::Create(m_pDevice, m_pContext))))
 	{
 		MSG_BOX("Faild to Add_Prototype : R");
 		return E_FAIL;

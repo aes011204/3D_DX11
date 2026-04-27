@@ -78,8 +78,9 @@ void CCamera_Manager::OnGui()
 			ImGui::SameLine();
 		}
 		// 구역 구분용 공백
-		ImGui::Text("|"); ImGui::SameLine();
+        ImGui::Text("|");
 
+    ImGui::NewLine();
 	}
 }
 

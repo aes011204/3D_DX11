@@ -28,7 +28,7 @@ HRESULT CFish::Initialize(void* pArg)
 	FISH_DESC* fishDesc = static_cast<FISH_DESC*>(pArg);
 
 	fish_DefID = fishDesc->fish_DefID;
-	m_FishCount = fishDesc->FishCount;
+	m_InitFishCount = fishDesc->FishCount;
 	m_MiniGameType = fishDesc->MiniGameType;
 
 	m_Fishs.resize(fishDesc->FishCount);
@@ -75,7 +75,7 @@ void CFish::Priority_Update(_float fTimeDelta)
 void CFish::Update(_float fTimeDelta)
 {
 
-	if (GetFishCount() <= 0)
+	if (GetCurFishCount() == 0 && m_MiniGame_Logic != nullptr)
 		Mark_Destroy();
 
 	 //TODO:: 물고기 갯수 줄어들어야 함
@@ -92,7 +92,7 @@ void CFish::Update(_float fTimeDelta)
 
 	m_acc += fTimeDelta;
 
-	for(int i =0; i < m_FishCount; i++)
+	for(int i =0; i < m_InitFishCount; i++)
 	{
 
 		//크자이공부
@@ -133,6 +133,8 @@ void CFish::Update(_float fTimeDelta)
 
 void CFish::Late_Update(_float fTimeDelta)
 {
+
+
 	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
@@ -147,7 +149,7 @@ HRESULT CFish::Render()
 
 
 
-	for (int i = 0; i < m_FishCount; i++)
+	for (int i = 0; i < m_InitFishCount; i++)
 	{
 
 		//if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))

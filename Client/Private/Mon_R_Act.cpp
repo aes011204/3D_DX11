@@ -57,6 +57,11 @@ HRESULT CMon_R_Act::Initialize(void* pArg)
 
 	m_pCurRot = m_pTransformCom->Get_Quaternion();
 
+	m_pGameInstance.lock()->Play_Loop(L"Leviathan_FinaleAttack");
+	
+
+
+
 	return S_OK;
 }
 
@@ -68,7 +73,7 @@ void CMon_R_Act::Update(_float fTimeDelta)
 {
 	m_pModelCom->Play_Animation(fTimeDelta);
 
-	if(m_pPlayer.lock())
+	if(m_pPlayer.lock()&& m_IsColl==false)
 	{
 	_vector TargetPos = m_pPlayer.lock()->Get_TransformCom()->Get_Position();
 	m_pTransformCom->Set_Position(TargetPos );
@@ -139,8 +144,13 @@ void CMon_R_Act::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 	{
 		if (other->Get_MyLayer()==COLLISION_LAYER::PLAYER)
 		{
-			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage();
+			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage(4);
+
 			m_IsColl = true;
+			m_pGameInstance.lock()->Stop(L"Leviathan_Rumble_Loop",1.5);
+			m_pGameInstance.lock()->Stop(L"Leviathan_Distant_Call",1.5f);
+			m_pGameInstance.lock()->Stop(L"Leviathan_FinaleAttack",1.5f);
+
 		}
 	}
 

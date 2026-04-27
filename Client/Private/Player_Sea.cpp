@@ -21,7 +21,7 @@ CPlayer_Sea::~CPlayer_Sea()
 void CPlayer_Sea::Enter()
 {
 	CPlayerState::Enter();
-	// ¸¸ÀÏ Ä«¸Ş¶ó ±âº» À§Ä¡¿Í ÇöÁ¦ À§Ä¡°¡ ´Ù¸£´Ù¸é ·²ÇÁ
+	// ï§ëš¯ì”ª ç§»ëŒ€ì°“??æ¹²ê³•ë‚¯ ?ê¾©íŠ‚?Â€ ?ê¾©ì £ ?ê¾©íŠ‚åª›Â€ ?ã…»â…¤?ã…»ãˆƒ ?ëŒ„ë´½
 	Evt_ChangeCam event = {};
 	
 	auto pLerp = make_shared<CAM_LERP_DESC>();
@@ -41,20 +41,26 @@ void CPlayer_Sea::Enter()
 	event.commands.push_back(pFow);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
+	CGameInstance::GetInstance()->Set_TimeScale(5.f);
 
+	m_Acceleration = m_Owner.lock()->Get_BoatSpeed() * 0.15f;
+	m_Deceleration = 1.f;
+	m_MaxSpeed = m_Owner.lock()->Get_BoatSpeed() * 0.25f;
+
+	m_pGameInstance.lock()->Play_Loop(L"Waves_Ambience_1");
 }
 
 void CPlayer_Sea::Exit()
 {
 	m_NextState = E_PLAYERSTATE::SEA;
+
+	m_pGameInstance.lock()->Stop(L"Waves_Ambience_1",2.f);
 	CPlayerState::Exit();
 }
 
 HRESULT CPlayer_Sea::Init_State()
 {
-	m_Acceleration = 2.f;
-	m_Deceleration = 1.f;
-	m_MaxSpeed = 5.f;
+
 	m_pSea_Manager = CSea_Manager::GetInstance();
 
 
@@ -65,6 +71,12 @@ HRESULT CPlayer_Sea::Init_State()
 
 int CPlayer_Sea::Update_State(const _float& timeDelta)
 {
+	if (m_Owner.lock() && m_Owner.lock()->IsInputBlocked())
+	{
+		m_CurSpeed = 0.f;
+		Location_Sea(timeDelta);
+		return ETOI(m_NextState);
+	}
 
 	if (Move(timeDelta) == ETOI(E_PLAYERSTATE::VILLAGE))
 		return ETOI(E_PLAYERSTATE::VILLAGE);
@@ -233,7 +245,7 @@ void CPlayer_Sea::Location_Sea(_float fTimeDelta)
 	auto Sea = m_pSea_Manager.lock();
 	_vector CurPos = m_pTransformCom->Get_Position();
 
-	//ÁßÁ¡À¸·Î y À§Ä¡
+	//ä»¥ë¬’ì ?ì‡°ì¤ˆ y ?ê¾©íŠ‚
 	//{
 	_float fFinalPosY = {};
 
@@ -244,7 +256,7 @@ void CPlayer_Sea::Location_Sea(_float fTimeDelta)
 	//}
 
 
-	// 4Á¡ À¸·Î ±â¿ï±â + º¸°£
+	// 4???ì‡°ì¤ˆ æ¹²ê³—ìŠ±æ¹²?+ è¹‚ë‹¿ì»™
 	{
 		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
 		_float3 FRBL[4] = {};
@@ -389,12 +401,12 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
 	bool isInput = false;
 
-	if (dinput->KeyPress(DIK_UP))
+	if (dinput->KeyPress(DIK_W))
 	{
 		m_CurSpeed += m_Acceleration * fTimeDelta;
 		isInput = true;
 	}
-	if (dinput->KeyPress(DIK_DOWN))
+	if (dinput->KeyPress(DIK_S))
 	{
 		m_CurSpeed -= m_Acceleration * fTimeDelta;
 		isInput = true;
@@ -431,12 +443,12 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 	}
 
 
-	if (dinput->KeyPress(DIK_RIGHT))
+	if (dinput->KeyPress(DIK_D))
 	{
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), fTimeDelta);
 	}
 
-	if (dinput->KeyPress(DIK_LEFT))
+	if (dinput->KeyPress(DIK_A))
 	{
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
 	}

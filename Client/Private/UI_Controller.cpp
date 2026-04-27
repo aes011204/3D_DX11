@@ -92,16 +92,20 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 			auto ToolTip = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"ToolTip");
 			auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
 
-			if (e.locationState == LOCATIONSTATE::END)
+			CacheToolTip(e);
+
+			if (e.locationState == LOCATIONSTATE::END || e.itemInst.ItemInst_ID == ID_Absence)
+			{
 				ui->UI_InActive();
+				return;
+			}
+
 			ui->UI_PanelActive(e.isHold, e.itemInst, m_PendingUIState, e.IsPlayer);
+			
+
+
+
 		});
-
-
-
-
-
-
 
 	return S_OK;
 }
@@ -211,6 +215,7 @@ void CUI_Controller::StateUI()
 
 
 		
+
 
 
 	}
@@ -435,15 +440,46 @@ void CUI_Controller::InActiveTime()
 {
 	m_pTime->UI_InActive();
 }
+void CUI_Controller::CacheToolTip(const Evt_ItemHovered& e)
+{
+	if (e.locationState == LOCATIONSTATE::END || e.itemInst.ItemInst_ID == ID_Absence)
+	{
+		m_ToolTipRestore = {};
+		return;
+	}
 
+	m_ToolTipRestore.bValid = true;
+	m_ToolTipRestore.isHold = e.isHold;
+	m_ToolTipRestore.IsPlayer = e.IsPlayer;
+	m_ToolTipRestore.itemInst = e.itemInst;
+}
+
+void CUI_Controller::RestoreToolTip()
+{
+	if (m_ToolTipRestore.bValid == false)
+		return;
+
+	if (m_ToolTipRestore.itemInst.ItemInst_ID == ID_Absence)
+		return;
+
+	auto ToolTip = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"ToolTip");
+	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
+	if (ui == nullptr)
+		return;
+	//ui->UI_Active();
+	ui->UI_PanelActive(
+		m_ToolTipRestore.isHold,
+		m_ToolTipRestore.itemInst,
+		m_PendingUIState,
+		m_ToolTipRestore.IsPlayer
+	);
+}
 void CUI_Controller::ActiveHover()
 {
 	auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
 	m_HoldItem->UI_Active();
-//
-//	auto ToolTip = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"ToolTip");
-//	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
-//	ui->UI_Active();
+
+	RestoreToolTip();
 
 }
 
@@ -456,6 +492,16 @@ void CUI_Controller::InActiveHover()
 	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
 	ui->UI_InActive();
 
+}
+
+void CUI_Controller::CloseToolTip()
+{
+	m_ToolTipRestore = {};
+
+	auto ToolTip = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"ToolTip");
+	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
+	if (ui)
+		ui->UI_InActive();
 }
 
 //void CUI_Controller::Set_InvenCtrl(shared_ptr<CInventory_Controller> invenCtrl)

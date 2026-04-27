@@ -4,7 +4,7 @@
       "ItemID": 2001,
       "ItemType": "EQUIP",
       "ItemName": "기이한 엔진",
-      "ItemDesc": "누군가가 이 엔진을 낯선\n방식으로 개조했다.어떻게\n손봤는지는 모르겠지만\n일반적인 엔진보다 동력이\n세진 것 같다.",
+      "ItemDesc": "누군가가 이 엔진을 낯선\n방식으로 개조했다.\n일반적인 엔진보다 동력이\n세진 것 같다.",
       "TexturePath": "../Bin/Resources/Textures/Item/Equip/engine1.png",
       "ItemShape": {
         "Width": 1,
@@ -16,13 +16,13 @@
       },
       "SizeNum": 2,
 
-      "Cost": 0,
+      "Cost": 100,
       "InstallTime": 2,
       "EquipType": "ENGINE",
 
       "EquipType_Effect": {
         "Research_Lv": 2,
-        "Speed_Kn": 14
+        "Speed_Kn": 15
       }
 
 
@@ -50,7 +50,7 @@
 
       "EquipType_Effect": {
         "Research_Lv": 2,
-        "Speed_Kn": 25
+        "Speed_Kn": 20
       }
 
 
@@ -78,7 +78,7 @@
 
       "EquipType_Effect": {
         "Research_Lv": 3,
-        "Speed_Kn": 35
+        "Speed_Kn": 25
       }
 
 
@@ -197,7 +197,7 @@
       "EquipType_Effect": {
         "Research_Lv": 0,
         "SeaType_Mask": [ "COASTAL" ],
-        "Speed_Per": 35
+        "Speed_Per": 40
       }
 
     },
@@ -222,7 +222,7 @@
       "EquipType_Effect": {
         "Research_Lv": 1,
         "SeaType_Mask": [ "COASTAL" ],
-        "Speed_Per": 35
+        "Speed_Per": 40
       }
 
     },

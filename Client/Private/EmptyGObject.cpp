@@ -199,6 +199,12 @@ HRESULT CEmptyGObject::Bind_ShaderResources()
 		if (FAILED(m_pShaderCom->Bind_RawValue("g_GrassColor", &m_GrassColor, sizeof(_float4))))
 			return E_FAIL;
 	}
+
+	float emissive =1.f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
+		return E_FAIL;
+		
+	
 	return S_OK;
 }
 

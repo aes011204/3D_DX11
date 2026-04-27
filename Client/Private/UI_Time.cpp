@@ -59,6 +59,9 @@ void CUI_Time::UIPannelActive(_uint time ,_bool IsSleep)
 
 HRESULT CUI_Time::OnInit(void* pArg)
 {
+
+
+
 	UITIME_DESC* pDesc = static_cast<UITIME_DESC*>(pArg);
 
 
@@ -122,7 +125,7 @@ HRESULT CUI_Time::OnInit(void* pArg)
 
 	m_TargetAngle = -180;
 	//
-
+	Set_Interactive(false);
 	return S_OK;
 }
 

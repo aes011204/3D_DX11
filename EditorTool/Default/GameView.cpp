@@ -110,7 +110,7 @@ void CGameView::Render()
 
 	ImGui::Begin("Game View");
 
-	Render_CameraToolbar();
+	//Render_CameraToolbar();
 
 	{// 마우스 위치 
 		ImVec2 vPanelSize = ImGui::GetContentRegionAvail();
@@ -157,8 +157,8 @@ void CGameView::Render()
 					float fCalibratedY = (fLocalY / m_vRenderSize.y) * (float)m_Height;
 
 					//  화면에 출력
-					ImGui::SetCursorScreenPos(ImVec2(m_vContentPos.x + 10.f, m_vContentPos.y + 10.f));
-					ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "X: %.1f, Y: %.1f", fCalibratedX, fCalibratedY);
+                    //ImGui::SetCursorScreenPos(ImVec2(m_vContentPos.x + 10.f, m_vContentPos.y + 10.f));
+                    //ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "X: %.1f, Y: %.1f", fCalibratedX, fCalibratedY);
 				}
 
 			}
@@ -212,14 +212,14 @@ unique_ptr<CGameView>  CGameView::Create(const ENGINE_DESC& EngineDesc,
 
 void CGameView::Render_CameraToolbar()
 {
-	ImGui::BeginGroup(); // 관련 요소들 묶기
-
-	ImGui::TextColored(ImVec4(1.f, 1.f, 0.f, 1.f), " [CAM] ");
-	ImGui::SameLine();
-	CGameInstance::GetInstance()->CAM_Manger_OnGui();
-
-ImGui::EndGroup();
-ImGui::NewLine(); // 툴바 끝났으니 다음 줄로
+//	ImGui::BeginGroup(); // 관련 요소들 묶기
+//
+//	ImGui::TextColored(ImVec4(1.f, 1.f, 0.f, 1.f), " [CAM] ");
+//	ImGui::SameLine();
+//	CGameInstance::GetInstance()->CAM_Manger_OnGui();
+//
+//ImGui::EndGroup();
+//ImGui::NewLine(); // 툴바 끝났으니 다음 줄로
 }
 
 void CGameView::Free()

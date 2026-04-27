@@ -14,6 +14,7 @@ NS_BEGIN(Client)
 {
 public:
     enum STATE{ATTACK, IDLE, P_NEAR,REVEAL, RUNAWAY, END};
+    enum class DIST_STATE { ATTACK_RANGE, E_NEAR, E_FAR, END };
 
 private:
     CMon_MonkFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -28,6 +29,8 @@ public:
     virtual void Update(_float fTimeDelta) override;
     void ChangeState(STATE newState);
     void EnterState(STATE newState);
+    DIST_STATE GetDistanceState(_float dist) const;
+    void UpdateBlendByDistanceState(DIST_STATE distState, _float fTimeDelta);
     virtual void Late_Update(_float fTimeDelta) override;
     virtual HRESULT Render() override;
 
@@ -56,7 +59,7 @@ protected:
     }
 
 private:
-
+    _int m_iAttackPrevFrame = {};
     _uint m_AnimIndex = {};
     STATE m_State = {};
     STATE m_PrevState = {};
@@ -65,6 +68,9 @@ private:
     _float m_Alpha_Anim = {};
     _float m_AlphaSpeed = {};
     _float3 m_Dir = {};
+
+
+    _bool IsColl = {false};
 private:
 
     shared_ptr<CShader> m_pShaderCom = { nullptr };

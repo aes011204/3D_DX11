@@ -145,6 +145,7 @@
     <ClInclude Include="..\Public\Box.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\Public\ColliderObject.h" />
     <ClInclude Include="..\Public\Explosion.h" />
     <ClInclude Include="..\Public\Fish.h" />
     <ClInclude Include="..\Public\MiniGame.h" />
@@ -227,6 +228,7 @@
     <ClCompile Include="..\Private\Box.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\Private\ColliderObject.cpp" />
     <ClCompile Include="..\Private\Explosion.cpp" />
     <ClCompile Include="..\Private\Fish.cpp" />
     <ClCompile Include="..\Private\MiniGame.cpp" />

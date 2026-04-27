@@ -43,7 +43,7 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	// 0,0 ¿¡¼­ ½ÃÀÛÇÏ¸é ÅÍ·¹ÀÎ ¿¹¿ÜÃ³¸® ¾ÈÇØ¼­ ÅÍÁü¿©
+	// 0,0 ?ë¨¯ê½Œ ?ì’–ì˜‰?ì„Žãˆƒ ?ê³•ì …???ë‰ì‡…ï§£ì„Žâ” ?ëŠë¹???ê³—ì­š??
 	_float3 tmp = { 5.f, 5.f, 5.f };
 	m_pTransformCom->Set_Position(XMLoadFloat3(&tmp));
 
@@ -106,8 +106,11 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	if (m_fInvincibleTime > 0.f)
 		m_fInvincibleTime -= fTimeDelta;
 
+	if (m_fInputBlockTime > 0.f)
+		m_fInputBlockTime -= fTimeDelta;
+
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
-	//Å×½ºÆ®
+	//?ëš¯ë’ª??
 	if (dinput->KeyPress(DIK_0))
 	{
 		Add_Money(m_Money++);
@@ -150,7 +153,7 @@ HRESULT CPlayerBoat::Render()
 #ifdef _DEBUG
 	if (m_pGameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_pColliderCom->Render();
+
 	
 #endif
 
@@ -179,59 +182,11 @@ void CPlayerBoat::OnGui()
 {
 }
 
-//void CPlayerBoat::RebindCom()
-//{
-//	// ÀÌÁ¦ ¸ðµç ÄÄÆ÷³ÍÆ®´Â ³ÎÃ¼Å© ÀßÇÏ±â ¾ø´Â°æ¿ìµµ ÀÖÀ»¼ö ÀÖÀ¸´Ï±î
-//	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-//	m_pModelCom = Get_Component<CModel>(L"Com_Model");
-//	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
-//	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
-//}
-//
-//HRESULT CPlayerBoat::Bind_ShaderResources()
-//{
-//	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
-//		return E_FAIL;
-//
-//	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
-//		return E_FAIL;
-//
-//	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
-//		return E_FAIL;
-//
-//
-//
-//	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
-//		return E_FAIL;
-//
-//	const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
-//	if (nullptr == pLightDesc)
-//		return E_FAIL;
-//
-//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &pLightDesc->vDirection, sizeof(_float4))))
-//		return E_FAIL;
-//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &pLightDesc->vDiffuse, sizeof(_float4))))
-//		return E_FAIL;
-//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &pLightDesc->vAmbient, sizeof(_float4))))
-//		return E_FAIL;
-//	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
-//		return E_FAIL;
-//
-//	return S_OK;
-//}
 
 HRESULT CPlayerBoat::Ready_Components()
 {
 
-
-	//// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
-	//if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
-	//	return E_FAIL;
-	//// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
-	//if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
-	//	return E_FAIL;
-	////if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
-	////	return E_FAIL;
+	
 
 	CInventory::INVEN_DESC inven_desc = {};
 	inven_desc.invenType = INVENTYPE::PLAYER;
@@ -338,7 +293,7 @@ int i = {};
 
 }
 
-void CPlayerBoat::Get_Demage()
+void CPlayerBoat::Get_Demage(_uint Demage)
 {
 	if (m_fInvincibleTime > 0.f)
 		return;
@@ -347,31 +302,31 @@ void CPlayerBoat::Get_Demage()
 	m_fInvincibleTime = 2.f;
 	
 
+	m_Hp -= Demage;
 
-	// Ã¤·Â ÇÏ³ª ÁÙ°í
+	// ï§¢ê¾¨ì ° ?ì„Žêµ¹ ä»¥ê¾§í€¬
 	if(m_Hp <= 0)
 	{
-	//¸¸ÀÏ Ã¤·ÂÀÌ 0 ÀÌ¸é Á×À½ »óÅÂ
+	//ï§ëš¯ì”ª ï§¢ê¾¨ì °??0 ?ëŒ€ãˆƒ äºŒìŽŒì“¬ ?ê³¹ê¹­
 		Dead();
-		return;
+		m_WasDead = true;
 	}
-	m_Hp--;
 
-	// ¿ÜÇü º¯°æ
-	int ran = m_pGameInstance.lock()->RandomInt(1, 5);
-	wstring name = L"impact_" + std::to_wstring(ran);
+
+	int ran = m_pGameInstance.lock()->RandomInt( 3, 5);
+	wstring name = L"impact_" + to_wstring(ran);
 	m_pGameInstance.lock()->Play_Once(name);
 
 
 
-	// Ä«¸Þ¶ó ½¦ÀÌÅ© -> µ¥¹ÌÁö ÁØÂÊ¿¡¼­
+	// ç§»ëŒ€ì°“???ë¨¯ì” ??-> ?ê³•?ï§žÂ€ ä»¥Â€ï§ŸìŽŒë¿‰??
 	Evt_Demage e = {};
 	e.ShakePower = 0.3f;
 	e.ShakeTime = 1.f;
 	//e.DeAc = 0.1f;
 	e.DemageCount = m_MAXHp - m_Hp;
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
-	// ÀÎ¹ê ÇÑ Ä­ ·»µ© »èÁ¦
+	// ?ëªƒê° ??ç§»??ëš®? ??ì £
 
 
 	Evt_RepairCoat e1 = {};
@@ -384,32 +339,32 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 {
 	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
 
-	if (dinput->KeyPress(DIK_UP))
+	if (dinput->KeyPress(DIK_W))
 	{
 		m_pTransformCom->Go_Forward(fTimeDelta);
 	}
 
-	if (dinput->KeyPress(DIK_DOWN))
+	if (dinput->KeyPress(DIK_S))
 	{
 		m_pTransformCom->Go_Backward(fTimeDelta);
 	}
 
-	if (dinput->KeyPress(DIK_RIGHT))
+	if (dinput->KeyPress(DIK_D))
 	{
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), fTimeDelta);
 	}
 
-	if (dinput->KeyPress(DIK_LEFT))
+	if (dinput->KeyPress(DIK_A))
 	{
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
 	}
 	auto Sea = m_pSea_Manager.lock();
 
-	// ÀÓ½ÃÄÚµå ///////////////// 3Á¡ -> 4Á¡À¸·Î ¼öÁ¤¿¹Á¤ + ÄÚµå Á¤¸®
+	// ?ê¾©ë–†è‚„ë¶¾ë±¶ ///////////////// 3??-> 4?ë¨¯ì‘æ¿¡??ì„ì ™?ë‰ì ™ + è‚„ë¶¾ë±¶ ?ëº£â”
 	//
 	_vector CurPos = m_pTransformCom->Get_Position();
 
-	//ÁßÁ¡À¸·Î y À§Ä¡
+	//ä»¥ë¬’ì ?ì‡°ì¤ˆ y ?ê¾©íŠ‚
 	//{
 	_float fFinalPosY = {};
 
@@ -420,7 +375,7 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 	//}
 
 
-	// 4Á¡ À¸·Î ±â¿ï±â + º¸°£
+	// 4???ì‡°ì¤ˆ æ¹²ê³—ìŠ±æ¹²?+ è¹‚ë‹¿ì»™
 	{
 		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
 		_float3 FRBL[4] = {};
@@ -488,7 +443,8 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 void CPlayerBoat::Dead()
 {
 	SetHPFull();
-	_float3 pos = _float3(0.f, 5.f, 10.f);
+	m_fInputBlockTime = 2.f;
+	_float3 pos = _float3(0.f, 5.f, 0.f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
 
 }

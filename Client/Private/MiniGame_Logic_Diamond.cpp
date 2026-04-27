@@ -62,7 +62,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 	if (m_bStart == true)
 	{
-		m_prograssBar01 += m_RodSpeed * 0.01f * timeDelta;
+		m_prograssBar01 += m_RodSpeed * 0.005f * timeDelta;
 
 
 		////////////////////////////////////
@@ -131,7 +131,11 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 			Evt_GetFish  e = {};
 			e.DefID = m_DefID;
 			e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
-			e.fishInst.mutation_ID = 2;
+			auto& item = CItemDB::GetInstance()->GetItemByID(m_DefID);
+			if (auto fish = std::get_if<Fish_Def>(&item.TypeDef))
+			{
+				e.fishInst.mutation_ID = SelectMutationNoRepeat(*fish);
+			}
 			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
 
@@ -150,11 +154,6 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 void CMiniGame_Logic_Diamond::OnInput()
 {
-
-	if (m_bFin && m_FishCount > 0)
-	{
-		m_bFin = false;
-	}
 	bool isDragging = m_InvenCtrl.lock()->Is_Dragging();
 	if (isDragging)
 	{
@@ -169,6 +168,10 @@ void CMiniGame_Logic_Diamond::OnInput()
 		m_pGameInstance.lock()->Play_Once(L"fishing_end");
 
 		return;
+	}
+	if (m_bFin && m_FishCount > 0)
+	{
+		m_bFin = false;
 	}
 
 	//Ω√¿€

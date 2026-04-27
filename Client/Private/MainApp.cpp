@@ -500,6 +500,35 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 		return E_FAIL;
 	}
 
+
+
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/stargazer-ab-1.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/stargazer-ab-1.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/stargazer.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/stargazer.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler-ab-1.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler-ab-1.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler.png"),
+		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+
+
+
 	//
 	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light1.png"),
 		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/light1.png"), 1))))
@@ -1637,7 +1666,7 @@ SOUND_LOAD_MODE::STATIC,
 	sounds.push_back({
 	L"MarrowMonster_IdleLoop",
 	L"../Bin/Resources/Sound/Mon/MarrowMon/MarrowMonster_IdleLoop.wav",
-	SOUND_CATEGORY::SFX,
+	SOUND_CATEGORY::AMBIENT,
 	SOUND_LOAD_MODE::STATIC,
 	1.f
 		});
@@ -1677,13 +1706,31 @@ SOUND_LOAD_MODE::STATIC,
 	SOUND_LOAD_MODE::STATIC,
 	1.f
 		});
-	//sounds.push_back({
-	//L"light_off",
-	//L"../Bin/Resources/Sound/Mon/Lev/light_off.wav",
-	//SOUND_CATEGORY::SFX,
-	//SOUND_LOAD_MODE::STATIC,
-	//1.f
-	//	});
+	sounds.push_back({
+L"Leviathan_Rumble_Loop",
+L"../Bin/Resources/Sound/Mon/Lev/Leviathan_Rumble_Loop.wav",
+SOUND_CATEGORY::SFX,
+SOUND_LOAD_MODE::STATIC,
+1.f
+		});
+
+	sounds.push_back({
+	L"Leviathan_Wake_Loop",
+	L"../Bin/Resources/Sound/Mon/Lev/Leviathan_Wake_Loop.wav",
+	SOUND_CATEGORY::SFX,
+	SOUND_LOAD_MODE::STATIC,
+	1.f
+		});
+
+
+	
+	sounds.push_back({
+	L"Waves_Ambience_1",
+	L"../Bin/Resources/Sound/Sea/Waves_Ambience_1.wav",
+	SOUND_CATEGORY::AMBIENT,
+	SOUND_LOAD_MODE::STATIC,
+	1.f
+		});
 	//sounds.push_back({
 	//L"light_off",
 	//L"../Bin/Resources/Sound/Mon/Lev/light_off.wav",

@@ -45,7 +45,8 @@ HRESULT CBox::Initialize(void* pArg)
 	}
 	_float3 pos = _float3(49.5f, -0.4f, -19.f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
-	m_pTransformCom->Set_RotationDegree(_float3(9.5f,8.9f,0.f));
+	m_pTransformCom->Set_RotationDegree(_float3(9.5f, 8.9f, 0.f));
+	m_pTransformCom->Update_WorldMatrix();
 	
 	return S_OK;
 }
@@ -194,6 +195,9 @@ HRESULT CBox::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
 
+	float emissive = 0.f;
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
+		return E_FAIL;
 	return S_OK;
 }
 

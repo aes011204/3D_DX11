@@ -42,6 +42,12 @@ vector g_vLightDiffuse;
 vector g_vLightAmbient;
 vector g_vLightSpecular;
 
+int g_iPlayerPointLightActive;
+vector g_vPlayerLightPos;
+float g_fPlayerLightRange;
+vector g_vPlayerLightDiffuse;
+vector g_vPlayerLightSpecular;
+
 DepthStencilState Depth_Enable
 {
     DepthEnable = TRUE;
@@ -249,8 +255,30 @@ PS_OUT PS_MAIN(PS_IN In)
     float vSpecular = pow(max(dot(V, Reflect), 0.f), 200.f);
     float3 vSpecularColor = g_vLightSpecular.xyz * g_vMtrlSpecular.xyz * vSpecular;
 
+    float3 pointDiffuse = float3(0.f, 0.f, 0.f);
+    float3 pointSpecular = float3(0.f, 0.f, 0.f);
 
-    float3 finalRGB =  waterColor * light + vSpecularColor.xyz;
+    if (g_iPlayerPointLightActive != 0)
+    {
+        float3 toLight = g_vPlayerLightPos.xyz - In.vWorldPos.xyz;
+        float distToLight = length(toLight);
+
+        if (distToLight < g_fPlayerLightRange)
+        {
+            float3 pointL = normalize(toLight);
+            float attenuation = saturate(1.0f - (distToLight / g_fPlayerLightRange));
+            attenuation *= attenuation;
+
+            float pointNdotL = max(dot(Normal, pointL), 0.f);
+            pointDiffuse = g_vPlayerLightDiffuse.xyz * pointNdotL * attenuation;
+
+            float3 pointReflect = reflect(-pointL, Normal);
+            float pointSpecPow = pow(max(dot(V, pointReflect), 0.f), 96.f);
+            pointSpecular = g_vPlayerLightSpecular.xyz * pointSpecPow * attenuation;
+        }
+    }
+
+    float3 finalRGB = waterColor * light + vSpecularColor.xyz + pointDiffuse * 0.6f + pointSpecular;
     // 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트??
     //Out.vColor = float4(waterColor,1.f);
 

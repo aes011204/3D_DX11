@@ -72,7 +72,7 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 			{
 				CUIText::TEXT_DESC nameDesc = {};
 				nameDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-				nameDesc.strText = L"½ÃÀå";
+				nameDesc.strText = L"?ì’–ì˜£";
 				shared_ptr<CUIText> Name_Text = CUIText::Create(m_pDevice, m_pContext);
 				Name_Text->Initialize(&nameDesc);
 
@@ -83,7 +83,7 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 
 		CUIText::TEXT_DESC dialogueTextDesc = {};
 		dialogueTextDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-		dialogueTextDesc.strText = L"½ÃÀå";
+		dialogueTextDesc.strText = L"?ì’–ì˜£";
 		shared_ptr<CUIText> Dialogue_Text = CUIText::Create(m_pDevice, m_pContext);
 		Dialogue_Text->Initialize(&dialogueTextDesc);
 
@@ -113,7 +113,7 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 		{
 			CUIText::TEXT_DESC upDesc = {};
 			upDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			upDesc.strText = L"½ÃÀå";
+			upDesc.strText = L"?ì’–ì˜£";
 			shared_ptr<CUIText> Dialogue_Text = CUIText::Create(m_pDevice, m_pContext);
 			Dialogue_Text->Initialize(&upDesc);
 
@@ -143,7 +143,7 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 		{
 			CUIText::TEXT_DESC downDesc = {};
 			downDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			downDesc.strText = L"½ÃÀå";
+			downDesc.strText = L"?ì’–ì˜£";
 			shared_ptr<CUIText> Down_Text = CUIText::Create(m_pDevice, m_pContext);
 			Down_Text->Initialize(&downDesc);
 
@@ -177,7 +177,7 @@ void CUI_NPC::UI_NPCActive( const string& dialogueId, list<string>& Fistlist)
 
 		m_NpcImg->UI_Active();
 		m_NpcImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 1.5f, true, _float4{ 0.f,0.f,0.f,0.f }));
-		// ÀÚ½Äµµ ÇØ¾ßÇÔ
+		// ?ë¨¯ë–‡???ëŒë¹ž??
 		//auto& npcImg = m_NpcImg->GetChildren()[0];
 		m_BackImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 2.f, true, _float4{ 0.f,0.f,0.f,0.f }));
 		m_BackImg->m_behavior.push_back(make_shared<CTransformModifier>(_float2{ -30.f,0.f }, _float2{ 0.f,0.f }, 0.f, 1.f));
@@ -185,12 +185,12 @@ void CUI_NPC::UI_NPCActive( const string& dialogueId, list<string>& Fistlist)
 
 
 		dialogueOrSpeech = false;
-		//³ÎÀÌ ¾Æ´Ñ°æ¿ì
+		//?ë¨¯ì”  ?ê¾¨ë•¶å¯ƒìŽŒìŠ¦
 		m_Name_Text->Set_Text(dialogue->speaker);
 	}
 	else
 	{
-		//³ÎÀÎ °æ¿ì
+		//?ë¨¯ì”¤ å¯ƒìŽŒìŠ¦
 		m_NpcImg->UI_InActive();
 		m_BackImg->UI_InActive();
 		dialogueOrSpeech = true;
@@ -200,7 +200,7 @@ void CUI_NPC::UI_NPCActive( const string& dialogueId, list<string>& Fistlist)
 	//{
 	//	m_NpcImg->UI_Active();
 	//	m_NpcImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 1.5f, true, _float4{ 0.f,0.f,0.f,0.f }));
-	//	// ÀÚ½Äµµ ÇØ¾ßÇÔ
+	//	// ?ë¨¯ë–‡???ëŒë¹ž??
 	//	auto& npcImg = m_NpcImg->GetChildren()[0];
 	//	npcImg->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, 2.f, true, _float4{ 0.f,0.f,0.f,0.f }));
 	//	npcImg->m_behavior.push_back(make_shared<CTransformModifier>(_float2{ -30.f,0.f }, _float2{ 0.f,0.f }, 0.f, 1.f));
@@ -257,7 +257,7 @@ void CUI_NPC::UI_DialogueActive(_bool dialogueOrSpeech, _uint curIndex)
 		m_Dialogue->Set_TextureIndex(0);
 		m_Dialogue_Text->UI_Active();
 		m_Dialogue_Text->Set_Text(m_CashingDialogue->lines[curIndex].text);
-		//m_Dialogue->m_behavior.push_back() È¿°ú
+		//m_Dialogue->m_behavior.push_back() ?â‘£ë‚µ
 
 		m_NameBase->UI_InActive();
 	}
@@ -266,7 +266,7 @@ void CUI_NPC::UI_DialogueActive(_bool dialogueOrSpeech, _uint curIndex)
 
 		m_Dialogue->UI_Active();
 		m_Dialogue->Set_TextureIndex(1);
-		//m_Dialogue->m_behavior.push_back() È¿°ú
+		//m_Dialogue->m_behavior.push_back() ?â‘£ë‚µ
 		m_Dialogue_Text->UI_Active();
 		m_Dialogue_Text->Set_Text(m_CashingDialogue->lines[curIndex].text);
 
@@ -277,13 +277,13 @@ void CUI_NPC::UI_DialogueActive(_bool dialogueOrSpeech, _uint curIndex)
 
 	if(m_CashingDialogue->lines[curIndex].hasChoices == true)
 	{
-		// ¹öÆ° 2°³ ¸¸µé±â È°¼ºÈ­
+		// è¸°ê¾ªë“‰ 2åª›?ï§ëš®ë±¾æ¹²??ì’–ê½¦??
 		m_Leftchoice->UI_Active();
 		m_Up_Text->Set_Text(m_CashingDialogue->lines[curIndex].choice.leftText);
 		m_Rightchoice->UI_Active();
 		m_Down_Text->Set_Text(m_CashingDialogue->lines[curIndex].choice.rightText);
 
-		// ´ÙÀ½ ÀÎµ¦½º ¹øÈ£ °¡Á®¿À±â
+		// ?ã…¼ì“¬ ?ëªƒëœ³??è¸°ëŠìƒ‡ åª›Â€?ëª„ì‚¤æ¹²?
 	}
 
 
@@ -308,23 +308,23 @@ void CUI_NPC::OnDisabled()
 
 void CUI_NPC::OnUpdate(const _float& timeDelta)
 {
-	//if (/*´ÙÀÌ¾î·Î±× °¡ ³¡³´À»‹š*/)
+	//if (/*?ã…¼ì” ?ëŒ€ì¤ˆæ´¹?åª›Â€ ?ì•¸ê¶–?ê¾¨ë»¹*/)
 	//{
 
-		if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_RETURN)&& m_CashingDialogue->lines[m_CurIndex].hasChoices == false)
+		if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_SPACE)&& m_CashingDialogue->lines[m_CurIndex].hasChoices == false)
 		{
 			if(m_CashingDialogue->lines[m_CurIndex].NextID >= m_CashingDialogue->lines.size())
 			{
 				m_bFIn = true;
 				if (m_DialogueList.empty())
 				{
-					return; // ÀÌ°Ç ±×³É Å¬¸¯ ¾ÈµÈÃ¤·Î À¯Áö'
+					return; // ?ë‹¿êµ” æ´¹ëªƒê¹· ?ëŒ€â”ƒ ?ëˆë§‚ï§¢ê¾¨ì¤ˆ ?ì¢Ž?'
 				}
 				m_DialogueList.pop_front();
 
 				if(m_DialogueList.empty())
 				{
-					// ÀÌ¹êÆ®
+					// ?ëŒ€ê°??
 					m_pGameInstance.lock()->Get_EventBus()->Publish(Evt_Dialogue_Finish{});
 
 				}
@@ -337,7 +337,7 @@ void CUI_NPC::OnUpdate(const _float& timeDelta)
 				return;
 			}
 
-			//´ÙÀ½ ´ÙÀÌ¾î·Î±×
+			//?ã…¼ì“¬ ?ã…¼ì” ?ëŒ€ì¤ˆæ´¹?
 			UI_DialogueActive(false, m_CashingDialogue->lines[m_CurIndex].NextID);
 			
 		}

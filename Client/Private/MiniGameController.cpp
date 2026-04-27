@@ -49,17 +49,17 @@ void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_pt
 		CMiniGame_Logic::MINIGAEMELOGIC_DESC pLogicDesc = { };
 		pLogicDesc.pInvenCtrl = InvenCtrl.lock();
 
-		pLogicDesc.FishCount = m_pFish.lock()->GetFishCount();
+		pLogicDesc.FishCount = m_pFish.lock()->GetInitFishCount();
 		pLogicDesc.DefID = m_pFish.lock()->Get_fish_DefID();
 		pLogicDesc.RodSpeed = RodSpeeed;
-		pLogicDesc.zoneCount = static_cast<int>(m_pGameInstance.lock()->Random(2.f, 4.f));
-		float baseSegment = 1.f / pLogicDesc.zoneCount;
+		pLogicDesc.zoneCount =_float2(2.f, 4.f);
+		/*float baseSegment = 1.f / pLogicDesc.zoneCount;
 		float minRatio = 0.05f;
 		float maxRatio = 0.3f;
 
 		pLogicDesc.zoneSize = _float2(
 			baseSegment * minRatio,
-			baseSegment * maxRatio);
+			baseSegment * maxRatio);*/
 		pLogicDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
 
 
@@ -74,7 +74,7 @@ void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_pt
 		CMiniGame_Logic_Diamond::MINIGAEMELOGIC_DIAMOND_DESC pLogicDesc = { };
 		pLogicDesc.pInvenCtrl = InvenCtrl.lock();
 
-		pLogicDesc.FishCount = m_pFish.lock()->GetFishCount();
+		pLogicDesc.FishCount = m_pFish.lock()->GetInitFishCount();
 		pLogicDesc.DefID = m_pFish.lock()->Get_fish_DefID();
 		pLogicDesc.RodSpeed = RodSpeeed;
 		pLogicDesc.MiniGameType = MINIGAME::DIAMOND;

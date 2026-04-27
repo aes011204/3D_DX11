@@ -133,9 +133,9 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Box", false, nullptr);
 	//m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 	
-	m_pGameInstance.lock()->UI_Push(UI_LAYER::WINDOW, L"Time", false, nullptr);
+	m_pGameInstance.lock()->UI_Push(UI_LAYER::STACK, L"Time", false, nullptr);
 
-	m_Time = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Time");
+	m_Time = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::STACK, L"Time");
 
 
 	return S_OK;
@@ -195,7 +195,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
 
 
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_O))
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_I))
 	{
 		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
@@ -207,19 +207,33 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_I))
+	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_O))
 	{
 		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
 			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
 
+	//if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_U))
+	//{
+	//	if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
+	//		ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
+	//		return;
+	//}
+
 	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_U))
 	{
-		if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
-			ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
+		if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
+			ETOI(LEVEL::GAMEPLAY), L"Layer_Effect")))
 			return;
+
+
 	}
+
+
+
+
+
 
 	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_M))
 	{
@@ -358,9 +372,9 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
 		return E_FAIL;
 
 
-	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster_Anim"),
-		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
-		return E_FAIL;
+	//if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster_Anim"),
+	//	ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+	//	return E_FAIL;
 
 
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Box"),
@@ -411,7 +425,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	CFish::FISH_DESC fishDesc = {};
 
 	fishDesc.fish_DefID = 1001;
-	fishDesc.FishCount = 5;
+	fishDesc.FishCount = 4;
 	fishDesc.Size = _float2(0.1f, .2f);
 	fishDesc.Height = _float2(-.1f, .1f);
 	fishDesc.Radius = _float2(1.f, 2.f);
@@ -419,7 +433,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc.Speed = _float2(1.f, 2.f);
 	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
 
-	fishDesc.vPosition = _float3(10.f, -1.f, 0.f);
+	fishDesc.vPosition = _float3(30.f, -1.f, 5.f);
 
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
@@ -429,8 +443,8 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	//
 	CFish::FISH_DESC fishDesc2 = {};
 
-	fishDesc2.fish_DefID = 1001;
-	fishDesc2.FishCount = 5;
+	fishDesc2.fish_DefID = 1002;
+	fishDesc2.FishCount = 3;
 	fishDesc2.Size = _float2(0.1f, .2f);
 	fishDesc2.Height = _float2(-.1f, .1f);
 	fishDesc2.Radius = _float2(1.f, 2.f);
@@ -438,13 +452,164 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc2.Speed = _float2(1.f, 2.f);
 	fishDesc2.MiniGameType = MINIGAME::DIAMOND;
 
-
-	fishDesc2.vPosition = _float3(10.f, -1.f, 10.f);
-
-
+	fishDesc2.vPosition = _float3(40.f, -1.f, 5.f);
 
 	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc2)))
+		return E_FAIL;
+
+
+
+
+     fishDesc = {};
+
+	fishDesc.fish_DefID = 1001;
+	fishDesc.FishCount = 2;
+	fishDesc.Size = _float2(0.1f, .2f);
+	fishDesc.Height = _float2(-.1f, .1f);
+	fishDesc.Radius = _float2(1.f, 2.f);
+	fishDesc.AlphaTime = _float2(1.f, 2.f);
+	fishDesc.Speed = _float2(1.f, 2.f);
+	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+
+	fishDesc.vPosition = _float3(33.126f, -1.f, -2.6f);
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
+		return E_FAIL;
+
+
+
+
+	fishDesc = {};
+
+	fishDesc.fish_DefID = 1002;
+	fishDesc.FishCount = 2;
+	fishDesc.Size = _float2(0.1f, .2f);
+	fishDesc.Height = _float2(-.1f, .1f);
+	fishDesc.Radius = _float2(1.f, 2.f);
+	fishDesc.AlphaTime = _float2(1.f, 2.f);
+	fishDesc.Speed = _float2(1.f, 2.f);
+	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+
+	fishDesc.vPosition = _float3(54.6, -1.f, -3.9f);
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
+		return E_FAIL;
+
+
+	fishDesc = {};
+
+	fishDesc.fish_DefID = 1002;
+	fishDesc.FishCount = 2;
+	fishDesc.Size = _float2(0.1f, .2f);
+	fishDesc.Height = _float2(-.1f, .1f);
+	fishDesc.Radius = _float2(1.f, 2.f);
+	fishDesc.AlphaTime = _float2(1.f, 2.f);
+	fishDesc.Speed = _float2(1.f, 2.f);
+	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+
+	fishDesc.vPosition = _float3(54.6, -1.f, -3.9f);
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
+		return E_FAIL;
+
+
+
+	CFish::FISH_DESC fishDesc3 = {};
+
+	fishDesc3.fish_DefID = 1003;
+	fishDesc3.FishCount = 2;
+	fishDesc3.Size = _float2(0.3f, .4f);
+	fishDesc3.Height = _float2(-.1f, .1f);
+	fishDesc3.Radius = _float2(1.5f, 2.f);
+	fishDesc3.AlphaTime = _float2(1.f, 2.f);
+	fishDesc3.Speed = _float2(1.f, 2.f);
+	fishDesc3.MiniGameType = MINIGAME::BASIC_CIRCLE;
+
+	fishDesc3.vPosition = _float3(57.9f, -1.f, 9.5f);
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc3)))
+		return E_FAIL;
+
+
+	CFish::FISH_DESC fishDesc4 = {};
+
+	fishDesc4.fish_DefID = 1004;
+	fishDesc4.FishCount = 2;
+	fishDesc4.Size = _float2(0.3f, .5f);
+	fishDesc4.Height = _float2(-.1f, .1f);
+	fishDesc4.Radius = _float2(1.5f, 2.f);
+	fishDesc4.AlphaTime = _float2(1.f, 2.f);
+	fishDesc4.Speed = _float2(1.f, 2.f);
+	fishDesc4.MiniGameType = MINIGAME::DIAMOND;
+
+	fishDesc4.vPosition = _float3(79.f, -1.f, -3.f);
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc4)))
+		return E_FAIL;
+
+
+
+
+
+	fishDesc = {};
+
+	fishDesc.fish_DefID = 1003;
+	fishDesc.FishCount = 1;
+	fishDesc.Size = _float2(0.1f, .2f);
+	fishDesc.Height = _float2(-.1f, .1f);
+	fishDesc.Radius = _float2(1.f, 2.f);
+	fishDesc.AlphaTime = _float2(1.f, 2.f);
+	fishDesc.Speed = _float2(1.f, 2.f);
+	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+
+	fishDesc.vPosition = _float3(100.f, -1.f, -17.f);
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
+		return E_FAIL;
+
+
+	fishDesc = {};
+
+	fishDesc.fish_DefID = 1004;
+	fishDesc.FishCount = 1;
+	fishDesc.Size = _float2(0.1f, .2f);
+	fishDesc.Height = _float2(-.1f, .1f);
+	fishDesc.Radius = _float2(1.f, 2.f);
+	fishDesc.AlphaTime = _float2(1.f, 2.f);
+	fishDesc.Speed = _float2(1.f, 2.f);
+	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+
+	fishDesc.vPosition = _float3(121.5f, -1.f, 12.f);
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag, &fishDesc)))
+		return E_FAIL;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_ColliderObject"),
+		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 
 	return S_OK;
@@ -453,11 +618,6 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 
 HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& strLayerTag)
 {
-	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
-		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
-		return E_FAIL;
-
-	
 
 	//if (nullptr == ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
 	//	ETOI(LEVEL::GAMEPLAY), strLayerTag))))

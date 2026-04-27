@@ -210,6 +210,10 @@ void CVIBuffer_Particle_Point::Spawn(_float fTimeDelta)
 		XMConvertToRadians(m_Angle.y),
 		XMConvertToRadians(m_Angle.z)
 	);
+
+	bool hasAliveParticle = false;
+
+
 	for (size_t i = 0; i < m_iNumInstances; i++)
 	{
 
@@ -253,8 +257,16 @@ void CVIBuffer_Particle_Point::Spawn(_float fTimeDelta)
 		XMStoreFloat4(&pVertexInstance[i].vUp, vUp);
 		XMStoreFloat4(&pVertexInstance[i].vLook, vLook);
 
+	if (pVertexInstance[i].vLifeTime.y < pVertexInstance[i].vLifeTime.x)
+	{
+		hasAliveParticle = true;
+	}
 	}
 
+	if (m_isLoop == false && hasAliveParticle == false)
+		m_bFinished = true;
+	else
+		m_bFinished = false;
 	m_pContext->Unmap(m_pVBInstance.Get(), 0);
 }
 

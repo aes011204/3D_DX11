@@ -106,7 +106,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			pDesc.OverlapStartEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 				m_Select[pThis->Get_TypeIndex()]->UI_Active();
 				_float2 tmp = { 4.f, 2.f };
-				m_Select[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 1.f, 0.f, tmp)));
+				m_Select[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
 
 				m_pGameInstance.lock()->Play_Once(L"Hover");
 				};
@@ -222,7 +222,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			
 			_float2 tmp = { 1.3f, 3.6f };
 			
-			m_Select_boat[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 1.f, 0.f, tmp)));
+			m_Select_boat[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
 			m_Select_boat[pThis->Get_TypeIndex()]->Set_Zorder(4);
 			m_pGameInstance.lock()->Play_Once(L"Hover");
 

@@ -43,14 +43,16 @@ public:
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
-    void Get_Demage();
+    void Get_Demage(_uint Demage=1);
     _uint Get_DemageFixPrice() { return (m_MAXHp - m_Hp) * 80.f; };
 
     float Get_RodSpeed() const{return m_RodSpeed;}
     shared_ptr<CInventory> GetInventory() const{return m_pInvenCom;}
 
     virtual void OnGui() override;
-
+    _bool Get_WasDead() {
+        return m_WasDead;
+    };
     //virtual void RebindCom();
     HRESULT Bind_ShaderResources();
 
@@ -63,12 +65,11 @@ public:
     //_float Get_Money() { return m_Money; }
     void Add_Money(_float money);
 
-    int GetMoney() const
-    {
-        return m_Money;
-    }
-
+    int GetMoney() const{return m_Money;}
+    _uint Get_BoatSpeed() const{return m_BoatSpeed;}
+    void Set_BoatSpeed(_uint speed){m_BoatSpeed = speed;}
     void SetHPFull();
+    bool IsInputBlocked() const { return m_fInputBlockTime > 0.f; }
 
     bool MinusMoney(int amount);
     weak_ptr<CLight> Get_Light() const {return m_LightObj;}
@@ -90,17 +91,18 @@ private:
     shared_ptr< CCollider> m_pColliderCom = { nullptr };
 
     float m_fInvincibleTime = {};
-
+    float m_fInputBlockTime = {};
+    _bool m_WasDead = { false };
 private:
     int curBoatLevel = {};
     int m_Hp = {4 };
     int m_MAXHp = {4};
     _float m_Money = {};
-   _uint m_BoatSpeed = {10}; //±âº»Àº 10
+   _uint m_BoatSpeed = {10}; //ê¸°ë³¸ì€ 10
    _float m_RodSpeed = {10.f};
    _uint m_Light = {};
-   SEA_MASK m_SeaMask = {}; // dÀÌ°Å ¿Ö ÀÖÀ½
-   float m_InvenMoney = {}; // dÀÌ°Å ¿Ö ÀÖÀ½
+   SEA_MASK m_SeaMask = {}; // dì´ê±° ì™œ ìˆìŒ
+   float m_InvenMoney = {}; // dì´ê±° ì™œ ìˆìŒ
 
    shared_ptr<CLight> m_LightObj = { nullptr };
   // _bool On_Light = { false };

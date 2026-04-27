@@ -254,6 +254,7 @@
     <ClInclude Include="..\Public\UI_Time.h">
       <Filter>03.UI</Filter>
     </ClInclude>
+    <ClInclude Include="..\Public\ColliderObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Client.ico">
@@ -457,6 +458,7 @@
     <ClCompile Include="..\Private\UI_Time.cpp">
       <Filter>03.UI</Filter>
     </ClCompile>
+    <ClCompile Include="..\Private\ColliderObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Item_Equipment.json">

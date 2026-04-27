@@ -102,7 +102,7 @@ HRESULT CInventory::Initialize(void* pArg)
 
 		Equip_Inst instEquip = {};
 		Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
-		AddItem(inst3, 1, 3);
+		AddItem(inst3, 2, 6);
 
 		Item_Inst inst4 = Create_ItemInstance(2003, instEquip, 1);
 		AddItem(inst4, 5, 3);
@@ -218,9 +218,12 @@ Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, variant<monostate, 
 
 	if (auto pFish = get_if<Fish_Inst>(&TypeDefInst))
 	{
-		if (pFish->mutation_ID != ID_Absence)
+		const Fish_Def& fishDef = get<Fish_Def>(def.TypeDef);
+		const int mutationIndex = static_cast<int>(pFish->mutation_ID) - 1;
+
+		if (mutationIndex >= 0 && mutationIndex < static_cast<int>(fishDef.vec_Mutation.size()))
 		{
-			Mutation mut = get<Fish_Def>(def.TypeDef).vec_Mutation[pFish->mutation_ID];
+			const Mutation& mut = fishDef.vec_Mutation[mutationIndex];
 			newInst.MutaionCashing = mut;
 			newInst.IsMutaion = true;
 			newInst.pCashingTexture = mut.pTexture;
@@ -381,6 +384,45 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
 			//하나라도 락이랑 겹치면 불가 - 빨강
 			color = PLACE_COLOR::RED;
 			return -1;
+		}
+		if (itemInst.ItemType == ITEM_TYPE::EQUIP&&INVENTYPE::PLAYER==m_InvenType)
+		{
+			if (auto equip = get_if<Equip_Def>(&def.TypeDef))
+			{
+				switch (equip->EquipType_Effect.index())
+				{
+				case 0: // Equip_Engine
+					if(the_Slot.slotType!=SLOT_TYPE::ENGINE)
+					{
+						color = PLACE_COLOR::RED;
+						return -1;
+					}
+					break;
+				case 1: // Equip_Light
+					if (the_Slot.slotType != SLOT_TYPE::LIGHT)
+					{
+						color = PLACE_COLOR::RED;
+						return -1;
+					}
+					break;
+				case 2: // Equip_Rod
+					if (the_Slot.slotType != SLOT_TYPE::ROT)
+					{
+						color = PLACE_COLOR::RED;
+						return -1;
+					}
+					break;
+				case 3: // Equip_Net
+					if (the_Slot.slotType != SLOT_TYPE::NET)
+					{
+						color = PLACE_COLOR::RED;
+						return -1;
+					}
+					break;
+				
+				}
+				
+			}
 		}
 
 		if (the_Slot.ItemInst_ID == ID_Absence)
@@ -645,9 +687,9 @@ void CInventory::Get_Damage()
 	int RandIndex = { -1 };
 	RandIndex = static_cast<int>(m_pGameInstance.lock()->Random(0, m_InvenSlot.size()-1));
 	// 전체 순회 -> 만일 이미 고장난 칸이거나 투명칸이면 다시 렌덤
-	while(m_InvenSlot[RandIndex].IsBroken == true || m_InvenSlot[RandIndex].IsLock == true)
+	while(m_InvenSlot[RandIndex].IsBroken == true || m_InvenSlot[RandIndex].IsLock == true|| (m_InvenSlot[RandIndex].slotType != SLOT_TYPE::END && m_InvenSlot[RandIndex].slotType != SLOT_TYPE::ANY))
 	{
-		RandIndex = abs(m_pGameInstance.lock()->Random(0, m_InvenSlot.size()));
+		RandIndex = (m_pGameInstance.lock()->RandomInt(0, m_InvenSlot.size()-1));
 	}
 
 	// 장비가 있을떄 -> 장비 이것도 그냥 버려버려?? 일단은 버려
@@ -716,7 +758,13 @@ void CInventory::ThrowAwayFrom_Inven(_uint BaseX, _uint BaseY)
 	m_Dirty = true;
 
 }
-
+void CInventory::ClearHighlightArea()
+{
+	for (auto& slot : m_InvenSlot)
+	{
+		slot.Slot_Color = PLACE_COLOR::END;
+	}
+}
 void CInventory::Apply_BaseMask(vector<Slot>& vecSlot)
 {
 
@@ -888,6 +936,7 @@ void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY,
 
 
 }
+
 void CInventory::FixAll()
 {
 	for(auto& it : m_InvenSlot)

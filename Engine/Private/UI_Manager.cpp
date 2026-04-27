@@ -83,7 +83,10 @@ void CUI_Manager::Late_Update(float m_fDeltaTime)
 	{
 		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
 	}
-
+	for (auto& pUI : m_UI[ETOI(UI_LAYER::STACK)])
+	{
+		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
+	}
 }
 
 void CUI_Manager::Render()

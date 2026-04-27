@@ -58,7 +58,15 @@ void CWaterEff::Priority_Update(_float fTimeDelta)
 void CWaterEff::Update(_float fTimeDelta)
 {
 	if (!m_pPlayer.lock())
+	{
+		m_pVIBufferCom->Stop();
+		m_pVIBufferCom->Spawn(fTimeDelta);
+		if (m_pVIBufferCom->Is_Finished() == true)
+		{
+			Mark_Destroy();
+		}
 		return;
+	}
 
 	_vector vPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(STATE::POSITION);
 	//m_pTransformCom->Set_Position(vPos);

@@ -41,11 +41,29 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 	MINIGAEMELOGIC_DESC* pDesc = static_cast<MINIGAEMELOGIC_DESC*>(pArg);
 
 
-	m_zoneCount = pDesc->zoneCount;
-	m_InitZoonSize = pDesc->zoneSize;
-	m_zoneSize = m_pGameInstance.lock()->Random(pDesc->zoneSize.x, pDesc->zoneSize.y);
+	m_InitZoonCount = pDesc->zoneCount;
+	m_zoneCount = m_pGameInstance.lock()->RandomInt(pDesc->zoneCount.x, pDesc->zoneCount.y);
+	
+	//m_zoneSize = m_pGameInstance.lock()->Random(pDesc->zoneSize.x, pDesc->zoneSize.y);
                                                                                                                                                                                         
+	float baseSegment = 1.f / m_zoneCount;
+	float minRatio = 0.1f;
+	float maxRatio = 0.3f;
+	float minAbsolute = 0.04f;
 
+	float minSize = baseSegment * minRatio;
+	if (minSize < minAbsolute)
+		minSize = minAbsolute;
+
+	float maxSize = baseSegment * maxRatio;
+	if (maxSize < minSize)
+		maxSize = minSize;
+
+	m_InitZoonSize = _float2(
+		minSize,
+		maxSize);
+
+	m_zoneSize= m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
 
 	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
 	//	[this](const Evt_FishingData& e) {
@@ -70,11 +88,13 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 		float divideStart = i * divide;
 		float divideEnd = divideStart + divide;
 
-		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
+		float size = m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
+		if (size > divide)
+			size = divide;
 
-		// ±¸°£ ¾È¿¡¼­¸¸ »ý¼ºµÇ°Ô Á¦ÇÑ
-		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
-		float end = start + m_zoneSize;
+		// êµ¬ê°„ ì•ˆì—ì„œë§Œ ìƒì„±ë˜ê²Œ ì œí•œ
+		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - size);
+		float end = start + size;
 
 		m_zones[i].start = start;
 		m_zones[i].end = end;
@@ -117,7 +137,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 	
 	if (m_bStart == true)
 	{
-		m_prograssBar01 += m_RodSpeed * 0.01f * timeDelta;
+		m_prograssBar01 += m_RodSpeed * 0.005f * timeDelta;
 
 
 		////////////////////////////////////
@@ -150,7 +170,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 
 				if (isSuccess == true)
 				{
-					// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+					// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 				//m_bStart = false;
 
 					m_prograssBar01 += 0.2;
@@ -160,7 +180,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 				}
 				else
 				{
-					// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+					// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 					m_prograssBar01 -= 0.2;
 					m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
@@ -201,7 +221,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 
 		//	if (isSuccess == true)
 		//	{
-		//		// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+		//		// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 		//	//m_bStart = false;
 
 		//		m_prograssBar01 += 0.2;
@@ -211,7 +231,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 		//	}
 		//	else
 		//	{
-		//		// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+		//		// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 		//		m_prograssBar01 -= 0.2;
 
@@ -227,7 +247,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 
 	if (m_prograssBar01 >= 1.f && !m_bFin)
 	{
-		//ÁøÂ¥ ¼º°ø ¹ÝÈ¯
+		//ì§„ì§œ ì„±ê³µ ë°˜í™˜
 		m_bStart = false;
 
 		m_bFin = true;
@@ -236,13 +256,17 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 		Evt_GetFish  e = {};
 		e.DefID = m_DefID;
 		e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
-		e.fishInst.mutation_ID = 2;
+		auto& item = CItemDB::GetInstance()->GetItemByID(m_DefID);
+		if (auto fish = std::get_if<Fish_Def>(&item.TypeDef))
+		{
+			e.fishInst.mutation_ID = SelectMutationNoRepeat(*fish);
+		}
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
 		m_pGameInstance.lock()->Play_Once(L"Fish_New");
 		m_pGameInstance.lock()->Stop(L"fishing_loop");
 		m_FishCount--;
-
+		
 		ResetZoon();
 
 	}
@@ -265,6 +289,16 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 
 void CMiniGame_Logic::ResetZoon()
 {
+	m_zoneCount = m_pGameInstance.lock()->RandomInt(m_InitZoonCount.x, m_InitZoonCount.y);
+
+	float baseSegment = 1.f / m_zoneCount;
+	float minRatio = 0.05f;
+	float maxRatio = 0.3f;
+
+	m_InitZoonSize = _float2(
+		baseSegment * minRatio,
+		baseSegment * maxRatio);
+
 	m_zoneSize = m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
 
 	float divide = 1.f / m_zoneCount;
@@ -276,7 +310,7 @@ void CMiniGame_Logic::ResetZoon()
 
 		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
 
-		// ±¸°£ ¾È¿¡¼­¸¸ »ý¼ºµÇ°Ô Á¦ÇÑ
+		// êµ¬ê°„ ì•ˆì—ì„œë§Œ ìƒì„±ë˜ê²Œ ì œí•œ
 		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
 		float end = start + m_zoneSize;
 
@@ -287,14 +321,6 @@ void CMiniGame_Logic::ResetZoon()
 
 void CMiniGame_Logic::OnInput()
 {
-	//bool m_chose = false;
-
-	if (m_bFin && m_FishCount > 0)
-	{
-		
-
-		m_bFin = false;
-	}
 	bool isDragging = m_InvenCtrl.lock()->Is_Dragging();
 	if (isDragging)
 	{
@@ -305,12 +331,15 @@ void CMiniGame_Logic::OnInput()
 	if (m_bFin && m_FishCount == 0)
 	{
 		m_pGameInstance.lock()->Play_Once(L"fishing_end");
-
 		m_bStart = false;
 		return;
 	}
+	if (m_bFin && m_FishCount > 0)
+	{
+		m_bFin = false;
+	}
 
-	// ½ÃÀÛ
+	// ì‹œìž‘
 	if (!m_bStart)
 	{
 		m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
