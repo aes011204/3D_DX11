@@ -151,19 +151,19 @@ HRESULT CMon_R::Render()
 		{*/
 			size_t iNumMesh = m_pModelCom_Etc->Get_NumMeshes();
 		
-			for (size_t i = 0; i < iNumMesh; i++)
-			{
-				m_pModelCom_Etc->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
-
-				m_pModelCom_Etc->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-				m_pModelCom_Etc->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-		
-				if (FAILED(m_pShaderCom->Begin(0)))
-					return E_FAIL;
-		
-				if (FAILED(m_pModelCom_Etc->Render(i)))
-					return E_FAIL;
-			}
+			//for (size_t i = 0; i < iNumMesh; i++)
+			//{
+			//	//m_pModelCom_Etc->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+			//	//
+			//	//m_pModelCom_Etc->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			//	//m_pModelCom_Etc->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+			//	//
+			//	//if (FAILED(m_pShaderCom->Begin(0)))
+			//	//	return E_FAIL;
+			//
+			//	//if (FAILED(m_pModelCom_Etc->Render(i)))
+			//	//	return E_FAIL;
+			//}
 		/*}*/
 
 

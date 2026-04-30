@@ -1,4 +1,7 @@
 ﻿#include "Mon_MonkFish.h"
+
+#include "DInput_Manager.h"
+
 #include "GameInstance.h"
 #include "Model.h"
 #include "Collider.h"
@@ -266,6 +269,10 @@ void CMon_MonkFish::EnterState(STATE newState)
 		break;
 	}
 
+	if(m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_L)==true)
+	{
+		Mark_Destroy();
+	}
 
 
 
@@ -359,18 +366,10 @@ void CMon_MonkFish::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CColli
 	_vector dir = XMVector3Normalize(m_pPlayer.lock()->Get_TransformCom()->Get_Position() - m_pTransformCom->Get_Position());
 	
 	_vector targetPos = m_pTransformCom->Get_Position() + vToPlayer * 100.f;
-	IsColl = true;
+	//IsColl = true;
 	XMStoreFloat3(&m_Dir, targetPos);
 
 
-	//if(m_State == ATTACK)
-	//{
-	//	if (self == m_Hand_Collider_2 || self == m_Hand_Collider_1)
-	//	{
-	//		dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage();
-	//	
-	//	}
-	//}
 
 
 

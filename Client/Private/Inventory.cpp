@@ -86,7 +86,7 @@ HRESULT CInventory::Initialize(void* pArg)
 		Fish_Inst instfish = {};
 		Item_Inst inst1 = Create_ItemInstance(1001, instfish, 3);
 
-		inst1.BaseXY = { 2,2 };
+		/*inst1.BaseXY = { 2,2 };
 		AddItem(inst1, 2, 2);
 
 		Item_Inst inst = Create_ItemInstance(1001, instfish, 1);
@@ -97,7 +97,7 @@ HRESULT CInventory::Initialize(void* pArg)
 		Item_Inst inst2 = Create_ItemInstance(1002, instfish, 0);
 
 		inst2.BaseXY = { 2,0 };
-		AddItem(inst2, 2, 0);
+		AddItem(inst2, 2, 0);*/
 
 
 		Equip_Inst instEquip = {};
@@ -163,13 +163,13 @@ HRESULT CInventory::Initialize(void* pArg)
 	case INVENTYPE::STORAGE:
 	{
 		
-		Fish_Inst instfish = {};
+		/*Fish_Inst instfish = {};
 		Item_Inst inst1 = Create_ItemInstance(1001, instfish, 3);
 
 		inst1.BaseXY = { 2,2 };
 		AddItem(inst1, 2, 2);
 
-		Item_Inst inst = Create_ItemInstance(1001, instfish, 1);
+		Item_Inst inst = Create_ItemInstance(1001, instfish, 1);*/
 		break;
 	}
 	case INVENTYPE::CHEST:

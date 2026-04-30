@@ -193,17 +193,17 @@
         {
           "lineIndex": 0,
           "speaker": "시장",
-          "text": "자네, 이 지역을 빠져 나갈려고 했더군, 무시무시한 생물체가 드글드글거리지 자넨 살아돌아왔다니 첨만다행이네",
+          "text": "자네, 이 지역을 빠져 나갈려고 했더군, 무시무시한\n생물체가 드글드글거리지 자넨 살아돌아왔다니 다행이네",
           "hasChoices": false
         },
         {
-          "lineIndex": 0,
+          "lineIndex": 1,
           "speaker": "시장",
           "text": "나갈 생각은 하지 않는게 좋을걸세",
           "hasChoices": false
         },
         {
-          "lineIndex": 1,
+          "lineIndex": 2,
           "speaker": "시장",
           "text": "고기나 잡아오시게나.",
           "hasChoices": false

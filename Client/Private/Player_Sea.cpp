@@ -41,7 +41,7 @@ void CPlayer_Sea::Enter()
 	event.commands.push_back(pFow);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
-	CGameInstance::GetInstance()->Set_TimeScale(5.f);
+	CGameInstance::GetInstance()->Set_TimeScale(2.f);
 
 	m_Acceleration = m_Owner.lock()->Get_BoatSpeed() * 0.15f;
 	m_Deceleration = 1.f;

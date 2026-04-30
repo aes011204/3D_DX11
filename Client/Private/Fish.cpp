@@ -74,15 +74,11 @@ void CFish::Priority_Update(_float fTimeDelta)
 
 void CFish::Update(_float fTimeDelta)
 {
-
-	if (GetCurFishCount() == 0 && m_MiniGame_Logic != nullptr)
-		Mark_Destroy();
-
-	 //TODO:: ¹°°í±â °¹¼ö ÁÙ¾îµé¾î¾ß ÇÔ
+	 //TODO:: ë¬¼ê³ ê¸° ê°¯ìˆ˜ ì¤„ì–´ë“¤ì–´ì•¼ í•¨
 
 
 	if (m_bIsDirtyCom) {
-		RebindCom();      // "¹Ù²ï °Í"¸¸ ÇÑ ¹ø °»½Å
+		RebindCom();      // "ë°”ë€ ê²ƒ"ë§Œ í•œ ë²ˆ ê°±ì‹ 
 		m_bIsDirtyCom = false;
 	}
 
@@ -95,7 +91,7 @@ void CFish::Update(_float fTimeDelta)
 	for(int i =0; i < m_InitFishCount; i++)
 	{
 
-		//Å©ÀÚÀÌ°øºÎ
+		//í¬ìì´ê³µë¶€
 		//m_Fishs[i].FishMatrices;
 
 		_matrix mat = XMMatrixIdentity();
@@ -121,6 +117,9 @@ void CFish::Update(_float fTimeDelta)
 	if(m_MiniGame_Logic !=nullptr)
 	{
 		m_MiniGame_Logic->Update(fTimeDelta);
+
+		if (GetCurFishCount() == 0)
+			Mark_Destroy();
 	}
 
 
@@ -245,8 +244,8 @@ void CFish::Change_Cam(shared_ptr<CGameObject>m_Player)
 	//
 	//_vector forward = m_Player->Get_TransformCom()->Get_State(STATE::LOOK);
 	//XMStoreFloat3(&pLerp->vTargetPos, m_Player->Get_TransformCom()->Get_Position()
-	//	- XMVector3Normalize(forward) * 3.f   // »ìÂ¦ µÚ·Î
-	//	+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // À§);
+	//	- XMVector3Normalize(forward) * 3.f   // ì‚´ì§ ë’¤ë¡œ
+	//	+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // ìœ„);
 	////pLerp->vTargetRot = _float3(1.f, 1.f, 1.f);
 	//pLerp->m_Target = m_Player;
 	//pLerp->fDuration = 1.5f;
@@ -310,13 +309,13 @@ HRESULT CFish::Bind_ShaderResources()
 HRESULT CFish::Ready_Components()
 {
 
-		// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
+		// ì‰ì´ë”ëŠ” í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ì„
 		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 			return E_FAIL;
 
 
 
-		// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
+		// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨ 
 		if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fish"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 			return E_FAIL;
 
