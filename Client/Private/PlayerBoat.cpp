@@ -370,6 +370,7 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 
 	//m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fFinalPosY);
 	_float3 fianlPos = { XMVectorGetX(CurPos), Sea->Get_GlobalY(), XMVectorGetZ(CurPos) };
+	fianlPos.y = Sea->Calculate_GerstnerWavePosition(fianlPos).y;
 	m_pTransformCom->Set_Position(XMLoadFloat3(&fianlPos));
 	//	
 	//}
@@ -379,10 +380,15 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 	{
 		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
 		_float3 FRBL[4] = {};
-		XMStoreFloat3(&FRBL[0], XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * 1.5f);
-		XMStoreFloat3(&FRBL[1], XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT)) * 0.5f);
-		XMStoreFloat3(&FRBL[2], XMVector3Normalize(m_pTransformCom->Get_State(STATE::LOOK)) * -1.5f);
-		XMStoreFloat3(&FRBL[3], XMVector3Normalize(m_pTransformCom->Get_State(STATE::RIGHT)) * -0.5f);
+		_vector flatLook = XMVectorSetY(m_pTransformCom->Get_State(STATE::LOOK), 0.f);
+		flatLook = XMVector3Normalize(flatLook);
+		const _vector worldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+		_vector flatRight = XMVector3Normalize(XMVector3Cross(worldUp, flatLook));
+
+		XMStoreFloat3(&FRBL[0], flatLook * 1.5f);
+		XMStoreFloat3(&FRBL[1], flatRight * 0.5f);
+		XMStoreFloat3(&FRBL[2], flatLook * -1.5f);
+		XMStoreFloat3(&FRBL[3], flatRight * -0.5f);
 
 		_float3 Pos[4];
 		Pos[0] = fianlPos + FRBL[0];
@@ -405,9 +411,7 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 
 		_vector FinalUpDir = XMVector3Normalize(XMVector3Cross(forwordDir, RightDir));
 
-		_vector vOldShipForward = m_pTransformCom->Get_State(STATE::LOOK);
-
-		_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, vOldShipForward));
+		_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, flatLook));
 
 		_vector FinalLookDir = XMVector3Normalize(XMVector3Cross(FinalRightDir, FinalUpDir));
 
