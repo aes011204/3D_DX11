@@ -44,7 +44,7 @@ void CSea_Manager::Update(float TimeDelta)
 	m_AccTime += TimeDelta;
 
 }
-float CSea_Manager::Calculate_GerstnerWave_Overlap(_float3 Pos)
+_float3 CSea_Manager::Calculate_GerstnerWavePosition(_float3 Pos)
 {
   
 
@@ -69,26 +69,30 @@ float CSea_Manager::Calculate_GerstnerWave_Overlap(_float3 Pos)
    
 
 
-	_float offsetY = {};
+	_float3 wavePosition = Pos;
 	for (_uint i = 0; i < m_WaveCount; i++)
 	{
-		_vector waveDir = XMLoadFloat2(&m_waveDesc[i].dir);
-		waveDir = XMVector2Normalize(waveDir);
+		_float2 waveDir = m_waveDesc[i].dir;
+		const float dirLength = sqrtf(waveDir.x * waveDir.x + waveDir.y * waveDir.y);
+		if (dirLength <= 0.f)
+			continue;
+
+		waveDir.x /= dirLength;
+		waveDir.y /= dirLength;
 
 		float RadianWaveLength = (numbers::pi * 2) / m_waveDesc[i].waveLength;
-        _float2 normalizedDir = m_waveDesc[i].dir;
-		_float dotXZ = (normalizedDir.x * Pos.x) + (normalizedDir.y * Pos.z);
+		_float dotXZ = (waveDir.x * Pos.x) + (waveDir.y * Pos.z);
 		float angle = dotXZ * RadianWaveLength - (m_waveDesc[i].speed * m_AccTime);
 		float amplitude = m_waveDesc[i].waveHeight* height01;
 
 
-		offsetY += amplitude * sin(angle);
-		/*offset.x = waveDir.x * (amplitude * cos(angle));
-		offset.z = waveDir.y * (amplitude * cos(angle));*/
+		wavePosition.y += amplitude * sinf(angle);
+		wavePosition.x += waveDir.x * (amplitude * cosf(angle));
+		wavePosition.z += waveDir.y * (amplitude * cosf(angle));
 
 	}
 
-	return offsetY;
+	return wavePosition;
 
 }
 
@@ -153,3 +157,4 @@ void CSea_Manager::Free()
 {
 	CBase::Free();
 }
+

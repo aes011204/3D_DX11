@@ -394,9 +394,7 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 		for (_uint i = 0; i < 4; i++)
 		{
 
-			_float fOut1 = Sea->Calculate_GerstnerWave_Overlap(Pos[i]);
-
-			fianlPosFRBL[i] = { Pos[i].x, fOut1, Pos[i].z };
+			fianlPosFRBL[i] = Sea->Calculate_GerstnerWavePosition(Pos[i]);
 		}
 
 		_vector forwordDir = XMLoadFloat3(&fianlPosFRBL[0]) - XMLoadFloat3(&fianlPosFRBL[2]);

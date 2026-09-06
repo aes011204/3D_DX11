@@ -19,7 +19,7 @@ public:
 public:
     HRESULT Initialize(/*ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext*/);
     void Update(float TimeDelta);
-    float Calculate_GerstnerWave_Overlap(_float3 Pos);
+    _float3 Calculate_GerstnerWavePosition(_float3 Pos);
 
     virtual void OnGui() override;
 
@@ -35,8 +35,8 @@ public:
     }
    _float3 TerrainPos={-750.f,0.f,-750.f};
    _float TerrainSize={1500.f};
-    _float3 deepColor = _float3(0.094f, 0.137f, 0.302f); // 다크 네이비
-    _float3 shallowColor = _float3(0.114f, 0.176f, 0.365f); // 에메랄드
+    _float3 deepColor = _float3(0.094f, 0.137f, 0.302f); // Deep wave color
+    _float3 shallowColor = _float3(0.114f, 0.176f, 0.365f); // Shallow wave color
 
 private:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };
