@@ -24,6 +24,7 @@ public:
     virtual void Priority_Update(_float fTimeDelta);
     virtual void Update(_float fTimeDelta);
     virtual void Late_Update(_float fTimeDelta);
+    virtual void Update_AfterTarget(_float fTimeDelta) {}
     virtual HRESULT Render();
 
     _float4x4* Get_CamTSMatrices(D3DTS eTransformState) { return &m_CamTSMatrices[ETOI(eTransformState)]; };

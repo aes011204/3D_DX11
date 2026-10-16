@@ -21,6 +21,7 @@ public:
 	virtual void Clear();
 
 	ComPtr<ID3D11RenderTargetView>	Get_RTV() { return m_pRTV; }
+	ComPtr<ID3D11Texture2D>		Get_Texture2D() { return m_Texture2D; }
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);

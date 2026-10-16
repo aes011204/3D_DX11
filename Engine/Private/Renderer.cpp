@@ -39,6 +39,8 @@ HRESULT CRenderer::Initialize()
 
 	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Emissive"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Combined"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		return E_FAIL;
 
 	{
 
@@ -62,6 +64,8 @@ HRESULT CRenderer::Initialize()
 		return E_FAIL;
 	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Emissive"))))
 		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_Combined"), TEXT("Target_Combined"))))
+		return E_FAIL;
 
 	{
 		if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_Blur1"), TEXT("Target_Blur1"))))
@@ -84,13 +88,17 @@ HRESULT CRenderer::Initialize()
 
 
 #ifdef _DEBUG
-	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Diffuse"), 150.f, 150.f, 300.f, 300.f)))
+	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Diffuse"), 200.f, 130.f, 400.f, 225.f)))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Normal"), 150.f, 450.f, 300.f, 300.f)))
+	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Normal"), 200.f, 370.f, 400.f, 225.f)))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Shade"), 450.f, 150.f, 300.f, 300.f)))
+	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Shade"), 600.f, 130.f, 400.f, 225.f)))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Emissive"), 450.f, 450.f, 300.f, 300.f)))
+	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Emissive"), 600.f, 370.f, 400.f, 225.f)))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Depth"), 1000.f, 130.f, 400.f, 225.f)))
+		return E_FAIL;
+	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Combined"), 1000.f, 370.f, 400.f, 225.f)))
 		return E_FAIL;
 #endif
 
@@ -131,6 +139,18 @@ void CRenderer::Draw()
 
 
 #ifdef _DEBUG
+	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F1))
+		m_showColliders = !m_showColliders;
+
+	if (m_showColliders)
+	{
+		for (auto& pDebugComponent : m_DebugComponents)
+		{
+			pDebugComponent->Render();
+		}
+	}
+	m_DebugComponents.clear();
+
 	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyPress(DIK_LCONTROL) == true)
 	{
 		Render_Debug();
@@ -261,6 +281,15 @@ void CRenderer::Render_Lights()
 
 void CRenderer::Render_Combined()
 {
+	// Preserve the sky already drawn to the back buffer. Background pixels are
+	// discarded by the combined shader, so they must already exist in this RT.
+	ID3D11ShaderResourceView* nullSRV[16] = {};
+	m_pContext->PSSetShaderResources(0, 16, nullSRV);
+
+	if (FAILED(m_pGameInstance.lock()->Copy_BackBufferToRenderTarget(TEXT("Target_Combined"))))
+		return;
+	if (FAILED(m_pGameInstance.lock()->Begin_MRT(TEXT("MRT_Combined"), false, false)))
+		return;
 
 
 	//ID3D11ShaderResourceView* nullSRV[16] = {};
@@ -311,6 +340,11 @@ void CRenderer::Render_Combined()
 
 	m_pVIBuffer->Bind_Resources();
 	m_pVIBuffer->Render();
+
+	m_pGameInstance.lock()->End_MRT();
+
+	if (FAILED(m_pGameInstance.lock()->Copy_RenderTargetToBackBuffer(TEXT("Target_Combined"))))
+		return;
 
 }
 void CRenderer::Render_NonLight()
@@ -440,13 +474,6 @@ void CRenderer::RenderBloom()
 void CRenderer::Render_Debug()
 {
 
-	for (auto& pDebugComponent : m_DebugComponents)
-	{
-		pDebugComponent->Render();
-		
-	}
-
-	m_DebugComponents.clear();
 
 
 	if (FAILED(m_pShader->Bind_Matrix("g_ViewMatrix", &m_ViewMatrix)))
@@ -459,6 +486,8 @@ void CRenderer::Render_Debug()
 		return;
 
 	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_LightAcc"))))
+		return;
+	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Combined"))))
 		return;
 //	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Blur2"))))
 //		return;

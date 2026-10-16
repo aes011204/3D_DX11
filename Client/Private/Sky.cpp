@@ -37,12 +37,13 @@ void CSky::Update(_float fTimeDelta)
 
 	m_Acc += fTimeDelta;
 
-	m_pTransformCom->Set_Position(
-		XMLoadFloat4(m_pGameInstance.lock()->Get_CamPositon()));
+	// Center the sky after the final camera update.
 }
 
 void CSky::Late_Update(_float fTimeDelta)
 {
+	m_pTransformCom->Set_Position(
+		XMLoadFloat4(m_pGameInstance.lock()->Get_CamPositon()));
 	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::PRIORITY,static_pointer_cast<CEntity>( shared_from_this()));
 }
 

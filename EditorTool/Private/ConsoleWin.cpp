@@ -35,7 +35,9 @@ void CConsoleWin::Render()
             else if (log.eLevel == LOG_LEVEL::ERR)
                 vColor = { 1.f, 0.f, 0.f, 1.f }; // ERR (빨간색)
 
+            ImGui::PushStyleColor(ImGuiCol_Text, vColor);
             ImGui::TextUnformatted(log.strMessage.c_str());
+            ImGui::PopStyleColor();
         }
 
         // 최하단 자동 스크롤

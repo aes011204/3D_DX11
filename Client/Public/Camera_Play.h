@@ -27,6 +27,7 @@ public:
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(void* pArg);
     virtual void Priority_Update(_float fTimeDelta);
+    void Update_AfterTarget(_float fTimeDelta) override;
     void Change_CamMode(CAM_MODE m_ChangeMode, CAM_MODE m_NextMode);
     void SetTarget(weak_ptr<CGameObject> target, _float startPitchAngle, _float startYawAngle, _float startDistance,
                    _float fTimeDelta);
@@ -77,6 +78,7 @@ private:
     _float m_Yaw = {};
     _float m_Pitch = {};
     _float m_fDistance = {};
+    _float m_followTargetY = 0.f;
     _float m_time = {};
     //
     //_vector m_vTargetPos={};

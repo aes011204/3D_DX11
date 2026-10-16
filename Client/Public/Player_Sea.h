@@ -55,6 +55,11 @@ private:
     float m_MaxSpeed = {};
     float m_Acceleration = {};
     float m_Deceleration = {}; // 아무것도 안할떄 줄어드는 양
+
+    float m_CurTurnSpeed = {};
+    float m_MaxTurnSpeed = {};
+    float m_TurnAcceleration = {};
+    float m_TurnDeceleration = {};
    ///
     bool m_bIsDocking = false;
     bool m_bFinDock = false;

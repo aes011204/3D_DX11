@@ -14,6 +14,7 @@ public:
 
     HRESULT Initialize(_uint iNumLevels);
     void Apply_To_PipeLine();
+    void Update_AfterTarget(_float fTimeDelta);
     float Get_Far();
 public:
 

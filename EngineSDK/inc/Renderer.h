@@ -21,6 +21,8 @@ public:
     void Draw();
 #ifdef _DEBUG
     void Add_DebugenderGroup(shared_ptr < class  CComponent > pDebugComponent);
+private:
+    bool m_showColliders = false;
 #endif
 private:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };

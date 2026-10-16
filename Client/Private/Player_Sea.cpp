@@ -21,7 +21,7 @@ CPlayer_Sea::~CPlayer_Sea()
 void CPlayer_Sea::Enter()
 {
 	CPlayerState::Enter();
-	// 留뚯씪 移대찓??湲곕낯 ?꾩튂? ?꾩젣 ?꾩튂媛 ?ㅻⅤ?ㅻ㈃ ?댄봽
+	// 留뚯??移�?�??湲곕???꾩튂?? ?꾩젣 ?꾩튂媛 ??�Ⅴ??�㈃ ??�봽
 	Evt_ChangeCam event = {};
 	
 	auto pLerp = make_shared<CAM_LERP_DESC>();
@@ -46,6 +46,12 @@ void CPlayer_Sea::Enter()
 	m_Acceleration = m_Owner.lock()->Get_BoatSpeed() * 0.15f;
 	m_Deceleration = 1.f;
 	m_MaxSpeed = m_Owner.lock()->Get_BoatSpeed() * 0.25f;
+
+	// Angular acceleration/deceleration for smooth steering.
+	m_CurTurnSpeed = 0.f;
+	m_MaxTurnSpeed = XMConvertToRadians(40.f);
+	m_TurnAcceleration = m_MaxTurnSpeed * 2.5f;
+	m_TurnDeceleration = m_MaxTurnSpeed * 1.5f;
 
 	m_pGameInstance.lock()->Play_Loop(L"Waves_Ambience_1");
 }
@@ -74,6 +80,7 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 	if (m_Owner.lock() && m_Owner.lock()->IsInputBlocked())
 	{
 		m_CurSpeed = 0.f;
+		m_CurTurnSpeed = 0.f;
 		Location_Sea(timeDelta);
 		return ETOI(m_NextState);
 	}
@@ -245,7 +252,7 @@ void CPlayer_Sea::Location_Sea(_float fTimeDelta)
 	auto Sea = m_pSea_Manager.lock();
 	_vector CurPos = m_pTransformCom->Get_Position();
 
-	//以묒젏?쇰줈 y ?꾩튂
+	//以묒???�줈 y ?꾩튂
 	//{
 	_float fFinalPosY = {};
 
@@ -257,7 +264,7 @@ void CPlayer_Sea::Location_Sea(_float fTimeDelta)
 	//}
 
 
-	// 4???쇰줈 湲곗슱湲?+ 蹂닿컙
+	// 4????�줈 湲곗?�湲?+ 蹂닿�?
 	{
 		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
 		_float3 FRBL[4] = {};
@@ -445,14 +452,30 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 	}
 
 
+	float turnInput = 0.f;
 	if (dinput->KeyPress(DIK_D))
+		turnInput += 1.f;
+	if (dinput->KeyPress(DIK_A))
+		turnInput -= 1.f;
+
+	if (turnInput != 0.f)
 	{
-		m_pTransformCom->Turn(XMLoadFloat4(&upDir), fTimeDelta);
+		m_CurTurnSpeed += turnInput * m_TurnAcceleration * fTimeDelta;
+		m_CurTurnSpeed = clamp(m_CurTurnSpeed, -m_MaxTurnSpeed, m_MaxTurnSpeed);
+	}
+	else
+	{
+		const float turnDeceleration = m_TurnDeceleration * fTimeDelta;
+		if (m_CurTurnSpeed > 0.f)
+			m_CurTurnSpeed = max(0.f, m_CurTurnSpeed - turnDeceleration);
+		else if (m_CurTurnSpeed < 0.f)
+			m_CurTurnSpeed = min(0.f, m_CurTurnSpeed + turnDeceleration);
 	}
 
-	if (dinput->KeyPress(DIK_A))
+	if (abs(m_CurTurnSpeed) > 0.0001f)
 	{
-		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
+		m_pTransformCom->Set_RadianSpeed(abs(m_CurTurnSpeed));
+		m_pTransformCom->Turn(XMLoadFloat4(&upDir), m_CurTurnSpeed > 0.f ? fTimeDelta : -fTimeDelta);
 	}
 
 return 	ETOI(E_PLAYERSTATE::SEA);

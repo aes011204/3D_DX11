@@ -166,7 +166,13 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 
 	m_pCollision_Manager->Update();
 
+	m_pCamera_Manager->Update_AfterTarget(fTimeDelta);
+	m_pCamera_Manager->Apply_To_PipeLine();
+	m_pPipeLine->Update();
+	m_pPicking_Manager->Update();
+
 	m_pObject_Manager->Late_Update(fTimeDelta);
+
 	m_UI_Manager->Late_Update(fTimeDelta);
 
 	m_pLevel_Manager->Update(fTimeDelta);
@@ -561,14 +567,24 @@ HRESULT CGameInstance::Add_MRT(const _wstring& strMRTTag, const _wstring& strTar
 	return m_pTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
 }
 
-HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
+HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, bool useDepth, bool clearTargets)
 {
-	return m_pTarget_Manager->Begin_MRT(strMRTTag, useDepth);
+	return m_pTarget_Manager->Begin_MRT(strMRTTag, useDepth, clearTargets);
 }
 
 HRESULT CGameInstance::End_MRT()
 {
 	return m_pTarget_Manager->End_MRT();
+}
+
+HRESULT CGameInstance::Copy_BackBufferToRenderTarget(const _wstring& strTargetTag)
+{
+	return m_pTarget_Manager->Copy_BackBufferToRenderTarget(strTargetTag);
+}
+
+HRESULT CGameInstance::Copy_RenderTargetToBackBuffer(const _wstring& strTargetTag)
+{
+	return m_pTarget_Manager->Copy_RenderTargetToBackBuffer(strTargetTag);
 }
 
 #ifdef _DEBUG

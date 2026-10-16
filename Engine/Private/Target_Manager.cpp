@@ -65,7 +65,7 @@ HRESULT CTarget_Manager::Add_MRT(const _wstring& strMRTTag, const _wstring& strT
 
 }
 
-HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
+HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth, bool clearTargets)
 {
 
 	list <shared_ptr<CRenderTarget>>* pMRTList = Find_MRT(strMRTTag);
@@ -96,7 +96,8 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 
 	for (auto& pRenderTarget : *pMRTList)
 	{
-		pRenderTarget->Clear();
+		if (clearTargets)
+			pRenderTarget->Clear();
 		pRenderTargets[iNumRenderTargets++] = pRenderTarget->Get_RTV().Get();
 	}
 
@@ -116,6 +117,40 @@ HRESULT CTarget_Manager::End_MRT()
 
 	return S_OK;
 
+}
+
+HRESULT CTarget_Manager::Copy_BackBufferToRenderTarget(const _wstring& strTargetTag)
+{
+	auto pRenderTarget = Find_RenderTarget(strTargetTag);
+	if (nullptr == pRenderTarget)
+		return E_FAIL;
+
+	ComPtr<ID3D11RenderTargetView> pBackBufferRTV;
+	m_pContext->OMGetRenderTargets(1, pBackBufferRTV.GetAddressOf(), nullptr);
+	if (nullptr == pBackBufferRTV)
+		return E_FAIL;
+
+	ComPtr<ID3D11Resource> pBackBufferResource;
+	pBackBufferRTV->GetResource(pBackBufferResource.GetAddressOf());
+	m_pContext->CopyResource(pRenderTarget->Get_Texture2D().Get(), pBackBufferResource.Get());
+	return S_OK;
+}
+
+HRESULT CTarget_Manager::Copy_RenderTargetToBackBuffer(const _wstring& strTargetTag)
+{
+	auto pRenderTarget = Find_RenderTarget(strTargetTag);
+	if (nullptr == pRenderTarget)
+		return E_FAIL;
+
+	ComPtr<ID3D11RenderTargetView> pBackBufferRTV;
+	m_pContext->OMGetRenderTargets(1, pBackBufferRTV.GetAddressOf(), nullptr);
+	if (nullptr == pBackBufferRTV)
+		return E_FAIL;
+
+	ComPtr<ID3D11Resource> pBackBufferResource;
+	pBackBufferRTV->GetResource(pBackBufferResource.GetAddressOf());
+	m_pContext->CopyResource(pBackBufferResource.Get(), pRenderTarget->Get_Texture2D().Get());
+	return S_OK;
 }
 #ifdef _DEBUG
 HRESULT CTarget_Manager::Ready_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)

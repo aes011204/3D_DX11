@@ -2,6 +2,7 @@
 #include "DInput_Manager.h"
 #include "Transform.h"
 #include "EventBus.h"
+#include <cmath>
 
 CCamera_Play::CCamera_Play(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CCamera(pDevice, pContext)
@@ -74,6 +75,11 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 
 void CCamera_Play::Priority_Update(_float fTimeDelta)
 {
+    // Follow commands are evaluated after target movement and collision.
+}
+
+void CCamera_Play::Update_AfterTarget(_float fTimeDelta)
+{
 	if (m_CamCommands.empty())
 		return;
 
@@ -89,7 +95,7 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 	{
 	case CAM_MODE::FOLLOW:
 		Update_Follow(fTimeDelta, pCurrentDesc);
-	
+
 		break;
 	case CAM_MODE::STOP:
 	//	__super::Update_TransformMatrices();
@@ -98,7 +104,7 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 		if (false == Update_Lerp(fTimeDelta, pCurrentDesc))
 			m_bFinish = true;
 
-	
+
 		break;
 
 	case CAM_MODE::END:
@@ -107,7 +113,7 @@ void CCamera_Play::Priority_Update(_float fTimeDelta)
 
 
 
-	
+
 	XMStoreFloat3(&m_BasePos, m_pTransformCom->Get_Position());
 
 	Shake_Cam(fTimeDelta);
@@ -158,6 +164,7 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 
 		_vector vTargetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+		m_followTargetY = XMVectorGetY(vTargetPos);
 		_vector vCurrentPos = m_pTransformCom->Get_Position();
 		_vector vDir = vCurrentPos - vTargetPos;
 
@@ -225,6 +232,10 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 
 		_vector targetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+		constexpr float heightResponse = 2.f;
+		const float heightFollow = 1.f - std::exp(-heightResponse * max(fTimeDelta, 0.f));
+		m_followTargetY += (XMVectorGetY(targetPos) - m_followTargetY) * heightFollow;
+		targetPos = XMVectorSetY(targetPos, m_followTargetY);
 		_vector camPos = targetPos + offset;
 
 

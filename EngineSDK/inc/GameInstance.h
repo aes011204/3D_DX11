@@ -147,8 +147,10 @@ public:/*For.Font_Manager*/
 	                               const _wstring& strTargetTag);
 
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
-	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true);
+	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true, bool clearTargets = true);
 	HRESULT End_MRT();
+	HRESULT Copy_BackBufferToRenderTarget(const _wstring& strTargetTag);
+	HRESULT Copy_RenderTargetToBackBuffer(const _wstring& strTargetTag);
 #ifdef _DEBUG
 public:
 	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);

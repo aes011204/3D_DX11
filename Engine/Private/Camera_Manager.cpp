@@ -22,6 +22,14 @@ HRESULT CCamera_Manager::Initialize(_uint iNumLevels)
 
 }
 
+void CCamera_Manager::Update_AfterTarget(_float fTimeDelta)
+{
+	// Retain the camera if a command callback changes the active camera.
+	auto camera = m_CurCam;
+	if (camera)
+		camera->Update_AfterTarget(fTimeDelta);
+}
+
 void CCamera_Manager::Apply_To_PipeLine()
 {
 
