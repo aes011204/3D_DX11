@@ -47,7 +47,6 @@ void CPlayer_Sea::Enter()
 	m_Deceleration = 1.f;
 	m_MaxSpeed = m_Owner.lock()->Get_BoatSpeed() * 0.25f;
 
-	// Angular acceleration/deceleration for smooth steering.
 	m_CurTurnSpeed = 0.f;
 	m_MaxTurnSpeed = XMConvertToRadians(40.f);
 	m_TurnAcceleration = m_MaxTurnSpeed * 2.5f;

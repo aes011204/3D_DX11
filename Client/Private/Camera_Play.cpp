@@ -75,7 +75,6 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 
 void CCamera_Play::Priority_Update(_float fTimeDelta)
 {
-    // Follow commands are evaluated after target movement and collision.
 }
 
 void CCamera_Play::Update_AfterTarget(_float fTimeDelta)

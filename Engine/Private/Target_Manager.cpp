@@ -87,7 +87,6 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 	//
 	//m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets->GetAddressOf(), m_pOriginalDSV.Get());
 
-	// Unbind inputs from the previous pass before reusing textures as outputs.
 	ID3D11ShaderResourceView* nullSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {};
 	m_pContext->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
 	m_pContext->VSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);

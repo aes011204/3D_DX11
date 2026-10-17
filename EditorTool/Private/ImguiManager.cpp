@@ -309,7 +309,6 @@ int CImguiManager::Begin_GpuTiming()
     auto& slot = m_gpuTimings[index];
     if (slot.pending)
     {
-        // Poll once only. Never flush or wait for the GPU to finish a sample.
         D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjoint = {};
         UINT64 start = 0, end = 0;
         const HRESULT disjointResult = m_gpuContext->GetData(slot.disjoint.Get(), &disjoint, sizeof(disjoint), D3D11_ASYNC_GETDATA_DONOTFLUSH);
@@ -364,7 +363,6 @@ unique_ptr<CImguiManager> CImguiManager::Create()
 
 void CImguiManager::Free()
 {
-    // Release profiler resources as part of the editor lifetime.
     m_gpuTimingEnabled = false;
     m_gpuTimingReady = false;
     for (auto& slot : m_gpuTimings)

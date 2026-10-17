@@ -195,7 +195,6 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 
 void CGameInstance::Draw()
 {
-	// Commit late inventory mutations and camera-triggered UI before drawing.
     const auto prepareStart = PerfClock::now();
 	m_UI_Manager->Prepare_Render();
     RecordMs(m_frameTimings.uiPrepareMs, prepareStart);

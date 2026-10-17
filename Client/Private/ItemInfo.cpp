@@ -201,7 +201,6 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 		case E_PLAYERSTATE::FISH_SHOP:
 
 		{
-			// Reuse the type-specific cost computed above (including fish mutations).
 
 
 			//설치 회전 창고로보내기 환불

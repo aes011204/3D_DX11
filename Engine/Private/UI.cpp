@@ -332,7 +332,6 @@ void CUI::Prepare_Render()
         if (child)
             child->Prepare_Render();
     }
-    // Only expose the UI after its final content and transforms are ready.
     m_bRenderReady = true;
 }
 

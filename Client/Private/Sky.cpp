@@ -37,7 +37,6 @@ void CSky::Update(_float fTimeDelta)
 
 	m_Acc += fTimeDelta;
 
-	// Center the sky after the final camera update.
 }
 
 void CSky::Late_Update(_float fTimeDelta)

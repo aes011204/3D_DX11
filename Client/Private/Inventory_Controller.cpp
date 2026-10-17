@@ -41,7 +41,6 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
                 m_UIHoldItem->ReleaseItem();
                 m_bDragging = false;
             }
-            // The shop may be displaying storage as well as the player inventory.
             for (auto inventory : { m_PlayerInven.lock(), m_TargetInven.lock() })
             {
                 if (!inventory)

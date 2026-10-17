@@ -62,7 +62,6 @@ struct PS_OUT_BACKBUFFER
 struct PS_OUT_LIGHT
 {
     vector vShade : SV_TARGET0;
-    // Unused SV_TARGET1 output removed.
 };
 
 
