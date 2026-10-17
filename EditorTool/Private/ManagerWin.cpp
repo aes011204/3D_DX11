@@ -1,4 +1,5 @@
 #include "ManagerWin.h"
+#include "EditorInstance.h"
 #include "GameInstance.h"
 #include "Engine_Helper.h"
 #include "GameInstance.h"
@@ -41,6 +42,23 @@ void CManagerWin::Render()
 
 	ImGuiIO& io = ImGui::GetIO();
 	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+    const auto& timings = CGameInstance::GetInstance()->Get_FrameTimings();
+    ImGui::Text("Render CPU: %.3f ms", timings.renderCpuMs);
+    if (timings.gpuReady)
+        ImGui::Text("Scene GPU: %.3f ms", timings.renderGpuMs);
+    else
+        ImGui::TextDisabled("Scene GPU: waiting / unavailable");
+    double imguiGpuMs = 0.0;
+    if (CEditorInstance::GetInstance()->Get_ImGuiGpuMs(imguiGpuMs))
+        ImGui::Text("ImGui GPU (windows): %.3f ms", imguiGpuMs);
+    else
+        ImGui::TextDisabled("ImGui GPU: waiting / unavailable");
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Main and platform windows. Excludes Game View copy. Delayed GPU elapsed samples.");
+    ImGui::Text("UI prepare CPU: %.3f ms", timings.uiPrepareMs);
+    ImGui::Text("Engine update CPU: %.3f ms", timings.updateMs);
+    ImGui::Text("Present CPU (wait included): %.3f ms", timings.presentMs);
+    ImGui::TextDisabled("Smoothed ms; GPU excludes editor. Present is previous frame.");
 
 
 	ImGui::Separator();

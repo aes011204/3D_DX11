@@ -314,6 +314,28 @@ void CUI::Late_Update(_float fTimeDelta)
 	}
 }
 
+void CUI::Prepare_Render()
+{
+    if (!m_bEnabled)
+        return;
+
+    if (m_pUITransformCom)
+        m_pUITransformCom->UpdateLayoutIfDirty();
+    OnPrepareRender();
+    if (!m_bEnabled)
+        return;
+    if (m_pUITransformCom)
+        m_pUITransformCom->UpdateLayoutIfDirty();
+
+    for (auto& child : m_Children)
+    {
+        if (child)
+            child->Prepare_Render();
+    }
+    // Only expose the UI after its final content and transforms are ready.
+    m_bRenderReady = true;
+}
+
 HRESULT CUI::Render()
 {
 	if (m_bVisible && m_bRenderReady == true)

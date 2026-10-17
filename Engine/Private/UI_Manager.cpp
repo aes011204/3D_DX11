@@ -89,6 +89,18 @@ void CUI_Manager::Late_Update(float m_fDeltaTime)
 	}
 }
 
+void CUI_Manager::Prepare_Render()
+{
+    for (auto& layer : m_UI)
+    {
+        for (auto& ui : layer)
+        {
+            if (ui)
+                ui->Prepare_Render();
+        }
+    }
+}
+
 void CUI_Manager::Render()
 {
 	//¼ø¼­(OVERRIDE -> WINDOW -> STACK -> HUD)

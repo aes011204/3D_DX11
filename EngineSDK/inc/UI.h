@@ -33,6 +33,7 @@ public:
     virtual void Update(_float fTimeDelta,bool& bMouseHold);
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
+    void Prepare_Render();
 
     virtual void UI_Active(); //  UI 활성활시 호출되는 함수//
     void UI_InActive(); // UI 비활성활시 호출되는 함수//
@@ -71,6 +72,7 @@ protected:
     virtual void OnDisabled() {}; //클릭은 가능하고 근대 활성환ㄴ 안된상태           // 보이는데 클릭 안되는거 //돈 없을떄 //  이거는 슬랏에 넣자
     virtual void OnUpdate(const _float& timeDelta) {};
     virtual void OnLateUpdate() {};
+    virtual void OnPrepareRender() {};
     virtual HRESULT OnRender() { return S_OK; };
     virtual void OnClear() {}; // 이건 죽을때 실행되는거
 

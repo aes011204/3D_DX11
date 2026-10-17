@@ -24,6 +24,7 @@ public:
     HRESULT Initialize(_uint width, _uint height);
     void Update(float m_fDeltaTime); //  request 요청 처리기 (ui 업뎃 돌리지 않음)
     void Late_Update(float m_fDeltaTime);
+    void Prepare_Render();
     void Render(); // 안쓸듯 이거는 렌더러에서 하니까
 
     void Push(UI_LAYER layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);

@@ -65,7 +65,7 @@ HRESULT CTarget_Manager::Add_MRT(const _wstring& strMRTTag, const _wstring& strT
 
 }
 
-HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth, bool clearTargets)
+HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 {
 
 	list <shared_ptr<CRenderTarget>>* pMRTList = Find_MRT(strMRTTag);
@@ -87,8 +87,11 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth, boo
 	//
 	//m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets->GetAddressOf(), m_pOriginalDSV.Get());
 
-	/*ID3D11ShaderResourceView* nullSRV[16] = {};
-	m_pContext->PSSetShaderResources(0, 16, nullSRV);*/
+	// Unbind inputs from the previous pass before reusing textures as outputs.
+	ID3D11ShaderResourceView* nullSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {};
+	m_pContext->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
+	m_pContext->VSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
+	m_pContext->GSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
 
 	ID3D11RenderTargetView* pRenderTargets[8] = { nullptr };
 
@@ -96,8 +99,7 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth, boo
 
 	for (auto& pRenderTarget : *pMRTList)
 	{
-		if (clearTargets)
-			pRenderTarget->Clear();
+		pRenderTarget->Clear();
 		pRenderTargets[iNumRenderTargets++] = pRenderTarget->Get_RTV().Get();
 	}
 
@@ -119,39 +121,6 @@ HRESULT CTarget_Manager::End_MRT()
 
 }
 
-HRESULT CTarget_Manager::Copy_BackBufferToRenderTarget(const _wstring& strTargetTag)
-{
-	auto pRenderTarget = Find_RenderTarget(strTargetTag);
-	if (nullptr == pRenderTarget)
-		return E_FAIL;
-
-	ComPtr<ID3D11RenderTargetView> pBackBufferRTV;
-	m_pContext->OMGetRenderTargets(1, pBackBufferRTV.GetAddressOf(), nullptr);
-	if (nullptr == pBackBufferRTV)
-		return E_FAIL;
-
-	ComPtr<ID3D11Resource> pBackBufferResource;
-	pBackBufferRTV->GetResource(pBackBufferResource.GetAddressOf());
-	m_pContext->CopyResource(pRenderTarget->Get_Texture2D().Get(), pBackBufferResource.Get());
-	return S_OK;
-}
-
-HRESULT CTarget_Manager::Copy_RenderTargetToBackBuffer(const _wstring& strTargetTag)
-{
-	auto pRenderTarget = Find_RenderTarget(strTargetTag);
-	if (nullptr == pRenderTarget)
-		return E_FAIL;
-
-	ComPtr<ID3D11RenderTargetView> pBackBufferRTV;
-	m_pContext->OMGetRenderTargets(1, pBackBufferRTV.GetAddressOf(), nullptr);
-	if (nullptr == pBackBufferRTV)
-		return E_FAIL;
-
-	ComPtr<ID3D11Resource> pBackBufferResource;
-	pBackBufferRTV->GetResource(pBackBufferResource.GetAddressOf());
-	m_pContext->CopyResource(pBackBufferResource.Get(), pRenderTarget->Get_Texture2D().Get());
-	return S_OK;
-}
 #ifdef _DEBUG
 HRESULT CTarget_Manager::Ready_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
 {

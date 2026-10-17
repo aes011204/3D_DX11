@@ -458,6 +458,7 @@ void CUITransform::Load_FromJson(nlohmann::json& j)
 
 HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const _char* pConstantName)
 {
+    UpdateLayoutIfDirty();
     return 	pShaderCom->Bind_Matrix(pConstantName, &m_WorldMatrix);;
 }
 

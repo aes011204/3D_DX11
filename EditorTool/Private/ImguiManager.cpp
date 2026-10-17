@@ -124,6 +124,8 @@ void CImguiManager::Initialize(HWND _hWnd, ComPtr<ID3D11Device>_Device, ComPtr<I
         // Setup Platform/Renderer backends
         ImGui_ImplWin32_Init(_hWnd);
         ImGui_ImplDX11_Init(_Device.Get(), _Context.Get());
+        m_gpuContext = _Context;
+        Initialize_GpuTiming(_Device.Get());
     
 
     //// 기본 폰트 크기를 13.0f 정도로 설정 (보통 18.0f나 16.0f로 설정되어 있어서 크게 느껴짐)
@@ -260,6 +262,7 @@ void CImguiManager::Render()
         //const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
         //g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr); // (바인딩) -> 외부에서 MainApp (BindingRenderTarget 이랑 같음)
         //g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha); // (지우기) -> 외부에서 MainApp
+        const int timingSlot = Begin_GpuTiming();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
         // io 는 ImGui 내부에 존재하는 단일 글로벌 상태 객체 // 매번 지역 참조로 받기 (읽기만 할거면 상관없음) // 맴버변수로 캐싱하면 나중에 위험(ImGuiContext를 여러 개 운영하려는 경우일떄는 ㄱㄴ)
@@ -271,7 +274,7 @@ void CImguiManager::Render()
             ImGui::UpdatePlatformWindows(); // (실제 imgui 랜더링)
             ImGui::RenderPlatformWindowsDefault(); // (멀티 뷰포트 처리)
         }
-
+        End_GpuTiming(timingSlot);
 
 
     }
@@ -279,6 +282,79 @@ void CImguiManager::Render()
 
 }
 
+
+void CImguiManager::Initialize_GpuTiming(ID3D11Device* device)
+{
+    for (auto& slot : m_gpuTimings)
+    {
+        D3D11_QUERY_DESC desc = {};
+        desc.Query = D3D11_QUERY_TIMESTAMP_DISJOINT;
+        if (FAILED(device->CreateQuery(&desc, slot.disjoint.GetAddressOf())))
+            return;
+        desc.Query = D3D11_QUERY_TIMESTAMP;
+        if (FAILED(device->CreateQuery(&desc, slot.start.GetAddressOf())) ||
+            FAILED(device->CreateQuery(&desc, slot.end.GetAddressOf())))
+            return;
+    }
+    m_gpuTimingEnabled = true;
+}
+
+int CImguiManager::Begin_GpuTiming()
+{
+    if (!m_gpuTimingEnabled)
+        return -1;
+
+    const unsigned int index = m_gpuTimingIndex;
+    m_gpuTimingIndex = (m_gpuTimingIndex + 1) % 4;
+    auto& slot = m_gpuTimings[index];
+    if (slot.pending)
+    {
+        // Poll once only. Never flush or wait for the GPU to finish a sample.
+        D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjoint = {};
+        UINT64 start = 0, end = 0;
+        const HRESULT disjointResult = m_gpuContext->GetData(slot.disjoint.Get(), &disjoint, sizeof(disjoint), D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        if (disjointResult == S_FALSE)
+            return -1;
+        if (FAILED(disjointResult))
+        {
+            m_gpuTimingEnabled = false;
+            m_gpuTimingReady = false;
+            return -1;
+        }
+        const HRESULT startResult = m_gpuContext->GetData(slot.start.Get(), &start, sizeof(start), D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        const HRESULT endResult = m_gpuContext->GetData(slot.end.Get(), &end, sizeof(end), D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        if (FAILED(startResult) || FAILED(endResult))
+        {
+            m_gpuTimingEnabled = false;
+            m_gpuTimingReady = false;
+            return -1;
+        }
+        if (startResult == S_FALSE || endResult == S_FALSE)
+            return -1;
+        if (!disjoint.Disjoint && disjoint.Frequency != 0 && end >= start)
+        {
+            const double ms = double(end - start) * 1000.0 / double(disjoint.Frequency);
+            m_gpuRenderMs = m_gpuTimingReady ? m_gpuRenderMs * 0.9 + ms * 0.1 : ms;
+            m_gpuTimingReady = true;
+        }
+        else
+            m_gpuTimingReady = false;
+        slot.pending = false;
+    }
+    m_gpuContext->Begin(slot.disjoint.Get());
+    m_gpuContext->End(slot.start.Get());
+    return static_cast<int>(index);
+}
+
+void CImguiManager::End_GpuTiming(int index)
+{
+    if (index < 0)
+        return;
+    auto& slot = m_gpuTimings[index];
+    m_gpuContext->End(slot.end.Get());
+    m_gpuContext->End(slot.disjoint.Get());
+    slot.pending = true;
+}
 
 unique_ptr<CImguiManager> CImguiManager::Create()
 {
@@ -288,6 +364,12 @@ unique_ptr<CImguiManager> CImguiManager::Create()
 
 void CImguiManager::Free()
 {
+    // Release profiler resources as part of the editor lifetime.
+    m_gpuTimingEnabled = false;
+    m_gpuTimingReady = false;
+    for (auto& slot : m_gpuTimings)
+        slot = {};
+    m_gpuContext.Reset();
     // Cleanup
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();

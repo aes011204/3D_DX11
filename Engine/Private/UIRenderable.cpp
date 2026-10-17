@@ -86,6 +86,12 @@ void CUIRenderable::OnUpdate(const _float& timeDelta)
 		m_SliceDesc.TexCustomSize = m_pUITransformCom->Get_SizeDelta();
 }
 
+void CUIRenderable::OnPrepareRender()
+{
+    CUIRenderable::OnUpdate(0.f);
+    CUIRenderable::OnLateUpdate();
+}
+
 void CUIRenderable::OnLateUpdate()
 {
 	if (m_bUseNineSlice == true)

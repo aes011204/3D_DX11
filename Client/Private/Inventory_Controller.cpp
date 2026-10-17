@@ -32,6 +32,31 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 	//
 	////m_Inven->Upgrade_Boat(0); // Á© Ã³À½
 	///
+    m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ItemSold>(
+        [this](const Evt_ItemSold& event)
+        {
+            if (m_UIHoldItem &&
+                m_UIHoldItem->Get_HoldItem().ItemInst_ID == event.itemInstId)
+            {
+                m_UIHoldItem->ReleaseItem();
+                m_bDragging = false;
+            }
+            // The shop may be displaying storage as well as the player inventory.
+            for (auto inventory : { m_PlayerInven.lock(), m_TargetInven.lock() })
+            {
+                if (!inventory)
+                    continue;
+                const auto& items = inventory->Get_InventoryItem();
+                const auto found = find_if(items.begin(), items.end(),
+                    [&](const Item_Inst& item) { return item.ItemInst_ID == event.itemInstId; });
+                if (found != items.end())
+                    inventory->RemoveFrom_Inven(event.itemInstId);
+                inventory->ClearHighlightArea();
+            }
+            m_hoverDirty = true;
+            CUI_Controller::GetInstance()->CloseToolTip();
+        });
+
 	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_OpenInventory>(
 		[this](const Evt_OpenInventory& e)
 		{
@@ -155,6 +180,16 @@ shared_ptr<CInventory>  CInventory_Controller::Get_CurrentInven()
 }
 void CInventory_Controller::Update(float TimeDelta)
 {
+    auto refreshFinalHover = [this]()
+    {
+        Refresh_Hover();
+        m_bIsOnSlot = false;
+    };
+    struct FinalHoverRefresh
+    {
+        decltype(refreshFinalHover)& refresh;
+        ~FinalHoverRefresh() { refresh(); }
+    } finalHoverRefresh{ refreshFinalHover };
 	auto dInput = m_pGameInstance.lock()->Get_DInput_Manger();
 	//	->MouseDown(DIMB::LBUTTON);
 
@@ -249,6 +284,7 @@ void CInventory_Controller::Update(float TimeDelta)
 					e.IsPlayer = false;
 				}
 				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+                m_hoverDirty = true;
 
 				m_PrevSlotX = m_SlotX;
 				m_PrevSlotY = m_SlotY;
@@ -418,6 +454,7 @@ void CInventory_Controller::Update(float TimeDelta)
 
 
 			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+                m_hoverDirty = true;
 
 			m_PrevSlotX = 99;
 			m_PrevSlotY = 99;
@@ -468,6 +505,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			e.itemInst = m_UIHoldItem->Get_HoldItem();
 
 			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+                m_hoverDirty = true;
 
 			m_PrevDragging = m_bDragging;
 			//m_PrevSlotX = m_SlotX;
@@ -488,6 +526,36 @@ void CInventory_Controller::Update(float TimeDelta)
 	}
 
 
+
+}
+
+void CInventory_Controller::Refresh_Hover()
+{
+    auto inventory = Get_CurrentInven();
+    auto playerInventory = m_PlayerInven.lock();
+    Evt_ItemHovered event = {};
+    event.isHold = m_bDragging;
+    event.IsPlayer = inventory && inventory == playerInventory;
+
+    if (m_bDragging && m_UIHoldItem)
+        event.itemInst = m_UIHoldItem->Get_HoldItem();
+    else if (m_bIsOnSlot && inventory)
+        event.itemInst = inventory->Peek_Item(m_SlotX, m_SlotY);
+
+    const bool changed = !m_hoverValid || m_hoverDirty ||
+        m_hoverInventory.lock() != inventory ||
+        m_hoverState.isHold != event.isHold ||
+        m_hoverState.IsPlayer != event.IsPlayer ||
+        m_hoverState.itemInst.ItemInst_ID != event.itemInst.ItemInst_ID ||
+        m_hoverState.itemInst.Rotation != event.itemInst.Rotation;
+    if (!changed)
+        return;
+
+    m_hoverState = event;
+    m_hoverInventory = inventory;
+    m_hoverValid = true;
+    m_hoverDirty = false;
+    m_pGameInstance.lock()->Get_EventBus()->Publish(event);
 }
 
 shared_ptr<CInventory_Controller> CInventory_Controller::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven, shared_ptr<CUI_Item> UIHoldItem)

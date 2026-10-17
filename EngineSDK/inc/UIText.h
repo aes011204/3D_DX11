@@ -33,6 +33,7 @@ public:
     void OnDisabled()override;
     void OnUpdate(const _float& timeDelta)override;
     void OnLateUpdate()override;
+    void OnPrepareRender() override;
     HRESULT OnRender()override;
     void OnClear()override;
 

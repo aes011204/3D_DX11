@@ -128,6 +128,12 @@ void CUI_Item::OnUpdate(const _float& timeDelta)
 	__super::OnUpdate(timeDelta);
 }
 
+void CUI_Item::OnPrepareRender()
+{
+    CUI_Item::OnUpdate(0.f);
+    __super::OnPrepareRender();
+}
+
 void CUI_Item::OnLateUpdate()
 {
 	__super::OnLateUpdate();

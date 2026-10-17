@@ -360,11 +360,16 @@ void CUI_Inventory::OnDisabled()
 
 void CUI_Inventory::OnUpdate(const _float& timeDelta)
 {
+    if (!m_Inven.expired() && m_InvenPanel && !m_Slot.empty())
+        MousePosToSlot();
+    __super::OnUpdate(timeDelta);
+}
 
-
-	MousePosToSlot();
-
-
+void CUI_Inventory::OnPrepareRender()
+{
+    auto inventory = m_Inven.lock();
+    if (!inventory || !m_InvenPanel || m_Slot.empty())
+        return;
 	auto& InvenItem = m_Inven.lock()->Get_InventoryItem();
 	auto& InvenSlot = m_Inven.lock()->Get_Invenslot();
 
@@ -444,10 +449,8 @@ void CUI_Inventory::OnUpdate(const _float& timeDelta)
 	}
 
 
-	__super::OnUpdate(timeDelta);
-
-	Render_Item();
-
+    Render_Item();
+    __super::OnPrepareRender();
 }
 
 void CUI_Inventory::OnLateUpdate()

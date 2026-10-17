@@ -322,6 +322,11 @@ namespace Client
         Fish_Inst fishInst = {};
     };
 
+    struct Evt_ItemSold
+    {
+        ID_uint itemInstId = ID_Absence;
+    };
+
     struct Evt_ItemHovered
     {
         _bool isHold = {false};

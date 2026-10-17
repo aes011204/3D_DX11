@@ -124,27 +124,32 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 	}
 	}
 	m_NameText->Set_Text(NameInfo); //위치조정 필요 없음
-	m_NameText->UI_Active();
+	if (m_NameText->Get_UIState() != UI_STATE::ACTIVE)
+		m_NameText->UI_Active();
 	m_NameText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
 	fCurrentY -= (m_NameText->Get_TextSize().y + m_NamePadding);
 
-	m_LineImg->UI_Active();
+	if (m_LineImg->Get_UIState() != UI_STATE::ACTIVE)
+		m_LineImg->UI_Active();
 	m_LineImg->GetUITransform()->SetAnchoredPos({ 0, fCurrentY });
 	fCurrentY -= (m_LineImg->GetUITransform()->Get_SizeDelta().y + m_PaddingY);
 
 	m_LeftText->Set_Text(LeftInfo);
 	m_LeftText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
-	m_LeftText->UI_Active();
+	if (m_LeftText->Get_UIState() != UI_STATE::ACTIVE)
+		m_LeftText->UI_Active();
 
 	m_RightText->Set_Text(RightInfo);
 	m_RightText->GetUITransform()->SetAnchoredPos({ -m_PaddingX, fCurrentY });
-	m_RightText->UI_Active();
+	if (m_RightText->Get_UIState() != UI_STATE::ACTIVE)
+		m_RightText->UI_Active();
 	fCurrentY -= (m_LeftText->Get_TextSize().y + m_PaddingY);
 
 
 	m_DetailText->Set_Text(DescInfo);
 	m_DetailText->GetUITransform()->SetAnchoredPos({ -m_PaddingX, fCurrentY });
-	m_DetailText->UI_Active();
+	if (m_DetailText->Get_UIState() != UI_STATE::ACTIVE)
+		m_DetailText->UI_Active();
 	fCurrentY -= (m_DetailText->Get_TextSize().y + m_PaddingY);
 
 	for (auto& infoBtn : m_vecIcon)
@@ -176,13 +181,8 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 		case E_PLAYERSTATE::REPAIR_SHOP:
 		{
 			//설치 회전 창고로보내기 환불
-			Equip_Inst* EquipInst = get_if<Equip_Inst>(&itemInst.TypeDef);
-			Equip_Def* EquipDef = get_if<Equip_Def>(&itemDef.TypeDef);
 
-			NameInfo = S2W(itemDef.ItemName);
 
-			DescInfo = S2W(itemDef.ItemDesc);
-			cost = EquipDef->Cost;
 			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
 
@@ -201,13 +201,9 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 		case E_PLAYERSTATE::FISH_SHOP:
 
 		{
-			Fish_Inst* fInst = get_if<Fish_Inst>(&itemInst.TypeDef);
-			Fish_Def* fDef = get_if<Fish_Def>(&itemDef.TypeDef);
+			// Reuse the type-specific cost computed above (including fish mutations).
 
-			NameInfo = S2W(itemDef.ItemName);
 
-			DescInfo = S2W(itemDef.ItemDesc);
-			cost = fDef->Cost;
 			//설치 회전 창고로보내기 환불
 
 			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
@@ -311,9 +307,10 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 	//m_Targetsize.y = rc.Bottom() - GetUITransform()->Get_WorldRect().Top() ;
 
 
+	const bool wasActive = Get_UIState() == UI_STATE::ACTIVE;
 	Set_ActiveForCustom();
-
-	m_bRenderReady = false;
+	if (!wasActive)
+		m_bRenderReady = false;
 
 	if (m_pUITransformCom)
 		m_pUITransformCom->UpdateLayoutIfDirty();
@@ -518,6 +515,13 @@ void CItemInfo::OnUpdate(const _float& timeDelta)
 
 
 	CUIPanel::OnUpdate(timeDelta);
+}
+
+void CItemInfo::OnPrepareRender()
+{
+    CItemInfo::OnUpdate(0.f);
+    CItemInfo::OnLateUpdate();
+    __super::OnPrepareRender();
 }
 
 void CItemInfo::OnLateUpdate()

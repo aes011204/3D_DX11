@@ -52,8 +52,14 @@ void CUIText::OnUpdate(const _float& timeDelta)
 	{
 	m_TextSize = m_pGameInstance.lock()->Measure_String(m_strFontTag, m_strText.c_str());
 	GetUITransform()->SetSizeDelta(m_TextSize);
+    m_IsChangeText = false;
 	}
 	CUI::OnUpdate(timeDelta);
+}
+
+void CUIText::OnPrepareRender()
+{
+    CUIText::OnUpdate(0.f);
 }
 
 void CUIText::OnLateUpdate()

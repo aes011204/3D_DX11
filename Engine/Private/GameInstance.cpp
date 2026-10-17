@@ -1,4 +1,15 @@
 #include "GameInstance.h"
+#include <chrono>
+
+namespace
+{
+    using PerfClock = std::chrono::steady_clock;
+    void RecordMs(double& average, PerfClock::time_point start)
+    {
+        const double ms = std::chrono::duration<double, std::milli>(PerfClock::now() - start).count();
+        average = average == 0.0 ? ms : average * 0.9 + ms * 0.1;
+    }
+}
 
 #include "Graphic_Device.h"
 #include "Timer_Manager.h"
@@ -149,6 +160,7 @@ void CGameInstance::SetImguiContext(ImGuiContext* imgContext)
 //}
 void CGameInstance::Update_Engine(float fTimeDelta)
 {
+    const auto updateStart = PerfClock::now();
 	m_pDInput_Manager->Update_InputDev();
 
 	m_pTimeOfDay->Update(fTimeDelta);
@@ -177,16 +189,25 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 
 	m_pLevel_Manager->Update(fTimeDelta);
 	m_pSound_Manager->Update_Audio(fTimeDelta);
+    RecordMs(m_frameTimings.updateMs, updateStart);
 
 }
 
 void CGameInstance::Draw()
 {
+	// Commit late inventory mutations and camera-triggered UI before drawing.
+    const auto prepareStart = PerfClock::now();
+	m_UI_Manager->Prepare_Render();
+    RecordMs(m_frameTimings.uiPrepareMs, prepareStart);
+    const auto renderStart = PerfClock::now();
 	m_Renderer->Draw();
 
 	m_pLevel_Manager->Render();
 
 	m_UI_Manager->Render();
+    RecordMs(m_frameTimings.renderCpuMs, renderStart);
+    m_frameTimings.renderGpuMs = m_Renderer->Get_GpuRenderMs();
+    m_frameTimings.gpuReady = m_Renderer->Has_GpuTiming();
 
 }
 
@@ -313,7 +334,10 @@ HRESULT CGameInstance::Bind_BackBufferRenderTarget(HWND hwnd)
 }
 HRESULT CGameInstance::Present()
 {
-	return m_pGraphic_Device->Present();;
+    const auto presentStart = PerfClock::now();
+    const HRESULT result = m_pGraphic_Device->Present();
+    RecordMs(m_frameTimings.presentMs, presentStart);
+    return result;
 }
 
 const map<const _wstring, shared_ptr<CLayer>>& CGameInstance::Get_GameObjects(_uint levelIndex) const
@@ -567,24 +591,14 @@ HRESULT CGameInstance::Add_MRT(const _wstring& strMRTTag, const _wstring& strTar
 	return m_pTarget_Manager->Add_MRT(strMRTTag, strTargetTag);
 }
 
-HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, bool useDepth, bool clearTargets)
+HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 {
-	return m_pTarget_Manager->Begin_MRT(strMRTTag, useDepth, clearTargets);
+	return m_pTarget_Manager->Begin_MRT(strMRTTag, useDepth);
 }
 
 HRESULT CGameInstance::End_MRT()
 {
 	return m_pTarget_Manager->End_MRT();
-}
-
-HRESULT CGameInstance::Copy_BackBufferToRenderTarget(const _wstring& strTargetTag)
-{
-	return m_pTarget_Manager->Copy_BackBufferToRenderTarget(strTargetTag);
-}
-
-HRESULT CGameInstance::Copy_RenderTargetToBackBuffer(const _wstring& strTargetTag)
-{
-	return m_pTarget_Manager->Copy_RenderTargetToBackBuffer(strTargetTag);
 }
 
 #ifdef _DEBUG

@@ -81,6 +81,12 @@ void Editor::CEditorInstance::Render_Editor()
 	m_pImgui_Manager->Render();
 }
 
+bool CEditorInstance::Get_ImGuiGpuMs(double& milliseconds) const
+{
+    milliseconds = 0.0;
+    return m_pImgui_Manager && m_pImgui_Manager->Get_GpuRenderMs(milliseconds);
+}
+
 ESelectType CEditorInstance::GetType() const
 {
 	if (m_pSelection->HasSelection())

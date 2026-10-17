@@ -25,6 +25,13 @@ public:
 public:
     HRESULT Initialize(weak_ptr<CInventory> Inven, shared_ptr<class CUI_Item> UIHoldItem);
     void Update(float TimeDelta);
+private:
+    void Refresh_Hover();
+    Evt_ItemHovered m_hoverState = {};
+    weak_ptr<CInventory> m_hoverInventory;
+    bool m_hoverValid = false;
+    bool m_hoverDirty = false;
+public:
     void Make_Hold(Item_Inst inst);
     shared_ptr<CInventory> Get_CurrentInven();
 

@@ -26,6 +26,7 @@ public:
 		ComPtr<ID3D11DeviceContext> pContext);
 	void Update_Editor(float fTimeDelta);
 	void Render_Editor();
+    bool Get_ImGuiGpuMs(double& milliseconds) const;
 
 	ESelectType GetType() const;
 	shared_ptr<CEntity> GetEntity() const;

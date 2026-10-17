@@ -26,6 +26,17 @@ public:
 	void Update_Engine(float fTimeDelta);
 	void Draw();
 
+    struct FRAME_TIMINGS
+    {
+        double updateMs = 0.0;
+        double uiPrepareMs = 0.0;
+        double renderCpuMs = 0.0;
+        double renderGpuMs = 0.0;
+        double presentMs = 0.0;
+        bool gpuReady = false;
+    };
+    const FRAME_TIMINGS& Get_FrameTimings() const { return m_frameTimings; }
+
 	void Clear_Resources(_uint iLevelIndex);
 
 	_float Random(_float fMin, _float fMax);
@@ -147,10 +158,8 @@ public:/*For.Font_Manager*/
 	                               const _wstring& strTargetTag);
 
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
-	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true, bool clearTargets = true);
+	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true);
 	HRESULT End_MRT();
-	HRESULT Copy_BackBufferToRenderTarget(const _wstring& strTargetTag);
-	HRESULT Copy_RenderTargetToBackBuffer(const _wstring& strTargetTag);
 #ifdef _DEBUG
 public:
 	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
@@ -172,6 +181,7 @@ public:// SoundManager
 	void Set_CategoryVolume(SOUND_CATEGORY eCategory, _float fVolume);
 
 private:
+    FRAME_TIMINGS m_frameTimings;
 	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
 	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
 	unique_ptr<class CLevel_Manager> m_pLevel_Manager = { nullptr };

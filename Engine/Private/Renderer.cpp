@@ -39,8 +39,6 @@ HRESULT CRenderer::Initialize()
 
 	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Emissive"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_RenderTarget(TEXT("Target_Combined"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
-		return E_FAIL;
 
 	{
 
@@ -63,8 +61,6 @@ HRESULT CRenderer::Initialize()
 	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_LightAcc"), TEXT("Target_Shade"))))
 		return E_FAIL;
 	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_GameObjects"), TEXT("Target_Emissive"))))
-		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_MRT(TEXT("MRT_Combined"), TEXT("Target_Combined"))))
 		return E_FAIL;
 
 	{
@@ -96,12 +92,9 @@ HRESULT CRenderer::Initialize()
 		return E_FAIL;
 	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Emissive"), 600.f, 370.f, 400.f, 225.f)))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Depth"), 1000.f, 130.f, 400.f, 225.f)))
-		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Ready_RT_Debug(TEXT("Target_Combined"), 1000.f, 370.f, 400.f, 225.f)))
-		return E_FAIL;
 #endif
 
+    Initialize_GpuTiming();
 	return S_OK;
 }
 
@@ -118,6 +111,7 @@ void CRenderer::Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<CEntity> pG
 
 void CRenderer::Draw()
 {
+    const int timingSlot = Begin_GpuTiming();
 	
 
 	Render_Priority();
@@ -156,6 +150,80 @@ void CRenderer::Draw()
 		Render_Debug();
 	}
 #endif
+    End_GpuTiming(timingSlot);
+}
+
+void CRenderer::Initialize_GpuTiming()
+{
+    for (auto& slot : m_gpuTimings)
+    {
+        D3D11_QUERY_DESC desc = {};
+        desc.Query = D3D11_QUERY_TIMESTAMP_DISJOINT;
+        if (FAILED(m_pDevice->CreateQuery(&desc, slot.disjoint.GetAddressOf())))
+            return;
+        desc.Query = D3D11_QUERY_TIMESTAMP;
+        if (FAILED(m_pDevice->CreateQuery(&desc, slot.start.GetAddressOf())) ||
+            FAILED(m_pDevice->CreateQuery(&desc, slot.end.GetAddressOf())))
+            return;
+    }
+    m_gpuTimingEnabled = true;
+}
+
+int CRenderer::Begin_GpuTiming()
+{
+    if (!m_gpuTimingEnabled)
+        return -1;
+
+    const unsigned int index = m_gpuTimingIndex;
+    m_gpuTimingIndex = (m_gpuTimingIndex + 1) % 4;
+    auto& slot = m_gpuTimings[index];
+    if (slot.pending)
+    {
+        // Poll once only. Never flush or wait for the GPU to finish a sample.
+        D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjoint = {};
+        UINT64 start = 0, end = 0;
+        const HRESULT disjointResult = m_pContext->GetData(slot.disjoint.Get(), &disjoint, sizeof(disjoint), D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        if (disjointResult == S_FALSE)
+            return -1;
+        if (FAILED(disjointResult))
+        {
+            m_gpuTimingEnabled = false;
+            m_gpuTimingReady = false;
+            return -1;
+        }
+        const HRESULT startResult = m_pContext->GetData(slot.start.Get(), &start, sizeof(start), D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        const HRESULT endResult = m_pContext->GetData(slot.end.Get(), &end, sizeof(end), D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        if (FAILED(startResult) || FAILED(endResult))
+        {
+            m_gpuTimingEnabled = false;
+            m_gpuTimingReady = false;
+            return -1;
+        }
+        if (startResult == S_FALSE || endResult == S_FALSE)
+            return -1;
+        if (!disjoint.Disjoint && disjoint.Frequency != 0 && end >= start)
+        {
+            const double ms = double(end - start) * 1000.0 / double(disjoint.Frequency);
+            m_gpuRenderMs = m_gpuTimingReady ? m_gpuRenderMs * 0.9 + ms * 0.1 : ms;
+            m_gpuTimingReady = true;
+        }
+        else
+            m_gpuTimingReady = false;
+        slot.pending = false;
+    }
+    m_pContext->Begin(slot.disjoint.Get());
+    m_pContext->End(slot.start.Get());
+    return static_cast<int>(index);
+}
+
+void CRenderer::End_GpuTiming(int index)
+{
+    if (index < 0)
+        return;
+    auto& slot = m_gpuTimings[index];
+    m_pContext->End(slot.end.Get());
+    m_pContext->End(slot.disjoint.Get());
+    slot.pending = true;
 }
 
 void CRenderer::Render_Priority()
@@ -281,15 +349,7 @@ void CRenderer::Render_Lights()
 
 void CRenderer::Render_Combined()
 {
-	// Preserve the sky already drawn to the back buffer. Background pixels are
-	// discarded by the combined shader, so they must already exist in this RT.
-	ID3D11ShaderResourceView* nullSRV[16] = {};
-	m_pContext->PSSetShaderResources(0, 16, nullSRV);
 
-	if (FAILED(m_pGameInstance.lock()->Copy_BackBufferToRenderTarget(TEXT("Target_Combined"))))
-		return;
-	if (FAILED(m_pGameInstance.lock()->Begin_MRT(TEXT("MRT_Combined"), false, false)))
-		return;
 
 
 	//ID3D11ShaderResourceView* nullSRV[16] = {};
@@ -341,10 +401,6 @@ void CRenderer::Render_Combined()
 	m_pVIBuffer->Bind_Resources();
 	m_pVIBuffer->Render();
 
-	m_pGameInstance.lock()->End_MRT();
-
-	if (FAILED(m_pGameInstance.lock()->Copy_RenderTargetToBackBuffer(TEXT("Target_Combined"))))
-		return;
 
 }
 void CRenderer::Render_NonLight()
@@ -486,8 +542,6 @@ void CRenderer::Render_Debug()
 		return;
 
 	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_LightAcc"))))
-		return;
-	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Combined"))))
 		return;
 //	if (FAILED(m_pGameInstance.lock()->Render_RT_Debug(m_pVIBuffer, m_pShader, TEXT("MRT_Blur2"))))
 //		return;

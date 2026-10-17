@@ -20,10 +20,8 @@ public:
 
 	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
 
-	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true, bool clearTargets = true);
+	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true);
 	HRESULT End_MRT();
-	HRESULT Copy_BackBufferToRenderTarget(const _wstring& strTargetTag);
-	HRESULT Copy_RenderTargetToBackBuffer(const _wstring& strTargetTag);
 
 #ifdef _DEBUG
 public:

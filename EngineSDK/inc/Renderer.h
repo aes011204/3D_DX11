@@ -19,6 +19,8 @@ public:
     HRESULT Initialize();
     void Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<class CEntity> p_GameObject);
     void Draw();
+    double Get_GpuRenderMs() const { return m_gpuRenderMs; }
+    bool Has_GpuTiming() const { return m_gpuTimingReady; }
 #ifdef _DEBUG
     void Add_DebugenderGroup(shared_ptr < class  CComponent > pDebugComponent);
 private:
@@ -42,6 +44,22 @@ private:
 #endif
 
 private:
+    void Initialize_GpuTiming();
+    int Begin_GpuTiming();
+    void End_GpuTiming(int slot);
+    struct GPU_TIMING_SLOT
+    {
+        ComPtr<ID3D11Query> disjoint;
+        ComPtr<ID3D11Query> start;
+        ComPtr<ID3D11Query> end;
+        bool pending = false;
+    };
+    GPU_TIMING_SLOT m_gpuTimings[4];
+    unsigned int m_gpuTimingIndex = 0;
+    double m_gpuRenderMs = 0.0;
+    bool m_gpuTimingEnabled = false;
+    bool m_gpuTimingReady = false;
+
     void Render_Priority();
     void Render_NonBlend();
     void Render_Sea();

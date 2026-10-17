@@ -106,6 +106,10 @@ int CPlayer_FishShop::Update_State(const _float& timeDelta)
 
 			m_Owner.lock()->Add_Money(money);
 			m_Owner.lock()->GetInventory()->RemoveFrom_Inven(m_ItemIdInst.ItemInst_ID);
+            Evt_ItemSold soldEvent = {};
+            soldEvent.itemInstId = m_ItemIdInst.ItemInst_ID;
+            m_ItemIdInst = {};
+            m_pGameInstance.lock()->Get_EventBus()->Publish(soldEvent);
 			
 
 		}
