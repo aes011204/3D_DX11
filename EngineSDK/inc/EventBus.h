@@ -3,6 +3,8 @@
 #include "Engine_Define.h"
 #include "Event_Struct.h"
 #include <typeindex>
+#include <cstdint>
+#include <algorithm>
 
 NS_BEGIN(Engine)
 
@@ -15,18 +17,33 @@ public:
 	virtual ~CEventBus();
 
 	using anyHandler = function<void(const void*)>;
+	using SubscriptionId = std::uint64_t;
+	struct Subscription { SubscriptionId id; anyHandler handler; };
 
 	struct QueuedEvent { type_index m_TypeIndex; shared_ptr<void> data; };
 public:
 	template<typename EventT>
-	void Subscribe (function<void(const EventT&)> func)
+	SubscriptionId Subscribe(function<void(const EventT&)> func)
 	{
-		//map []로 추가만 가능함 : 없으면 새로 만든다는 의미
-		m_handlers[typeid(EventT)].push_back(
-			[func](const void* e) {func(*static_cast<const EventT*>(e));}
-		);
+		SubscriptionId id = m_NextId++;
+		m_handlers[typeid(EventT)].push_back({
+			id, [func](const void* e) { func(*static_cast<const EventT*>(e)); }
+		});
+		return id;
+	}
 
-		// 푸쉬백으로 람다를 넣어서 사용할떄 자동으로 자신의 구조체 형식으로 캐스팅되어 사용
+	template<typename EventT>
+	void Unsubscribe(SubscriptionId id)
+	{
+		auto it = m_handlers.find(typeid(EventT));
+		if (it == m_handlers.end())
+			return;
+
+		std::erase_if(it->second, [id](const Subscription& sub) {
+			return sub.id == id;
+		});
+		if (it->second.empty())
+			m_handlers.erase(it);
 	}
 
 	template<typename EventT>
@@ -34,15 +51,11 @@ public:
 	{
 		auto it = m_handlers.find(typeid(EventT));
 		if (it == m_handlers.end())
-		{
-			//MSG_BOX("No Event in m_handler");
 			return;
-		}
-			
-		for(auto& handle :it->second)
-		{
-			handle(&e);
-		}
+
+		auto handlers = it->second;
+		for (auto& sub : handlers)
+			sub.handler(&e);
 	}
 
 public:
@@ -59,23 +72,23 @@ public:
 		while (!m_EventQueue.empty())
 		{
 			QueuedEvent event = m_EventQueue.front();
+			m_EventQueue.pop();
 			auto it = m_handlers.find(event.m_TypeIndex);
-
 			if (it != m_handlers.end())
 			{
-				for (auto& handle : it->second)
-				{
-					handle(event.data.get());
-				}
+				auto handlers = it->second;
+				for (auto& sub : handlers)
+					sub.handler(event.data.get());
 			}
-			m_EventQueue.pop();
 		}
 	}
 
 
 private:
 
-	unordered_map<type_index, vector<anyHandler>> m_handlers; // 이밴트들을 저장하는 저장소
+	unordered_map<type_index, vector<Subscription>> m_handlers; // 이밴트들을 저장하는 저장소
+
+	SubscriptionId m_NextId = 1;
 
 	queue<QueuedEvent> m_EventQueue = {};
 
