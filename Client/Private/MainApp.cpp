@@ -1829,6 +1829,7 @@ void CMainApp::Free()
 	__super::Free();
 
 	//CInventory_Controller::DestroyInstance();
+	CUI_Controller::DestroyInstance();
 	CItemDB::DestroyInstance();
 
 	m_pContext->ClearState();

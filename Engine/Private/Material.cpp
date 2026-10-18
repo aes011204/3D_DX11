@@ -88,12 +88,11 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 		data.pSysMem = &black;
 		data.SysMemPitch = sizeof(UINT);
 
-		m_pDevice->CreateTexture2D(&desc, &data, tex.GetAddressOf());
+		if (FAILED(m_pDevice->CreateTexture2D(&desc, &data, tex.GetAddressOf())))
+			return E_FAIL;
 
-		ID3D11ShaderResourceView* srv = nullptr;
-		m_pDevice->CreateShaderResourceView(tex.Get(), nullptr, &srv);
-
-		m_pBlackSRV = srv;
+		if (FAILED(m_pDevice->CreateShaderResourceView(tex.Get(), nullptr, m_pBlackSRV.ReleaseAndGetAddressOf())))
+			return E_FAIL;
 	}
 
 
