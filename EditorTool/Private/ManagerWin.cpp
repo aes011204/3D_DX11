@@ -60,6 +60,21 @@ void CManagerWin::Render()
     ImGui::Text("Present CPU (wait included): %.3f ms", timings.presentMs);
     ImGui::TextDisabled("Smoothed ms; GPU excludes editor. Present is previous frame.");
 
+    const auto& editorCpu = CEditorInstance::GetInstance()->Get_EditorCpuTimings();
+    if (editorCpu.ready)
+    {
+        ImGui::Text("Editor CPU total: %.3f ms (avg %.3f / peak %.3f)",
+            editorCpu.totalMs, editorCpu.averageTotalMs, editorCpu.peakTotalMs);
+        ImGui::Text("  Editor update CPU: %.3f ms", editorCpu.updateMs);
+        ImGui::Text("  Editor render CPU: %.3f ms", editorCpu.renderMs);
+        ImGui::Text("  Game View capture CPU (included): %.3f ms", editorCpu.captureMs);
+        ImGui::TextDisabled("Previous completed frame; total = update + render. CPU includes waits.");
+        if (ImGui::SmallButton("Reset editor CPU peak"))
+            CEditorInstance::GetInstance()->Reset_EditorCpuPeak();
+    }
+    else
+        ImGui::TextDisabled("Editor CPU: waiting for first completed frame");
+
 
 	ImGui::Separator();
 

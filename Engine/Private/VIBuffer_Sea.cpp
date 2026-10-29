@@ -242,8 +242,9 @@ _float3 CVIBuffer_Sea::Snaping(float PosY)
 	_float3 result = {};
 	const _float4* camPos = m_pGameInstance.lock()->Get_CamPositon();
 
-	result.x = floor(camPos->x / 1.f) * 1.f;
-	result.z = floor(camPos->z / 1.f) * 1.f;
+	constexpr float snapCellSize = 8.f;
+	result.x = floor(camPos->x / snapCellSize) * snapCellSize;
+	result.z = floor(camPos->z / snapCellSize) * snapCellSize;
 	result.y = PosY;
 
 	return result;

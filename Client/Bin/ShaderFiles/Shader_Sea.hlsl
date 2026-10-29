@@ -121,13 +121,13 @@ VS_OUT VS_MAIN(VS_IN In)
     float3 pos = float3(finalXZ.x, scaledPos.y, finalXZ.y); // pos  로컬 좌표
     ///스냅핑
     float4x4 snappedWorld = g_WorldMatrix;
-    float cellsize = 1.f;
+    float cellsize = 8.f;
     snappedWorld._41 = floor(snappedWorld._41 / cellsize) * cellsize;
     snappedWorld._43 = floor(snappedWorld._43 / cellsize) * cellsize;
     
     float4 worldPos = mul(float4(pos, 1.f), snappedWorld);
     
-    Out.vWorldPos = worldPos;
+
     
 // UV 하이트 매ㅐㅂ
         // Terrain
@@ -163,6 +163,7 @@ VS_OUT VS_MAIN(VS_IN In)
     
     
     float3 wavefinal = worldPos + offset;
+    Out.vWorldPos = float4(wavefinal, 1.f);
     
     float4x4 matVP = mul(g_ViewMatrix, g_ProjMatrix);
    // matWVP = mul(matWV, g_ProjMatrix);
