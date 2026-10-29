@@ -8,6 +8,17 @@
 #include "Selection.h"
 #include "Event_Struct.h"
 #include "EventBus.h"
+#include <chrono>
+
+namespace
+{
+    using EditorPerfClock = std::chrono::steady_clock;
+
+    double EditorElapsedMs(EditorPerfClock::time_point start)
+    {
+        return std::chrono::duration<double, std::milli>(EditorPerfClock::now() - start).count();
+    }
+}
 
 
 IMPLEMENT_SINGLETON(CEditorInstance)
@@ -44,6 +55,7 @@ HRESULT Editor::CEditorInstance::Initialize_Editor(const ENGINE_DESC& EngineDesc
 
 void Editor::CEditorInstance::Update_Editor(float fTimeDelta)
 {
+    const auto updateStart = EditorPerfClock::now();
 	if (m_pWin_Manager)
 		m_pWin_Manager->Update(fTimeDelta);
 
@@ -57,20 +69,27 @@ void Editor::CEditorInstance::Update_Editor(float fTimeDelta)
 	
 	//m_pObject_Manager->Update_Gui();
 
+    m_editorUpdateMs = EditorElapsedMs(updateStart);
+
 
 }
 
 void Editor::CEditorInstance::Render_Editor()
 {
+    const auto renderStart = EditorPerfClock::now();
 	m_pImgui_Manager->Begin();
 
 	if (m_pGameView)
 		m_pGameView->Render();
 
 	auto* gd = CGameInstance::GetInstance()->Get_GraphicDevice();
+    double captureMs = 0.0;
 	if (gd && m_pGameView)
-
+	{
+        const auto captureStart = EditorPerfClock::now();
 		m_pGameView->CaptureFromBackBuffer(gd->GetBackBufferRTV());
+        captureMs = EditorElapsedMs(captureStart);
+    }
 
 	if (m_pWin_Manager)
 		m_pWin_Manager->Render();
@@ -79,6 +98,18 @@ void Editor::CEditorInstance::Render_Editor()
 
 
 	m_pImgui_Manager->Render();
+
+    auto& timings = m_editorCpuTimings;
+    timings.updateMs = m_editorUpdateMs;
+    timings.renderMs = EditorElapsedMs(renderStart);
+    timings.captureMs = captureMs;
+    timings.totalMs = timings.updateMs + timings.renderMs;
+    timings.averageTotalMs = timings.ready
+        ? timings.averageTotalMs * 0.9 + timings.totalMs * 0.1
+        : timings.totalMs;
+    if (timings.totalMs > timings.peakTotalMs)
+        timings.peakTotalMs = timings.totalMs;
+    timings.ready = true;
 }
 
 bool CEditorInstance::Get_ImGuiGpuMs(double& milliseconds) const

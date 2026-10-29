@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include <chrono>
 
 #include "DInput_Manager.h"
 #include "GameInstance.h"
@@ -125,7 +126,16 @@ void CRenderer::Draw()
 	Render_NonLight();
 	
 
-	Render_Sea();
+    if (timingSlot >= 0)
+        m_pContext->End(m_gpuTimings[timingSlot].seaStart.Get());
+    const auto seaCpuStart = std::chrono::steady_clock::now();
+    Render_Sea();
+    const double seaCpuMs = std::chrono::duration<double, std::milli>(
+        std::chrono::steady_clock::now() - seaCpuStart).count();
+    m_seaCpuMs = m_seaCpuTimingReady ? m_seaCpuMs * 0.9 + seaCpuMs * 0.1 : seaCpuMs;
+    m_seaCpuTimingReady = true;
+    if (timingSlot >= 0)
+        m_pContext->End(m_gpuTimings[timingSlot].seaEnd.Get());
 	Render_Blend();
 
 	Render_UI();
@@ -163,7 +173,9 @@ void CRenderer::Initialize_GpuTiming()
             return;
         desc.Query = D3D11_QUERY_TIMESTAMP;
         if (FAILED(m_pDevice->CreateQuery(&desc, slot.start.GetAddressOf())) ||
-            FAILED(m_pDevice->CreateQuery(&desc, slot.end.GetAddressOf())))
+            FAILED(m_pDevice->CreateQuery(&desc, slot.end.GetAddressOf())) ||
+            FAILED(m_pDevice->CreateQuery(&desc, slot.seaStart.GetAddressOf())) ||
+            FAILED(m_pDevice->CreateQuery(&desc, slot.seaEnd.GetAddressOf())))
             return;
     }
     m_gpuTimingEnabled = true;
@@ -180,25 +192,29 @@ int CRenderer::Begin_GpuTiming()
     if (slot.pending)
     {
         D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjoint = {};
-        UINT64 start = 0, end = 0;
+        UINT64 start = 0, end = 0, seaStart = 0, seaEnd = 0;
         const HRESULT disjointResult = m_pContext->GetData(slot.disjoint.Get(), &disjoint, sizeof(disjoint), D3D11_ASYNC_GETDATA_DONOTFLUSH);
         if (disjointResult == S_FALSE)
             return -1;
         if (FAILED(disjointResult))
         {
             m_gpuTimingEnabled = false;
+            m_seaGpuTimingReady = false;
             m_gpuTimingReady = false;
             return -1;
         }
         const HRESULT startResult = m_pContext->GetData(slot.start.Get(), &start, sizeof(start), D3D11_ASYNC_GETDATA_DONOTFLUSH);
         const HRESULT endResult = m_pContext->GetData(slot.end.Get(), &end, sizeof(end), D3D11_ASYNC_GETDATA_DONOTFLUSH);
-        if (FAILED(startResult) || FAILED(endResult))
+        const HRESULT seaStartResult = m_pContext->GetData(slot.seaStart.Get(), &seaStart, sizeof(seaStart), D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        const HRESULT seaEndResult = m_pContext->GetData(slot.seaEnd.Get(), &seaEnd, sizeof(seaEnd), D3D11_ASYNC_GETDATA_DONOTFLUSH);
+        if (FAILED(startResult) || FAILED(endResult) || FAILED(seaStartResult) || FAILED(seaEndResult))
         {
             m_gpuTimingEnabled = false;
+            m_seaGpuTimingReady = false;
             m_gpuTimingReady = false;
             return -1;
         }
-        if (startResult == S_FALSE || endResult == S_FALSE)
+        if (startResult == S_FALSE || endResult == S_FALSE || seaStartResult == S_FALSE || seaEndResult == S_FALSE)
             return -1;
         if (!disjoint.Disjoint && disjoint.Frequency != 0 && end >= start)
         {
@@ -208,6 +224,14 @@ int CRenderer::Begin_GpuTiming()
         }
         else
             m_gpuTimingReady = false;
+        if (!disjoint.Disjoint && disjoint.Frequency != 0 && seaEnd >= seaStart)
+        {
+            const double ms = double(seaEnd - seaStart) * 1000.0 / double(disjoint.Frequency);
+            m_seaGpuMs = m_seaGpuTimingReady ? m_seaGpuMs * 0.9 + ms * 0.1 : ms;
+            m_seaGpuTimingReady = true;
+        }
+        else
+            m_seaGpuTimingReady = false;
         slot.pending = false;
     }
     m_pContext->Begin(slot.disjoint.Get());

@@ -12,6 +12,17 @@ NS_END
 
 NS_BEGIN(Editor)
 
+struct EditorCpuTimings
+{
+    double updateMs = 0.0;
+    double renderMs = 0.0;
+    double captureMs = 0.0;
+    double totalMs = 0.0;
+    double averageTotalMs = 0.0;
+    double peakTotalMs = 0.0;
+    bool ready = false;
+};
+
 class  CEditorInstance
 {
 	DECLARE_SINGLETON(CEditorInstance)
@@ -27,6 +38,8 @@ public:
 	void Update_Editor(float fTimeDelta);
 	void Render_Editor();
     bool Get_ImGuiGpuMs(double& milliseconds) const;
+    const EditorCpuTimings& Get_EditorCpuTimings() const { return m_editorCpuTimings; }
+    void Reset_EditorCpuPeak() { m_editorCpuTimings.peakTotalMs = 0.0; }
 
 	ESelectType GetType() const;
 	shared_ptr<CEntity> GetEntity() const;
@@ -39,6 +52,9 @@ public:
 	//Engine::CEventBus* GetEventBus() { return &m_EditorBus; }
 
 private:
+    EditorCpuTimings m_editorCpuTimings;
+    double m_editorUpdateMs = 0.0;
+
 	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
 
 	unique_ptr < class CWin_Mananger> m_pWin_Manager = {};
