@@ -112,7 +112,7 @@ HRESULT CVIBuffer_Sea::Initialize_Prototype(/*const _tchar* pHeightMapFilePath*/
 
 	int holeStart = m_GridSize / 4; // 1/4 지점
 	int holeEnd = (m_GridSize * 3) / 4; // 3/4 지점
-	for (size_t z = 0; z < m_GridSize ; z++)
+	for (size_t z = 0; m_NumLevel > 1 && z < m_GridSize; z++)
 	{
 		for (size_t x = 0; x < m_GridSize ; x++)
 		{
@@ -211,6 +211,9 @@ HRESULT CVIBuffer_Sea::Bind_Resources()
 
 HRESULT CVIBuffer_Sea::Render(shared_ptr<CShader> ShaderCom)
 {
+	const int useLOD = m_NumLevel > 1 ? 1 : 0;
+	if (FAILED(ShaderCom->Bind_RawValue("g_UseLOD", &useLOD, sizeof(useLOD))))
+		return E_FAIL;
 	for(_uint i=0; i < m_NumLevel; i++ )
 	{
 		float currentScale = pow(2.f, i); // 쉐이더에서는 float로

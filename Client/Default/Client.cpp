@@ -80,7 +80,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (FAILED(GameInstance.lock()->Add_Timer(TEXT("Timer_60"))))
 		return FALSE;
 
-	_float fTimerAcc = {};
 
 	// 기본 메시지 루프입니다:
 	while (true)
@@ -126,17 +125,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//deltaTime
 
-		fTimerAcc += GameInstance.lock()->Compute_TimeDelta(TEXT("Timer_Default"));
-
-		if (fTimerAcc >= 1.f / 60.f)
-		{
-			pMainApp->Update(GameInstance.lock()->Compute_TimeDelta(TEXT("Timer_60")));
-			//pMainApp->LateUpdate();
-			pMainApp->Render();
-
-
-			fTimerAcc = 0.f;
-		}
+		pMainApp->Update(GameInstance.lock()->Compute_TimeDelta(TEXT("Timer_60")));
+		pMainApp->Render();
 	}
 
 	return (int)msg.wParam;

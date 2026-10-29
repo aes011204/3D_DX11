@@ -21,6 +21,9 @@ public:
     void Draw();
     double Get_GpuRenderMs() const { return m_gpuRenderMs; }
     bool Has_GpuTiming() const { return m_gpuTimingReady; }
+    double Get_SeaGpuMs() const { return m_seaGpuMs; }
+    double Get_SeaCpuMs() const { return m_seaCpuMs; }
+    bool Has_SeaGpuTiming() const { return m_seaGpuTimingReady; }
 #ifdef _DEBUG
     void Add_DebugenderGroup(shared_ptr < class  CComponent > pDebugComponent);
 private:
@@ -52,6 +55,8 @@ private:
         ComPtr<ID3D11Query> disjoint;
         ComPtr<ID3D11Query> start;
         ComPtr<ID3D11Query> end;
+        ComPtr<ID3D11Query> seaStart;
+        ComPtr<ID3D11Query> seaEnd;
         bool pending = false;
     };
     GPU_TIMING_SLOT m_gpuTimings[4];
@@ -59,6 +64,10 @@ private:
     double m_gpuRenderMs = 0.0;
     bool m_gpuTimingEnabled = false;
     bool m_gpuTimingReady = false;
+    double m_seaGpuMs = 0.0;
+    double m_seaCpuMs = 0.0;
+    bool m_seaCpuTimingReady = false;
+    bool m_seaGpuTimingReady = false;
 
     void Render_Priority();
     void Render_NonBlend();

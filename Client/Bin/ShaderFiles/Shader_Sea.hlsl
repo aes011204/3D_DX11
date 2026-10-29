@@ -1,6 +1,7 @@
 #include "Engine_Shader_Defines.hlsli"
 
 float4x4 g_WorldMatrix, g_ViewMatrix, g_ProjMatrix;
+int g_UseLOD = 1;
 
 vector g_vCamPosition;
 
@@ -106,17 +107,15 @@ VS_OUT VS_MAIN(VS_IN In)
     scaledPos.z *= g_Scale;
     
     //모핑
-    float nextScale = g_Scale * 2.0f;
-    float2 connectXZ;
-    
-    connectXZ.x = floor((scaledPos.x / nextScale) + 0.5f) * nextScale;
-    connectXZ.y = floor((scaledPos.z / nextScale) + 0.5f) * nextScale;
-    // nextScale나눠서 1 단위로 만들고 0.5+후 소숫점 무시 후 다시 곱해서 원래 사이즈로 복구
-    
-    float maxPoint = max(abs(In.vPosition.x), abs(In.vPosition.z));
-    float alpha = saturate((maxPoint - 48.0f) / 8.f); //saturate : 0-1 사이의 값만 남김
-    // 이 수치는 바다 크기에 따라 다르게 줘야함0.75
-    float2 finalXZ = lerp(scaledPos.xz, connectXZ, alpha);
+    float2 finalXZ = scaledPos.xz;
+    if (g_UseLOD != 0)
+    {
+        float nextScale = g_Scale * 2.f;
+        float2 connectXZ = floor(scaledPos.xz / nextScale + 0.5f) * nextScale;
+        float maxPoint = max(abs(In.vPosition.x), abs(In.vPosition.z));
+        float alpha = saturate((maxPoint - 48.f) / 8.f);
+        finalXZ = lerp(scaledPos.xz, connectXZ, alpha);
+    }
     
     float3 pos = float3(finalXZ.x, scaledPos.y, finalXZ.y); // pos  로컬 좌표
     ///스냅핑

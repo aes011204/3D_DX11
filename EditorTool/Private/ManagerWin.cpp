@@ -48,6 +48,13 @@ void CManagerWin::Render()
         ImGui::Text("Scene GPU: %.3f ms", timings.renderGpuMs);
     else
         ImGui::TextDisabled("Scene GPU: waiting / unavailable");
+    ImGui::Text("Sea CPU (Render_Sea): %.3f ms", timings.seaCpuMs);
+    if (timings.seaGpuReady)
+        ImGui::Text("Sea GPU (Render_Sea): %.3f ms", timings.seaGpuMs);
+    else
+        ImGui::TextDisabled("Sea GPU: waiting / unavailable");
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Included in Scene GPU. Smoothed, delayed timestamp samples; no forced GPU wait.");
     double imguiGpuMs = 0.0;
     if (CEditorInstance::GetInstance()->Get_ImGuiGpuMs(imguiGpuMs))
         ImGui::Text("ImGui GPU (windows): %.3f ms", imguiGpuMs);

@@ -207,6 +207,9 @@ void CGameInstance::Draw()
     RecordMs(m_frameTimings.renderCpuMs, renderStart);
     m_frameTimings.renderGpuMs = m_Renderer->Get_GpuRenderMs();
     m_frameTimings.gpuReady = m_Renderer->Has_GpuTiming();
+    m_frameTimings.seaCpuMs = m_Renderer->Get_SeaCpuMs();
+    m_frameTimings.seaGpuMs = m_Renderer->Get_SeaGpuMs();
+    m_frameTimings.seaGpuReady = m_Renderer->Has_SeaGpuTiming();
 
 }
 

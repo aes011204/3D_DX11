@@ -34,6 +34,9 @@ public:
         double renderGpuMs = 0.0;
         double presentMs = 0.0;
         bool gpuReady = false;
+        double seaCpuMs = 0.0;
+        double seaGpuMs = 0.0;
+        bool seaGpuReady = false;
     };
     const FRAME_TIMINGS& Get_FrameTimings() const { return m_frameTimings; }
 
