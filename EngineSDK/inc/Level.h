@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 
-/* Å¬¶ó °³¹ßÀÚ°¡ ¸¸µé °¢Á¾ ·¹¹ë¿¡ ºÎ¸ğ°¡µÇ´Â Å¬·¡½ºÀÌ´Ù. */
+/* í´ë¼ ê°œë°œìê°€ ë§Œë“¤ ê°ì¢… ë ˆë°¸ì— ë¶€ëª¨ê°€ë˜ëŠ” í´ë˜ìŠ¤ì´ë‹¤. */
 // -> ENGINE_DLL , abstract , virtual 
 
 
-// explicit 1°³ ÀÎÀÚ »ı¼ºÀÚ¿¡¼­ ÀÚµ¿ Çüº¯È¯ ¸·±â A a =3;  ÀÌ°Ô ÄÄÆÄÀÏ µÊ
+// explicit 1ê°œ ì¸ì ìƒì„±ìì—ì„œ ìë™ í˜•ë³€í™˜ ë§‰ê¸° A a =3;  ì´ê²Œ ì»´íŒŒì¼ ë¨
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CLevel abstract : public CBase
@@ -22,10 +22,10 @@ public:
 	virtual HRESULT Render();
 
 protected:
-	ComPtr<ID3D11Device> m_pDevice = { nullptr };
-	ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
+	ComPtr<ID3D11Device> m_device = { nullptr };
+	ComPtr<ID3D11DeviceContext> m_context = { nullptr };
 
-	weak_ptr<class CGameInstance> m_pGameInstance = {  };
+	weak_ptr<class CGameInstance> m_gameInstance = {  };
 
 public:
 	virtual void Free() override;

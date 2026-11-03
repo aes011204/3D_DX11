@@ -15,7 +15,7 @@ class CPlayerBoat :
 {
 public:
 
-    struct PlayerBoatDesc : public CContainerObject::ContainerOBJ_DESC
+    struct PlayerBoatDesc : public CContainerObject::ContainerObjDesc
     {
 
 

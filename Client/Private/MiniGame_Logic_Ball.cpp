@@ -41,7 +41,7 @@ HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
 	MINIGAEMELOGIC_BALL_DESC* pDesc = static_cast<MINIGAEMELOGIC_BALL_DESC*>(pArg);
 
 	                                                                                                                                                                             
-	m_Speed = m_pGameInstance.lock()->Random(pDesc->Speed.x, pDesc->Speed.y);
+	m_Speed = m_gameInstance.lock()->Random(pDesc->Speed.x, pDesc->Speed.y);
 
 	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
 	//	[this](const Evt_FishingData& e) {
@@ -66,7 +66,7 @@ HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
 		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
 
 		// 구간 안에서만 생성되게 제한
-		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
+		float start = m_gameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
 		float end = start + m_zoneSize;
 
 		m_zones[i].start = start;
@@ -115,7 +115,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 		////////////////////////////////////
 		m_AccTime += timeDelta;
-		m_Angle = m_Speed * m_AccTime;
+		m_angle = m_Speed * m_AccTime;
 		
 		/*float currentAngle = fmod(m_Angle, 360.f);
 		if (currentAngle < 0) currentAngle += 360.f;
@@ -171,9 +171,9 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 		
 		Evt_GetFish  e = {};
 		e.DefID = m_DefID;
-		e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
+		e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
 		e.fishInst.mutationId = 2;
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
 		m_FishCount--;
 
@@ -199,7 +199,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 void CMiniGame_Logic_Ball::ResetZoon()
 {
-	m_zoneSize = m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
+	m_zoneSize = m_gameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
 
 	float divide = 1.f / m_zoneCount;
 
@@ -211,7 +211,7 @@ void CMiniGame_Logic_Ball::ResetZoon()
 		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
 
 		// 구간 안에서만 생성되게 제한
-		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
+		float start = m_gameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
 		float end = start + m_zoneSize;
 
 		m_zones[i].start = start;
@@ -249,7 +249,7 @@ void CMiniGame_Logic_Ball::OnInput()
 		//else { m_chose = true; }
 
 		float angle01 = {};
-		float currentAngle = fmod(m_Angle, 360.f);
+		float currentAngle = fmod(m_angle, 360.f);
 		if (currentAngle < 0) currentAngle += 360.f;
 
 		angle01 = (currentAngle / 360.f);

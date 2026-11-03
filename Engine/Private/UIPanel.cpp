@@ -1,4 +1,4 @@
-#include "UIPanel.h"
+ï»¿#include "UIPanel.h"
 #include "UISlot.h"
 #include "UITransform.h"
 #include "UICanvas.h"
@@ -20,34 +20,34 @@ HRESULT CUIPanel::OnInit(void* pArg)
 
     Set_Interactive(false);
 
-    // ¹Û¿¡¼­ Root Canvas ¿¬°áÇØÁÖ±â
-    UIPANEL_DESC* pDesc = static_cast<UIPANEL_DESC*>(pArg);
+    // ë°–ì—ì„œ Root Canvas ì—°ê²°í•´ì£¼ê¸°
+    UIPanelDesc* pDesc = static_cast<UIPanelDesc*>(pArg);
 
-    m_LayoutDesc = pDesc->LayoutDesc;
+    m_layoutDesc = pDesc->layoutDesc;
     //m_IsTransparent = pDesc->IsTransparent;
-    m_IsFullScreen = pDesc->IsFullScreen;
-    m_IsUseLayout = pDesc->IsUseLayout;
+    m_isFullScreen = pDesc->isFullScreen;
+    m_isUseLayout = pDesc->isUseLayout;
 
     __super::OnInit(pDesc);
 
    // m_IsUseLayout = pDesc->IsUseLayout;
 
 
-    if (pDesc->IsFullScreen == true)
+    if (pDesc->isFullScreen == true)
     {
-        Rect m_CanvasSize = m_pGameInstance.lock()->Get_WinSize();
+        Rect m_canvasSize = m_gameInstance.lock()->Get_WinSize();
 
-       // pDesc->vAnchorPoint = Vector2{ 0.5f, 0.5f }; // Áß¾Ó ±âÁØ
-       // pDesc->vPivot = Vector2{ 0.5f, 0.5f }; // Áß¾Ó ±âÁØ
+       // pDesc->vAnchorPoint = Vector2{ 0.5f, 0.5f }; // ì¤‘ì•™ ê¸°ì¤€
+       // pDesc->vPivot = Vector2{ 0.5f, 0.5f }; // ì¤‘ì•™ ê¸°ì¤€
        // pDesc->vSizeDelta = Vector2{ m_CanvasSize.w, m_CanvasSize.h };
        // pDesc->vAnchoredPos = Vector2{ 0.f, 0.f };
        // pDesc->vScale = Vector2{ 1.f, 1.f };
         
-        m_pUITransformCom->SetAnchorPoint(Vector2(0.5f, 0.5f));
-        m_pUITransformCom->SetPivot(Vector2(0.5f, 0.5f));
-        m_pUITransformCom->SetSizeDelta(Vector2(m_CanvasSize.w, m_CanvasSize.h));
-        m_pUITransformCom->SetAnchoredPos(Vector2(0.f, 0.f));
-        m_pUITransformCom->SetLocalScale(Vector2(1.f,1.f));
+        m_UITransformCom->SetAnchorPoint(Vector2(0.5f, 0.5f));
+        m_UITransformCom->SetPivot(Vector2(0.5f, 0.5f));
+        m_UITransformCom->SetSizeDelta(Vector2(m_canvasSize.w, m_canvasSize.h));
+        m_UITransformCom->SetAnchoredPos(Vector2(0.f, 0.f));
+        m_UITransformCom->SetLocalScale(Vector2(1.f,1.f));
     }
 
     return S_OK;
@@ -56,7 +56,7 @@ HRESULT CUIPanel::OnInit(void* pArg)
 
 void CUIPanel::OnActive()
 {
-    if(m_IsUseLayout == true)
+    if(m_isUseLayout == true)
 		Layout();
 
     __super::OnActive();
@@ -78,7 +78,7 @@ void CUIPanel::OnDisabled()
 void CUIPanel::OnUpdate(const _float& timeDelta)
 {
     //if (m_bIsDirtyCom) {
-    //    RebindCom();      // "¹Ù²ï °Í"¸¸ ÇÑ ¹ø °»½Å
+    //    RebindCom();      // "ë°”ë€ ê²ƒ"ë§Œ í•œ ë²ˆ ê°±ì‹ 
     //    m_bIsDirtyCom = false;
     //}
 
@@ -163,7 +163,7 @@ void CUIPanel::OnClear()
 
 //void CUIPanel::RebindCom()
 //{
-//    // ÀÌÁ¦ ¸ğµç ÄÄÆ÷³ÍÆ®´Â ³ÎÃ¼Å© ÀßÇÏ±â ¾ø´Â°æ¿ìµµ ÀÖÀ»¼ö ÀÖÀ¸´Ï±î
+//    // ì´ì œ ëª¨ë“  ì»´í¬ë„ŒíŠ¸ëŠ” ë„ì²´í¬ ì˜í•˜ê¸° ì—†ëŠ”ê²½ìš°ë„ ìˆì„ìˆ˜ ìˆìœ¼ë‹ˆê¹Œ
 //    m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
 //    m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 //    m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
@@ -173,19 +173,19 @@ void CUIPanel::Save_ToJson(nlohmann::json& j)
 {
     __super::Save_ToJson(j);
     //j["IsTransparent"] = m_IsTransparent;
-    j["IsFullScreen"] = m_IsFullScreen;
-    j["IsUseLayout"] = m_IsUseLayout;
-    if (m_IsUseLayout == true)
+    j["IsFullScreen"] = m_isFullScreen;
+    j["IsUseLayout"] = m_isUseLayout;
+    if (m_isUseLayout == true)
     {
-        if (m_IsUseLayout)
+        if (m_isUseLayout)
         {
             nlohmann::json jLayout;
-            jLayout["Col"] = m_LayoutDesc.m_Col;
-            jLayout["Raw"] = m_LayoutDesc.m_Row;
-            jLayout["SlotSize"] = m_LayoutDesc.m_SlotSize;
-            jLayout["Padding"] = { m_LayoutDesc.m_Padding.x,m_LayoutDesc.m_Padding.y };
-            jLayout["Spacing"] = { m_LayoutDesc.m_Spacing.x, m_LayoutDesc.m_Spacing.y };
-            jLayout["Offset"] = { m_LayoutDesc.m_Offset.x, m_LayoutDesc.m_Offset.y };
+            jLayout["Col"] = m_layoutDesc.col;
+            jLayout["Raw"] = m_layoutDesc.row;
+            jLayout["SlotSize"] = m_layoutDesc.slotSize;
+            jLayout["Padding"] = { m_layoutDesc.padding.x,m_layoutDesc.padding.y };
+            jLayout["Spacing"] = { m_layoutDesc.spacing.x, m_layoutDesc.spacing.y };
+            jLayout["Offset"] = { m_layoutDesc.offset.x, m_layoutDesc.offset.y };
 
             j["LayoutDesc"] = jLayout;
         }
@@ -201,7 +201,7 @@ void CUIPanel::Load_FromJson(nlohmann::json& j)
     //}
     if (j.contains("IsFullScreen"))
     {
-        m_IsFullScreen = j["IsFullScreen"];
+        m_isFullScreen = j["IsFullScreen"];
     }
    /* if (j.contains("IsUseLayout"))
     {
@@ -239,29 +239,29 @@ void CUIPanel::Load_FromJson(nlohmann::json& j)
 
 void CUIPanel::OnGui()
 {
-    ImGui::Checkbox("Use Layout", &m_IsUseLayout);
-    if (m_IsUseLayout == true)
+    ImGui::Checkbox("Use Layout", &m_isUseLayout);
+    if (m_isUseLayout == true)
     {
-        // Çà°ú ¿­ (Step ¹öÆ°À¸·Î Á¶Àı °¡´ÉÇÏ°Ô)
-        ImGui::InputInt("Rows", &m_LayoutDesc.m_Row);
-        ImGui::InputInt("Columns", &m_LayoutDesc.m_Col);
+        // í–‰ê³¼ ì—´ (Step ë²„íŠ¼ìœ¼ë¡œ ì¡°ì ˆ ê°€ëŠ¥í•˜ê²Œ)
+        ImGui::InputInt("Rows", &m_layoutDesc.row);
+        ImGui::InputInt("Columns", &m_layoutDesc.col);
 
-        ImGui::Separator(); // ±¸ºĞ¼±
+        ImGui::Separator(); // êµ¬ë¶„ì„ 
 
-        //// ½½·Ô Å©±â (º¸Åë °¡·Î¼¼·Î ºñÀ²ÀÌ °°À¸¹Ç·Î float ÇÏ³ª·Î)
+        //// ìŠ¬ë¡¯ í¬ê¸° (ë³´í†µ ê°€ë¡œì„¸ë¡œ ë¹„ìœ¨ì´ ê°™ìœ¼ë¯€ë¡œ float í•˜ë‚˜ë¡œ)
         //ImGui::DragFloat("Slot Size", &m_LayoutDesc.m_SlotSize, 0.5f, 1.0f, 500.0f, "%.1f");
 
-        // °£°İ (Spacing)
-        ImGui::DragFloat2("Spacing", (float*)&m_LayoutDesc.m_Spacing, 0.5f, 0.0f, 100.0f, "%.1f");
+        // ê°„ê²© (Spacing)
+        ImGui::DragFloat2("Spacing", (float*)&m_layoutDesc.spacing, 0.5f, 0.0f, 100.0f, "%.1f");
 
-        // ÆĞµù (Padding - ÀüÃ¼ ¿µ¿ª ³»ºÎ ¿©¹é)
-        ImGui::DragFloat2("Padding", (float*)&m_LayoutDesc.m_Padding, 0.5f, 0.0f, 100.0f, "%.1f");
+        // íŒ¨ë”© (Padding - ì „ì²´ ì˜ì—­ ë‚´ë¶€ ì—¬ë°±)
+        ImGui::DragFloat2("Padding", (float*)&m_layoutDesc.padding, 0.5f, 0.0f, 100.0f, "%.1f");
 
-        // ¿ÀÇÁ¼Â (Offset - ½ÃÀÛ À§Ä¡ Á¶Á¤)
-        ImGui::DragFloat2("Offset", (float*)&m_LayoutDesc.m_Offset, 0.5f, -1000.0f, 1000.0f, "%.1f");
+        // ì˜¤í”„ì…‹ (Offset - ì‹œì‘ ìœ„ì¹˜ ì¡°ì •)
+        ImGui::DragFloat2("Offset", (float*)&m_layoutDesc.offset, 0.5f, -1000.0f, 1000.0f, "%.1f");
 
         if (ImGui::Button("Apply Layout")) {
-            // ¿©±â¿¡ ½½·ÔµéÀÇ À§Ä¡¸¦ Àç°è»êÇÏ´Â Arrange_Slots() °°Àº ÇÔ¼ö È£Ãâ
+            // ì—¬ê¸°ì— ìŠ¬ë¡¯ë“¤ì˜ ìœ„ì¹˜ë¥¼ ì¬ê³„ì‚°í•˜ëŠ” Arrange_Slots() ê°™ì€ í•¨ìˆ˜ í˜¸ì¶œ
             Layout();
         }
     }
@@ -291,7 +291,7 @@ void CUIPanel::Free()
 void CUIPanel::Layout()
 {
 
-    //// ÀÏ´Ü left top
+    //// ì¼ë‹¨ left top
     //for (auto& child : m_Children)
     //{
     //    if (child->IsLayoutTarget() != true)
@@ -305,14 +305,14 @@ void CUIPanel::Layout()
 
     //    child->GetUITransform()->SetAnchoredPos({ posX, posY });
 
-    //    // child °¡ ½½¶ùÀÏ °æ¿ì ÀÎµ¦½º ¸¦ ³Ñ±ä´Ù
+    //    // child ê°€ ìŠ¬ëì¼ ê²½ìš° ì¸ë±ìŠ¤ ë¥¼ ë„˜ê¸´ë‹¤
     //    dynamic_pointer_cast<CUISlot>(child)->SetGridIndex({ (float)Raw, (float)Col });
 
 
     //    index++;
     //}
 
-    // ÁßÁ¡  ///////////////////////////////////////////////////////////////
+    // ì¤‘ì   ///////////////////////////////////////////////////////////////
     int index = 0;
     //LOG_F(LOG_LEVEL::INFO, "--- Layout Debug ---");
     //LOG_F(LOG_LEVEL::INFO, "Desc Raw/Col: %d, %d", m_LayoutDesc.m_Raw, m_LayoutDesc.m_Col);
@@ -323,25 +323,25 @@ void CUIPanel::Layout()
 
     
 
-    for (auto& child : m_Children)
+    for (auto& child : m_children)
     {
-        if (child->IsLayoutTarget() != true|| child->Get_UIState()==UI_STATE::INACTIVE)
+        if (child->IsLayoutTarget() != true|| child->Get_UIState()==EUIState::INACTIVE)
             continue;
 
         _float2 slotSize = child->GetUITransform()->Get_FinalSize();
-    float totalWidth = (m_LayoutDesc.m_Col * slotSize.x) + ((m_LayoutDesc.m_Col - 1) * m_LayoutDesc.m_Spacing.x);
-    float totalHeight = (m_LayoutDesc.m_Row * slotSize.y) + ((m_LayoutDesc.m_Row - 1) * m_LayoutDesc.m_Spacing.y);
+    float totalWidth = (m_layoutDesc.col * slotSize.x) + ((m_layoutDesc.col - 1) * m_layoutDesc.spacing.x);
+    float totalHeight = (m_layoutDesc.row * slotSize.y) + ((m_layoutDesc.row - 1) * m_layoutDesc.spacing.y);
 
-    _float2 startPos = { -(totalWidth / 2) + (slotSize.x / 2)+m_LayoutDesc.m_Offset.x, (totalHeight / 2) - (slotSize.y / 2)+ m_LayoutDesc.m_Offset.y };
+    _float2 startPos = { -(totalWidth / 2) + (slotSize.x / 2)+m_layoutDesc.offset.x, (totalHeight / 2) - (slotSize.y / 2)+ m_layoutDesc.offset.y };
 
 
-        int Col = index % m_LayoutDesc.m_Col;
-        int Raw = index / m_LayoutDesc.m_Col;
+        int Col = index % m_layoutDesc.col;
+        int Raw = index / m_layoutDesc.col;
 
-        float posX = startPos.x + (slotSize.x + m_LayoutDesc.m_Spacing.x) * Col;
-        float posY = startPos.y - (slotSize.y + m_LayoutDesc.m_Spacing.y) * Raw;
+        float posX = startPos.x + (slotSize.x + m_layoutDesc.spacing.x) * Col;
+        float posY = startPos.y - (slotSize.y + m_layoutDesc.spacing.y) * Raw;
 
-        LOG_F(LOG_LEVEL::INFO, "First Slot AnchoredPos: %f, %f", posX, posY); 
+        LOG_F(ELogLevel::INFO, "First Slot AnchoredPos: %f, %f", posX, posY); 
         child->GetUITransform()->SetAnchoredPos({ posX, posY });
 
 

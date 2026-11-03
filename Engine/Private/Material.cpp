@@ -1,8 +1,8 @@
-#include "Material.h"
+ï»¿#include "Material.h"
 #include "Shader.h"
 
 CMaterial::CMaterial(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice(pDevice),m_pContext(pContext)
+	: m_device(pDevice),m_context(pContext)
 {
 }
 
@@ -88,31 +88,31 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 		data.pSysMem = &black;
 		data.SysMemPitch = sizeof(UINT);
 
-		if (FAILED(m_pDevice->CreateTexture2D(&desc, &data, tex.GetAddressOf())))
+		if (FAILED(m_device->CreateTexture2D(&desc, &data, tex.GetAddressOf())))
 			return E_FAIL;
 
-		if (FAILED(m_pDevice->CreateShaderResourceView(tex.Get(), nullptr, m_pBlackSRV.ReleaseAndGetAddressOf())))
+		if (FAILED(m_device->CreateShaderResourceView(tex.Get(), nullptr, m_blackSRV.ReleaseAndGetAddressOf())))
 			return E_FAIL;
 	}
 
 
 
-		// 2. ÀçÁú ÀÌ¸§ ÀĞ±â (MAX_PATH¸¸Å­ °íÁ¤ Å©±â)
+		// 2. ì¬ì§ˆ ì´ë¦„ ì½ê¸° (MAX_PATHë§Œí¼ ê³ ì • í¬ê¸°)
 		_char szMatName[MAX_PATH] = {};
 		InFile.read(szMatName, MAX_PATH);
 
-		memcpy(&m_szMatName, &szMatName, MAX_PATH);
-		//// ¿£Áø¿¡¼­ »ç¿ëÇÒ ÀçÁú °´Ã¼ »ı¼º
+		memcpy(&m_matName, &szMatName, MAX_PATH);
+		//// ì—”ì§„ì—ì„œ ì‚¬ìš©í•  ì¬ì§ˆ ê°ì²´ ìƒì„±
 		//auto pMaterial = make_shared<CMaterial>(m_pDevice, m_pContext);
 		//pMaterial->Set_Name(szMatName);
 
-		// 3. ÅØ½ºÃ³ Å¸ÀÔ ·çÇÁ (ÄÁ¹öÅÍÀÇ AI_TEXTURE_TYPE_MAX¿Í È½¼ö°¡ °°¾Æ¾ß ÇÔ)
-		// º¸Åë Assimp 5.x ±âÁØ 18ÀÔ´Ï´Ù. ÄÁ¹öÅÍ¿¡¼­ Ãâ·ÂµÈ °ªÀ» º¸°í ¸ÂÃß¼¼¿ä.
+		// 3. í…ìŠ¤ì²˜ íƒ€ì… ë£¨í”„ (ì»¨ë²„í„°ì˜ AI_TEXTURE_TYPE_MAXì™€ íšŸìˆ˜ê°€ ê°™ì•„ì•¼ í•¨)
+		// ë³´í†µ Assimp 5.x ê¸°ì¤€ 18ì…ë‹ˆë‹¤. ì»¨ë²„í„°ì—ì„œ ì¶œë ¥ëœ ê°’ì„ ë³´ê³  ë§ì¶”ì„¸ìš”.
 		/*const _uint iAssimpTypeMax = 18;*/
 
 		for (_uint j = 0; j < MAX_TEXTURE_SLOT; ++j)
 		{
-			// 4. ÀÌ Å¸ÀÔ(j)ÀÇ ÅØ½ºÃ³ °³¼ö ÀĞ±â
+			// 4. ì´ íƒ€ì…(j)ì˜ í…ìŠ¤ì²˜ ê°œìˆ˜ ì½ê¸°
 			_uint iNumTextures = 0;
 			if (!InFile.read(reinterpret_cast<char*>(&iNumTextures), sizeof(_uint)))
 				break;
@@ -120,34 +120,34 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 			if (0 == iNumTextures)
 				continue;
 
-			// 5. °³¼ö¸¸Å­ °æ·Î ÀĞ°í ÅØ½ºÃ³ ·Îµå
+			// 5. ê°œìˆ˜ë§Œí¼ ê²½ë¡œ ì½ê³  í…ìŠ¤ì²˜ ë¡œë“œ
 			for (_uint k = 0; k < iNumTextures; ++k)
 			{
 				_char szFullPath[MAX_PATH] = {};
 				if (!InFile.read(szFullPath, MAX_PATH))
 					break;
 
-				// À¯´ÏÄÚµå º¯È¯
+				// ìœ ë‹ˆì½”ë“œ ë³€í™˜
 				_tchar szWPath[MAX_PATH] = {};
 				MultiByteToWideChar(CP_ACP, 0, szFullPath, -1, szWPath, MAX_PATH);
 
-				// ½ÇÁ¦ ÅØ½ºÃ³ ·Îµå ¹× SRV »ı¼º (±âÁ¸ ÇÔ¼ö È°¿ë)
+				// ì‹¤ì œ í…ìŠ¤ì²˜ ë¡œë“œ ë° SRV ìƒì„± (ê¸°ì¡´ í•¨ìˆ˜ í™œìš©)
 				ComPtr<ID3D11ShaderResourceView> pSRV = nullptr;
 
-				// È®ÀåÀÚ Ã¼Å© ·ÎÁ÷
+				// í™•ì¥ì ì²´í¬ ë¡œì§
 				HRESULT hr = S_OK;
 				if (strstr(szFullPath, ".dds") || strstr(szFullPath, ".DDS"))
-					hr = CreateDDSTextureFromFile(m_pDevice.Get(), szWPath, nullptr, &pSRV);
+					hr = CreateDDSTextureFromFile(m_device.Get(), szWPath, nullptr, &pSRV);
 				else
-					hr = CreateWICTextureFromFile(m_pDevice.Get(), szWPath, nullptr, &pSRV);
+					hr = CreateWICTextureFromFile(m_device.Get(), szWPath, nullptr, &pSRV);
 
 				if (SUCCEEDED(hr))
 				{
-					// ÀçÁú °´Ã¼ ³»ºÎÀÇ º¤ÅÍ ¹è¿­¿¡ Ãß°¡
-					// pMaterial->m_Textures[j].push_back(pSRV); ¿Í °°Àº ÇüÅÂ
+					// ì¬ì§ˆ ê°ì²´ ë‚´ë¶€ì˜ ë²¡í„° ë°°ì—´ì— ì¶”ê°€
+					// pMaterial->m_Textures[j].push_back(pSRV); ì™€ ê°™ì€ í˜•íƒœ
 					//pMaterial->Add_Texture(j, pSRV);
 
-					m_MaterialTextures[j].push_back(pSRV);
+					m_materialTextures[j].push_back(pSRV);
 				}
 			}
 		}
@@ -167,11 +167,11 @@ HRESULT CMaterial::Bind_Material(shared_ptr<CShader> pShader, const _char* pCons
 	//if (nullptr == m_MaterialTextures[eMaterialType][iTextureIndex] ||
 	//	iTextureIndex >= m_MaterialTextures[eMaterialType].size())
 	//	return E_FAIL;
-	if (iTextureIndex < m_MaterialTextures[eMaterialType].size())
-		srv = m_MaterialTextures[eMaterialType][iTextureIndex];
+	if (iTextureIndex < m_materialTextures[eMaterialType].size())
+		srv = m_materialTextures[eMaterialType][iTextureIndex];
 	
 		if (srv == nullptr)
-			srv = m_pBlackSRV; // 
+			srv = m_blackSRV; // 
 
 		pShader->Bind_SRV(pConstantName, srv);
 	
@@ -194,7 +194,7 @@ void CMaterial::Free()
 {
 	for (size_t i = 0; i < AI_TEXTURE_TYPE_MAX; i++)
 	{
-		m_MaterialTextures[i].clear();
+		m_materialTextures[i].clear();
 	}
 
 	__super::Free();

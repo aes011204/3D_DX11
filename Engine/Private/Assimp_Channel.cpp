@@ -1,4 +1,4 @@
-#include "Assimp_Channel.h"
+Ôªø#include "Assimp_Channel.h"
 
 #include "Assimp_Model.h"
 #include "Assimp_Bone.h"
@@ -10,22 +10,22 @@ CAssimp_Channel::CAssimp_Channel()
 
 HRESULT CAssimp_Channel::Initialize(const aiNodeAnim* pAIChannel, shared_ptr<class CAssimp_Model> pModel)
 {
-    m_iBoneIndex = pModel->Get_BoneIndex(pAIChannel->mNodeName.data);
+    m_boneIndex = pModel->Get_BoneIndex(pAIChannel->mNodeName.data);
 
-	m_iNumKeyFrames = max(pAIChannel->mNumPositionKeys, pAIChannel->mNumRotationKeys);
-	m_iNumKeyFrames = max(m_iNumKeyFrames, pAIChannel->mNumScalingKeys);
+	m_numKeyFrames = max(pAIChannel->mNumPositionKeys, pAIChannel->mNumRotationKeys);
+	m_numKeyFrames = max(m_numKeyFrames, pAIChannel->mNumScalingKeys);
 
     _float3 vScale = {};
     _float4 vRotation = {};
     _float3 vTranslation = {};
 
-    for(size_t i =0;i<m_iNumKeyFrames;i++)
+    for(size_t i =0;i<m_numKeyFrames;i++)
     {
-        KEYFRAME KeyFrame = {};
+        KeyFrame keyFrame = {};
         if(pAIChannel->mNumScalingKeys > i)
         {
             memcpy(&vScale, &pAIChannel->mScalingKeys[i].mValue, sizeof(_float3));
-            KeyFrame.fTrackPosition = pAIChannel->mScalingKeys[i].mTime; // ¿Ã∞≈ Ω«¡¶ Ω√∞£¿Ã æ∆¥‘
+            keyFrame.trackPosition = pAIChannel->mScalingKeys[i].mTime; // Ïù¥Í±∞ Ïã§Ï†ú ÏãúÍ∞ÑÏù¥ ÏïÑÎãò
         }
         if (pAIChannel->mNumRotationKeys > i)
         {
@@ -34,19 +34,19 @@ HRESULT CAssimp_Channel::Initialize(const aiNodeAnim* pAIChannel, shared_ptr<cla
             vRotation.z = pAIChannel->mRotationKeys[i].mValue.z;
             vRotation.w = pAIChannel->mRotationKeys[i].mValue.w;
 
-            KeyFrame.fTrackPosition = pAIChannel->mRotationKeys[i].mTime;
+            keyFrame.trackPosition = pAIChannel->mRotationKeys[i].mTime;
         }
         if (pAIChannel->mNumPositionKeys > i)
         {
             memcpy(&vTranslation, &pAIChannel->mPositionKeys[i].mValue, sizeof(_float3));
-            KeyFrame.fTrackPosition = pAIChannel->mPositionKeys[i].mTime; // ¿Ã∞≈ Ω«¡¶ Ω√∞£¿Ã æ∆¥‘
+            keyFrame.trackPosition = pAIChannel->mPositionKeys[i].mTime; // Ïù¥Í±∞ Ïã§Ï†ú ÏãúÍ∞ÑÏù¥ ÏïÑÎãò
         }
 
-        KeyFrame.vScale = vScale;
-        KeyFrame.vRotation = vRotation;
-        KeyFrame.vTranslation = vTranslation;
+        keyFrame.scale = vScale;
+        keyFrame.rotation = vRotation;
+        keyFrame.translation = vTranslation;
 
-        m_KeyFrames.push_back(KeyFrame);
+        m_keyFrames.push_back(keyFrame);
     }
 
      
@@ -56,47 +56,47 @@ HRESULT CAssimp_Channel::Initialize(const aiNodeAnim* pAIChannel, shared_ptr<cla
 void CAssimp_Channel::Update_TransformationMatrix(_float fCurrentTrackPosition, const vector<shared_ptr<CAssimp_Bone>>& Bones)
 {
     if (0.f == fCurrentTrackPosition)
-        m_iCurrentKeyFrameIndex = 0;
+        m_currentKeyFrameIndex = 0;
 
-    KEYFRAME LastKeyFrame = m_KeyFrames.back();
+    KeyFrame LastKeyFrame = m_keyFrames.back();
 
     _vector vScale, vRotation, vTranslation;
 
-    if (fCurrentTrackPosition >= LastKeyFrame.fTrackPosition)// ∏∂¡ˆ∏∑ «¡∑π¿” ¿Ã»ƒ ±◊ ¿⁄ºº ±◊¥Î∑Œ ¿Ø¡ˆ
+    if (fCurrentTrackPosition >= LastKeyFrame.trackPosition)// ÎßàÏßÄÎßâ ÌîÑÎ†àÏûÑ Ïù¥ÌõÑ Í∑∏ ÏûêÏÑ∏ Í∑∏ÎåÄÎ°ú Ïú†ÏßÄ
     {
-        vScale = XMLoadFloat3(&LastKeyFrame.vScale);
-        vRotation = XMLoadFloat4(&LastKeyFrame.vRotation);
-        vTranslation = XMVectorSetW(XMLoadFloat3(&LastKeyFrame.vTranslation), 1.f);
+        vScale = XMLoadFloat3(&LastKeyFrame.scale);
+        vRotation = XMLoadFloat4(&LastKeyFrame.rotation);
+        vTranslation = XMVectorSetW(XMLoadFloat3(&LastKeyFrame.translation), 1.f);
     }
-    else // ªÁ¿Ã∫∏∞£
+    else // ÏÇ¨Ïù¥Î≥¥Í∞Ñ
     {
-        while (fCurrentTrackPosition >= m_KeyFrames[m_iCurrentKeyFrameIndex + 1].fTrackPosition)
-            ++m_iCurrentKeyFrameIndex;
+        while (fCurrentTrackPosition >= m_keyFrames[m_currentKeyFrameIndex + 1].trackPosition)
+            ++m_currentKeyFrameIndex;
 
-        _float fRatio = (fCurrentTrackPosition - m_KeyFrames[m_iCurrentKeyFrameIndex].fTrackPosition) /
-            (m_KeyFrames[m_iCurrentKeyFrameIndex + 1].fTrackPosition - m_KeyFrames[m_iCurrentKeyFrameIndex].fTrackPosition);
+        _float fRatio = (fCurrentTrackPosition - m_keyFrames[m_currentKeyFrameIndex].trackPosition) /
+            (m_keyFrames[m_currentKeyFrameIndex + 1].trackPosition - m_keyFrames[m_currentKeyFrameIndex].trackPosition);
 
         _vector vLeftScale, vRightScale;
         _vector	vLeftRotation, vRightRotation;
         _vector	vLeftTranslation, vRightTranslation;
 
-        vLeftScale = XMLoadFloat3(&m_KeyFrames[m_iCurrentKeyFrameIndex].vScale);
-        vRightScale = XMLoadFloat3(&m_KeyFrames[m_iCurrentKeyFrameIndex+1].vScale);
+        vLeftScale = XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex].scale);
+        vRightScale = XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex+1].scale);
         vScale = XMVectorLerp(vLeftScale, vRightScale, fRatio);
 
-        vLeftRotation = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrameIndex].vRotation);
-        vRightRotation = XMLoadFloat4(&m_KeyFrames[m_iCurrentKeyFrameIndex + 1].vRotation);
+        vLeftRotation = XMLoadFloat4(&m_keyFrames[m_currentKeyFrameIndex].rotation);
+        vRightRotation = XMLoadFloat4(&m_keyFrames[m_currentKeyFrameIndex + 1].rotation);
         vRotation = XMQuaternionSlerp(vLeftRotation, vRightRotation, fRatio);
 
-        vLeftTranslation = XMVectorSetW(XMLoadFloat3(&m_KeyFrames[m_iCurrentKeyFrameIndex].vTranslation), 1.f);
-        vRightTranslation = XMVectorSetW(XMLoadFloat3(&m_KeyFrames[m_iCurrentKeyFrameIndex + 1].vTranslation), 1.f);
+        vLeftTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex].translation), 1.f);
+        vRightTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex + 1].translation), 1.f);
         vTranslation = XMVectorLerp(vLeftTranslation, vRightTranslation, fRatio);
     }
 
     _matrix		BoneTransformationMatrix = XMMatrixAffineTransformation(
         vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
 
-    Bones[m_iBoneIndex]->Update_TransformationMatrix(BoneTransformationMatrix);
+    Bones[m_boneIndex]->Update_TransformationMatrix(BoneTransformationMatrix);
 }
 
 shared_ptr<CAssimp_Channel> CAssimp_Channel::Create(const aiNodeAnim* pAIChannel, shared_ptr<class CAssimp_Model> pModel)
@@ -114,5 +114,5 @@ shared_ptr<CAssimp_Channel> CAssimp_Channel::Create(const aiNodeAnim* pAIChannel
 void CAssimp_Channel::Free()
 {
 	__super::Free();
-    m_KeyFrames.clear();
+    m_keyFrames.clear();
 }

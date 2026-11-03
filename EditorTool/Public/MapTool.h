@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Editor_Win.h"
 
 
@@ -21,11 +21,11 @@ public:
     virtual void Update(float fTimeDelta) override;
     virtual void Render() override;
 
-    void Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath);
+    void Render_SaveLoadPanel(ESaveType eType, const string& folderPath);
 
 private:
-    vector<string> s_files[(int)SAVETYPE::END];
-    int            s_selected[(int)SAVETYPE::END] = { -1, -1 };
+    vector<string> s_files[(int)ESaveType::END];
+    int            s_selected[(int)ESaveType::END] = { -1, -1 };
     char           s_newFileName[128] = "NewData.json";
 public:
     static shared_ptr<CMapTool> Create();

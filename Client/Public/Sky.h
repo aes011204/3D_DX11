@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "Client_Define.h"
 #include "GameObject.h"
 
@@ -12,7 +12,7 @@ class CSky :
     public CGameObject
 {
 public:
-	typedef struct tagTerrainDesc final : public CGameObject::GAMEOBJECT_DESC
+	typedef struct tagTerrainDesc final : public CGameObject::GameObjectDesc
 	{
 
 	}TERRAIN_DESC;
@@ -32,9 +32,9 @@ public:
 protected:
 	float m_Acc = {};
 
-	shared_ptr<CShader> m_pShaderCom = { nullptr };
-	shared_ptr<CVIBuffer> m_pVIBufferCom = { nullptr };
-	shared_ptr<CTexture> m_pTextureCom = { nullptr };
+	shared_ptr<CShader> m_shaderCom = { nullptr };
+	shared_ptr<CVIBuffer> m_VIBufferCom = { nullptr };
+	shared_ptr<CTexture> m_textureCom = { nullptr };
 	shared_ptr<CTexture> m_pTextureNoiseCom = { nullptr };
 	shared_ptr<CTexture> m_pTextureDistiortionCom = { nullptr };
 protected:
@@ -43,11 +43,11 @@ protected:
 	HRESULT Bind_ShaderResources();
 
 private:
-	//_float2 NightT = _float2(0.f, 0.20);	//0.00 ~0.20 : π„
-	//_float2 MidNightT = _float2(0.20f, 0.40);	//0.20 ~0.35 : ªı∫Æ(π„ °Ê ≥∑)
-	//_float2 DayT = _float2(0.40f, 0.65);	//0.35 ~0.65 : ≥∑
-	//_float2 SunsetT = _float2(0.65f, 0.75);	//0.65 ~0.80 : ≥Î¿ª(≥∑ °Ê ≥Î¿ª)
-	//_float2 AfterSunsetT = _float2(0.75f, .85f);	//0.80 ~1.00 : π„(≥Î¿ª °Ê π„)
+	//_float2 NightT = _float2(0.f, 0.20);	//0.00 ~0.20 : Î∞§
+	//_float2 MidNightT = _float2(0.20f, 0.40);	//0.20 ~0.35 : ÏÉàÎ≤Ω(Î∞§ ‚Üí ÎÇÆ)
+	//_float2 DayT = _float2(0.40f, 0.65);	//0.35 ~0.65 : ÎÇÆ
+	//_float2 SunsetT = _float2(0.65f, 0.75);	//0.65 ~0.80 : ÎÖ∏ÏùÑ(ÎÇÆ ‚Üí ÎÖ∏ÏùÑ)
+	//_float2 AfterSunsetT = _float2(0.75f, .85f);	//0.80 ~1.00 : Î∞§(ÎÖ∏ÏùÑ ‚Üí Î∞§)
 	//_float2 NightT2 = _float2(0.85f, 1.0f);
 
 	//_float3 Night = _float3(0.05, 0.08, 0.15);

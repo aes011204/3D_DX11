@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "VIBuffer.h"
 
 NS_BEGIN(Engine)
@@ -7,12 +7,12 @@ class CVIBuffer_Instance abstract:
 {
 
 public:
-	struct INSTANCE_DESC
+	struct InstanceDesc
 	{
-		_uint		iNumInstances = {};
-		_float3		vCenter;
-		_float3		vRange;
-		_float2		vScale;
+		_uint		numInstances = {};
+		_float3		center;
+		_float3		range;
+		_float2		scale;
 	};
 
 protected:
@@ -28,14 +28,14 @@ public:
 	virtual HRESULT Render();
 
 protected:
-	ComPtr<ID3D11Buffer>  m_pVBInstance = { nullptr };
-	D3D11_BUFFER_DESC m_InstanceBufferDesc{};
+	ComPtr<ID3D11Buffer>  m_VBInstance = { nullptr };
+	D3D11_BUFFER_DESC m_instanceBufferDesc{};
 
 protected:
-	_uint						m_iInstanceStride = {};
+	_uint						m_instanceStride = {};
 
-	_uint						m_iNumInstances = {};
-	_uint						m_iIndexCountPerInstance = {};
+	_uint						m_numInstances = {};
+	_uint						m_indexCountPerInstance = {};
 
 	
 public:

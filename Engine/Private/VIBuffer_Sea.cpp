@@ -13,8 +13,8 @@ CVIBuffer_Sea::CVIBuffer_Sea(const CVIBuffer_Sea& prototype)
 	m_numLevel(prototype.m_numLevel), m_gridSize(prototype.m_gridSize),
 m_numRingIndices(prototype.m_numRingIndices), m_numCenterIndices(prototype.m_numCenterIndices)
 {
-	m_vtxPos = new _float3[m_iNumVertices];
-	memcpy(m_vtxPos, prototype.m_vtxPos, sizeof(_float3) * m_iNumVertices);
+	m_vtxPos = new _float3[m_numVertices];
+	memcpy(m_vtxPos, prototype.m_vtxPos, sizeof(_float3) * m_numVertices);
 }
 
 HRESULT CVIBuffer_Sea::Initialize_Prototype(/*const _tchar* pHeightMapFilePath*/)
@@ -26,32 +26,32 @@ HRESULT CVIBuffer_Sea::Initialize_Prototype(/*const _tchar* pHeightMapFilePath*/
 		return E_FAIL;
 	}
 
-	m_iNumVertexBuffers = 1; // 버택스 버퍼가 몇갠지 사각형그리는 거니까 1개
-	m_iNumVertices = (m_gridSize+1) * (m_gridSize+1);
-	m_iVertexStride = sizeof(VTXPOS);
+	m_numVertexBuffers = 1; // 버택스 버퍼가 몇갠지 사각형그리는 거니까 1개
+	m_numVertices = (m_gridSize+1) * (m_gridSize+1);
+	m_vertexStride = sizeof(VTXPOS);
 	//m_iNumIndices = (m_GridSize - 1) * (m_GridSize - 1) * 2 * 3;
-	m_iIndexStride = 4; // 2바이트랑 4바이트 중 택1
-	m_ePrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_indexStride = 4; // 2바이트랑 4바이트 중 택1
+	m_primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	// Vertex Buffer//////////////////////
 
 	D3D11_BUFFER_DESC vertexBufferDesc{};
-	vertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	vertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.StructureByteStride = m_iVertexStride;
+	vertexBufferDesc.StructureByteStride = m_vertexStride;
 
 	vertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
 	vertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
 
-	VTXPOS* vertices = new VTXPOS[m_iNumVertices];
+	VTXPOS* vertices = new VTXPOS[m_numVertices];
 
 	// 버택스 갯수는 짝수 // 정사각형 가정
-	_uint* pixels = new _uint[m_iNumVertices];
+	_uint* pixels = new _uint[m_numVertices];
 
 	float halfSize = m_gridSize * 0.5f;
 
-	m_vtxPos = new _float3[m_iNumVertices];
+	m_vtxPos = new _float3[m_numVertices];
 
 	for (_uint z = 0; z < m_gridSize+1; ++z)
 	{
@@ -59,9 +59,9 @@ HRESULT CVIBuffer_Sea::Initialize_Prototype(/*const _tchar* pHeightMapFilePath*/
 		{
 			_uint index = z * (m_gridSize + 1) + x;
 
-			vertices[index].vPosition = _float3(x - halfSize, 0.0f, z - halfSize);
+			vertices[index].position = _float3(x - halfSize, 0.0f, z - halfSize);
 
-			m_vtxPos[index] = vertices[index].vPosition;
+			m_vtxPos[index] = vertices[index].position;
 
 		}
 
@@ -69,7 +69,7 @@ HRESULT CVIBuffer_Sea::Initialize_Prototype(/*const _tchar* pHeightMapFilePath*/
 
 	D3D11_SUBRESOURCE_DATA			vertexInitialData{};
 	vertexInitialData.pSysMem = vertices;
-	if (FAILED(m_pDevice->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_pVB)))
+	if (FAILED(m_device->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_VB)))
 		return E_FAIL;
 
 
@@ -149,20 +149,20 @@ HRESULT CVIBuffer_Sea::Initialize_Prototype(/*const _tchar* pHeightMapFilePath*/
 	mergedIndices.insert(mergedIndices.end(), centerIndices.begin(), centerIndices.end());
 	mergedIndices.insert(mergedIndices.end(), ringIndices.begin(), ringIndices.end());
 
-	m_iNumIndices = mergedIndices.size();
+	m_numIndices = mergedIndices.size();
 
 	D3D11_BUFFER_DESC	indexBufferDesc{};
-	indexBufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
+	indexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
 	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	indexBufferDesc.StructureByteStride = m_iIndexStride;
+	indexBufferDesc.StructureByteStride = m_indexStride;
 	indexBufferDesc.CPUAccessFlags = 0;
 	indexBufferDesc.MiscFlags = 0;
 
 
 	D3D11_SUBRESOURCE_DATA			indexInitialData{};
 	indexInitialData.pSysMem = mergedIndices.data();
-	if (FAILED(m_pDevice->CreateBuffer(&indexBufferDesc, &indexInitialData, &m_pIB)))
+	if (FAILED(m_device->CreateBuffer(&indexBufferDesc, &indexInitialData, &m_IB)))
 		return E_FAIL;
 
 	//////정리///////
@@ -185,12 +185,12 @@ HRESULT CVIBuffer_Sea::Initialize(void* arg)
 HRESULT CVIBuffer_Sea::Bind_Resources()
 {
 	ID3D11Buffer* vertexBuffers[] = {
-		m_pVB.Get(),
+		m_VB.Get(),
 		// m_pVBInstance, 
 	};
 
 	_uint			vertexStrides[] = {
-		m_iVertexStride,
+		m_vertexStride,
 
 	};
 
@@ -198,9 +198,9 @@ HRESULT CVIBuffer_Sea::Bind_Resources()
 		0
 	};
 
-	m_pContext->IASetVertexBuffers(0, m_iNumVertexBuffers, vertexBuffers, vertexStrides, offsets);
-	m_pContext->IASetIndexBuffer(m_pIB.Get(), 2 == m_iIndexStride ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
-	m_pContext->IASetPrimitiveTopology(m_ePrimitiveType);
+	m_context->IASetVertexBuffers(0, m_numVertexBuffers, vertexBuffers, vertexStrides, offsets);
+	m_context->IASetIndexBuffer(m_IB.Get(), 2 == m_indexStride ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+	m_context->IASetPrimitiveTopology(m_primitiveType);
 	
 	// 이 이후에 쉐이더랑 얘기 해서 버퍼의 위치를 화정
 
@@ -224,12 +224,12 @@ HRESULT CVIBuffer_Sea::Render(shared_ptr<CShader> shaderCom)
 
 		if(i ==0 )
 		{
-			m_pContext->DrawIndexed(m_numCenterIndices, 0, 0);
+			m_context->DrawIndexed(m_numCenterIndices, 0, 0);
 			
 		}
 		else
 		{
-			m_pContext->DrawIndexed(m_numRingIndices, m_numCenterIndices, 0);
+			m_context->DrawIndexed(m_numRingIndices, m_numCenterIndices, 0);
 
 		}
 
@@ -243,7 +243,7 @@ HRESULT CVIBuffer_Sea::Render(shared_ptr<CShader> shaderCom)
 _float3 CVIBuffer_Sea::Snapping(float posY)
 {
 	_float3 result = {};
-	const _float4* camPos = m_pGameInstance.lock()->Get_CamPositon();
+	const _float4* camPos = m_gameInstance.lock()->Get_CamPositon();
 
 	constexpr float snapCellSize = 8.f;
 	result.x = floor(camPos->x / snapCellSize) * snapCellSize;

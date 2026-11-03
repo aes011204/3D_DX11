@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 
@@ -14,7 +14,7 @@ NS_BEGIN(Client)
 {
 public:
     enum VIllAGE_LOCATION {FISH, REPAIR, STORAGE,BOAT,END};
-    struct MAINMENU_DESC : public CUIPanel::UIPANEL_DESC
+    struct MAINMENU_DESC : public CUIPanel::UIPanelDesc
     {
        /* _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";*/

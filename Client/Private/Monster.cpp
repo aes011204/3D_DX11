@@ -39,9 +39,9 @@ HRESULT CMonster::Initialize(void* pArg)
 
 
 	_float3 pos = _float3(142.3f, -0.1f, -3.8f);
-	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
-	m_pTransformCom->Set_RotationDegree(_float3(0.f,-68.f,0.f));
-	m_pTransformCom->Update_WorldMatrix();
+	m_transformCom->Set_Position(XMLoadFloat3(&pos));
+	m_transformCom->Set_RotationDegree(_float3(0.f,-68.f,0.f));
+	m_transformCom->Update_WorldMatrix();
 
 	m_Hand_Collider_1->Set_CollisionActive(false);
 	m_Hand_Collider_2->Set_CollisionActive(false);
@@ -71,16 +71,16 @@ void CMonster::Update(_float fTimeDelta)
 
 		if (m_iAttackPrevFrame < 80 && curFrame >= 80)
 		{
-			m_pGameInstance.lock()->Play_Once(L"WreckMonsterAttack1");
+			m_gameInstance.lock()->Play_Once(L"WreckMonsterAttack1");
 			m_Hand_Collider_1->Set_CollisionActive(true);
 			m_Hand_Collider_2->Set_CollisionActive(true);
 		}
 
 		if (m_iAttackPrevFrame < 126 && curFrame >= 126)
-			m_pGameInstance.lock()->Play_Once(L"WreckMonsterSwipeAttack");
+			m_gameInstance.lock()->Play_Once(L"WreckMonsterSwipeAttack");
 
 		if (m_iAttackPrevFrame < 170 && curFrame >= 170)
-			m_pGameInstance.lock()->Play_Once(L"WreckMonsterSwipeAttack");
+			m_gameInstance.lock()->Play_Once(L"WreckMonsterSwipeAttack");
 
 		m_iAttackPrevFrame = curFrame;
 		
@@ -91,7 +91,7 @@ void CMonster::Update(_float fTimeDelta)
 			m_State = STATE::RELEASE;
 			m_Hand_Collider_1->Set_CollisionActive(false);
 			m_Hand_Collider_2->Set_CollisionActive(false);
-			m_pGameInstance.lock()->Play_Once(L"WreckMonsterRetreat");
+			m_gameInstance.lock()->Play_Once(L"WreckMonsterRetreat");
 
 		}
 	}
@@ -104,7 +104,7 @@ void CMonster::Update(_float fTimeDelta)
 		m_State = STATE::IDLE;
 	}
 
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	m_pColliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 
 
 	m_Hand_Collider_1->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_RightHand)));
@@ -116,7 +116,7 @@ void CMonster::Late_Update(_float fTimeDelta)
 {
 
 
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CMonster::Render()
@@ -129,11 +129,11 @@ HRESULT CMonster::Render()
 
 	for(size_t i=0; i< iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		m_pModelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_pModelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_pModelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
 	if (FAILED(m_pModelCom->Render(i)))
@@ -144,16 +144,16 @@ HRESULT CMonster::Render()
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
 	if (m_Hand_Collider_1->Get_CollisionActive())
-		m_pGameInstance.lock()->Add_DebugenderGroup(m_Hand_Collider_1);
+		m_gameInstance.lock()->Add_DebugenderGroup(m_Hand_Collider_1);
 
 	if (m_Hand_Collider_2->Get_CollisionActive())
-		m_pGameInstance.lock()->Add_DebugenderGroup(m_Hand_Collider_2);
+		m_gameInstance.lock()->Add_DebugenderGroup(m_Hand_Collider_2);
 
 	if (m_pColliderCom->Get_CollisionActive())
-		m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+		m_gameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
 
 #endif
 
@@ -166,7 +166,7 @@ void CMonster::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> 
 	if(m_State != STATE::ATTACK &&  self == m_pColliderCom)
 	{
 
-		m_pGameInstance.lock()->Play_Once(L"WreckMonsterEmerge");
+		m_gameInstance.lock()->Play_Once(L"WreckMonsterEmerge");
 
 	m_AnimIndex = 0;
 
@@ -211,25 +211,25 @@ void CMonster::OnGui()
 void CMonster::RebindCom()
 {
 
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
 	m_pModelCom = Get_Component<CModel>(L"Com_Model");
 
 }
 
 HRESULT CMonster::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -246,12 +246,12 @@ HRESULT CMonster::Bind_ShaderResources()
 		return E_FAIL;*/
 
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float fFar = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
 		
 	float emissive =0.f;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
 		return E_FAIL;
 	return S_OK;
 }
@@ -260,44 +260,44 @@ HRESULT CMonster::Ready_Components()
 {
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
 
 
-	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
-	OBBDesc.vExtents = _float3(3.39f, 1.f, 2.f);
-	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
-	OBBDesc.vCenter = _float3(0.f, 0.f, 2.333f);
-	OBBDesc.MyLayer = COLLISION_LAYER::TRIGGER;
-	OBBDesc.OtherMask = COLLISION_LAYER::PLAYER;
+	CBounding_OBB::BoundingOBBDesc		OBBDesc{};
+	OBBDesc.extents = _float3(3.39f, 1.f, 2.f);
+	OBBDesc.radians = _float3(0.f, 0.f, 0.f);
+	OBBDesc.center = _float3(0.f, 0.f, 2.333f);
+	OBBDesc.myLayer = ECollisionLayer::TRIGGER;
+	OBBDesc.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+	m_gameInstance.lock()->Add_Collider(m_pColliderCom);
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc{};
+	CBounding_Sphere::BoundingSphereDesc		SPhereDesc{};
 	
-	SPhereDesc.fRadius = 2.f;
-	SPhereDesc.vCenter = _float3(0.f, 2.f,0.f);
-	SPhereDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc.OtherMask = COLLISION_LAYER::PLAYER;
+	SPhereDesc.radius = 2.f;
+	SPhereDesc.center = _float3(0.f, 2.f,0.f);
+	SPhereDesc.myLayer = ECollisionLayer::MONSTERATT;
+	SPhereDesc.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
 		TEXT("Com_Hand_Collider_1"), &m_Hand_Collider_1 , &SPhereDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Hand_Collider_1);
+	m_gameInstance.lock()->Add_Collider(m_Hand_Collider_1);
 
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc1{};
-	SPhereDesc1.fRadius = 2.f;
-	SPhereDesc1.vCenter = _float3(0.f, -2.f, 0.f);
-	SPhereDesc1.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc1.OtherMask = COLLISION_LAYER::PLAYER;
+	CBounding_Sphere::BoundingSphereDesc		SPhereDesc1{};
+	SPhereDesc1.radius = 2.f;
+	SPhereDesc1.center = _float3(0.f, -2.f, 0.f);
+	SPhereDesc1.myLayer = ECollisionLayer::MONSTERATT;
+	SPhereDesc1.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
 		TEXT("Com_Hand_Collider_2"), &m_Hand_Collider_2, &SPhereDesc1)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Hand_Collider_2);
+	m_gameInstance.lock()->Add_Collider(m_Hand_Collider_2);
 
 
 

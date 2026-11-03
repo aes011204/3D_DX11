@@ -3,13 +3,13 @@
 //IMPLEMENT_SINGLETON(CDInput_Manager)
 
 CDInput_Manager::CDInput_Manager()
-    : m_InputSDK(nullptr),
-      m_KeyBoardDev(nullptr),
-      m_MouseDev(nullptr),
-      m_KeyState{},
-      m_PrevKeyState{},
-      m_MouseState{},
-      m_PrevMouseState{},
+    : m_inputSDK(nullptr),
+      m_keyBoardDev(nullptr),
+      m_mouseDev(nullptr),
+      m_keyState{},
+      m_prevKeyState{},
+      m_mouseState{},
+      m_prevMouseState{},
       m_hWnd(nullptr)
 {}
 
@@ -23,30 +23,30 @@ HRESULT CDInput_Manager::Initialize(HINSTANCE hInst, HWND hWnd)
     if (FAILED(DirectInput8Create(hInst,
         DIRECTINPUT_VERSION,
         IID_IDirectInput8,
-        (void**)&m_InputSDK,
+        (void**)&m_inputSDK,
         nullptr)))
         return E_FAIL;
 
-    if (FAILED(m_InputSDK->CreateDevice(GUID_SysKeyboard, &m_KeyBoardDev, nullptr)))
+    if (FAILED(m_inputSDK->CreateDevice(GUID_SysKeyboard, &m_keyBoardDev, nullptr)))
         return E_FAIL;
 
-    m_KeyBoardDev->SetDataFormat(&c_dfDIKeyboard);
+    m_keyBoardDev->SetDataFormat(&c_dfDIKeyboard);
 
     // 백그라운드 입력 못받게 막기
     //m_KeyBoardDev->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
-    m_KeyBoardDev->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+    m_keyBoardDev->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 
-    m_KeyBoardDev->Acquire();
+    m_keyBoardDev->Acquire();
 
-    if (FAILED(m_InputSDK->CreateDevice(GUID_SysMouse, &m_MouseDev, nullptr)))
+    if (FAILED(m_inputSDK->CreateDevice(GUID_SysMouse, &m_mouseDev, nullptr)))
         return E_FAIL;
 
-    m_MouseDev->SetDataFormat(&c_dfDIMouse);
+    m_mouseDev->SetDataFormat(&c_dfDIMouse);
 
     //m_MouseDev->SetCooperativeLevel(hWnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE);
-    m_MouseDev->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+    m_mouseDev->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
 
-    m_MouseDev->Acquire();
+    m_mouseDev->Acquire();
 
     m_hWnd = hWnd;
 
@@ -56,24 +56,24 @@ HRESULT CDInput_Manager::Initialize(HINSTANCE hInst, HWND hWnd)
 void CDInput_Manager::Update_InputDev()
 {
     // 키보드 이전 프레임 상태 백업
-    memcpy(m_PrevKeyState, m_KeyState, sizeof(m_KeyState));
+    memcpy(m_prevKeyState, m_keyState, sizeof(m_keyState));
 
     // 마우스 이전 프레임 상태 백업
-    m_PrevMouseState = m_MouseState;
+    m_prevMouseState = m_mouseState;
 
     // 키보드
-    if (FAILED(m_KeyBoardDev->GetDeviceState(256, m_KeyState)))
+    if (FAILED(m_keyBoardDev->GetDeviceState(256, m_keyState)))
     {
         // 포커스 잃었을 때 복구용
-        m_KeyBoardDev->Acquire();
-        m_KeyBoardDev->GetDeviceState(256, m_KeyState);
+        m_keyBoardDev->Acquire();
+        m_keyBoardDev->GetDeviceState(256, m_keyState);
     }
 
     // 마우스
-    if (FAILED(m_MouseDev->GetDeviceState(sizeof(m_MouseState), &m_MouseState)))
+    if (FAILED(m_mouseDev->GetDeviceState(sizeof(m_mouseState), &m_mouseState)))
     {
-        m_MouseDev->Acquire();
-        m_MouseDev->GetDeviceState(sizeof(m_MouseState), &m_MouseState);
+        m_mouseDev->Acquire();
+        m_mouseDev->GetDeviceState(sizeof(m_mouseState), &m_mouseState);
     }
 }
 
@@ -100,8 +100,8 @@ unique_ptr<CDInput_Manager> CDInput_Manager::Create(HINSTANCE hInst, HWND hWnd)
 
 void CDInput_Manager::Free()
 {
-    m_KeyBoardDev.Reset();
-    m_MouseDev.Reset();
-    m_InputSDK.Reset();
+    m_keyBoardDev.Reset();
+    m_mouseDev.Reset();
+    m_inputSDK.Reset();
 
 }

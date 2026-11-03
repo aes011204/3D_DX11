@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Client_Enum.h"
 #include "MiniGame.h"
@@ -34,7 +34,7 @@ public:
 	virtual void Update(const _float& timeDelta);
 
 	
-	virtual float GetAngle() const override { return m_Angle; }
+	virtual float GetAngle() const override { return m_angle; }
 
 	float GetSize() const override{return m_Size;}
 
@@ -56,7 +56,7 @@ public:
 
 	float m_Size = {0};
 
-	float m_Angle = {};
+	float m_angle = {};
 
 	///
 	bool m_changeColor = { false };

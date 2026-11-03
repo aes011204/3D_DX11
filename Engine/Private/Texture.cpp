@@ -1,4 +1,4 @@
-#include "Texture.h"
+﻿#include "Texture.h"
 #include "Shader.h"
 #include "UITransform.h"
 
@@ -9,7 +9,7 @@ CTexture::CTexture(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pCo
 
 CTexture::CTexture(const CTexture& Prototype)
 	:CComponent(Prototype)
-	, m_iNumSRVs{ Prototype.m_iNumSRVs }
+	, m_numSRVs{ Prototype.m_numSRVs }
 	, m_SRVs{ Prototype.m_SRVs }
 {
 	
@@ -18,7 +18,7 @@ CTexture::CTexture(const CTexture& Prototype)
 
 HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNumSRVs)
 {
-	m_iNumSRVs = iNumSRVs;
+	m_numSRVs = iNumSRVs;
 	for (_uint i = 0; i < iNumSRVs;i++)
 	{
 		ComPtr<ID3D11ShaderResourceView> pSRV = { nullptr };
@@ -34,11 +34,11 @@ HRESULT CTexture::Initialize_Prototype(const _tchar* pTextureFilePath, _uint iNu
 
 		HRESULT hr = {};
 		if(false == lstrcmp( szEXT, TEXT(".dds")))
-			hr = CreateDDSTextureFromFile(m_pDevice.Get(), szTextureFilePath, nullptr, &pSRV);
+			hr = CreateDDSTextureFromFile(m_device.Get(), szTextureFilePath, nullptr, &pSRV);
 		else if (false == lstrcmp(szEXT, TEXT(".tga")))
 			hr = E_FAIL;
 		else 
-			hr = CreateWICTextureFromFile(m_pDevice.Get(), szTextureFilePath, nullptr, &pSRV);
+			hr = CreateWICTextureFromFile(m_device.Get(), szTextureFilePath, nullptr, &pSRV);
 
 		if (FAILED(hr))
 			return E_FAIL;
@@ -68,7 +68,7 @@ HRESULT CTexture::Bind_ShaderResourceView(shared_ptr<CShader> pShaderCom, const 
 
 _float2 CTexture::Get_SizeFromSRV(_uint index)
 {
-	if (m_SRVs[index] == nullptr&&index >=m_iNumSRVs)
+	if (m_SRVs[index] == nullptr&&index >=m_numSRVs)
 	{
 		MSG_BOX("m_SRV[index] is nullptr");
 		return { 0,0 };

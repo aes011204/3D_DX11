@@ -1,4 +1,4 @@
-#include "UI_Time.h"
+Ôªø#include "UI_Time.h"
 
 #include <UIImage.h>
 #include <UIText.h>
@@ -21,7 +21,7 @@ void CUI_Time::UIPannelActive(_uint time ,_bool IsSleep)
 
 	
 
-	m_pGameInstance.lock()->Play_Loop(L"Hold_Active");
+	m_gameInstance.lock()->Play_Loop(L"Hold_Active");
 
 	m_IsSleep = IsSleep;
 
@@ -29,27 +29,27 @@ void CUI_Time::UIPannelActive(_uint time ,_bool IsSleep)
 
 	if(m_IsSleep == true)
 	{
-		m_Text->Set_Text(L"»ﬁΩƒ...");
+		m_Text->Set_Text(L"Ìú¥Ïãù...");
 	}
 	else
 	{
-		m_Text->Set_Text(L"¿Â∫Ò º≥ƒ°¡ﬂ");
+		m_Text->Set_Text(L"Ïû•ÎπÑ ÏÑ§ÏπòÏ§ë");
 
-		m_StartTod = m_pGameInstance.lock()->Get_TOD01();
-		m_TargetTod = m_pGameInstance.lock()->Get_TOD01() + time/24.f;
+		m_StartTod = m_gameInstance.lock()->Get_TOD01();
+		m_TargetTod = m_gameInstance.lock()->Get_TOD01() + time/24.f;
 
 	}
 
 	Set_ActiveForCustom();
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 
 	OnActive();
 
-	for (auto& it : m_Children)
+	for (auto& it : m_children)
 	{
 		it->UI_Active();
 	}
@@ -66,9 +66,9 @@ HRESULT CUI_Time::OnInit(void* pArg)
 
 
 	//CUIPanel::UIPANEL_DESC LoadingDesc;
-	pDesc->IsFullScreen = true;
-	pDesc->TextureProtoName = L"Prototype_Component_Texture_Black";
-	pDesc->TextureComLevel = ETOI(LEVEL::STATIC);
+	pDesc->isFullScreen = true;
+	pDesc->textureProtoName = L"Prototype_Component_Texture_Black";
+	pDesc->textureComLevel = ETOI(LEVEL::STATIC);
 	Set_Alpha(0.7f);
 
 	//pDesc->NoDISTACH = true;
@@ -76,32 +76,32 @@ HRESULT CUI_Time::OnInit(void* pArg)
 	 CUIPanel::OnInit(pArg);
 
 
-	CUIImage::UIIMAGE_DESC SandTimerDesc;
-	SandTimerDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	SandTimerDesc.TextureProtoName = L"Prototype_Component_Texture_Timer";
-	shared_ptr<CUIImage> pIcon = CUIImage::Create(m_pDevice, m_pContext);
+	CUIImage::UIImageDesc SandTimerDesc;
+	SandTimerDesc.textureComLevel = ETOI(LEVEL::STATIC);
+	SandTimerDesc.textureProtoName = L"Prototype_Component_Texture_Timer";
+	shared_ptr<CUIImage> pIcon = CUIImage::Create(m_device, m_context);
 	pIcon->Initialize(&SandTimerDesc);
 	//pIcon->m_behavior.push_back(make_shared<CRotationModifier>(200.f));
 	Add_Child(pIcon, L"ICON_TIME", false);
 	m_iCon = pIcon;
 
-	CUIText::TEXT_DESC TextDesc;
+	CUIText::TextDesc textDesc;
 	//TextDesc.TextColor = _float4{ 1.f,0.f };
-	TextDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
-	TextDesc.strText = L"»ﬁΩƒ...";
-	TextDesc.fontaline = CUIText::FONTALINE::DEFAULT;
-	shared_ptr<CUIText> text = CUIText::Create(m_pDevice, m_pContext);
-	text->Initialize(&TextDesc);
+	textDesc.fontTag = L"Noto_Sans_CJK_SC_32";
+	textDesc.text = L"Ìú¥Ïãù...";
+	textDesc.fontAlign = CUIText::EFontAlign::DEFAULT;
+	shared_ptr<CUIText> text = CUIText::Create(m_device, m_context);
+	text->Initialize(&textDesc);
 	Add_Child(text, L"text_TIME", false);
 
 	m_Text = text;
 
-	CUIText::TEXT_DESC TextDesc1;
+	CUIText::TextDesc TextDesc1;
 	//TextDesc.TextColor = _float4{ 1.f,0.f };
-	TextDesc1.strFontTag = L"Noto_Sans_CJK_SC_24";
-	TextDesc1.strText = L"X : ≥™∞°±‚";
-	TextDesc1.fontaline = CUIText::FONTALINE::DEFAULT;
-	shared_ptr<CUIText> text1 = CUIText::Create(m_pDevice, m_pContext);
+	TextDesc1.fontTag = L"Noto_Sans_CJK_SC_24";
+	TextDesc1.text = L"X : ÎÇòÍ∞ÄÍ∏∞";
+	TextDesc1.fontAlign = CUIText::EFontAlign::DEFAULT;
+	shared_ptr<CUIText> text1 = CUIText::Create(m_device, m_context);
 	text1->Initialize(&TextDesc1);
 	Add_Child(text1, L"text_Exit", false);
 
@@ -109,11 +109,11 @@ HRESULT CUI_Time::OnInit(void* pArg)
 
 	//
 
-	CUIImage::UIIMAGE_DESC CircleDesc = {};
-	CircleDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	CircleDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUICircle";
+	CUIImage::UIImageDesc CircleDesc = {};
+	CircleDesc.textureComLevel = ETOI(LEVEL::STATIC);
+	CircleDesc.textureProtoName = L"Prototype_Component_Texture_FishingUICircle";
 	CircleDesc.shaderType = CUIRenderable::UIShaderType::Radial;
-	shared_ptr<CUIImage> Circle = CUIImage::Create(m_pDevice, m_pContext);
+	shared_ptr<CUIImage> Circle = CUIImage::Create(m_device, m_context);
 	Circle->Initialize(&CircleDesc);
 	Circle->Set_BaseColor(_float4{ 0.f,0.f,0.f, 1.f });
 	Circle->Set_ZoneColor(_float4{ 1.f,0.f,0.f, 1.f });
@@ -140,9 +140,9 @@ void CUI_Time::OnInActive()
 {
 	__super::OnInActive();
 	CUI_Controller::GetInstance()->ActiveHover();
-	m_pGameInstance.lock()->Set_TimeScale(1.f);
+	m_gameInstance.lock()->Set_TimeScale(1.f);
 
-	m_pGameInstance.lock()->Stop(L"Hold_Active");
+	m_gameInstance.lock()->Stop(L"Hold_Active");
 	
 }
 
@@ -175,12 +175,12 @@ void CUI_Time::OnUpdate(const _float& timeDelta)
 	if(m_IsSleep==true)
 	{
 		
-		m_pGameInstance.lock()->Set_TimeScale(20.f);
+		m_gameInstance.lock()->Set_TimeScale(20.f);
 	}
 	else
 	{
-		m_pGameInstance.lock()->Set_TimeScale(20.f);
-		m_CurrentTod = m_pGameInstance.lock()->Get_TOD01();
+		m_gameInstance.lock()->Set_TimeScale(20.f);
+		m_CurrentTod = m_gameInstance.lock()->Get_TOD01();
 		_float fRatio = (m_CurrentTod - m_StartTod) / (m_TargetTod - m_StartTod);
 		m_zones[0].end = fRatio;
 		
@@ -190,8 +190,8 @@ void CUI_Time::OnUpdate(const _float& timeDelta)
 
 				UI_InActive();
 				
-				m_pGameInstance.lock()->Play_Once(L"Hold_Complete");
-					return; // ¡ÔΩ√ ∏Æƒ¡
+				m_gameInstance.lock()->Play_Once(L"Hold_Complete");
+					return; // Ï¶âÏãú Î¶¨Ïª®
 			}
 	}
 	__super::OnUpdate(timeDelta);

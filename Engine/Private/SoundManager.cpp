@@ -63,7 +63,7 @@ namespace
 		return nullptr != pText ? _wstring{ pText } : _wstring{};
 	}
 
-	constexpr size_t s_uiSoundCategoryCount = static_cast<size_t>(SOUND_CATEGORY::END);
+	constexpr size_t s_uiSoundCategoryCount = static_cast<size_t>(ESoundCategory::END);
 
 	constexpr array<const char*, s_uiSoundCategoryCount> s_CategoryGroupNames =
 	{
@@ -117,14 +117,14 @@ CSoundManager::~CSoundManager()
 
 HRESULT CSoundManager::Initialize()
 {
-	FMOD_RESULT eResult = FMOD::System_Create(&m_pSystem);
+	FMOD_RESULT eResult = FMOD::System_Create(&m_system);
 	if (FMOD_OK != eResult)
 	{
 		Log_FMODFailure(eResult, "System_Create");
 		return E_FAIL;
 	}
 
-	eResult = m_pSystem->init(32, FMOD_INIT_NORMAL, nullptr);
+	eResult = m_system->init(32, FMOD_INIT_NORMAL, nullptr);
 	if (FMOD_OK != eResult)
 	{
 		Log_FMODFailure(eResult, "System::init");
@@ -133,9 +133,9 @@ HRESULT CSoundManager::Initialize()
 
 	for (size_t uiIndex = 0; uiIndex < s_uiSoundCategoryCount; ++uiIndex)
 	{
-		eResult = m_pSystem->createChannelGroup(
+		eResult = m_system->createChannelGroup(
 			s_CategoryGroupNames[uiIndex],
-			&m_pCategoryGroups[uiIndex]
+			&m_categoryGroups[uiIndex]
 		);
 		if (FMOD_OK != eResult)
 		{
@@ -147,19 +147,19 @@ HRESULT CSoundManager::Initialize()
 	return S_OK;
 }
 
-HRESULT CSoundManager::Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundDescs)
+HRESULT CSoundManager::Register_Sounds(const vector<SoundAssetDesc>& vecSoundDescs)
 {
-	if(nullptr==m_pSystem)return E_FAIL;
+	if(nullptr==m_system)return E_FAIL;
 
-	for (const SOUND_ASSET_DESC& tSoundDesc : vecSoundDescs)
+	for (const SoundAssetDesc& tSoundDesc : vecSoundDescs)
 	{
-		if (tSoundDesc.strSoundTag.empty())
+		if (tSoundDesc.soundTag.empty())
 		{
 			//LOG_ERROR("Sound registration failed. soundTag must not be empty.");
 			return E_FAIL;
 		}
 
-		if (tSoundDesc.strAssetPath.empty())
+		if (tSoundDesc.assetPath.empty())
 		{
 			//LOG_ERROR(
 			//    "Sound registration failed. assetPath must not be empty. soundTag='{}'",
@@ -168,7 +168,7 @@ HRESULT CSoundManager::Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundD
 			return E_FAIL;
 		}
 
-		if (!Is_ValidCategory(tSoundDesc.eCategory))
+		if (!Is_ValidCategory(tSoundDesc.category))
 		{
 			//LOG_ERROR(
 			//    "Sound registration failed. Invalid category. soundTag='{}'",
@@ -177,7 +177,7 @@ HRESULT CSoundManager::Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundD
 			return E_FAIL;
 		}
 
-		if (!Is_ValidLoadMode(tSoundDesc.eLoadMode))
+		if (!Is_ValidLoadMode(tSoundDesc.loadMode))
 		{
 			// LOG_ERROR(
 			//     "Sound registration failed. Invalid loadMode. soundTag='{}'",
@@ -186,7 +186,7 @@ HRESULT CSoundManager::Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundD
 			return E_FAIL;
 		}
 
-		if (0.f > tSoundDesc.fDefaultVolume || 1.f < tSoundDesc.fDefaultVolume)
+		if (0.f > tSoundDesc.defaultVolume || 1.f < tSoundDesc.defaultVolume)
 		{
 			//LOG_ERROR(
 			//    "Sound registration failed. defaultVolume must be in [0, 1]. soundTag='{}' Volume={}",
@@ -196,7 +196,7 @@ HRESULT CSoundManager::Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundD
 			return E_FAIL;
 		}
 
-		if (m_SoundDescs.contains(tSoundDesc.strSoundTag))
+		if (m_soundDescs.contains(tSoundDesc.soundTag))
 		{
 			//LOG_ERROR(
 			//    "Sound registration failed. Duplicate soundTag='{}'",
@@ -208,7 +208,7 @@ HRESULT CSoundManager::Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundD
 		if (FAILED(Create_Sound(tSoundDesc)))
 			return E_FAIL;
 
-		m_SoundDescs.emplace(tSoundDesc.strSoundTag, tSoundDesc);
+		m_soundDescs.emplace(tSoundDesc.soundTag, tSoundDesc);
 	}
 
 	return S_OK;
@@ -216,49 +216,49 @@ HRESULT CSoundManager::Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundD
 
 void CSoundManager::Update_Audio(const _float fTimeDelta)
 {
-	if (nullptr == m_pSystem)
+	if (nullptr == m_system)
 		return;
 
-	const FMOD_RESULT eResult = m_pSystem->update();
+	const FMOD_RESULT eResult = m_system->update();
 	if (FMOD_OK != eResult)
 		Log_FMODFailure(eResult, "System::update");
 
 	Cleanup_FinishedLoopChannels();
 	Cleanup_FinishedFadeChannels();
 
-	auto iter = m_FadingLoopChannels.begin();
-	while (iter != m_FadingLoopChannels.end())
+	auto iter = m_fadingLoopChannels.begin();
+	while (iter != m_fadingLoopChannels.end())
 	{
-		if (nullptr == iter->pChannel)
+		if (nullptr == iter->channel)
 		{
-			iter = m_FadingLoopChannels.erase(iter);
+			iter = m_fadingLoopChannels.erase(iter);
 			continue;
 		}
 
 		_bool bIsPlaying = false;
-		const FMOD_RESULT eIsPlayingResult = iter->pChannel->isPlaying(&bIsPlaying);
+		const FMOD_RESULT eIsPlayingResult = iter->channel->isPlaying(&bIsPlaying);
 		if (FMOD_OK != eIsPlayingResult || !bIsPlaying)
 		{
-			iter = m_FadingLoopChannels.erase(iter);
+			iter = m_fadingLoopChannels.erase(iter);
 			continue;
 		}
 
-		iter->fCurrentVolume -= iter->fFadeSpeed * fTimeDelta;
-		if (iter->fCurrentVolume <= 0.f)
+		iter->currentVolume -= iter->fadeSpeed * fTimeDelta;
+		if (iter->currentVolume <= 0.f)
 		{
-			const FMOD_RESULT eStopResult = iter->pChannel->stop();
+			const FMOD_RESULT eStopResult = iter->channel->stop();
 			if (FMOD_OK != eStopResult)
-				Log_FMODFailure(eStopResult, "Channel::stop", iter->strSoundTag);
+				Log_FMODFailure(eStopResult, "Channel::stop", iter->soundTag);
 
-			iter = m_FadingLoopChannels.erase(iter);
+			iter = m_fadingLoopChannels.erase(iter);
 			continue;
 		}
 
-		const FMOD_RESULT eVolumeResult = iter->pChannel->setVolume(iter->fCurrentVolume);
+		const FMOD_RESULT eVolumeResult = iter->channel->setVolume(iter->currentVolume);
 		if (FMOD_OK != eVolumeResult)
 		{
-			Log_FMODFailure(eVolumeResult, "Channel::setVolume", iter->strSoundTag);
-			iter = m_FadingLoopChannels.erase(iter);
+			Log_FMODFailure(eVolumeResult, "Channel::setVolume", iter->soundTag);
+			iter = m_fadingLoopChannels.erase(iter);
 			continue;
 		}
 
@@ -268,7 +268,7 @@ void CSoundManager::Update_Audio(const _float fTimeDelta)
 
 void CSoundManager::Play_Once(const _wstring& strSoundTag, const _float fVolumeScale)
 {
-	const SOUND_ASSET_DESC* pSoundDesc = Find_SoundDesc(strSoundTag);
+	const SoundAssetDesc* pSoundDesc = Find_SoundDesc(strSoundTag);
 	if(nullptr==pSoundDesc)
 		return;
 
@@ -282,7 +282,7 @@ void CSoundManager::Play_Once_Pitched(
 	const _float fPitch,
 	const _float fVolumeScale)
 {
-	const SOUND_ASSET_DESC* pSoundDesc = Find_SoundDesc(strSoundTag);
+	const SoundAssetDesc* pSoundDesc = Find_SoundDesc(strSoundTag);
 	if(nullptr==pSoundDesc)
 		return;
 
@@ -302,7 +302,7 @@ void CSoundManager::Play_Loop(
 	const _float fVolumeScale,
 	const _float fFadeOutDuration)
 {
-	const SOUND_ASSET_DESC* pSoundDesc = Find_SoundDesc(strSoundTag);
+	const SoundAssetDesc* pSoundDesc = Find_SoundDesc(strSoundTag);
 	if(nullptr==pSoundDesc)return;
 
 	Stop_LoopByTag(strSoundTag, fFadeOutDuration);
@@ -312,12 +312,12 @@ void CSoundManager::Play_Loop(
 		return;
 	if(nullptr==pChannel)return;
 
-	m_ActiveLoopChannels[strSoundTag] = pChannel;
+	m_activeLoopChannels[strSoundTag] = pChannel;
 }
 
 void CSoundManager::Stop_Sound(const _wstring& strSoundTag,float fadeOutTime)
 {
-	const SOUND_ASSET_DESC* pSoundDesc = Find_SoundDesc(strSoundTag);
+	const SoundAssetDesc* pSoundDesc = Find_SoundDesc(strSoundTag);
 	if (nullptr == pSoundDesc)
 	{
 		//LOG_WARN("Stop_Sound ignored unknown soundTag='{}'", String::WstrToStr_UTF8(strSoundTag));
@@ -334,7 +334,7 @@ void CSoundManager::Stop_Sound(const _wstring& strSoundTag,float fadeOutTime)
 		return;
 	}
 
-	FMOD::ChannelGroup* pCategoryGroup = Find_CategoryGroup(pSoundDesc->eCategory);
+	FMOD::ChannelGroup* pCategoryGroup = Find_CategoryGroup(pSoundDesc->category);
 	if(nullptr==pCategoryGroup)return;
 
 	_int iChannelCount = 0;
@@ -380,7 +380,7 @@ void CSoundManager::Stop_Sound(const _wstring& strSoundTag,float fadeOutTime)
 
 void CSoundManager::Stop_AllSounds()
 {
-	for (FMOD::ChannelGroup* pCategoryGroup : m_pCategoryGroups)
+	for (FMOD::ChannelGroup* pCategoryGroup : m_categoryGroups)
 	{
 		if (nullptr == pCategoryGroup)
 			continue;
@@ -390,11 +390,11 @@ void CSoundManager::Stop_AllSounds()
 			Log_FMODFailure(eResult, "ChannelGroup::stop");
 	}
 
-	m_ActiveLoopChannels.clear();
-	m_FadingLoopChannels.clear();
+	m_activeLoopChannels.clear();
+	m_fadingLoopChannels.clear();
 }
 
-void CSoundManager::Set_SoundCategoryVolume(const SOUND_CATEGORY eCategory, const _float fVolume)
+void CSoundManager::Set_SoundCategoryVolume(const ESoundCategory eCategory, const _float fVolume)
 {
 	FMOD::ChannelGroup* pCategoryGroup = Find_CategoryGroup(eCategory);
 	if(nullptr==pCategoryGroup)return;
@@ -404,17 +404,17 @@ void CSoundManager::Set_SoundCategoryVolume(const SOUND_CATEGORY eCategory, cons
 		Log_FMODFailure(eResult, "ChannelGroup::setVolume");
 }
 
-_bool CSoundManager::Is_ValidCategory(const SOUND_CATEGORY eCategory) const
+_bool CSoundManager::Is_ValidCategory(const ESoundCategory eCategory) const
 {
-	return static_cast<size_t>(eCategory) < s_uiSoundCategoryCount && SOUND_CATEGORY::END != eCategory;
+	return static_cast<size_t>(eCategory) < s_uiSoundCategoryCount && ESoundCategory::END != eCategory;
 }
 
-_bool CSoundManager::Is_ValidLoadMode(const SOUND_LOAD_MODE eLoadMode) const
+_bool CSoundManager::Is_ValidLoadMode(const ESoundLoadMode eLoadMode) const
 {
-	return SOUND_LOAD_MODE::STATIC == eLoadMode || SOUND_LOAD_MODE::STREAM == eLoadMode;
+	return ESoundLoadMode::STATIC == eLoadMode || ESoundLoadMode::STREAM == eLoadMode;
 }
 
-FMOD::ChannelGroup* CSoundManager::Find_CategoryGroup(const SOUND_CATEGORY eCategory) const
+FMOD::ChannelGroup* CSoundManager::Find_CategoryGroup(const ESoundCategory eCategory) const
 {
 	if (!Is_ValidCategory(eCategory))
 	{
@@ -422,13 +422,13 @@ FMOD::ChannelGroup* CSoundManager::Find_CategoryGroup(const SOUND_CATEGORY eCate
 		return nullptr;
 	}
 
-	return m_pCategoryGroups[static_cast<size_t>(eCategory)];
+	return m_categoryGroups[static_cast<size_t>(eCategory)];
 }
 
-const SOUND_ASSET_DESC* CSoundManager::Find_SoundDesc(const _wstring& strSoundTag) const
+const SoundAssetDesc* CSoundManager::Find_SoundDesc(const _wstring& strSoundTag) const
 {
-	const auto iter = m_SoundDescs.find(strSoundTag);
-	if (m_SoundDescs.end() == iter)
+	const auto iter = m_soundDescs.find(strSoundTag);
+	if (m_soundDescs.end() == iter)
 	{
 		//LOG_WARN("Unknown soundTag='{}'", WstrToStr_UTF8(strSoundTag));
 		return nullptr;
@@ -439,18 +439,18 @@ const SOUND_ASSET_DESC* CSoundManager::Find_SoundDesc(const _wstring& strSoundTa
 
 FMOD::Sound* CSoundManager::Find_Sound(const _wstring& strSoundTag) const
 {
-	const auto iter = m_Sounds.find(strSoundTag);
-	if (m_Sounds.end() == iter)
+	const auto iter = m_sounds.find(strSoundTag);
+	if (m_sounds.end() == iter)
 		return nullptr;
 
 	return iter->second;
 }
 
-HRESULT CSoundManager::Create_Sound(const SOUND_ASSET_DESC& tSoundDesc)
+HRESULT CSoundManager::Create_Sound(const SoundAssetDesc& tSoundDesc)
 {
-	if(nullptr==m_pSystem)return E_FAIL;;
+	if(nullptr==m_system)return E_FAIL;;
 
-	const _string strAssetPathUtf8 = WstrToStr_UTF8(tSoundDesc.strAssetPath);
+	const _string strAssetPathUtf8 = WstrToStr_UTF8(tSoundDesc.assetPath);
 	if (strAssetPathUtf8.empty())
 	{
 	   // LOG_ERROR(
@@ -463,14 +463,14 @@ HRESULT CSoundManager::Create_Sound(const SOUND_ASSET_DESC& tSoundDesc)
 	FMOD::Sound* pSound = nullptr;
 	FMOD_RESULT eResult = FMOD_OK;
 
-	switch (tSoundDesc.eLoadMode)
+	switch (tSoundDesc.loadMode)
 	{
-	case SOUND_LOAD_MODE::STATIC:
-		eResult = m_pSystem->createSound(strAssetPathUtf8.c_str(), FMOD_DEFAULT, nullptr, &pSound);
+	case ESoundLoadMode::STATIC:
+		eResult = m_system->createSound(strAssetPathUtf8.c_str(), FMOD_DEFAULT, nullptr, &pSound);
 		break;
 
-	case SOUND_LOAD_MODE::STREAM:
-		eResult = m_pSystem->createStream(strAssetPathUtf8.c_str(), FMOD_DEFAULT, nullptr, &pSound);
+	case ESoundLoadMode::STREAM:
+		eResult = m_system->createStream(strAssetPathUtf8.c_str(), FMOD_DEFAULT, nullptr, &pSound);
 		break;
 
 	default:
@@ -483,55 +483,55 @@ HRESULT CSoundManager::Create_Sound(const SOUND_ASSET_DESC& tSoundDesc)
 
 	if (FMOD_OK != eResult || nullptr == pSound)
 	{
-		Log_FMODFailure(eResult, "System::createSound/createStream", tSoundDesc.strSoundTag);
+		Log_FMODFailure(eResult, "System::createSound/createStream", tSoundDesc.soundTag);
 		return E_FAIL;
 	}
 
-	m_Sounds.emplace(tSoundDesc.strSoundTag, pSound);
+	m_sounds.emplace(tSoundDesc.soundTag, pSound);
 	return S_OK;
 }
 
 HRESULT CSoundManager::Play_Sound(
-	const SOUND_ASSET_DESC& tSoundDesc,
+	const SoundAssetDesc& tSoundDesc,
 	const FMOD_MODE eLoopMode,
 	const _float fVolumeScale,
 	FMOD::Channel** ppOutChannel)
 {
-	if(nullptr==m_pSystem)return E_FAIL;
+	if(nullptr==m_system)return E_FAIL;
 	if(nullptr==ppOutChannel)return E_FAIL;
 
 	*ppOutChannel = nullptr;
 
-	FMOD::Sound* pSound = Find_Sound(tSoundDesc.strSoundTag);
+	FMOD::Sound* pSound = Find_Sound(tSoundDesc.soundTag);
 	if (nullptr == pSound)
 	{
 		//LOG_WARN("Play ignored unloaded soundTag='{}'", String::WstrToStr_UTF8(tSoundDesc.strSoundTag));
 		return E_FAIL;
 	}
 
-	FMOD::ChannelGroup* pCategoryGroup = Find_CategoryGroup(tSoundDesc.eCategory);
+	FMOD::ChannelGroup* pCategoryGroup = Find_CategoryGroup(tSoundDesc.category);
 	if(nullptr==pCategoryGroup) return E_FAIL;
 
 	FMOD::Channel* pChannel = nullptr;
-	FMOD_RESULT eResult = m_pSystem->playSound(pSound, pCategoryGroup, true, &pChannel);
+	FMOD_RESULT eResult = m_system->playSound(pSound, pCategoryGroup, true, &pChannel);
 	if (FMOD_OK != eResult || nullptr == pChannel)
 	{
-		Log_FMODFailure(eResult, "System::playSound", tSoundDesc.strSoundTag);
+		Log_FMODFailure(eResult, "System::playSound", tSoundDesc.soundTag);
 		return E_FAIL;
 	}
 
 	eResult = pChannel->setMode(eLoopMode);
 	if (FMOD_OK != eResult)
 	{
-		Log_FMODFailure(eResult, "Channel::setMode", tSoundDesc.strSoundTag);
+		Log_FMODFailure(eResult, "Channel::setMode", tSoundDesc.soundTag);
 		pChannel->stop();
 		return E_FAIL;
 	}
 
-	eResult = pChannel->setVolume(ClampVolume(tSoundDesc.fDefaultVolume * fVolumeScale));
+	eResult = pChannel->setVolume(ClampVolume(tSoundDesc.defaultVolume * fVolumeScale));
 	if (FMOD_OK != eResult)
 	{
-		Log_FMODFailure(eResult, "Channel::setVolume", tSoundDesc.strSoundTag);
+		Log_FMODFailure(eResult, "Channel::setVolume", tSoundDesc.soundTag);
 		pChannel->stop();
 		return E_FAIL;
 	}
@@ -539,7 +539,7 @@ HRESULT CSoundManager::Play_Sound(
 	eResult = pChannel->setPaused(false);
 	if (FMOD_OK != eResult)
 	{
-		Log_FMODFailure(eResult, "Channel::setPaused", tSoundDesc.strSoundTag);
+		Log_FMODFailure(eResult, "Channel::setPaused", tSoundDesc.soundTag);
 		pChannel->stop();
 		return E_FAIL;
 	}
@@ -550,12 +550,12 @@ HRESULT CSoundManager::Play_Sound(
 
 void CSoundManager::Stop_LoopByTag(const _wstring& strSoundTag, const _float fFadeOutDuration)
 {
-	const auto iter = m_ActiveLoopChannels.find(strSoundTag);
-	if (m_ActiveLoopChannels.end() == iter)
+	const auto iter = m_activeLoopChannels.find(strSoundTag);
+	if (m_activeLoopChannels.end() == iter)
 		return;
 
 	FMOD::Channel* pChannel = iter->second;
-	m_ActiveLoopChannels.erase(iter);
+	m_activeLoopChannels.erase(iter);
 
 	if (nullptr == pChannel)
 		return;
@@ -589,22 +589,22 @@ void CSoundManager::Stop_LoopByTag(const _wstring& strSoundTag, const _float fFa
 
 	Clear_FadeEntries(strSoundTag);
 
-	LOOP_FADE_DESC tFadeDesc{};
-	tFadeDesc.strSoundTag = strSoundTag;
-	tFadeDesc.pChannel = pChannel;
-	tFadeDesc.fCurrentVolume = fCurrentVolume;
-	tFadeDesc.fFadeSpeed = fCurrentVolume / fFadeOutDuration;
-	m_FadingLoopChannels.push_back(move(tFadeDesc));
+	LoopFadeDesc tFadeDesc{};
+	tFadeDesc.soundTag = strSoundTag;
+	tFadeDesc.channel = pChannel;
+	tFadeDesc.currentVolume = fCurrentVolume;
+	tFadeDesc.fadeSpeed = fCurrentVolume / fFadeOutDuration;
+	m_fadingLoopChannels.push_back(move(tFadeDesc));
 }
 
 void CSoundManager::Cleanup_FinishedLoopChannels()
 {
-	auto iter = m_ActiveLoopChannels.begin();
-	while (iter != m_ActiveLoopChannels.end())
+	auto iter = m_activeLoopChannels.begin();
+	while (iter != m_activeLoopChannels.end())
 	{
 		if (nullptr == iter->second)
 		{
-			iter = m_ActiveLoopChannels.erase(iter);
+			iter = m_activeLoopChannels.erase(iter);
 			continue;
 		}
 
@@ -612,7 +612,7 @@ void CSoundManager::Cleanup_FinishedLoopChannels()
 		const FMOD_RESULT eResult = iter->second->isPlaying(&bIsPlaying);
 		if (FMOD_OK != eResult || !bIsPlaying)
 		{
-			iter = m_ActiveLoopChannels.erase(iter);
+			iter = m_activeLoopChannels.erase(iter);
 			continue;
 		}
 
@@ -622,20 +622,20 @@ void CSoundManager::Cleanup_FinishedLoopChannels()
 
 void CSoundManager::Cleanup_FinishedFadeChannels()
 {
-	auto iter = m_FadingLoopChannels.begin();
-	while (iter != m_FadingLoopChannels.end())
+	auto iter = m_fadingLoopChannels.begin();
+	while (iter != m_fadingLoopChannels.end())
 	{
-		if (nullptr == iter->pChannel)
+		if (nullptr == iter->channel)
 		{
-			iter = m_FadingLoopChannels.erase(iter);
+			iter = m_fadingLoopChannels.erase(iter);
 			continue;
 		}
 
 		_bool bIsPlaying = false;
-		const FMOD_RESULT eResult = iter->pChannel->isPlaying(&bIsPlaying);
+		const FMOD_RESULT eResult = iter->channel->isPlaying(&bIsPlaying);
 		if (FMOD_OK != eResult || !bIsPlaying)
 		{
-			iter = m_FadingLoopChannels.erase(iter);
+			iter = m_fadingLoopChannels.erase(iter);
 			continue;
 		}
 
@@ -645,23 +645,23 @@ void CSoundManager::Cleanup_FinishedFadeChannels()
 
 void CSoundManager::Clear_FadeEntries(const _wstring& strSoundTag)
 {
-	auto iter = m_FadingLoopChannels.begin();
-	while (iter != m_FadingLoopChannels.end())
+	auto iter = m_fadingLoopChannels.begin();
+	while (iter != m_fadingLoopChannels.end())
 	{
-		if (iter->strSoundTag != strSoundTag)
+		if (iter->soundTag != strSoundTag)
 		{
 			++iter;
 			continue;
 		}
 
-		if (nullptr != iter->pChannel)
+		if (nullptr != iter->channel)
 		{
-			const FMOD_RESULT eResult = iter->pChannel->stop();
+			const FMOD_RESULT eResult = iter->channel->stop();
 			if (FMOD_OK != eResult)
 				Log_FMODFailure(eResult, "Channel::stop", strSoundTag);
 		}
 
-		iter = m_FadingLoopChannels.erase(iter);
+		iter = m_fadingLoopChannels.erase(iter);
 	}
 }
 
@@ -683,7 +683,7 @@ void CSoundManager::Free()
 {
 	Stop_AllSounds();
 
-	for (auto& [strSoundTag, pSound] : m_Sounds)
+	for (auto& [strSoundTag, pSound] : m_sounds)
 	{
 		if (nullptr == pSound)
 			continue;
@@ -692,12 +692,12 @@ void CSoundManager::Free()
 		if (FMOD_OK != eResult)
 			Log_FMODFailure(eResult, "Sound::release");
 	}
-	m_Sounds.clear();
-	m_SoundDescs.clear();
-	m_ActiveLoopChannels.clear();
-	m_FadingLoopChannels.clear();
+	m_sounds.clear();
+	m_soundDescs.clear();
+	m_activeLoopChannels.clear();
+	m_fadingLoopChannels.clear();
 
-	for (FMOD::ChannelGroup*& pCategoryGroup : m_pCategoryGroups)
+	for (FMOD::ChannelGroup*& pCategoryGroup : m_categoryGroups)
 	{
 		if (nullptr == pCategoryGroup)
 			continue;
@@ -709,16 +709,16 @@ void CSoundManager::Free()
 		pCategoryGroup = nullptr;
 	}
 
-	if (nullptr != m_pSystem)
+	if (nullptr != m_system)
 	{
-		FMOD_RESULT eResult = m_pSystem->close();
+		FMOD_RESULT eResult = m_system->close();
 		if (FMOD_OK != eResult)
 			Log_FMODFailure(eResult, "System::close");
 
-		eResult = m_pSystem->release();
+		eResult = m_system->release();
 		if (FMOD_OK != eResult)
 			Log_FMODFailure(eResult, "System::release");
 
-		m_pSystem = nullptr;
+		m_system = nullptr;
 	}
 }

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Define.h"
 #include "Base.h"
 
@@ -38,7 +38,7 @@ public:
 public:
 	
 private:
-	weak_ptr<CGameInstance> m_pGameInstance = {};
+	weak_ptr<CGameInstance> m_gameInstance = {};
 	//
 	//weak_ptr<class CInventory_Controller> m_InvenCtrl = {}; 
 public:

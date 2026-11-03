@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "VIBuffer.h"
 
 NS_BEGIN(Engine)
@@ -15,15 +15,15 @@ public:
 	virtual HRESULT Initialize_Prototype(const _tchar* pHeightMapFilePath);
 	virtual HRESULT Initialize(void* pArg);
 
-	_uint Get_NumVerticeX() { return { m_iNumVerticesX }; }
-	_uint Get_NumVerticeZ() { return { m_iNumVerticesX }; }
-	_float3* Get_VtxPos() { return m_VtxPos; };
+	_uint Get_NumVerticeX() { return { m_numVerticesX }; }
+	_uint Get_NumVerticeZ() { return { m_numVerticesX }; }
+	_float3* Get_VtxPos() { return m_vtxPos; };
 	const vector<float>& Get_HeightData() const { return m_vecHeightData; }
 private:
-	_uint				m_iNumVerticesX = {};
-	_uint				m_iNumVerticesZ = {};
+	_uint				m_numVerticesX = {};
+	_uint				m_numVerticesZ = {};
 
-	_float3* m_VtxPos = {};
+	_float3* m_vtxPos = {};
 	vector<float> m_vecHeightData;
 public:
 	static shared_ptr<CVIBuffer_Terrain> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pHeightMapFilePath);

@@ -1,8 +1,8 @@
-//#include "pch.h"
+﻿//#include "pch.h"
 #include"Editor_Win.h"
 
 CEditor_Win::CEditor_Win(_string name)
-	: m_strName(name)
+	: m_name(name)
 {
 }
 

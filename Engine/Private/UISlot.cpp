@@ -1,4 +1,4 @@
-#include "UISlot.h"
+﻿#include "UISlot.h"
 
 CUISlot::CUISlot(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CUIButton(pDevice, pContext)
@@ -16,9 +16,9 @@ void CUISlot::Change_Color(_fvector color, bool bUseDark, bool bUseColorMix, boo
 
 HRESULT CUISlot::OnInit(void* pArg)
 {
-	SLOT_DESC* pDesc = static_cast<SLOT_DESC*>(pArg);
+	SlotDesc* pDesc = static_cast<SlotDesc*>(pArg);
 	m_slotType = pDesc->slotType;
-	m_GridIndex = pDesc->Index;
+	m_gridIndex = pDesc->index;
 
 
 	CUIButton::OnInit(pDesc);

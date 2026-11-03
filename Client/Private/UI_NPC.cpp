@@ -27,18 +27,18 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 
 	//Npcimage
 	{
-		CUIImage::UIIMAGE_DESC NPCBaseDesc = {};
+		CUIImage::UIImageDesc NPCBaseDesc = {};
 		//NPCBaseDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		//NPCBaseDesc.TextureProtoName = L"../Bin/Resources/Textures/NPC/Fishmonger_Background.png";
-		shared_ptr<CUIImage> NPCBase = CUIImage::Create(m_pDevice, m_pContext);
+		shared_ptr<CUIImage> NPCBase = CUIImage::Create(m_device, m_context);
 		NPCBase->Initialize(&NPCBaseDesc);
 
 		{
 
-			CUIImage::UIIMAGE_DESC NPCDesc = {};
+			CUIImage::UIImageDesc NPCDesc = {};
 			//NPCDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 			//NPCDesc.TextureProtoName = L"../Bin/Resources/Textures/NPC/Fishmonger.png";
-			shared_ptr<CUIImage> NPC = CUIImage::Create(m_pDevice, m_pContext);
+			shared_ptr<CUIImage> NPC = CUIImage::Create(m_device, m_context);
 			NPC->Initialize(&NPCDesc);
 
 			NPCBase->Add_Child(NPC, L"NPC", false);
@@ -52,17 +52,17 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 	//dialogue
 	{
 
-		CUIImage::UIIMAGE_DESC dialogueDesc = {};
-		dialogueDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		dialogueDesc.TextureProtoName = L"Prototype_Component_Texture_DialogBox";
-		shared_ptr<CUIImage> Dialogue = CUIImage::Create(m_pDevice, m_pContext);
+		CUIImage::UIImageDesc dialogueDesc = {};
+		dialogueDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		dialogueDesc.textureProtoName = L"Prototype_Component_Texture_DialogBox";
+		shared_ptr<CUIImage> Dialogue = CUIImage::Create(m_device, m_context);
 		Dialogue->Initialize(&dialogueDesc);
 
 		{
-			CUIImage::UIIMAGE_DESC nameBaseDesc = {};
-			nameBaseDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-			nameBaseDesc.TextureProtoName = L"Prototype_Component_Texture_TitleBackground";
-			shared_ptr<CUIImage> NameBase = CUIImage::Create(m_pDevice, m_pContext);
+			CUIImage::UIImageDesc nameBaseDesc = {};
+			nameBaseDesc.textureComLevel = ETOI(LEVEL::STATIC);
+			nameBaseDesc.textureProtoName = L"Prototype_Component_Texture_TitleBackground";
+			shared_ptr<CUIImage> NameBase = CUIImage::Create(m_device, m_context);
 			NameBase->Initialize(&nameBaseDesc);
 
 			m_NameBase = NameBase;
@@ -70,10 +70,10 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 			Dialogue->Add_Child(NameBase, L"NameBase", false);
 
 			{
-				CUIText::TEXT_DESC nameDesc = {};
-				nameDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-				nameDesc.strText = L"?쒖옣";
-				shared_ptr<CUIText> Name_Text = CUIText::Create(m_pDevice, m_pContext);
+				CUIText::TextDesc nameDesc = {};
+				nameDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+				nameDesc.text = L"?쒖옣";
+				shared_ptr<CUIText> Name_Text = CUIText::Create(m_device, m_context);
 				Name_Text->Initialize(&nameDesc);
 
 				NameBase->Add_Child(Name_Text, L"Name_Text", false);
@@ -81,10 +81,10 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 			}
 		}
 
-		CUIText::TEXT_DESC dialogueTextDesc = {};
-		dialogueTextDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-		dialogueTextDesc.strText = L"?쒖옣";
-		shared_ptr<CUIText> Dialogue_Text = CUIText::Create(m_pDevice, m_pContext);
+		CUIText::TextDesc dialogueTextDesc = {};
+		dialogueTextDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+		dialogueTextDesc.text = L"?쒖옣";
+		shared_ptr<CUIText> Dialogue_Text = CUIText::Create(m_device, m_context);
 		Dialogue_Text->Initialize(&dialogueTextDesc);
 
 		Dialogue->Add_Child(Dialogue_Text, L"Dialogue_Text", false);
@@ -97,24 +97,24 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 	}
 	//choice
 	{
-		CUIButton::UIBUTTON_DESC ButDesc1 = {};
-		ButDesc1.TextureComLevel = ETOI(LEVEL::STATIC);
-		ButDesc1.TextureProtoName = L"Prototype_Component_Texture_Button";
+		CUIButton::UIButtonDesc ButDesc1 = {};
+		ButDesc1.textureComLevel = ETOI(LEVEL::STATIC);
+		ButDesc1.textureProtoName = L"Prototype_Component_Texture_Button";
 		ButDesc1.OverlapStartEvent = [](CUIButton* pThis) {};
 		ButDesc1.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc1.ClickEvent = [this](CUIButton* pThis)
 			{
 				UI_DialogueActive(false, m_CashingDialogue->lines[m_CurIndex].choice.leftNextId);
 			};
-		shared_ptr<CUIButton> button_up = CUIButton::Create(m_pDevice, m_pContext);
+		shared_ptr<CUIButton> button_up = CUIButton::Create(m_device, m_context);
 		button_up->Initialize(&ButDesc1);
 		button_up->UI_InActive();
 
 		{
-			CUIText::TEXT_DESC upDesc = {};
-			upDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			upDesc.strText = L"?쒖옣";
-			shared_ptr<CUIText> Dialogue_Text = CUIText::Create(m_pDevice, m_pContext);
+			CUIText::TextDesc upDesc = {};
+			upDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+			upDesc.text = L"?쒖옣";
+			shared_ptr<CUIText> Dialogue_Text = CUIText::Create(m_device, m_context);
 			Dialogue_Text->Initialize(&upDesc);
 
 			button_up->Add_Child(Dialogue_Text, L"Up_Text", false);
@@ -125,9 +125,9 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 		m_Leftchoice= button_up;
 	}
 	{
-		CUIButton::UIBUTTON_DESC ButDesc2 = {};
-		ButDesc2.TextureComLevel = ETOI(LEVEL::STATIC);
-		ButDesc2.TextureProtoName = L"Prototype_Component_Texture_Button";
+		CUIButton::UIButtonDesc ButDesc2 = {};
+		ButDesc2.textureComLevel = ETOI(LEVEL::STATIC);
+		ButDesc2.textureProtoName = L"Prototype_Component_Texture_Button";
 		ButDesc2.OverlapStartEvent = [](CUIButton* pThis) {};
 		ButDesc2.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc2.ClickEvent = [this](CUIButton* pThis)
@@ -136,15 +136,15 @@ HRESULT CUI_NPC::OnInit(void* pArg)
 				UI_DialogueActive(false, m_CashingDialogue->lines[m_CurIndex].choice.rightNextId);
 
 			};
-		shared_ptr<CUIButton> button_down = CUIButton::Create(m_pDevice, m_pContext);
+		shared_ptr<CUIButton> button_down = CUIButton::Create(m_device, m_context);
 		button_down->Initialize(&ButDesc2);
 		button_down->UI_InActive();
 
 		{
-			CUIText::TEXT_DESC downDesc = {};
-			downDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			downDesc.strText = L"?쒖옣";
-			shared_ptr<CUIText> Down_Text = CUIText::Create(m_pDevice, m_pContext);
+			CUIText::TextDesc downDesc = {};
+			downDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+			downDesc.text = L"?쒖옣";
+			shared_ptr<CUIText> Down_Text = CUIText::Create(m_device, m_context);
 			Down_Text->Initialize(&downDesc);
 
 			button_down->Add_Child(Down_Text, L"Down_Text", false);
@@ -235,10 +235,10 @@ void CUI_NPC::UI_NPCActive( const string& dialogueId, list<string>& Fistlist)
 
 	Set_ActiveForCustom();
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 
 	OnActive();
 
@@ -311,7 +311,7 @@ void CUI_NPC::OnUpdate(const _float& timeDelta)
 	//if (/*?ㅼ씠?대줈洹?媛 ?앸궖?꾨뻹*/)
 	//{
 
-		if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_SPACE)&& m_CashingDialogue->lines[m_CurIndex].hasChoices == false)
+		if (m_gameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_SPACE)&& m_CashingDialogue->lines[m_CurIndex].hasChoices == false)
 		{
 			if(m_CashingDialogue->lines[m_CurIndex].NextID >= m_CashingDialogue->lines.size())
 			{
@@ -325,7 +325,7 @@ void CUI_NPC::OnUpdate(const _float& timeDelta)
 				if(m_DialogueList.empty())
 				{
 					// ?대객??
-					m_pGameInstance.lock()->Get_EventBus()->Publish(Evt_DialogueFinish{});
+					m_gameInstance.lock()->Get_EventBus()->Publish(Evt_DialogueFinish{});
 
 				}
 				else

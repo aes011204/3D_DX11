@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 
 
@@ -18,17 +18,17 @@ public:
     virtual _int    Update_StateMachine(const _float& timeDelta) = 0;
     virtual void    Change_State(_uint dwStateKey) = 0;
 
-    _uint       Get_CurStateNum() { return m_CurStateKey; }
-    _uint       Get_PrevStateKey() { return m_PrevStateKey; }
-    shared_ptr<CState> Get_CurState() { return m_CurState; } // ¼ÒÀ¯±Ç ¾øÀ½ row
+    _uint       Get_CurStateNum() { return m_curStateKey; }
+    _uint       Get_PrevStateKey() { return m_prevStateKey; }
+    shared_ptr< CState> Get_CurState() { return m_curState; } // ì†Œìœ ê¶Œ ì—†ìŒ row
 
 protected:
     vector<shared_ptr<CState>> m_vecState;
-    shared_ptr< CState> m_CurState;
+    shared_ptr< CState> m_curState;
     // shared_ptr<CState> m_pPrevState;
 
-    _uint m_PrevStateKey;
-    _uint m_CurStateKey;
+    _uint m_prevStateKey;
+    _uint m_curStateKey;
 
 protected:
     virtual void Free() override;

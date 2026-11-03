@@ -1,4 +1,4 @@
-#include "Data_Manager.h"
+ï»¿#include "Data_Manager.h"
 #include "GameInstance.h"
 #include "GameObject.h"
 #include "Layer.h"
@@ -9,7 +9,7 @@
 #include "Log_Manager.h"
 
 
-CData_Manager::CData_Manager() : m_pGameInstance(CGameInstance::GetInstance())
+CData_Manager::CData_Manager() : m_gameInstance(CGameInstance::GetInstance())
 {
 }
 CData_Manager::~CData_Manager()
@@ -18,7 +18,7 @@ CData_Manager::~CData_Manager()
 }
 HRESULT CData_Manager::Initialize(_uint  EditorLevel)
 {
-	m_EditorLevel = EditorLevel;
+	m_editorLevel = EditorLevel;
 	return S_OK;
 }
 
@@ -39,21 +39,21 @@ bool CData_Manager::Reload(const _tchar* Path)
 
 	//}
 
-	// ÀÌ°Ç±×³É ÀÓ±¸ÀÌ¿¡¼­ ÇÏ¸é µÉµí
+	// ì´ê±´ê·¸ëƒ¥ ì„êµ¬ì´ì—ì„œ í•˜ë©´ ë ë“¯
 
 
 	return true;
 }
 
-bool CData_Manager::ClearMap(SAVETYPE eDATATYPE)
+bool CData_Manager::ClearMap(ESaveType eDATATYPE)
 {
 
-	if (eDATATYPE == SAVETYPE::END)
+	if (eDATATYPE == ESaveType::END)
 		return false;
-	_uint iCurLevel = m_pGameInstance.lock()->Get_Current_LevelIdx();
-	if (eDATATYPE == SAVETYPE::GAMEOBJECT)
+	_uint iCurLevel = m_gameInstance.lock()->Get_Current_LevelIdx();
+	if (eDATATYPE == ESaveType::GAMEOBJECT)
 	{
-		const auto& layer = m_pGameInstance.lock()->Get_GameObjects(iCurLevel);
+		const auto& layer = m_gameInstance.lock()->Get_GameObjects(iCurLevel);
 
 		nlohmann::json jObjArray = nlohmann::json::array();
 
@@ -63,7 +63,7 @@ bool CData_Manager::ClearMap(SAVETYPE eDATATYPE)
 
 			for (auto& pObj : pair.second->Get_GameObject())
 			{
-				if (pObj->Get_SaveType() == SAVETYPE::GAMEOBJECT)
+				if (pObj->Get_SaveType() == ESaveType::GAMEOBJECT)
 				{
 					pObj->Mark_Destroy();
 				}
@@ -79,13 +79,13 @@ bool CData_Manager::ClearMap(SAVETYPE eDATATYPE)
 	return false;
 }
 
-bool CData_Manager::Load(SAVETYPE eDATATYPE, const string& fileName)
+bool CData_Manager::Load(ESaveType eDATATYPE, const string& fileName)
 {
 
-	if (eDATATYPE == SAVETYPE::END)
+	if (eDATATYPE == ESaveType::END)
 		return false;
 
-	if (eDATATYPE == SAVETYPE::GAMEOBJECT)
+	if (eDATATYPE == ESaveType::GAMEOBJECT)
 	{
 		Load_ObjData(fileName);
 	}
@@ -97,12 +97,12 @@ bool CData_Manager::Load(SAVETYPE eDATATYPE, const string& fileName)
 	return true;
 }
 
-bool CData_Manager::Save(SAVETYPE eDATATYPE, const string& fileName)
+bool CData_Manager::Save(ESaveType eDATATYPE, const string& fileName)
 {
-	if (eDATATYPE == SAVETYPE::END)
+	if (eDATATYPE == ESaveType::END)
 		return false;
 
-	if (eDATATYPE == SAVETYPE::GAMEOBJECT)
+	if (eDATATYPE == ESaveType::GAMEOBJECT)
 	{
 		if (FAILED(Save_ObjData(fileName)))
 			return false;
@@ -133,10 +133,10 @@ HRESULT CData_Manager::Load_ObjData(const string& fileName)
 
 	nlohmann::json j;
 
-	// ÆÄÀÏ ÀĞ±â
+	// íŒŒì¼ ì½ê¸°
 	try
 	{
-		file >> j;  // ¿©±â¼­ ¹®¹ı ÀÌ»óÇÏ¸é ¹Ù·Î ¿¹¿Ü ¹ß»ı
+		file >> j;  // ì—¬ê¸°ì„œ ë¬¸ë²• ì´ìƒí•˜ë©´ ë°”ë¡œ ì˜ˆì™¸ ë°œìƒ
 	}
 	catch (const nlohmann::json::parse_error& e)
 	{
@@ -153,17 +153,17 @@ HRESULT CData_Manager::Load_ObjData(const string& fileName)
 	{
 		for (auto& jObj : j["WorldGameObject"])
 		{
-			_uint Level = m_pGameInstance.lock()->Get_Current_LevelIdx();
-			shared_ptr<CGameObject> obj = m_pGameInstance.lock()->Add_GameObject(jObj["ProtoSavedLevel"], S2W(jObj["ProtoSavedTag"]), Level, S2W(jObj["LayerName"]));
+			_uint Level = m_gameInstance.lock()->Get_Current_LevelIdx();
+			shared_ptr<CGameObject> obj = m_gameInstance.lock()->Add_GameObject(jObj["ProtoSavedLevel"], S2W(jObj["ProtoSavedTag"]), Level, S2W(jObj["LayerName"]));
 
 
-			// ÄÄÆ÷³ÍÆ®´Â Load_FromJson, Save_ToJson °¢°¢ ¼±¾ğ / object ´Â Entity¿¡¼­ Load_FromJson ¸¸
-			obj->Load_FromJson(jObj);// ÄÄÆ÷³ÍÆ® ÃÊ±âÈ­ + ÄÄÆ÷³ÍÆ® Ãß°¡ ÀüºÎ ÀÌ ¾È¿¡¼­ ÇØ°á
+			// ì»´í¬ë„ŒíŠ¸ëŠ” Load_FromJson, Save_ToJson ê°ê° ì„ ì–¸ / object ëŠ” Entityì—ì„œ Load_FromJson ë§Œ
+			obj->Load_FromJson(jObj);// ì»´í¬ë„ŒíŠ¸ ì´ˆê¸°í™” + ì»´í¬ë„ŒíŠ¸ ì¶”ê°€ ì „ë¶€ ì´ ì•ˆì—ì„œ í•´ê²°
 
-			obj->Set_SaveType(SAVETYPE::GAMEOBJECT);
+			obj->Set_SaveType(ESaveType::GAMEOBJECT);
 
 		}
-		CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "GObj Data Updated Successfully!\n");
+		CLog_Manager::GetInstance()->Add_Log(ELogLevel::INFO, "GObj Data Updated Successfully!\n");
 
 	}
 
@@ -174,12 +174,12 @@ HRESULT CData_Manager::Load_ObjData(const string& fileName)
 HRESULT CData_Manager::Save_ObjData(const string& fileName)
 {
 	nlohmann::json j;
-	_uint iCurLevel = m_pGameInstance.lock()->Get_Current_LevelIdx();
+	_uint iCurLevel = m_gameInstance.lock()->Get_Current_LevelIdx();
 
 
 	j["Level"] = iCurLevel;
 	//obj
-	const auto& layer = m_pGameInstance.lock()->Get_GameObjects(iCurLevel);
+	const auto& layer = m_gameInstance.lock()->Get_GameObjects(iCurLevel);
 
 	nlohmann::json jObjArray = nlohmann::json::array();
 
@@ -198,9 +198,9 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 			jObj["LayerName"] = W2S(strLayerName);
 
 
-			jObj["ProtoSavedTag"] = W2S(pObj->Get_ProtoTag()); // "ProtoDATATYPE_Cube" µî
+			jObj["ProtoSavedTag"] = W2S(pObj->Get_ProtoTag()); // "ProtoDATATYPE_Cube" ë“±
 			jObj["ProtoSavedLevel"] = pObj->Get_ProtoLevel(); // 
-			jObj["ObjName"] = W2S(pObj->Get_Name());   // "Player", "Enemy1" µî
+			jObj["ObjName"] = W2S(pObj->Get_Name());   // "Player", "Enemy1" ë“±
 
 
 			pObj->Save_ToJson(jObj);
@@ -210,7 +210,7 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 			for (auto& pair : pObj->Get_ComponentMap())
 			{
 				nlohmann::json jCom;
-				// ÄÄÆ÷³ÍÆ®¿¡ °øÅëÀûÀ¸·Î µé¾î°¡´Â°Å
+				// ì»´í¬ë„ŒíŠ¸ì— ê³µí†µì ìœ¼ë¡œ ë“¤ì–´ê°€ëŠ”ê±°
 
 				jCom["ComProtoTag"] = W2S(pair.second->Get_ProtoTag());
 				jCom["ComProtoLevel"] = pair.second->Get_ProtoLevel();
@@ -218,7 +218,7 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 
 
 				jCom["ComponentTag"] = W2S(pair.first);
-				// °¢ ÄÄÆ÷³ÍÆ® ¾ÈÀÇ ¼¼ºÎ³»¿ë
+				// ê° ì»´í¬ë„ŒíŠ¸ ì•ˆì˜ ì„¸ë¶€ë‚´ìš©
 				pair.second->Save_ToJson(jCom);
 
 				jComponentArray.push_back(jCom);
@@ -231,19 +231,19 @@ HRESULT CData_Manager::Save_ObjData(const string& fileName)
 	}
 	j["WorldGameObject"] = jObjArray;
 
-	CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "GObj Data Save Successfully!\n");
+	CLog_Manager::GetInstance()->Add_Log(ELogLevel::INFO, "GObj Data Save Successfully!\n");
 
 
 	string folderPath = "../../Client/Bin/Resources/Data/MapData/";
 
-	// Æú´õ°¡ ¾øÀ¸¸é »ı¼º
+	// í´ë”ê°€ ì—†ìœ¼ë©´ ìƒì„±
 	if (!filesystem::exists(folderPath)) {
 		filesystem::create_directories(folderPath);
 	}
 
 	string fullPath = folderPath + fileName; //  folderPath + "Stage1.json"
 
-	// ÆÄÀÏ »ı¼º
+	// íŒŒì¼ ìƒì„±
 	ofstream file(fullPath);
 
 	if (file.is_open())
@@ -276,10 +276,10 @@ HRESULT CData_Manager::Load_UIData(const string& fileName)
 
 	nlohmann::json j;
 
-	// ÆÄÀÏ ÀĞ±â
+	// íŒŒì¼ ì½ê¸°
 	try
 	{
-		file >> j;  // ¿©±â¼­ ¹®¹ı ÀÌ»óÇÏ¸é ¹Ù·Î ¿¹¿Ü ¹ß»ı
+		file >> j;  // ì—¬ê¸°ì„œ ë¬¸ë²• ì´ìƒí•˜ë©´ ë°”ë¡œ ì˜ˆì™¸ ë°œìƒ
 	}
 	catch (const nlohmann::json::parse_error& e)
 	{
@@ -288,7 +288,7 @@ HRESULT CData_Manager::Load_UIData(const string& fileName)
 	}
 
 
-	auto pGameInstance = m_pGameInstance.lock();
+	auto pGameInstance = m_gameInstance.lock();
 	const auto& uiMgr = pGameInstance->Get_UI_Manager();
 	auto& uiPool = uiMgr->GetUIPool();
 
@@ -302,13 +302,13 @@ HRESULT CData_Manager::Load_UIData(const string& fileName)
 				auto it = uiPool.find(rootTag);
 				if (it != uiPool.end())
 				{
-					it->second->Load_FromJson(UI); // ¿©±â¼­ µ¥ÀÌÅÍ Àû¿ë ½ÃÀÛ!
-					CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "Single UI Root Loaded!");
+					it->second->Load_FromJson(UI); // ì—¬ê¸°ì„œ ë°ì´í„° ì ìš© ì‹œì‘!
+					CLog_Manager::GetInstance()->Add_Log(ELogLevel::INFO, "Single UI Root Loaded!");
 				}
 				else
 				{
-					// Ç®¿¡ ¾ø´Â ÀÌ¸§ÀÌ¸é ¹«½ÃÇÏ°Å³ª °æ°í
-					CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::WARNING, "Error: Matching UI Tag not found in Pool.\n");
+					// í’€ì— ì—†ëŠ” ì´ë¦„ì´ë©´ ë¬´ì‹œí•˜ê±°ë‚˜ ê²½ê³ 
+					CLog_Manager::GetInstance()->Add_Log(ELogLevel::WARNING, "Error: Matching UI Tag not found in Pool.\n");
 				}
 			
 		}
@@ -321,7 +321,7 @@ HRESULT CData_Manager::Save_UIData(const string& fileName)
 
 	//ui
 
-	const auto& uiMgr = m_pGameInstance.lock()->Get_UI_Manager();
+	const auto& uiMgr = m_gameInstance.lock()->Get_UI_Manager();
 
 	auto& uiPool = uiMgr->GetUIPool();
 
@@ -344,7 +344,7 @@ HRESULT CData_Manager::Save_UIData(const string& fileName)
 
 	string folderPath = "../../Client/Bin/Resources/Data/UIData/";
 
-	// Æú´õ »ı¼º
+	// í´ë” ìƒì„±
 	if (!filesystem::exists(folderPath)) {
 		filesystem::create_directories(folderPath);
 	}
@@ -354,10 +354,10 @@ HRESULT CData_Manager::Save_UIData(const string& fileName)
 
 	if (file.is_open())
 	{
-		file << setw(4) << j << endl; // JSONÀ» ¿¹»Ú°Ô Á¤·ÄÇØ¼­ ÀúÀå
+		file << setw(4) << j << endl; // JSONì„ ì˜ˆì˜ê²Œ ì •ë ¬í•´ì„œ ì €ì¥
 		file.close();
 
-		CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "UI Data Save Successfully!\n");
+		CLog_Manager::GetInstance()->Add_Log(ELogLevel::INFO, "UI Data Save Successfully!\n");
 
 		return S_OK;
 	}

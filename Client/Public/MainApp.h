@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Define.h"
 #include "Base.h"
 
@@ -44,9 +44,9 @@ private:
 	//HRESULT Ready_UI();
 	shared_ptr<class CInventory_Controller> m_Contr = {};
 private:
-	weak_ptr<CGameInstance> m_pGameInstance = {};
-	ComPtr<ID3D11Device> m_pDevice = { nullptr };
-	ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
+	weak_ptr<CGameInstance> m_gameInstance = {};
+	ComPtr<ID3D11Device> m_device = { nullptr };
+	ComPtr<ID3D11DeviceContext> m_context = { nullptr };
 	weak_ptr<Editor::CEditorInstance> m_pEditorInstance = { };
 
 };

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "IModifier.h"
 
 #include "Client_Define.h"
@@ -15,7 +15,7 @@ public:
 	virtual ~CRotationModifier();
 
 
-	// IModifierÀ»(¸¦) ÅëÇØ »ó¼ÓµÊ
+	// IModifierì„(ë¥¼) í†µí•´ ìƒì†ë¨
 	void Tick(float fDeltaTime, CUI* pOwner) override;
 
 	void OnAppear(float fDeltaTime, CUI* pOwner) override;
@@ -28,7 +28,7 @@ private:
 	CUITransform* m_pOwnerTransform = { nullptr };
 
 	_float m_fAccTime = {};
-	_float m_Range = {};
+	_float m_range = {};
 	_float m_Speed = {};
 	_float m_StartPosRad = {};
 	_float2 m_BaseScale = {};

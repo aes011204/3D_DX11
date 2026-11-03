@@ -1,4 +1,4 @@
-#include "Picking_Manager.h"
+ï»¿#include "Picking_Manager.h"
 #include "GameInstance.h"
 #include "Transform.h"
 #include "VIBuffer_Terrain.h"
@@ -8,8 +8,8 @@
 
 
 CPicking_Manager::CPicking_Manager(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice{ pDevice }, m_pContext{ pContext },
-	m_pGameInstance{ CGameInstance::GetInstance() }
+	: m_device{ pDevice }, m_context{ pContext },
+	m_gameInstance{ CGameInstance::GetInstance() }
 {
 }
 
@@ -28,11 +28,11 @@ HRESULT CPicking_Manager::Initialize()
 void CPicking_Manager::Update()
 {
 	_float3 fNDC = {};
-	_float2 Pos = m_pGameInstance.lock()->Get_MousePos();
+	_float2 Pos = m_gameInstance.lock()->Get_MousePos();
 
 	D3D11_VIEWPORT ViewPortDesc{};
 	_uint iNumViewPort = { 1 };
-	m_pContext->RSGetViewports(&iNumViewPort, &ViewPortDesc);
+	m_context->RSGetViewports(&iNumViewPort, &ViewPortDesc);
 
 	//NDC
 	fNDC.x = Pos.x / (ViewPortDesc.Width * 0.5f) - 1.f;
@@ -41,14 +41,14 @@ void CPicking_Manager::Update()
 
 	_vector vNDC = XMLoadFloat3(&fNDC);
 
-	//Åõ¿µ -> ºä½ºÆäÀÌ½º
-	const _float4x4* InverseProj = m_pGameInstance.lock()->Get_InverseTransfrom(D3DTS::PROJ);
+	//íˆ¬ì˜ -> ë·°ìŠ¤íŽ˜ì´ìŠ¤
+	const _float4x4* InverseProj = m_gameInstance.lock()->Get_InverseTransfrom(ED3DTS::PROJ);
 	//XMMatrixInverse(&matProj, 0, &matProj);
 	vNDC = XMVector3TransformCoord(vNDC, XMLoadFloat4x4(InverseProj));
 
-	//ºä½ºÆäÀÌ½º -> ¿ùµå 
+	//ë·°ìŠ¤íŽ˜ì´ìŠ¤ -> ì›”ë“œ 
 
-	const _float4x4* view = m_pGameInstance.lock()->Get_InverseTransfrom(D3DTS::VIEW);
+	const _float4x4* view = m_gameInstance.lock()->Get_InverseTransfrom(ED3DTS::VIEW);
 
 	Ray ray = {};
 	ray.position = XMVectorSet(0.f, 0.f, 0.f, 1.f);
@@ -57,7 +57,7 @@ void CPicking_Manager::Update()
 	ray.position = XMVector3TransformCoord(ray.position, XMLoadFloat4x4(view));
 	ray.direction = XMVector3TransformNormal(ray.direction, XMLoadFloat4x4(view));
 
-	m_CurrentRay = ray;
+	m_currentRay = ray;
 }
 
 _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform* pTransform, _float3* pOutPos)
@@ -65,18 +65,18 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 	if (pBuffer == nullptr || pTransform == nullptr)
 		return false;
 
-	Ray LocalRay = m_CurrentRay;
+	Ray LocalRay = m_currentRay;
 
-	// ¿ùµå-> ·ÎÄÃ
+	// ì›”ë“œ-> ë¡œì»¬
 	const _float4x4* World = pTransform->Get_WorldMatrix();
 	_matrix InvWorld = XMMatrixInverse(0, XMLoadFloat4x4(World));
 
 	LocalRay.position = XMVector3TransformCoord(LocalRay.position, InvWorld);
 	LocalRay.direction = XMVector3TransformNormal(LocalRay.direction, InvWorld);
-	// 4¹øÂ° ¼ººÐ¿¡ 0À» °öÇÑ´Ù ÀÌµ¿(Translation)À» ¹«½ÃÇÏ±â À§ÇØ¼­
+	// 4ë²ˆì§¸ ì„±ë¶„ì— 0ì„ ê³±í•œë‹¤ ì´ë™(Translation)ì„ ë¬´ì‹œí•˜ê¸° ìœ„í•´ì„œ
 
 	LocalRay.direction = XMVector3Normalize(LocalRay.direction);
-	// ±æÀÌ¸¦ 1·Î ¸¸µë À§¿¡°Å¶û ´Ù¸¥°ÅÀÓ
+	// ê¸¸ì´ë¥¼ 1ë¡œ ë§Œë“¬ ìœ„ì—ê±°ëž‘ ë‹¤ë¥¸ê±°ìž„
 
 	_ulong		dwVtxNumber[3]{};
 	const _float3* pTerrainVtxPos = pBuffer->Get_VtxPos();
@@ -91,7 +91,7 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 		{
 			_ulong dwIndex = i * pTerrainVtxNumX + j;
 
-			// ¿À¸¥ÂÊ À§
+			// ì˜¤ë¥¸ìª½ ìœ„
 
 			dwVtxNumber[0] = dwIndex + pTerrainVtxNumX;
 			dwVtxNumber[1] = dwIndex + pTerrainVtxNumX + 1;
@@ -117,7 +117,7 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 			}
 
 
-			// ¿ÞÂÊ ¾Æ·¡
+			// ì™¼ìª½ ì•„ëž˜
 
 			dwVtxNumber[0] = dwIndex + pTerrainVtxNumX;
 			dwVtxNumber[1] = dwIndex + 1;
@@ -150,8 +150,8 @@ _bool CPicking_Manager::Culaulate_Terrain(CVIBuffer_Terrain* pBuffer, CTransform
 
 _bool CPicking_Manager::Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out)
 {
-	_uint levelIndex = m_pGameInstance.lock()->Get_Current_LevelIdx();
-	auto terrain = m_pGameInstance.lock()->Get_GameObject(levelIndex, layerTag, TerrainIndex);
+	_uint levelIndex = m_gameInstance.lock()->Get_Current_LevelIdx();
+	auto terrain = m_gameInstance.lock()->Get_GameObject(levelIndex, layerTag, TerrainIndex);
 	auto transform = dynamic_pointer_cast<CTransform>(terrain->Get_Component(g_strTransformTag));
 	auto buffer = dynamic_pointer_cast<CVIBuffer_Terrain>(terrain->Get_Component(L"Com_VIBuffer"));
 
@@ -180,8 +180,8 @@ _bool CPicking_Manager::Compute_HeightOnTerrain(_wstring layerTag, _uint Terrain
 
 {
 
-	_uint levelIndex = m_pGameInstance.lock()->Get_Current_LevelIdx();
-	auto terrain = m_pGameInstance.lock()->Get_GameObject(levelIndex, layerTag, TerrainIndex);
+	_uint levelIndex = m_gameInstance.lock()->Get_Current_LevelIdx();
+	auto terrain = m_gameInstance.lock()->Get_GameObject(levelIndex, layerTag, TerrainIndex);
 	auto transform = dynamic_pointer_cast<CTransform>(terrain->Get_Component(g_strTransformTag));
 	auto buffer = dynamic_pointer_cast<CVIBuffer_Terrain>(terrain->Get_Component(L"Com_VIBuffer"));
 
@@ -203,7 +203,7 @@ _bool CPicking_Manager::Compute_HeightOnTerrain(_wstring layerTag, _uint Terrain
 
 	// y = (-ax - cz - d) / b;
 
-	// ¿À¸¥ÂÊ À§
+	// ì˜¤ë¥¸ìª½ ìœ„
 	if (fWidth >= fHeight)
 	{
 		vPlane = XMPlaneFromPoints(
@@ -213,7 +213,7 @@ _bool CPicking_Manager::Compute_HeightOnTerrain(_wstring layerTag, _uint Terrain
 		*Out = (-XMVectorGetX(vPlane) * XMVectorGetX(pCurPos) - XMVectorGetZ(vPlane) * XMVectorGetZ(pCurPos) - XMVectorGetW(vPlane)) / XMVectorGetY(vPlane);
 		return true;
 	}
-	// ¿ÞÂÊ ¾Æ·¡
+	// ì™¼ìª½ ì•„ëž˜
 	else if (fWidth < fHeight)
 	{
 		vPlane = XMPlaneFromPoints(

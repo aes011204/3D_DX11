@@ -1,4 +1,4 @@
-#include "GameObject.h"
+﻿#include "GameObject.h"
 #include "Transform.h"
 #include "Shader.h"
 
@@ -32,24 +32,24 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 
 
-	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext);
-	if (nullptr == m_pTransformCom)
+	m_transformCom = CTransform::Create(m_device, m_context);
+	if (nullptr == m_transformCom)
 		return E_FAIL;
 
-	if (FAILED(m_pTransformCom->Initialize(pArg)))
+	if (FAILED(m_transformCom->Initialize(pArg)))
 		return E_FAIL;
 
-	m_pTransformCom->SetDefaultNameFromThisType();
+	m_transformCom->SetDefaultNameFromThisType();
 
 	if (nullptr == Get_Component(g_strTransformTag))
 	{
-		m_Components.emplace(g_strTransformTag, m_pTransformCom);
+		m_components.emplace(g_strTransformTag, m_transformCom);
 		
 	}
 
 	if (nullptr != pArg)
 	{
-		GAMEOBJECT_DESC* pDesc = static_cast<GAMEOBJECT_DESC*> (pArg);
+		GameObjectDesc* pDesc = static_cast<GameObjectDesc*> (pArg);
 	}
 
 	return S_OK;

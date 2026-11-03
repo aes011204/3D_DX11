@@ -29,7 +29,7 @@ HRESULT CMon_R_Act::Initialize(void* pArg)
 	m_IsColl = false;
 
 
-	m_pPlayer = m_pGameInstance.lock()->Get_GameObject(
+	m_pPlayer = m_gameInstance.lock()->Get_GameObject(
 		ETOI(LEVEL::GAMEPLAY),
 		L"Layer_Player",0
 	);
@@ -37,11 +37,11 @@ HRESULT CMon_R_Act::Initialize(void* pArg)
 	_float3 targetPos = {};
 	XMStoreFloat3(&targetPos,m_pPlayer.lock()->Get_TransformCom()->Get_Position());
 
-	float x = m_pGameInstance.lock()->Random(-1, 1);
-	float z = m_pGameInstance.lock()->Random(-1, 1);
+	float x = m_gameInstance.lock()->Random(-1, 1);
+	float z = m_gameInstance.lock()->Random(-1, 1);
 	_vector finalPos =XMVectorSet(targetPos.x + x, 0.f, targetPos.z + z, 1.f);
 
-	m_pTransformCom->Set_Position(finalPos);
+	m_transformCom->Set_Position(finalPos);
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -55,9 +55,9 @@ HRESULT CMon_R_Act::Initialize(void* pArg)
 	m_pSocketMatrix = m_pModelCom->Get_BoneMatrixPtr("chin_jnt");
 
 
-	m_pCurRot = m_pTransformCom->Get_Quaternion();
+	m_pCurRot = m_transformCom->Get_Quaternion();
 
-	m_pGameInstance.lock()->Play_Loop(L"Leviathan_FinaleAttack");
+	m_gameInstance.lock()->Play_Loop(L"Leviathan_FinaleAttack");
 	
 
 
@@ -76,7 +76,7 @@ void CMon_R_Act::Update(_float fTimeDelta)
 	if(m_pPlayer.lock()&& m_IsColl==false)
 	{
 	_vector TargetPos = m_pPlayer.lock()->Get_TransformCom()->Get_Position();
-	m_pTransformCom->Set_Position(TargetPos );
+	m_transformCom->Set_Position(TargetPos );
 
 	//m_pTransformCom->Set_Quaternion(m_pPlayer.lock()->Get_TransformCom()->Get_Quaternion()+m_pCurRot);
 	}
@@ -92,7 +92,7 @@ void CMon_R_Act::Update(_float fTimeDelta)
 
 void CMon_R_Act::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CMon_R_Act::Render()
@@ -105,12 +105,12 @@ HRESULT CMon_R_Act::Render()
 
 	for(size_t i=0; i< iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_pModelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		m_pModelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_pModelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
 	if (FAILED(m_pModelCom->Render(i)))
@@ -120,9 +120,9 @@ HRESULT CMon_R_Act::Render()
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_Collider);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_Collider);
 #endif
 
 
@@ -142,14 +142,14 @@ void CMon_R_Act::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 
 	//if(m_State == ATTACK)
 	{
-		if (other->Get_MyLayer()==COLLISION_LAYER::PLAYER)
+		if (other->Get_MyLayer()==ECollisionLayer::PLAYER)
 		{
 			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Damage(4);
 
 			m_IsColl = true;
-			m_pGameInstance.lock()->Stop(L"Leviathan_Rumble_Loop",1.5);
-			m_pGameInstance.lock()->Stop(L"Leviathan_Distant_Call",1.5f);
-			m_pGameInstance.lock()->Stop(L"Leviathan_FinaleAttack",1.5f);
+			m_gameInstance.lock()->Stop(L"Leviathan_Rumble_Loop",1.5);
+			m_gameInstance.lock()->Stop(L"Leviathan_Distant_Call",1.5f);
+			m_gameInstance.lock()->Stop(L"Leviathan_FinaleAttack",1.5f);
 
 		}
 	}
@@ -177,7 +177,7 @@ void CMon_R_Act::OnGui()
 	float dist = XMVectorGetX(
 		XMVector3Length(
 			m_pPlayer.lock()->Get_TransformCom()->Get_Position()
-			- m_pTransformCom->Get_Position()
+			- m_transformCom->Get_Position()
 		)
 	);
 
@@ -186,25 +186,25 @@ void CMon_R_Act::OnGui()
 void CMon_R_Act::RebindCom()
 {
 
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
 	m_pModelCom = Get_Component<CModel>(L"Com_Model");
 
 }
 
 HRESULT CMon_R_Act::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -220,8 +220,8 @@ HRESULT CMon_R_Act::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float fFar = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
 
 	return S_OK;
@@ -231,7 +231,7 @@ HRESULT CMon_R_Act::Ready_Components()
 {
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
@@ -248,16 +248,16 @@ HRESULT CMon_R_Act::Ready_Components()
 		return E_FAIL;
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);*/
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc{};
+	CBounding_Sphere::BoundingSphereDesc		SPhereDesc{};
 	
-	SPhereDesc.fRadius = 2.f;
-	SPhereDesc.vCenter = _float3(0.f, 0.f,0.f);
-	SPhereDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc.OtherMask = COLLISION_LAYER::PLAYER;
+	SPhereDesc.radius = 2.f;
+	SPhereDesc.center = _float3(0.f, 0.f,0.f);
+	SPhereDesc.myLayer = ECollisionLayer::MONSTERATT;
+	SPhereDesc.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
 		TEXT("Com_Collider"), &m_Collider , &SPhereDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Collider);
+	m_gameInstance.lock()->Add_Collider(m_Collider);
 	
 	return S_OK;
 }

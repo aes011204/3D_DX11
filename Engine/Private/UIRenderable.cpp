@@ -1,4 +1,4 @@
-#include "UIRenderable.h"
+Ôªø#include "UIRenderable.h"
 
 CUIRenderable::CUIRenderable(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	:CUI(pDevice, pContext)
@@ -8,7 +8,7 @@ CUIRenderable::CUIRenderable(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceCo
 
 CUIRenderable::CUIRenderable(const CUIRenderable& prototype)
 	: CUI(prototype),
-	m_PassIndex(0)
+	m_passIndex(0)
 {
 }
 
@@ -16,42 +16,42 @@ CUIRenderable::CUIRenderable(const CUIRenderable& prototype)
 HRESULT CUIRenderable::OnInit(void* pArg)
 {
 
-	RENDERABLE_DESC* pDesc = static_cast<RENDERABLE_DESC*>(pArg);
+	RenderableDesc* pDesc = static_cast<RenderableDesc*>(pArg);
 
-	m_IsTransparent = pDesc->IsTransparent;
-	m_bUseDark = pDesc->bUseDark;
-	m_bUseNineSlice = pDesc->bUseNineSlice;
+	m_isTransparent = pDesc->isTransparent;
+	m_useDark = pDesc->useDark;
+	m_useNineSlice = pDesc->useNineSlice;
 
-	m_TexProtoLevel = pDesc->TextureComLevel;
-	 m_TexProtoName = pDesc->TextureProtoName;
-	m_TexIndex = pDesc->TextureIndex;
+	m_texProtoLevel = pDesc->textureComLevel;
+	 m_texProtoName = pDesc->textureProtoName;
+	m_texIndex = pDesc->textureIndex;
 
-	m_ShaderType = pDesc->shaderType;
-	if(m_ShaderType == UIShaderType::Radial)
+	m_shaderType = pDesc->shaderType;
+	if(m_shaderType == UIShaderType::Radial)
 	{
-		m_bUseRadial = true;
+		m_useRadial = true;
 		
 	}
 
 
-	if (FAILED(Ready_Components(m_TexProtoLevel, m_TexProtoName)))
+	if (FAILED(Ready_Components(m_texProtoLevel, m_texProtoName)))
 		return E_FAIL;
 
-	if (m_IsTransparent == false)
+	if (m_isTransparent == false)
 	{
-		_float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
-		m_SliceDesc.TexOriginalSize = orignSize;
-		m_SliceDesc.UISize = _float2(1.f, 1.f);// æÓ¬•«« ∆Æ∑ªΩ∫∆˚¿Ã ¡§«‘ √÷¡æ ui ªÁ¿Ã¡Ó
-		m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
+		_float2 orignSize = m_textureCom->Get_SizeFromSRV(0);
+		m_sliceDesc.texOriginalSize = orignSize;
+		m_sliceDesc.UISize = _float2(1.f, 1.f);// Ïñ¥ÏßúÌîº Ìä∏Î†åÏä§ÌèºÏù¥ Ï†ïÌï® ÏµúÏ¢Ö ui ÏÇ¨Ïù¥Ï¶à
+		m_sliceDesc.pxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
 	}
 
 
 
 
-	if (pDesc->PxSliceLRTB.x != 0.f && pDesc->PxSliceLRTB.y != 0.f
-		&& pDesc->PxSliceLRTB.z != 0.f && pDesc->PxSliceLRTB.w != 0.f)
+	if (pDesc->pxSliceLRTB.x != 0.f && pDesc->pxSliceLRTB.y != 0.f
+		&& pDesc->pxSliceLRTB.z != 0.f && pDesc->pxSliceLRTB.w != 0.f)
 	{
-		m_SliceDesc.PxSliceLRTB = (pDesc->PxSliceLRTB);
+		m_sliceDesc.pxSliceLRTB = (pDesc->pxSliceLRTB);
 	}
 
 
@@ -75,15 +75,15 @@ void CUIRenderable::OnDisabled()
 
 void CUIRenderable::OnUpdate(const _float& timeDelta)
 {
-	if (m_bIsDirtyCom) {
-		RebindCom();      // "πŸ≤Ô ∞Õ"∏∏ «— π¯ ∞ªΩ≈
-		m_bIsDirtyCom = false;
+	if (m_isDirtyCom) {
+		RebindCom();      // "Î∞îÎÄê Í≤É"Îßå Ìïú Î≤à Í∞±Ïã†
+		m_isDirtyCom = false;
 	}
 
-	if (m_bUseNineSlice)
-		m_SliceDesc.UISize = m_pUITransformCom->Get_FinalSize();
-	if (m_bUseNineSlice)
-		m_SliceDesc.TexCustomSize = m_pUITransformCom->Get_SizeDelta();
+	if (m_useNineSlice)
+		m_sliceDesc.UISize = m_UITransformCom->Get_FinalSize();
+	if (m_useNineSlice)
+		m_sliceDesc.texCustomSize = m_UITransformCom->Get_SizeDelta();
 }
 
 void CUIRenderable::OnPrepareRender()
@@ -94,33 +94,33 @@ void CUIRenderable::OnPrepareRender()
 
 void CUIRenderable::OnLateUpdate()
 {
-	if (m_bUseNineSlice == true)
+	if (m_useNineSlice == true)
 	{
-		m_PassIndex = 1;
+		m_passIndex = 1;
 
 	}
 	else
 	{
-		m_PassIndex = 0;
+		m_passIndex = 0;
 	}
 }
 
 HRESULT CUIRenderable::OnRender()
 {
-	if (m_IsTransparent == true)
+	if (m_isTransparent == true)
 		return S_OK;
 
 
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(m_PassIndex)))
+	if (FAILED(m_shaderCom->Begin(m_passIndex)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Bind_Resources()))
+	if (FAILED(m_VIBufferCom->Bind_Resources()))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	if (FAILED(m_VIBufferCom->Render()))
 		return E_FAIL;
 
 	return S_OK;
@@ -131,11 +131,11 @@ HRESULT CUIRenderable::Change_Texture(shared_ptr<CTexture> texture, _uint TexInd
 	//if(protoName != m_TexProtoName)
 	//{
 
-	m_pTextureCom = texture;
-	m_TexIndex = TexIndex;
-	if (m_pTextureCom && m_pUITransformCom) {
+	m_textureCom = texture;
+	m_texIndex = TexIndex;
+	if (m_textureCom && m_UITransformCom) {
 
-		m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(TexIndex) / 3.f) * 2.f);
+		m_UITransformCom->SetSizeDelta((m_textureCom->Get_SizeFromSRV(TexIndex) / 3.f) * 2.f);
 	}
 	return S_OK;
 	//}
@@ -144,28 +144,28 @@ HRESULT CUIRenderable::Change_Texture(shared_ptr<CTexture> texture, _uint TexInd
 
 HRESULT CUIRenderable::Set_TextureIndex(_uint index)
 {
-	if (index >= m_pTextureCom->Get_NumSRVs())
+	if (index >= m_textureCom->Get_NumSRVs())
 		return E_FAIL;
 
 
-	m_TexIndex = index;
+	m_texIndex = index;
 	return S_OK;
 }
 
 HRESULT CUIRenderable::Ready_Components(_uint Level, _wstring protoName)
 {
-	if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+	if (FAILED(Add_Component(0, TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
 
-	if (m_ShaderType == UIShaderType::Radial)
+	if (m_shaderType == UIShaderType::Radial)
 	{
-		if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxDonut"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+		if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxDonut"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 			return E_FAIL;
 	}
-	else if (m_ShaderType == UIShaderType::Default)
+	else if (m_shaderType == UIShaderType::Default)
 	{
 
-		if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+		if (FAILED(Add_Component(0, TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 			return E_FAIL;
 
 	}
@@ -173,13 +173,13 @@ HRESULT CUIRenderable::Ready_Components(_uint Level, _wstring protoName)
 
 
 
-	if (m_IsTransparent == false)
+	if (m_isTransparent == false)
 	{
-		if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+		if (FAILED(Add_Component(Level, /*TEXT(protoName)*/protoName, TEXT("Com_Texture"), &m_textureCom, nullptr)))
 			return E_FAIL;
-		if (m_pTextureCom && m_pUITransformCom) {
+		if (m_textureCom && m_UITransformCom) {
 
-			m_pUITransformCom->SetSizeDelta((m_pTextureCom->Get_SizeFromSRV(m_TexIndex) / 3.f) * 2.f);
+			m_UITransformCom->SetSizeDelta((m_textureCom->Get_SizeFromSRV(m_texIndex) / 3.f) * 2.f);
 		}
 	}
 	return S_OK;
@@ -187,20 +187,20 @@ HRESULT CUIRenderable::Ready_Components(_uint Level, _wstring protoName)
 
 HRESULT CUIRenderable::Bind_ShaderResources()
 {
-	if (FAILED(m_pUITransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_UITransformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ViewMatrix", D3DTS::VIEW)))
+	if (FAILED(__super::Bind_ShaderResource(m_shaderCom, "g_ViewMatrix", ED3DTS::VIEW)))
 		return E_FAIL;
 
-	if (FAILED(__super::Bind_ShaderResource(m_pShaderCom, "g_ProjMatrix", D3DTS::PROJ)))
+	if (FAILED(__super::Bind_ShaderResource(m_shaderCom, "g_ProjMatrix", ED3DTS::PROJ)))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", m_TexIndex)))
+	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_Texture", m_texIndex)))
 		return E_FAIL;
 
 
-	switch (m_ShaderType)
+	switch (m_shaderType)
 	{
 	case UIShaderType::Default:
 		if (FAILED(Bind_ShaderResources_Default()))
@@ -221,37 +221,37 @@ HRESULT CUIRenderable::Bind_ShaderResources()
 
 HRESULT CUIRenderable::Bind_ShaderResources_Default()
 {
-	if (m_bUseDark == true)
+	if (m_useDark == true)
 	{
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_Dark", &m_Dark, sizeof(_float))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_Dark", &m_dark, sizeof(_float))))
 			return E_FAIL;
 	}
 
-	if (m_bUseColorFlat == true)
+	if (m_useColorFlat == true)
 	{
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorFlat", &m_ColorFlat, sizeof(_float4))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_ColorFlat", &m_colorFlat, sizeof(_float4))))
 			return E_FAIL;
 	}
 
-	if (m_bUseColorMix == true)
+	if (m_useColorMix == true)
 	{
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorMix", &m_Color, sizeof(_float4))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_ColorMix", &m_color, sizeof(_float4))))
 			return E_FAIL;
 	}
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Alpha", &m_Alpha, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Alpha", &m_alpha, sizeof(_float))))
 		return E_FAIL;
 
 
-	if (m_PassIndex == 1)
+	if (m_passIndex == 1)
 	{
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_TexOriginalSize", &m_SliceDesc.TexOriginalSize, sizeof(_float2))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_TexOriginalSize", &m_sliceDesc.texOriginalSize, sizeof(_float2))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_TexCustomSize", &m_SliceDesc.TexCustomSize, sizeof(_float2))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_TexCustomSize", &m_sliceDesc.texCustomSize, sizeof(_float2))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_UISize", &m_SliceDesc.UISize, sizeof(_float2))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_UISize", &m_sliceDesc.UISize, sizeof(_float2))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_PxSliceLRTB", &m_SliceDesc.PxSliceLRTB, sizeof(_float4))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_PxSliceLRTB", &m_sliceDesc.pxSliceLRTB, sizeof(_float4))))
 			return E_FAIL;
 
 	}
@@ -261,12 +261,12 @@ HRESULT CUIRenderable::Bind_ShaderResources_Default()
 HRESULT CUIRenderable::Bind_ShaderResources_Radius()
 {
 
-	if (m_bUseRadial == false)
+	if (m_useRadial == false)
 		return S_OK;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_BaseColor", &m_BaseColor, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_BaseColor", &m_baseColor, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_ZoonColor", &m_ZoneColor, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_ZoonColor", &m_zoneColor, sizeof(_float4))))
 		return E_FAIL;
 
 
@@ -278,9 +278,9 @@ HRESULT CUIRenderable::Bind_ShaderResources_Radius()
 
 void CUIRenderable::RebindCom()
 {
-	// ¿Ã¡¶ ∏µÁ ƒƒ∆˜≥Õ∆Æ¥¬ ≥Œ√º≈© ¿ﬂ«œ±‚ æ¯¥¬∞ÊøÏµµ ¿÷¿ªºˆ ¿÷¿∏¥œ±Ó
-	m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
-	m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+	// Ïù¥Ï†ú Î™®Îì† Ïª¥Ìè¨ÎÑåÌä∏Îäî ÎÑêÏ≤¥ÌÅ¨ ÏûòÌïòÍ∏∞ ÏóÜÎäîÍ≤ΩÏö∞ÎèÑ ÏûàÏùÑÏàò ÏûàÏúºÎãàÍπå
+	m_VIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
+	m_shaderCom = Get_Component<CShader>(L"Com_Shader");
 	//m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
 
 
@@ -294,8 +294,8 @@ void CUIRenderable::OnClear()
 void CUIRenderable::Save_ToJson(nlohmann::json& j)
 {
 	__super::Save_ToJson(j);
-	j["PxSliceLRTB"] = { m_SliceDesc.PxSliceLRTB.x,  m_SliceDesc.PxSliceLRTB.y, m_SliceDesc.PxSliceLRTB.z, m_SliceDesc.PxSliceLRTB.w };
-	j["UseNineSlice"] = m_bUseNineSlice;
+	j["PxSliceLRTB"] = { m_sliceDesc.pxSliceLRTB.x,  m_sliceDesc.pxSliceLRTB.y, m_sliceDesc.pxSliceLRTB.z, m_sliceDesc.pxSliceLRTB.w };
+	j["UseNineSlice"] = m_useNineSlice;
 
 }
 
@@ -304,25 +304,25 @@ void CUIRenderable::Load_FromJson(nlohmann::json& j)
 	__super::Load_FromJson(j);
 	if (j.contains("PxSliceLRTB"))
 	{
-		m_SliceDesc.PxSliceLRTB.x = j["PxSliceLRTB"][0];
-		m_SliceDesc.PxSliceLRTB.y = j["PxSliceLRTB"][1];
-		m_SliceDesc.PxSliceLRTB.z = j["PxSliceLRTB"][2];
-		m_SliceDesc.PxSliceLRTB.w = j["PxSliceLRTB"][3];
+		m_sliceDesc.pxSliceLRTB.x = j["PxSliceLRTB"][0];
+		m_sliceDesc.pxSliceLRTB.y = j["PxSliceLRTB"][1];
+		m_sliceDesc.pxSliceLRTB.z = j["PxSliceLRTB"][2];
+		m_sliceDesc.pxSliceLRTB.w = j["PxSliceLRTB"][3];
 	}
 
 	if (j.contains("UseNineSlice"))
 	{
-		m_bUseNineSlice = j["UseNineSlice"];
+		m_useNineSlice = j["UseNineSlice"];
 	}
 
 }
 
 void CUIRenderable::OnGui()
 {
-	ImGui::Checkbox("Use NineSlice", &m_bUseNineSlice);
+	ImGui::Checkbox("Use NineSlice", &m_useNineSlice);
 
 
-	_float4& slice = m_SliceDesc.PxSliceLRTB;
+	_float4& slice = m_sliceDesc.pxSliceLRTB;
 
 	ImGui::Text("Nine Slice (px)");
 
@@ -331,10 +331,10 @@ void CUIRenderable::OnGui()
 	ImGui::DragFloat("Top", &slice.z, 1.0f, 0.0f, 1000.0f);
 	ImGui::DragFloat("Bottom", &slice.w, 1.0f, 0.0f, 1000.0f);
 
-	_float& TileScale = m_SliceDesc.TileScale;
+	_float& TileScale = m_sliceDesc.tileScale;
 	ImGui::DragFloat("TileScale", &TileScale, 1.0f, 0.0f, 1000.0f);
 
-	ImGui::Text("ZOrder: %d", m_ZOrder);
+	ImGui::Text("ZOrder: %d", m_zOrder);
 
 	__super::OnGui();
 }

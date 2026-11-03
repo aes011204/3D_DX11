@@ -11,9 +11,9 @@ class CCamera_Play final:
 public:
 
 
-    struct CAMERAPLAY_DESC : public CCamera::CAMERA_DESC
+    struct CAMERAPLAY_DESC : public CCamera::CameraDesc
     {
-        _float	fMouseSensor = {};
+        _float	mouseSensor = {};
     	weak_ptr<CGameObject> target = { };
         _float3 vDir = {};
 
@@ -64,7 +64,7 @@ private:
     _bool m_bChange = false;
 
 private:
-    _float	m_fMouseSensor = {};
+    _float	m_mouseSensor = {};
     weak_ptr<CGameObject> m_pTarget = {  };
     weak_ptr<CTransform> m_pTargetTransform = {  };
 

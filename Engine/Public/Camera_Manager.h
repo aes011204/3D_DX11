@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 class CCamera_Manager :
@@ -32,13 +32,13 @@ protected:
 
 
 private:
-    _uint  m_iNumLevel = {};
-    shared_ptr<class CCamera> m_CurCam = {};
-    map<const _wstring, shared_ptr<class CCamera>>* m_Cameras = {};
+    _uint  m_numLevel = {};
+    shared_ptr<class CCamera> m_curCam = {};
+    map<const _wstring, shared_ptr<class CCamera>>* m_cameras = {};
   
 private:
 
-    weak_ptr<class CGameInstance> m_pGameInstance = {};
+    weak_ptr<class CGameInstance> m_gameInstance = {};
 public:
 
     static unique_ptr<CCamera_Manager> Create(_uint iNumLevels);

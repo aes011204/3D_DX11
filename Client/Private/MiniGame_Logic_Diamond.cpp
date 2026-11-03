@@ -71,7 +71,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 		float loop = fmod(t, 1.f);
 		m_Size = t;
-		m_Angle = loop * 90.f;
+		m_angle = loop * 90.f;
 		if (m_bInputRequested)
 		{
 
@@ -90,7 +90,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 				//m_bStart = false;
 
 					m_prograssBar01 += 0.2;
-					m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
+					m_gameInstance.lock()->Play_Once(L"Fishing_Success");
 
 					m_LastInputResult = EInputResult::SUCCESS;
 				}
@@ -101,7 +101,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 					m_prograssBar01 -= 0.2;
 
 					m_LastInputResult = EInputResult::FAIL;
-					m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
+					m_gameInstance.lock()->Play_Once(L"Fishing_Failure");
 
 					m_changeColor = true;
 					colortime = .5f;
@@ -130,17 +130,17 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 			Evt_GetFish  e = {};
 			e.DefID = m_DefID;
-			e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
+			e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
 			auto& item = CItemDB::GetInstance()->GetItemByID(m_DefID);
 			if (auto fish = std::get_if<FishDef>(&item.typeDef))
 			{
 				e.fishInst.mutationId = SelectMutationNoRepeat(*fish);
 			}
-			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
+			m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
 
-			m_pGameInstance.lock()->Play_Once(L"Fish_New");
-			m_pGameInstance.lock()->Stop(L"fishing_loop");
+			m_gameInstance.lock()->Play_Once(L"Fish_New");
+			m_gameInstance.lock()->Stop(L"fishing_loop");
 
 			m_FishCount--;
 
@@ -158,14 +158,14 @@ void CMiniGame_Logic_Diamond::OnInput()
 	if (isDragging)
 	{
 		m_bStart = false;
-		m_pGameInstance.lock()->Stop(L"fishing_loop");
+		m_gameInstance.lock()->Stop(L"fishing_loop");
 
 		return;
 	}
 	if (m_bFin && m_FishCount == 0)
 	{
 		m_bStart = false;
-		m_pGameInstance.lock()->Play_Once(L"fishing_end");
+		m_gameInstance.lock()->Play_Once(L"fishing_end");
 
 		return;
 	}
@@ -177,7 +177,7 @@ void CMiniGame_Logic_Diamond::OnInput()
 	//시작
 	if (!m_bStart)
 	{
-		m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
+		m_gameInstance.lock()->Play_Loop(L"fishing_loop");
 
 		m_LastInputResult = EInputResult::START;
 		m_bStart = true;

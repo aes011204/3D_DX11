@@ -683,11 +683,11 @@ void CInventory::Get_Damage()
 {
 	// 사이즈가 맥스로 랜덤 인뎃스
 	int randIndex = { -1 };
-	randIndex = static_cast<int>(m_pGameInstance.lock()->Random(0, m_invenSlot.size()-1));
+	randIndex = static_cast<int>(m_gameInstance.lock()->Random(0, m_invenSlot.size()-1));
 	// 전체 순회 -> 만일 이미 고장난 칸이거나 투명칸이면 다시 렌덤
 	while(m_invenSlot[randIndex].isBroken == true || m_invenSlot[randIndex].isLock == true|| (m_invenSlot[randIndex].slotType != ESlotType::END && m_invenSlot[randIndex].slotType != ESlotType::ANY))
 	{
-		randIndex = (m_pGameInstance.lock()->RandomInt(0, m_invenSlot.size()-1));
+		randIndex = (m_gameInstance.lock()->RandomInt(0, m_invenSlot.size()-1));
 	}
 
 	// 장비가 있을떄 -> 장비 이것도 그냥 버려버려?? 일단은 버려
@@ -941,7 +941,7 @@ void CInventory::FixAll()
 	{
 		it.isBroken = false;
 	}
-	dynamic_pointer_cast<CPlayerBoat>(m_pGOwner.lock())->SetHPFull();
+	dynamic_pointer_cast<CPlayerBoat>(m_GOwner.lock())->SetHPFull();
 }
 
 shared_ptr<CInventory> CInventory::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)

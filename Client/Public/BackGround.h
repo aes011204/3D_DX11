@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "UIObject.h"
 #include "Client_Define.h"
@@ -14,7 +14,7 @@ class CBackGround final:
     public CUIObject
 {
 public:
-    struct BACKGROUND_DESC final:  public CUIObject::UIObject_Desc
+    struct BACKGROUND_DESC final:  public CUIObject::UIObjectDesc
     {
 	    
     };
@@ -37,9 +37,9 @@ public:
 protected:
     HRESULT Ready_Components();
 private:
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CVIBuffer_Rect> m_pVIBufferCom = { nullptr };
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
+    shared_ptr<CVIBuffer_Rect> m_VIBufferCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
 
 public:
     static shared_ptr<CBackGround> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

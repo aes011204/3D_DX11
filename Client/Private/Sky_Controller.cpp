@@ -1,4 +1,4 @@
-#include "Sky_Controller.h"
+ï»¿#include "Sky_Controller.h"
 
 
 #include <numbers>
@@ -33,9 +33,9 @@ CSky_Controller::~CSky_Controller()
 
 HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
-	m_pGameInstance = CGameInstance::GetInstance();
-	m_pDevice = pDevice;
-	m_pContext = pContext;
+	m_gameInstance = CGameInstance::GetInstance();
+	m_device = pDevice;
+	m_context = pContext;
 
 
 	return S_OK;
@@ -47,9 +47,9 @@ HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11D
 
 void CSky_Controller::Update(float TimeDelta)
 {
-	auto pGameInstance = m_pGameInstance.lock();
+	auto pGameInstance = m_gameInstance.lock();
 
-	// ºû
+	// ë¹›
 	float t = pGameInstance->Get_TOD01();
 	//auto lightDESC = pGameInstance->Get_LightDesc(0);
 
@@ -74,16 +74,16 @@ void CSky_Controller::Update(float TimeDelta)
 			return w * w * (3.f - 2.f * w);
 		};
 
-	// ¹ã ¡æ »õº®
+	// ë°¤ â†’ ìƒˆë²½
 	skyColor = Lerp3(skyColor, MidNight, smooth(NightT.x, NightT.y, t));
 
-	// »õº® ¡æ ³·
+	// ìƒˆë²½ â†’ ë‚®
 	skyColor = Lerp3(skyColor, Day, smooth(MidNightT.x, MidNightT.y, t));
 
-	// ³· ¡æ ³ëÀ»
+	// ë‚® â†’ ë…¸ì„
 	skyColor = Lerp3(skyColor, Sunset, smooth(DayT.x, DayT.y, t));
 
-	// ³ëÀ» ¡æ ¹ã
+	// ë…¸ì„ â†’ ë°¤
 	skyColor = Lerp3(skyColor, AfterSunset, smooth(SunsetT.x, SunsetT.y, t));
 	//
 	skyColor = Lerp3(skyColor, Night, smooth(NightT2.x, NightT2.y, t));
@@ -96,11 +96,11 @@ void CSky_Controller::Update(float TimeDelta)
 	//m_Ambient = _float4{ ambient.x,ambient.y,ambient.z,1.f };
 	m_Diffuse = _float4{ sunColor.x,sunColor.y,sunColor.z,1.f };
 
-	LIGHT_DESC light = {};
-	light.vDirection = m_Direction;
-	light.vDiffuse = m_Diffuse;
-	light.vAmbient = m_Ambient;
-	light.vSpecular = m_Specular;
+	LightDesc light = {};
+	light.direction = m_Direction;
+	light.diffuse = m_Diffuse;
+	light.ambient = m_Ambient;
+	light.specular = m_Specular;
 	pGameInstance->Set_LightDesc(0, light);
 
 

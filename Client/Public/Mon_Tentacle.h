@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
 
@@ -41,7 +41,7 @@ public:
 protected:
     HRESULT Ready_Components();
 
-    // ¼Õ¿¡ ÄÝ¶óÀÌ´õ
+    // ì†ì— ì½œë¼ì´ë”
     const _float4x4* m_pSocketMatrix_Top = { nullptr };
     const _float4x4* m_pSocketMatrix_Mid = { nullptr };
     const _float4x4* m_pSocketMatrix_Btm = { nullptr };
@@ -49,7 +49,7 @@ protected:
 
     XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
     {
-        return ChildrenMatrix * XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix());
+        return ChildrenMatrix * XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
     }
 
 private:
@@ -65,9 +65,9 @@ private:
 
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
     shared_ptr<CModel> m_pModelCom = { nullptr }; 
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
     //shared_ptr<CCollider> m_pColliderCom = { nullptr };
 
     shared_ptr<CCollider> m_Top_Collider = { nullptr };

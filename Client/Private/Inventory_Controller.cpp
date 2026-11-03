@@ -19,7 +19,7 @@
 
 CInventory_Controller::CInventory_Controller(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CGameObject(pDevice, pContext),
-	m_pGameInstance(CGameInstance::GetInstance())
+	m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -32,7 +32,7 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 	//
 	////m_Inven->Upgrade_Boat(0); // 젤 처음
 	///
-    m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ItemSold>(
+    m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_ItemSold>(
         [this](const Evt_ItemSold& event)
         {
             if (m_UIHoldItem &&
@@ -56,13 +56,13 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
             CUI_Controller::GetInstance()->CloseToolTip();
         });
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_OpenInventory>(
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_OpenInventory>(
 		[this](const Evt_OpenInventory& e)
 		{
 			m_TargetInven = e.inven;
 
 		});
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_CloseInventory>(
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_CloseInventory>(
 		[this](const Evt_CloseInventory&)
 		{
 
@@ -71,15 +71,15 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 			m_TargetInven.reset();
 
 		});
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MouseToIndexData>([this](const Evt_MouseToIndexData& e) {m_SlotX = e.x; m_SlotY = e.y; m_bIsOnSlot = e.IsOnSlot;  m_IsPlayerSlot = e.IsPlayer;  });
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_MouseToIndexData>([this](const Evt_MouseToIndexData& e) {m_SlotX = e.x; m_SlotY = e.y; m_bIsOnSlot = e.IsOnSlot;  m_IsPlayerSlot = e.IsPlayer;  });
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>([this](const Evt_GetFish& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>([this](const Evt_GetFish& e)
 		{
 			Make_Hold(m_PlayerInven.lock()->Create_ItemInstance(e.DefID, e.fishInst));
 
 		});
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_Damage>([this](const Evt_Damage& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_Damage>([this](const Evt_Damage& e)
 		{
 			m_PlayerInven.lock()->Get_Damage();
 
@@ -112,9 +112,9 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 					if (storage->Auto_Add(holdItem))
 					{
 						if (holdItem.itemType == EItemType::FISH)
-							m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
+							m_gameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 						else
-							m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
+							m_gameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
 
 						m_UIHoldItem->ReleaseItem();
 						m_bDragging = false;
@@ -130,9 +130,9 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 				return;
 
 			if (hoveredItem.itemType == EItemType::FISH)
-				m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
+				m_gameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 			else
-				m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
+				m_gameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
 
 			playerInven->Auto_Move_To(player->Get_StorageCom(), m_SlotX, m_SlotY);
 			playerInven->ClearHighlightArea();
@@ -151,7 +151,7 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 				CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-				m_pGameInstance.lock()->Play_Once(L"Repair_Kit");
+				m_gameInstance.lock()->Play_Once(L"Repair_Kit");
 
 
 			}
@@ -189,7 +189,7 @@ void CInventory_Controller::Update(float TimeDelta)
         decltype(refreshFinalHover)& refresh;
         ~FinalHoverRefresh() { refresh(); }
     } finalHoverRefresh{ refreshFinalHover };
-	auto dInput = m_pGameInstance.lock()->Get_DInput_Manger();
+	auto dInput = m_gameInstance.lock()->Get_DInput_Manger();
 	//	->MouseDown(DIMB::LBUTTON);
 
 
@@ -213,7 +213,7 @@ void CInventory_Controller::Update(float TimeDelta)
 		if (/*m_HoldItem.ItemInst_ID == ID_Absence &&*/ m_bDragging == false /* + ui 가 클릭은 반환*/)
 		{
 			m_PrevDragging = false;
-			if (dInput->MouseDown(DIMB::LBUTTON) /* + ui 가 클릭은 반환*/)
+			if (dInput->MouseDown(EMouseButton::LBUTTON) /* + ui 가 클릭은 반환*/)
 			{
 				//잡고 있는 아이템이 없을경우
 				//
@@ -282,7 +282,7 @@ void CInventory_Controller::Update(float TimeDelta)
 				{
 					e.IsPlayer = false;
 				}
-				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+				m_gameInstance.lock()->Get_EventBus()->Publish(e);
                 m_hoverDirty = true;
 
 				m_PrevSlotX = m_SlotX;
@@ -305,7 +305,7 @@ void CInventory_Controller::Update(float TimeDelta)
 
 
 
-			if (dInput->MouseDown(DIMB::LBUTTON))
+			if (dInput->MouseDown(EMouseButton::LBUTTON))
 			{
 				auto DestInven = Get_CurrentInven();
 				switch (color)
@@ -452,7 +452,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			}
 
 
-			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+			m_gameInstance.lock()->Get_EventBus()->Publish(e);
                 m_hoverDirty = true;
 
 			m_PrevSlotX = 99;
@@ -468,12 +468,12 @@ void CInventory_Controller::Update(float TimeDelta)
 	if (m_bDragging == true)
 	{
 
-		if (dInput->MouseDown(DIMB::RBUTTON)/*dInput->MouseDown(DIMB::RBUTTON)*/ /* + ui 가 우클릭은 반환*/)
+		if (dInput->MouseDown(EMouseButton::RBUTTON)/*dInput->MouseDown(DIMB::RBUTTON)*/ /* + ui 가 우클릭은 반환*/)
 		{
 			//회전
 			_uint rot = m_UIHoldItem->Get_HoldItem().rotation;
 			m_UIHoldItem->Set_Rotation(++rot);
-			m_pGameInstance.lock()->Play_Once(L"Rotate");
+			m_gameInstance.lock()->Play_Once(L"Rotate");
 		}
 		if (dInput->KeyDown(DIK_Z)/* + 일정 시간 이상 누르고 있을떄 */)
 		{
@@ -503,7 +503,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			e.isHold = true;
 			e.itemInst = m_UIHoldItem->Get_HoldItem();
 
-			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+			m_gameInstance.lock()->Get_EventBus()->Publish(e);
                 m_hoverDirty = true;
 
 			m_PrevDragging = m_bDragging;
@@ -554,7 +554,7 @@ void CInventory_Controller::Refresh_Hover()
     m_hoverInventory = inventory;
     m_hoverValid = true;
     m_hoverDirty = false;
-    m_pGameInstance.lock()->Get_EventBus()->Publish(event);
+    m_gameInstance.lock()->Get_EventBus()->Publish(event);
 }
 
 shared_ptr<CInventory_Controller> CInventory_Controller::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven, shared_ptr<CUI_Item> UIHoldItem)

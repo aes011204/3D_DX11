@@ -1,28 +1,28 @@
-#include "Entity.h"
+ï»¿#include "Entity.h"
 #include "Component.h"
 #include "GameInstance.h"
 #include "Engine_Helper.h"
 
 CEntity::CEntity(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice{ pDevice }, m_pContext{ pContext },
-	m_pGameInstance{ CGameInstance::GetInstance() }
+	: m_device{ pDevice }, m_context{ pContext },
+	m_gameInstance{ CGameInstance::GetInstance() }
 {
 
 }
 
 CEntity::CEntity(const CEntity& prototype)
-	: m_pDevice{ prototype.m_pDevice }, m_pContext{ prototype.m_pContext },
-	m_pGameInstance{ CGameInstance::GetInstance() },
-	m_bIsSavableClass{ m_bIsSavableClass }
+	: m_device{ prototype.m_device }, m_context{ prototype.m_context },
+	m_gameInstance{ CGameInstance::GetInstance() },
+	m_isSavableClass{ m_isSavableClass }
 {
 
-	//  ·¹ÆÛ·±½º °ü¸®¸¦ À§ÇØ µğÆúÆ® º¹»ç»ı¼ºÀÚ°¡ ¾Æ´Ï¶ó ¸¸µå°ÅÀÓ
+	//  ë ˆí¼ëŸ°ìŠ¤ ê´€ë¦¬ë¥¼ ìœ„í•´ ë””í´íŠ¸ ë³µì‚¬ìƒì„±ìê°€ ì•„ë‹ˆë¼ ë§Œë“œê±°ì„
 }
 
 shared_ptr<CComponent> CEntity::Get_Component(const _wstring& strComponentTag)
 {
-	auto it = m_Components.find(strComponentTag);
-	if (it == m_Components.end())
+	auto it = m_components.find(strComponentTag);
+	if (it == m_components.end())
 		return nullptr;
 
 	return it->second;
@@ -30,20 +30,20 @@ shared_ptr<CComponent> CEntity::Get_Component(const _wstring& strComponentTag)
 
 //void CEntity::Change_Component(const _wstring& strComponentTag)
 //{
-//	// Áö¿ì°í 
+//	// ì§€ìš°ê³  
 //	Remove_Component(strComponentTag);
-//		//°°Àº ÅÂ±×¿¡  Ãß°¡ÇÏ±â
+//		//ê°™ì€ íƒœê·¸ì—  ì¶”ê°€í•˜ê¸°
 //	Add_Component();;
 
 //}
 
 HRESULT CEntity::Remove_Component(const _wstring& strComponentTag)
 {
-	auto com = m_Components.find(strComponentTag);
-	if (com != m_Components.end()) // Ã£¾ÒÀ» ¶§¸¸ Áö¿ì±â
+	auto com = m_components.find(strComponentTag);
+	if (com != m_components.end()) // ì°¾ì•˜ì„ ë•Œë§Œ ì§€ìš°ê¸°
 	{
-		m_Components.erase(com);
-	m_bIsDirtyCom = true;
+		m_components.erase(com);
+	m_isDirtyCom = true;
 		return S_OK;
 	}
 
@@ -60,12 +60,12 @@ void CEntity::Load_FromJson(nlohmann::json& j)
 		{
 			//Add_Component<CComponent>((_uint)jCom["ComProtoLevel"], S2W(jCom["ComProtoTag"]), S2W(jCom["ComponentTag"]), nullptr, nullptr);
 
-			m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
+			m_components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
 
 		}
 		else if(jCom["ComponentTag"] == "Com_UITransform")
 		{
-			m_Components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
+			m_components.find(S2W(jCom["ComponentTag"]))->second->Load_FromJson(jCom);
 
 		}
 		else if (jCom["ComponentTag"] != "Com_UITransform" && jCom["ComponentTag"] != "Com_Transform")
@@ -75,18 +75,18 @@ void CEntity::Load_FromJson(nlohmann::json& j)
 				MSG_BOX("fail to add Component while data load");
 			}
 
-			auto it = m_Components.find(S2W(jCom["ComponentTag"]));
+			auto it = m_components.find(S2W(jCom["ComponentTag"]));
 
-			if (it != m_Components.end() && it->second != nullptr)
+			if (it != m_components.end() && it->second != nullptr)
 			{
 				it->second->Load_FromJson(jCom);
 			}
 			else
 			{
-				// µğ¹ö±ë¿ë: ¾î¶² ÅÂ±×¸¦ ¸ø Ã£¾Ò´ÂÁö È®ÀÎ
+				// ë””ë²„ê¹…ìš©: ì–´ë–¤ íƒœê·¸ë¥¼ ëª» ì°¾ì•˜ëŠ”ì§€ í™•ì¸
 				string tag = jCom.value("ComponentTag", "Unknown");
 				string str = "Component Tag Not Found: " + tag;
-				LOG(LOG_LEVEL::WARNING, str.c_str());
+				LOG(ELogLevel::WARNING, str.c_str());
 			}
 
 
@@ -101,6 +101,6 @@ void CEntity::Free()
 {
 	__super::Free();
 
-	m_Components.clear();
+	m_components.clear();
 
 }

@@ -78,14 +78,14 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 
 	Change_LayoutRawCol( numPanel,1);
 
-	m_Active = Active;
+	m_active = Active;
 
 	Set_ActiveForCustom();
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 	
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 	
 	//m_bInteractable = true;
 	OnActive();
@@ -105,7 +105,7 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 
 HRESULT CUI_TabContainer::OnInit(void* pArg)
 {
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_AddMoney>([this](const Evt_AddMoney& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_AddMoney>([this](const Evt_AddMoney& e)
 		{
 			
 			wstring strMoney = format(L"${:.2f}", e.money);
@@ -118,11 +118,11 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	HRESULT hr = E_FAIL;
 	TABCONTAINER_DESC* TABpDesc = static_cast<TABCONTAINER_DESC*>(pArg);
 	//TABCONTAINER_DESC pDesc = {};
-	TABpDesc->IsFullScreen = false;
-	TABpDesc->IsTransparent = false;
-	TABpDesc->TextureComLevel = ETOI(LEVEL::STATIC);
-	TABpDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
-	TABpDesc->IsUseLayout = true;
+	TABpDesc->isFullScreen = false;
+	TABpDesc->isTransparent = false;
+	TABpDesc->textureComLevel = ETOI(LEVEL::STATIC);
+	TABpDesc->textureProtoName = L"Prototype_Component_Texture_TabContainer";
+	TABpDesc->isUseLayout = true;
 	//pDesc.vAnchorPoint = 일단 패스
 	//	pDesc.vPivot
 	//	pDesc.vAnchoredPos
@@ -130,11 +130,11 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	hr = CUIPanel::OnInit(TABpDesc);
 
 
-	CUIImage::UIIMAGE_DESC img = {};
-	img.TextureComLevel = ETOI(LEVEL::STATIC);
-	img.TextureProtoName = L"Prototype_Component_Texture_TabDivider";
-	img.bUseNineSlice = true;
-	shared_ptr<CUIImage> Line = CUIImage::Create(m_pDevice, m_pContext);
+	CUIImage::UIImageDesc img = {};
+	img.textureComLevel = ETOI(LEVEL::STATIC);
+	img.textureProtoName = L"Prototype_Component_Texture_TabDivider";
+	img.useNineSlice = true;
+	shared_ptr<CUIImage> Line = CUIImage::Create(m_device, m_context);
 	Line->Initialize(&img);
 	Line->Set_Zorder(1);
 
@@ -146,26 +146,26 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		TAB eTab = static_cast<TAB>(1 << i);
 
 		/// 버튼
-		CUIButton::UIBUTTON_DESC ButDesc = {};
-		ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
+		CUIButton::UIButtonDesc ButDesc = {};
+		ButDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		ButDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 		//ButDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f ) };
 		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
 		//ButDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
 		//ButDesc.vPivot = Vector2{ 0.5f, 0.5f };
 		//ButDesc.vScale = Vector2{ 1.3f, 1.0f };
-		ButDesc.TypeIndex = ETOI(eTab);
+		ButDesc.typeIndex = ETOI(eTab);
 		ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
 		{
-				m_pGameInstance.lock()->Play_Once(L"Hover");
+				m_gameInstance.lock()->Play_Once(L"Hover");
 		};
 		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 		ButDesc.ClickEvent = [this](CUIButton* pThis)
 			{
 				SetActiveTab(static_cast<TAB>(pThis->Get_TypeIndex()));
-				m_pGameInstance.lock()->Play_Once(L"Click");
+				m_gameInstance.lock()->Play_Once(L"Click");
 			};
-		shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
+		shared_ptr<CUIButton> button = CUIButton::Create(m_device, m_context);
 		button->Initialize(&ButDesc);
 		button->Set_Zorder(2);
 		button->UI_InActive();
@@ -186,10 +186,10 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 				break;
 			}
 
-			CUIText::TEXT_DESC text_Desc = {};
-			text_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			text_Desc.strText = name;
-			shared_ptr<CUIText> Text_storage = CUIText::Create(m_pDevice, m_pContext);
+			CUIText::TextDesc text_Desc = {};
+			text_Desc.fontTag = L"Noto_Sans_CJK_SC_24";
+			text_Desc.text = name;
+			shared_ptr<CUIText> Text_storage = CUIText::Create(m_device, m_context);
 			Text_storage->Initialize(&text_Desc);
 			button->Add_Child(Text_storage, L"Text_"+S2W(string(magic_enum::enum_name(eTab))), false);
 		}
@@ -206,11 +206,11 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		TAB eTab = static_cast<TAB>(1 << 0);
 		// 일단 테스트 인벤 3개
 		CUI_Inventory::INVENTORY_DESC InvenDesc = {};
-		InvenDesc.IsFullScreen = false;
-		InvenDesc.IsTransparent = true;
-		InvenDesc.bSetParentSize = true;
+		InvenDesc.isFullScreen = false;
+		InvenDesc.isTransparent = true;
+		InvenDesc.isSetParentSize = true;
 
-		shared_ptr<CUI_Inventory> pInven = CUI_Inventory::Create(m_pDevice, m_pContext);
+		shared_ptr<CUI_Inventory> pInven = CUI_Inventory::Create(m_device, m_context);
 		pInven->Initialize(&InvenDesc);
 		
 		wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
@@ -222,12 +222,12 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 			TAB eTab = static_cast<TAB>(1 << 1);
 			// 일단 테스트 인벤 3개
 			CUI_Storage::STORAGE_DESC StorageDesc = {};
-			StorageDesc.IsFullScreen = false;
-			StorageDesc.IsTransparent = true;
-			StorageDesc.bSetParentSize = true;
+			StorageDesc.isFullScreen = false;
+			StorageDesc.isTransparent = true;
+			StorageDesc.isSetParentSize = true;
 			StorageDesc.Inventype = EInvenType::STORAGE;
 
-			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
+			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_device, m_context);
 			pStorage->Initialize(&StorageDesc);
 
 			
@@ -242,17 +242,17 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		///돈///
 
 	{
-		CUIImage::UIIMAGE_DESC moneyDesc = {};
-		moneyDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		moneyDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
-		shared_ptr<CUIImage> money = CUIImage::Create(m_pDevice, m_pContext);
+		CUIImage::UIImageDesc moneyDesc = {};
+		moneyDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		moneyDesc.textureProtoName = L"Prototype_Component_Texture_Button";
+		shared_ptr<CUIImage> money = CUIImage::Create(m_device, m_context);
 		money->Initialize(&moneyDesc);
 		{
-			CUIText::TEXT_DESC MoneyTexDesc = {};
-			MoneyTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
-			MoneyTexDesc.strText = L"$0";
-			MoneyTexDesc.fontaline = CUIText::FONTALINE::RIGHT;
-			shared_ptr<CUIText> MoneyTex = CUIText::Create(m_pDevice, m_pContext);
+			CUIText::TextDesc MoneyTexDesc = {};
+			MoneyTexDesc.fontTag = L"Noto_Sans_CJK_SC";
+			MoneyTexDesc.text = L"$0";
+			MoneyTexDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+			shared_ptr<CUIText> MoneyTex = CUIText::Create(m_device, m_context);
 			MoneyTex->Initialize(&MoneyTexDesc);
 			money->Add_Child(MoneyTex, L"MoneyTex", false);
 			m_TextFont = MoneyTex;
@@ -266,20 +266,20 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 
 void CUI_TabContainer::OnActive()
 {
-	m_TabContents[ETOI(m_Active)]->UI_Active();
-	m_ButtonContents[ETOI(m_Active)]->ChangeState(BUTTON_STATE::SELECT);
+	m_TabContents[ETOI(m_active)]->UI_Active();
+	m_ButtonContents[ETOI(m_active)]->ChangeState(EButtonState::SELECT);
 
 	//m_TabContents[ETOI(m_Active)]->GetUITransform()->SetLocalScale(GetUITransform()->Get_LocalScale());
 	//m_TabContents[ETOI(m_Active)]->GetUITransform()->SetSizeDelta(GetUITransform()->Get_SizeDelta());
 
-	m_ButtonContents[ETOI(m_Active)]->Set_Zorder(2);
+	m_ButtonContents[ETOI(m_active)]->Set_Zorder(2);
 
 	GetUITransform()->SetAnchoredPos(Vector2{ GetUITransform()->Get_FinalSize().x, 0.f });
 	m_vecAni = Vector2{ GetUITransform()->Get_FinalSize().x, 0.f };
 	m_bStart = true;
-	m_fDuration = 1.5f;
+	m_duration = 1.5f;
 
-	m_pGameInstance.lock()->Play_Once(L"Pursuits_OpenIndividual");
+	m_gameInstance.lock()->Play_Once(L"Pursuits_OpenIndividual");
 
 	CUIPanel::OnActive();
 }
@@ -288,7 +288,7 @@ void CUI_TabContainer::OnInActive()
 {
 	m_bStart = false;
 	m_TimeAcc = 0;
-	m_Active = TAB::NONE;
+	m_active = TAB::NONE;
 	CUIPanel::OnInActive();
 }
 
@@ -305,7 +305,7 @@ void CUI_TabContainer::OnUpdate(const _float& timeDelta)
 	{
 		m_TimeAcc += timeDelta;
 
-		float t = m_TimeAcc / m_fDuration;
+		float t = m_TimeAcc / m_duration;
 
 		if (t >= 1.f) t = 1.f;
 
@@ -339,7 +339,7 @@ void CUI_TabContainer::OnClear()
 
 void CUI_TabContainer::SetActiveTab(TAB tab)
 {
-	m_Active = tab;
+	m_active = tab;
 
 	for (int i = 0; i < 32; i++)
 	{
@@ -347,14 +347,14 @@ void CUI_TabContainer::SetActiveTab(TAB tab)
 			m_TabContents[i]->UI_InActive(); // 탭은 인엑티브를 해야하고 
 
 		if (m_ButtonContents[i])
-			m_ButtonContents[i]->ChangeState(BUTTON_STATE::NORMAL); // 버튼은 언셀렉트 
+			m_ButtonContents[i]->ChangeState(EButtonState::NORMAL); // 버튼은 언셀렉트 
 	}
 
 	if (m_TabContents[ETOI(tab)])
 		m_TabContents[ETOI(tab)]->UI_Active(); // 해당 패널 활성화
 
 	if (m_ButtonContents[ETOI(tab)])
-		m_ButtonContents[ETOI(tab)]->ChangeState(BUTTON_STATE::SELECT); // 셀렉트
+		m_ButtonContents[ETOI(tab)]->ChangeState(EButtonState::SELECT); // 셀렉트
 }
 
 shared_ptr<CUI_TabContainer> CUI_TabContainer::Create(ComPtr<ID3D11Device> pDevice,

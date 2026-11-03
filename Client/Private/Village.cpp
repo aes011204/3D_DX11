@@ -48,9 +48,9 @@ HRESULT CVillage::Initialize(void* pArg)
 	//		3.5
 	//	] ,
 
-	m_pTransformCom->Set_Position(XMVectorSet(-3.3f, 2.2f, 0.f, 1.f));
-	m_pTransformCom->Set_RotationDegree(_float3{ -180.f, -1.3f, 180.f });
-	m_pTransformCom->Set_Scale(_float3{ 3.5f, 3.5f, 3.5f });
+	m_transformCom->Set_Position(XMVectorSet(-3.3f, 2.2f, 0.f, 1.f));
+	m_transformCom->Set_RotationDegree(_float3{ -180.f, -1.3f, 180.f });
+	m_transformCom->Set_Scale(_float3{ 3.5f, 3.5f, 3.5f });
 
 
 
@@ -62,7 +62,7 @@ HRESULT CVillage::Initialize(void* pArg)
 		e.invenPtr = m_pShopCom[i];
 		e.invenType = m_pShopCom[i]->Get_Inventype();
 		e.shopTabType = static_cast<EShopTab>(i);
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStorageInitData>(e);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStorageInitData>(e);
 	}
 
 	return S_OK;
@@ -74,20 +74,20 @@ void CVillage::Priority_Update(_float fTimeDelta)
 
 void CVillage::Update(_float fTimeDelta)
 {
-	if (m_bIsDirtyCom) {
+	if (m_isDirtyCom) {
 		RebindCom();      // "바뀐 것"만 한 번 갱신
-		m_bIsDirtyCom = false;
+		m_isDirtyCom = false;
 	}
 	int a = 1;
 
 	
 
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	m_pColliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
 void CVillage::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CVillage::Render()
@@ -103,10 +103,10 @@ HRESULT CVillage::Render()
 
 	for (size_t i = 0; i < iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_pModelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
-		if (FAILED(m_pShaderCom->Begin(0)))
+		m_pModelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		if (FAILED(m_shaderCom->Begin(0)))
 			return E_FAIL;
 
 		if (FAILED(m_pModelCom->Render(i)))
@@ -115,9 +115,9 @@ HRESULT CVillage::Render()
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
 
 
 
@@ -138,7 +138,7 @@ void CVillage::OnGui()
 void CVillage::RebindCom()
 {
 	
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
 	m_pModelCom = Get_Component<CModel>(L"Com_Model");
 	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
@@ -146,18 +146,18 @@ void CVillage::RebindCom()
 
 HRESULT CVillage::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 	
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -174,12 +174,12 @@ HRESULT CVillage::Bind_ShaderResources()
 		return E_FAIL;*/
 
 	////
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float fFar = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
-	bool IsNight = m_pGameInstance.lock()->Get_IsNight();
+	bool IsNight = m_gameInstance.lock()->Get_IsNight();
 	_float emissivePower = IsNight ? 1.f : 0.f;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissivePower, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &emissivePower, sizeof(_float))))
 		return E_FAIL;
 
 	return S_OK;
@@ -198,7 +198,7 @@ HRESULT CVillage::Ready_Components()
 	//	return E_FAIL;
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Town"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
@@ -206,14 +206,14 @@ HRESULT CVillage::Ready_Components()
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 	//	return E_FAIL;
 
-	CBounding_AABB::BOUNDING_AABB_DESC		AABBDesc{};
-	AABBDesc.vExtents = _float3(0.4f, 0.4f, 0.4f);
-	AABBDesc.vCenter = _float3(2.21f, -0.66f, 0.5f);
-	AABBDesc.MyLayer = COLLISION_LAYER::TRIGGER;
-	AABBDesc.OtherMask = COLLISION_LAYER::PLAYER;
+	CBounding_AABB::BoundingAABBDesc		AABBDesc{};
+	AABBDesc.extents = _float3(0.4f, 0.4f, 0.4f);
+	AABBDesc.center = _float3(2.21f, -0.66f, 0.5f);
+	AABBDesc.myLayer = ECollisionLayer::TRIGGER;
+	AABBDesc.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_Collider"), &m_pColliderCom, &AABBDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+	m_gameInstance.lock()->Add_Collider(m_pColliderCom);
 
 
 	for(_uint i =0; i < ETOI(EShopTab::END) ; i++)

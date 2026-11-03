@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "UIButton.h"
 
 NS_BEGIN(Engine)
@@ -7,10 +7,10 @@ class ENGINE_DLL CUISlot :
     public CUIButton
 {
 public:
-    struct SLOT_DESC : public CUIButton::UIBUTTON_DESC
+    struct SlotDesc : public CUIButton::UIButtonDesc
     {
         _uint slotType = {};
-        _uint Index = {};
+        _uint index = {};
     };
 private:
     explicit CUISlot(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -21,7 +21,7 @@ public:
 public:
    void Change_Color(_fvector color, bool bUseDark, bool bUseColorMix, bool bUseColorFlat);
 
-    // uiÀÇ »ı¸íÁÖ±â Á¤Ã¥¿¡ µû¶ó ¾ØÁø »ı¸íÁÖ±â ¾È¿¡¼­ È£Ãâ ÇÔ
+    // uiì˜ ìƒëª…ì£¼ê¸° ì •ì±…ì— ë”°ë¼ ì•¤ì§„ ìƒëª…ì£¼ê¸° ì•ˆì—ì„œ í˜¸ì¶œ í•¨
     HRESULT OnInit(void* pArg)override;
     void OnActive()override;
     void OnInActive()override;
@@ -32,13 +32,13 @@ public:
     void OnClear()override;
 
     //void SetGridIndex(_float2 _GridIndex) { m_GridIndex = _GridIndex; }
-    void SetGridIndex(_uint _GridIndex) { m_GridIndex = _GridIndex; }
+    void SetGridIndex(_uint _GridIndex) { m_gridIndex = _GridIndex; }
     //_float2 GetGridIndex() { return m_GridIndex; }
-    _uint GetGridIndex() { return m_GridIndex; }
+    _uint GetGridIndex() { return m_gridIndex; }
 
     bool IsAcceptable(_uint itemType)
     {
-        if (m_Occupied == false)
+        if (m_isOccupied == false)
         {
             if (m_slotType == itemType || m_slotType == 0)
                 return true;
@@ -47,13 +47,13 @@ public:
     }
 
 private:
-    _uint m_slotType;// Å¬¶ó¿¡¼­ enumÀ¸·Î ÇØ¼­ (uint)·Î ÇØ¼­ Àü´Ş
+    _uint m_slotType;// í´ë¼ì—ì„œ enumìœ¼ë¡œ í•´ì„œ (uint)ë¡œ í•´ì„œ ì „ë‹¬
 
     //_float2 m_GridIndex = {};
-    _uint m_GridIndex = {};
-    bool m_Occupied = false;
-    //ÆĞ³ÎÀÌ bool m_OccupiedTable[Rows][Cols] °°Àº 2Â÷¿ø ¹è¿­À» µû·Î µé°í °ü¸®ÇÏ´Â ¹æ¹ıµµ ÀÖÀ½
-    shared_ptr<CUI> m_OccupiedItem = nullptr;
+    _uint m_gridIndex = {};
+    bool m_isOccupied = false;
+    //íŒ¨ë„ì´ bool m_OccupiedTable[Rows][Cols] ê°™ì€ 2ì°¨ì› ë°°ì—´ì„ ë”°ë¡œ ë“¤ê³  ê´€ë¦¬í•˜ëŠ” ë°©ë²•ë„ ìˆìŒ
+    shared_ptr<CUI> m_occupiedItem = nullptr;
 
 
 public:

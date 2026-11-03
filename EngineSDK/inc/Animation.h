@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 
 
@@ -22,32 +22,32 @@ public:
     _bool Blend_TransformationMatrices(_float timeDelta, const shared_ptr<CAnimation>& nextAnim, _float blendRatio, const vector<shared_ptr<CBone>>& bones, _bool isCurLoop, _bool isNextLoop/*, int32 rootNodeIndex = -1*/);
     void Update_ToBuffer(_float fTimeDelta, vector<_matrix>& OutMatrices, _bool isLoop, _uint boneCount);
 
-    void ReStart() { m_fCurrentTrackPosition = 0.f;
-    	for (auto& iIndex : m_CurrentKeyFrameIndices)
+    void ReStart() { m_currentTrackPosition = 0.f;
+    	for (auto& iIndex : m_currentKeyFrameIndices)
     {
         iIndex = 0;
     }
     }
     _int Get_CurrentFrame() const
     {
-        return static_cast<_int>(m_fCurrentTrackPosition);
+        return static_cast<_int>(m_currentTrackPosition);
     }
 
     _int Get_TotalFrame() const
     {
-        return static_cast<_int>(m_fDuration);
+        return static_cast<_int>(m_duration);
     }
 public:
  
-    _float m_fDuration = {};
-    _float m_fTickPerSecond = {};
+    _float m_duration = {};
+    _float m_tickPerSecond = {};
 
-    _float m_fCurrentTrackPosition = {};
+    _float m_currentTrackPosition = {};
 
-    _uint m_iNumChannels = {};
-    vector<shared_ptr<class CChannel>> m_Channels;
+    _uint m_numChannels = {};
+    vector<shared_ptr<class CChannel>> m_channels;
 
-    vector<_uint>	m_CurrentKeyFrameIndices; // ¿ø·¡ Ã¤³Î¾Ö ÀÖ¾ú´Âµ¥ ¿©±â·Î ÀÌµ¿
+    vector<_uint>	m_currentKeyFrameIndices; // ì›ë˜ ì±„ë„ì•  ìˆì—ˆëŠ”ë° ì—¬ê¸°ë¡œ ì´ë™
 public:
     static shared_ptr<CAnimation> Create(ifstream& InFile);
 	shared_ptr<CAnimation> Clone();

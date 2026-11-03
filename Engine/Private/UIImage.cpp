@@ -1,4 +1,4 @@
-#include "UIImage.h"
+ï»¿#include "UIImage.h"
 #include "Texture.h"
 #include "GameInstance.h"
 #include "Shader.h"
@@ -17,25 +17,25 @@ CUIImage::CUIImage(const CUIImage& prototype)
 HRESULT CUIImage::OnInit(void* pArg)
 {
 
-    m_bInteractable = false;
+    m_isInteractable = false;
 
 
-    UIIMAGE_DESC* pDesc = static_cast<UIIMAGE_DESC*>(pArg);
+    UIImageDesc* pDesc = static_cast<UIImageDesc*>(pArg);
 
   /*  if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
         return E_FAIL;*/
 
     //if (m_pTextureCom)
     //{
-    //    // ÅØ½ºÃÄ ÄÄÆ÷³ÍÆ® ¾È¿¡¼­Ã³¸®
-    //    // ÅØ½ºÃ³ ÇØ»óµµ¸¦ ½ºÄÉÀÏ¿¡ ´ëÀÔ
+    //    // í…ìŠ¤ì³ ì»´í¬ë„ŒíŠ¸ ì•ˆì—ì„œì²˜ë¦¬
+    //    // í…ìŠ¤ì²˜ í•´ìƒë„ë¥¼ ìŠ¤ì¼€ì¼ì— ëŒ€ì…
     //    m_pUITransformCom->SetSizeDelta(m_pTextureCom->Get_SizeFromSRV(0));
     //}
 
-    //// ÀÏ´Ü ÃÊ±âÈ­ -> CUi·Î ¿Ã¸² 
+    //// ì¼ë‹¨ ì´ˆê¸°í™” -> CUië¡œ ì˜¬ë¦¼ 
     //_float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
     //m_SliceDesc.TexSize = orignSize;
-    //m_SliceDesc.UISize = _float2(1.f, 1.f);// ¾îÂ¥ÇÇ Æ®·»½ºÆûÀÌ Á¤ÇÔ ÃÖÁ¾ ui »çÀÌÁî
+    //m_SliceDesc.UISize = _float2(1.f, 1.f);// ì–´ì§œí”¼ íŠ¸ë ŒìŠ¤í¼ì´ ì •í•¨ ìµœì¢… ui ì‚¬ì´ì¦ˆ
     //m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
 
     //m_bUseNineSlice = pDesc->bUseNineSlice;
@@ -69,7 +69,7 @@ void CUIImage::OnDisabled()
 void CUIImage::OnUpdate(const _float& timeDelta)
 {
     //if (m_bIsDirtyCom) {
-    //    RebindCom();      // "¹Ù²ï °Í"¸¸ ÇÑ ¹ø °»½Å
+    //    RebindCom();      // "ë°”ë€ ê²ƒ"ë§Œ í•œ ë²ˆ ê°±ì‹ 
     //    m_bIsDirtyCom = false;
     //}
 
@@ -168,7 +168,7 @@ void CUIImage::OnClear()
 //
 //void CUIImage::RebindCom()
 //{
-//    // ÀÌÁ¦ ¸ğµç ÄÄÆ÷³ÍÆ®´Â ³ÎÃ¼Å© ÀßÇÏ±â ¾ø´Â°æ¿ìµµ ÀÖÀ»¼ö ÀÖÀ¸´Ï±î
+//    // ì´ì œ ëª¨ë“  ì»´í¬ë„ŒíŠ¸ëŠ” ë„ì²´í¬ ì˜í•˜ê¸° ì—†ëŠ”ê²½ìš°ë„ ìˆì„ìˆ˜ ìˆìœ¼ë‹ˆê¹Œ
 //    m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
 //    m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 //    m_pShaderCom = Get_Component<CShader>(L"Com_Shader");

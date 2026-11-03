@@ -34,12 +34,12 @@ HRESULT CFish::Initialize(void* pArg)
 	m_Fishs.resize(fishDesc->FishCount);
 	for(int i=0; i < fishDesc->FishCount ; i++)
 	{
-		m_Fishs[i].Height = m_pGameInstance.lock()->Random(fishDesc->Height.x, fishDesc->Height.y);
-		m_Fishs[i].Size = m_pGameInstance.lock()->Random(fishDesc->Size.x, fishDesc->Size.y);
-		m_Fishs[i].Speed = m_pGameInstance.lock()->Random(fishDesc->Speed.x, fishDesc->Speed.y);
-		m_Fishs[i].Radius = m_pGameInstance.lock()->Random(fishDesc->Radius.x, fishDesc->Radius.y);
-		m_Fishs[i].Alpha = m_pGameInstance.lock()->Random(fishDesc->AlphaTime.x, fishDesc->AlphaTime.y);
-		m_Fishs[i].InitPosRad = m_pGameInstance.lock()->Random(XMConvertToRadians(0.f), XMConvertToRadians(179.f));
+		m_Fishs[i].Height = m_gameInstance.lock()->Random(fishDesc->Height.x, fishDesc->Height.y);
+		m_Fishs[i].Size = m_gameInstance.lock()->Random(fishDesc->Size.x, fishDesc->Size.y);
+		m_Fishs[i].Speed = m_gameInstance.lock()->Random(fishDesc->Speed.x, fishDesc->Speed.y);
+		m_Fishs[i].Radius = m_gameInstance.lock()->Random(fishDesc->Radius.x, fishDesc->Radius.y);
+		m_Fishs[i].Alpha = m_gameInstance.lock()->Random(fishDesc->AlphaTime.x, fishDesc->AlphaTime.y);
+		m_Fishs[i].InitPosRad = m_gameInstance.lock()->Random(XMConvertToRadians(0.f), XMConvertToRadians(179.f));
 
 	}
 
@@ -55,10 +55,10 @@ HRESULT CFish::Initialize(void* pArg)
 
 
 	CWaterEff::EffDESC eff = {};
-	eff.eType = EEffType::FISH;
+	eff.type = EEffType::FISH;
 	eff.Target = static_pointer_cast<CFish>(shared_from_this());
 
-	auto Eff = ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(LEVEL::GAMEPLAY), L"Layer_Effect", &eff)));
+	auto Eff = ((m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(LEVEL::GAMEPLAY), L"Layer_Effect", &eff)));
 	if (Eff == nullptr)
 		return E_FAIL;
 
@@ -77,14 +77,14 @@ void CFish::Update(_float fTimeDelta)
 	 //TODO:: 물고기 갯수 줄어들어야 함
 
 
-	if (m_bIsDirtyCom) {
+	if (m_isDirtyCom) {
 		RebindCom();      // "바뀐 것"만 한 번 갱신
-		m_bIsDirtyCom = false;
+		m_isDirtyCom = false;
 	}
 
 
 
-	_matrix pivot  = XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix());
+	_matrix pivot  = XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
 
 	m_acc += fTimeDelta;
 
@@ -127,14 +127,14 @@ void CFish::Update(_float fTimeDelta)
 
 	int a = 1;
 
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	m_pColliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
 void CFish::Late_Update(_float fTimeDelta)
 {
 
 
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CFish::Render()
@@ -153,17 +153,17 @@ HRESULT CFish::Render()
 
 		//if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		//return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_Matrix("g_WorldMatrix", &m_Fishs[i].FishMatrices)))
+		if (FAILED(m_shaderCom->Bind_Matrix("g_WorldMatrix", &m_Fishs[i].FishMatrices)))
 			return E_FAIL;
 
 	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
 		for (size_t i = 0; i < iNumMesh; i++)
 		{
-			m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			m_pModelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 			////m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-			m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+			m_pModelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
-			if (FAILED(m_pShaderCom->Begin(0)))
+			if (FAILED(m_shaderCom->Begin(0)))
 				return E_FAIL;
 
 			if (FAILED(m_pModelCom->Render(i)))
@@ -175,9 +175,9 @@ HRESULT CFish::Render()
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
 	
 
 #endif
@@ -271,15 +271,15 @@ HRESULT CFish::Bind_ShaderResources()
 	//if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 	//	return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	//const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -297,8 +297,8 @@ HRESULT CFish::Bind_ShaderResources()
 
 	////
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float fFar = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 
 
 	return S_OK;
@@ -310,7 +310,7 @@ HRESULT CFish::Ready_Components()
 {
 
 		// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 			return E_FAIL;
 
 
@@ -320,14 +320,14 @@ HRESULT CFish::Ready_Components()
 			return E_FAIL;
 
 
-		CBounding_AABB::BOUNDING_AABB_DESC		AABBDesc{};
-		AABBDesc.vExtents = _float3(0.4f, 0.4f, 0.4f);
-		AABBDesc.vCenter = _float3(0.f, 1.f, 0.f);
-		AABBDesc.MyLayer = COLLISION_LAYER::FISH;
-		AABBDesc.OtherMask = COLLISION_LAYER::PLAYER;
+		CBounding_AABB::BoundingAABBDesc		AABBDesc{};
+		AABBDesc.extents = _float3(0.4f, 0.4f, 0.4f);
+		AABBDesc.center = _float3(0.f, 1.f, 0.f);
+		AABBDesc.myLayer = ECollisionLayer::FISH;
+		AABBDesc.otherMask = ECollisionLayer::PLAYER;
 		if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_Collider"), &m_pColliderCom, &AABBDesc)))
 			return E_FAIL;
-		m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+		m_gameInstance.lock()->Add_Collider(m_pColliderCom);
 	return S_OK;
 }
 

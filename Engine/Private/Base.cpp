@@ -1,4 +1,4 @@
-#include "Base.h"
+ï»¿#include "Base.h"
 
 
 static std::unordered_map<_wstring, uint32_t> s_NameCounters; 
@@ -6,13 +6,13 @@ static std::unordered_map<_wstring, uint32_t> s_NameCounters;
 CBase::CBase()
 {
 
-	m_Name = L"GameObject";
+	m_name = L"GameObject";
 }
 
 CBase::CBase(const CBase& rhs)
     :
-    m_strProtoLevel{ rhs.m_strProtoLevel },
-    m_strProtoTag{ rhs.m_strProtoTag }
+    m_protoLevel{ rhs.m_protoLevel },
+    m_protoTag{ rhs.m_protoTag }
 
 {
 }
@@ -31,16 +31,16 @@ _wstring CBase::MakeDefaultNameFromTypeName(const char* rttiName)
         }
     }
 
-    // 2) ³×ÀÓ½ºÆäÀÌ½º Á¦°Å (Client::, Engine:: µî)
+    // 2) ë„¤ì„ìŠ¤í˜ì´ìŠ¤ ì œê±° (Client::, Engine:: ë“±)
     size_t pos = n.rfind("::");
     if (pos != _string::npos)
         n = n.substr(pos + 2);
 
-    // 3) ¾Õ¿¡ C Á¦°Å (CPlayer -> Player)
+    // 3) ì•ì— C ì œê±° (CPlayer -> Player)
     if (!n.empty() && n[0] == 'C')
         n.erase(0, 1);
 
-    // 4) string -> wstring (ASCII °¡Á¤)
+    // 4) string -> wstring (ASCII ê°€ì •)
     return _wstring(n.begin(), n.end());
 }
 
@@ -64,7 +64,7 @@ void CBase::SetDefaultNameFromThisType()
     if (baseName.empty())
         baseName = L"Object";
 
-    m_Name = MakeUniqueName(baseName);
+    m_name = MakeUniqueName(baseName);
 }
 //unsigned int CBase::AddRef()
 //{
@@ -79,7 +79,7 @@ void CBase::SetDefaultNameFromThisType()
 //
 //        delete  this;
 //        
-//        return 0; // return m_iRefCnt--; ÇÏ¸é ÅÍÁü À§¿¡¼­ °´Ã¼¸¦ Áö¿ü±â ¶«
+//        return 0; // return m_iRefCnt--; í•˜ë©´ í„°ì§ ìœ„ì—ì„œ ê°ì²´ë¥¼ ì§€ì› ê¸° ë•œ
 //    }
 //    else
 //        return m_iRefCnt--;

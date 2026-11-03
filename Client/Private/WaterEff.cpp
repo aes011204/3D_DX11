@@ -26,7 +26,7 @@ HRESULT CWaterEff::Initialize(void* pArg)
 
 	EffDESC* pDesc = static_cast<EffDESC*>(pArg);
 
-	eType = pDesc->eType;
+	eType = pDesc->type;
 	m_pPlayer = pDesc->Target;
 
 	if (FAILED(__super::Initialize(pArg)))
@@ -40,13 +40,13 @@ HRESULT CWaterEff::Initialize(void* pArg)
 	//m_pSocketMatrix_AttackPoint = m_pModelCom->Get_BoneMatrixPtr(/*"l_botclaw_jnt"*/);
 	//m_pTransformCom->Set_Position(XMVectorSet(50.f, 2.f, 1.f, 1.f));
 
-	_vector vPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(STATE::POSITION);
+	_vector vPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
 	//m_pTransformCom->Set_Position(vPos);
 	_float3 pos3;
 	XMStoreFloat3(&pos3, vPos);
 	pos3.y = 0.2f;
 
-	m_pVIBufferCom->Set_Pivot(pos3);
+	m_VIBufferCom->Set_Pivot(pos3);
 
 	return S_OK;
 }
@@ -59,16 +59,16 @@ void CWaterEff::Update(_float fTimeDelta)
 {
 	if (!m_pPlayer.lock())
 	{
-		m_pVIBufferCom->Stop();
-		m_pVIBufferCom->Spawn(fTimeDelta);
-		if (m_pVIBufferCom->Is_Finished() == true)
+		m_VIBufferCom->Stop();
+		m_VIBufferCom->Spawn(fTimeDelta);
+		if (m_VIBufferCom->Is_Finished() == true)
 		{
 			Mark_Destroy();
 		}
 		return;
 	}
 
-	_vector vPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(STATE::POSITION);
+	_vector vPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
 	//m_pTransformCom->Set_Position(vPos);
 	_float3 pos3;
 	XMStoreFloat3(&pos3, vPos);
@@ -81,31 +81,31 @@ void CWaterEff::Update(_float fTimeDelta)
 		_vector vCurrentPos = XMLoadFloat3(&pos3);
 
 	//m_pTransformCom->Set_Position(XMLoadFloat3(&pos3));
-	m_pVIBufferCom->Set_Pivot(pos3);
+	m_VIBufferCom->Set_Pivot(pos3);
 
 		_float fDistance = XMVectorGetX(XMVector3Length(vCurrentPos - vPrevPos));
 		if (fDistance > 0.01f)
 		{
-			m_pVIBufferCom->Start();
+			m_VIBufferCom->Start();
 		}
 		else
 		{
-			m_pVIBufferCom->Stop();
+			m_VIBufferCom->Stop();
 		}
 		PrevPos = pos3;
-		m_pVIBufferCom->Spawn(fTimeDelta);
+		m_VIBufferCom->Spawn(fTimeDelta);
 	}
 	else
 	{
 
-		m_pVIBufferCom->Spawn(fTimeDelta);
+		m_VIBufferCom->Spawn(fTimeDelta);
 	}
 
 }
 
 void CWaterEff::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::BLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::BLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CWaterEff::Render()
@@ -116,14 +116,14 @@ HRESULT CWaterEff::Render()
 		return E_FAIL;
 
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
 
-	if (FAILED(m_pVIBufferCom->Bind_Resources()))
+	if (FAILED(m_VIBufferCom->Bind_Resources()))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	if (FAILED(m_VIBufferCom->Render()))
 		return E_FAIL;
 
 
@@ -147,20 +147,20 @@ void CWaterEff::RebindCom()
 
 HRESULT CWaterEff::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -183,13 +183,13 @@ HRESULT CWaterEff::Ready_Components()
 {
 
 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_WaterEff"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_WaterEff"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
 		return E_FAIL;
 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_WaterEff"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_WaterEff"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
 
 

@@ -1,4 +1,4 @@
-#include "UIText.h"
+﻿#include "UIText.h"
 
 CUIText::CUIText(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CUI(pDevice, pContext)
@@ -12,15 +12,15 @@ CUIText::CUIText(const CUIText& prototype)
 
 HRESULT CUIText::OnInit(void* pArg)
 {
-	auto* pDesc = static_cast<TEXT_DESC*>(pArg);
-	m_vTextColor = pDesc->TextColor;
-	m_strFontTag = pDesc->strFontTag;
-	m_strText = pDesc->strText;
-	m_FontAline = pDesc->fontaline;
+	auto* pDesc = static_cast<TextDesc*>(pArg);
+	m_textColor = pDesc->textColor;
+	m_fontTag = pDesc->fontTag;
+	m_text = pDesc->text;
+	m_fontAline = pDesc->fontAlign;
 
 
 
-	m_bInteractable = false;
+	m_isInteractable = false;
 
 	return CUI::OnInit(pDesc);
 
@@ -30,7 +30,7 @@ void CUIText::OnActive()
 {
 
 		/*m_TextSize = m_pGameInstance.lock()->Measure_String(m_strFontTag, m_strText.c_str());*/
-		GetUITransform()->SetSizeDelta(m_TextSize);
+		GetUITransform()->SetSizeDelta(m_textSize);
 
 
 	CUI::OnActive();
@@ -48,11 +48,11 @@ void CUIText::OnDisabled()
 
 void CUIText::OnUpdate(const _float& timeDelta)
 {
-	if(m_IsChangeText==true)
+	if(m_isChangeText==true)
 	{
-	m_TextSize = m_pGameInstance.lock()->Measure_String(m_strFontTag, m_strText.c_str());
-	GetUITransform()->SetSizeDelta(m_TextSize);
-    m_IsChangeText = false;
+	m_textSize = m_gameInstance.lock()->Measure_String(m_fontTag, m_text.c_str());
+	GetUITransform()->SetSizeDelta(m_textSize);
+    m_isChangeText = false;
 	}
 	CUI::OnUpdate(timeDelta);
 }
@@ -70,7 +70,7 @@ void CUIText::OnLateUpdate()
 HRESULT CUIText::OnRender()
 {
 	HRESULT hr = CUI::OnRender();
-	if (m_strText.empty() == false)
+	if (m_text.empty() == false)
 	{
 		//Rect rc = m_pUITransformCom->Get_WorldRect();
 		//float CenterX = rc.Left() + (rc.Right() - rc.Left()) * 0.5f;
@@ -90,21 +90,21 @@ HRESULT CUIText::OnRender()
 		//	DrawPos,
 		//	XMLoadFloat4(&m_vTextColor));
 
-		Rect rc = m_pUITransformCom->Get_WorldRect();
+		Rect rc = m_UITransformCom->Get_WorldRect();
 
 		float CenterY = rc.Top() + (rc.Bottom() - rc.Top()) * 0.5f;
 
-		float screenHeight = m_pGameInstance.lock()->Get_WinSize().Bottom();
+		float screenHeight = m_gameInstance.lock()->Get_WinSize().Bottom();
 
 		_float2 DrawPos;
 		DrawPos.x = rc.Left(); 
-		DrawPos.y = screenHeight - CenterY - (m_TextSize.y * 0.5f);
+		DrawPos.y = screenHeight - CenterY - (m_textSize.y * 0.5f);
 
-		m_pGameInstance.lock()->Font_Draw(
-			m_strFontTag,
-			m_strText.c_str(),
+		m_gameInstance.lock()->Font_Draw(
+			m_fontTag,
+			m_text.c_str(),
 			DrawPos,
-			XMLoadFloat4(&m_vTextColor)
+			XMLoadFloat4(&m_textColor)
 		);
 		/*switch (m_FontAline)
 		{

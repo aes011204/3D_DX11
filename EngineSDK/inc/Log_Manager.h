@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 #include "Log_Manager.h"
 NS_BEGIN(Engine)
@@ -13,12 +13,12 @@ public:
 public:
    
     struct LogData {
-        LOG_LEVEL eLevel;
-        std::string strMessage;
+        ELogLevel level;
+        std::string message;
     };
 public:
-    void Add_Log_F(LOG_LEVEL eLevel, const char* pFormat, ...);
-    void Add_Log(LOG_LEVEL eLevel, const char* pMessage);
+    void Add_Log_F(ELogLevel eLevel, const char* pFormat, ...);
+    void Add_Log(ELogLevel eLevel, const char* pMessage);
     const vector<LogData>& Get_Logs() { return m_vecLogs; }
     void Clear() { m_vecLogs.clear(); }
 private:

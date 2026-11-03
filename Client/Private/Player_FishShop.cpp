@@ -109,13 +109,13 @@ int CPlayer_FishShop::Update_State(const _float& timeDelta)
             Evt_ItemSold soldEvent = {};
             soldEvent.itemInstId = m_ItemIdInst.itemInstId;
             m_ItemIdInst = {};
-            m_pGameInstance.lock()->Get_EventBus()->Publish(soldEvent);
+            m_gameInstance.lock()->Get_EventBus()->Publish(soldEvent);
 			
 
 		}
 
 	}
-	else if (m_Input_Manager->MouseDown(DIMB::WHEEL))
+	else if (m_Input_Manager->MouseDown(EMouseButton::WHEEL))
 	{
 		Evt_MoveToStorage e = {};
 		

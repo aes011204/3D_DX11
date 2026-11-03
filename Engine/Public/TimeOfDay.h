@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 class CTimeOfDay :
@@ -17,24 +17,24 @@ public:
 
     void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
 
-    _float Get_TOD01() { return m_fTOD01; }
+    _float Get_TOD01() { return m_TOD01; }
 
     void Set_TOD01(_float tod);
     _bool Get_IsNight() { return IsNight; };
    
     void OnGui() override;
 private:
-    _float m_SecondPerDay = 1200; // ½ºÄÉÀÏÀÌ 1 ÀÏ‹š °ÔÀÓÀÇ ÇÏ·ç´Â Çö½Ç 20ºĞ
-    _float m_TimeScale = { 1.f }; // 1 Á¤»ó 0.5 Àı¹İ ´À¸² 2 µÎ¹è ºü¸§
+    _float m_secondPerDay = 1200; // ìŠ¤ì¼€ì¼ì´ 1 ì¼ë–„ ê²Œì„ì˜ í•˜ë£¨ëŠ” í˜„ì‹¤ 20ë¶„
+    _float m_timeScale = { 1.f }; // 1 ì •ìƒ 0.5 ì ˆë°˜ ëŠë¦¼ 2 ë‘ë°° ë¹ ë¦„
 
-    _uint m_Day = { 0 };
+    _uint m_day = { 0 };
 
-    _float m_Second = { 0 }; // ÃÊ±âÁØÀ¸·Î ÀúÀå ½Ã°£ ÇÊ¿äÇÒ‹š °è»ê
+    _float m_second = { 0 }; // ì´ˆê¸°ì¤€ìœ¼ë¡œ ì €ì¥ ì‹œê°„ í•„ìš”í• ë–„ ê³„ì‚°
 
 
-    _float m_fTOD01 = 0.f; // 0~1
-    _float m_fSunrise01 = 0.30f; // ¿ø·¡´Â 0.25
-    _float m_fSunset01 = 0.75f;
+    _float m_TOD01 = 0.f; // 0~1
+    _float m_sunrise01 = 0.30f; // ì›ë˜ëŠ” 0.25
+    _float m_sunset01 = 0.75f;
 
     _bool IsNight = { false };
 

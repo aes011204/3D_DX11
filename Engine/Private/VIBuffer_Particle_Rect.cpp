@@ -1,4 +1,4 @@
-#include "VIBuffer_Particle_Rect.h"
+ï»¿#include "VIBuffer_Particle_Rect.h"
 #include "GameInstance.h"
 
 CVIBuffer_Particle_Rect::CVIBuffer_Particle_Rect(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -16,79 +16,79 @@ CVIBuffer_Particle_Rect::CVIBuffer_Particle_Rect(const CVIBuffer_Particle_Rect& 
 	//m_isLoop = Prototype.m_isLoop;
 
 
-	m_pInstanceVertices = std::make_unique<VTXPARTICLE_INSTANCE[]>(m_iNumInstances);
-	m_pSpeeds = std::make_unique<_float[]>(m_iNumInstances);
+	m_instanceVertices = std::make_unique<VTXPARTICLE_INSTANCE[]>(m_numInstances);
+	m_speeds = std::make_unique<_float[]>(m_numInstances);
 
-	memcpy(m_pInstanceVertices.get(), Prototype.m_pInstanceVertices.get(),
-		sizeof(VTXPARTICLE_INSTANCE) * m_iNumInstances);
+	memcpy(m_instanceVertices.get(), Prototype.m_instanceVertices.get(),
+		sizeof(VTXPARTICLE_INSTANCE) * m_numInstances);
 
-	memcpy(m_pSpeeds.get(), Prototype.m_pSpeeds.get(),
-		sizeof(_float) * m_iNumInstances);
+	memcpy(m_speeds.get(), Prototype.m_speeds.get(),
+		sizeof(_float) * m_numInstances);
 }
 
-HRESULT CVIBuffer_Particle_Rect::Initialize_Prototype(const CVIBuffer_Instance::INSTANCE_DESC* pParticleDesc)
+HRESULT CVIBuffer_Particle_Rect::Initialize_Prototype(const CVIBuffer_Instance::InstanceDesc* pParticleDesc)
 {
-	auto		pDesc = static_cast<const PARTICLE_RECT_DESC*>(pParticleDesc);
+	auto		pDesc = static_cast<const ParticleRectDesc*>(pParticleDesc);
 
 	m_isLoop = pDesc->isLoop;
 
 
 	/* For.Vertices */
-	m_iNumVertexBuffers = 2;
-	m_iNumVertices = 4;
-	m_iVertexStride = sizeof(VTXTEX);
+	m_numVertexBuffers = 2;
+	m_numVertices = 4;
+	m_vertexStride = sizeof(VTXTEX);
 	/* For.Indices */
-	m_iNumIndices = 6;
-	m_iIndexStride = 2;
-	m_ePrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_numIndices = 6;
+	m_indexStride = 2;
+	m_primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	/* For.Instances*/
-	m_iIndexCountPerInstance = 6;
-	m_iNumInstances = pDesc->iNumInstances;
-	m_iInstanceStride = sizeof(VTXPARTICLE_INSTANCE);
+	m_indexCountPerInstance = 6;
+	m_numInstances = pDesc->numInstances;
+	m_instanceStride = sizeof(VTXPARTICLE_INSTANCE);
 
 	// Vertex Buffer
 
 	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
 	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_iVertexStride;
+	VertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
-	VertexBufferDesc.MiscFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
+	VertexBufferDesc.CPUAccessFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìžˆìŒ
+	VertexBufferDesc.MiscFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìžˆìŒ
 
-	VTXTEX* pVertices = new VTXTEX[m_iNumVertices];
-	pVertices[0].vPosition = _float3(-0.5f, 0.5f, 0.f);
-	pVertices[0].vTexcoord = _float2(0.f, 0.f);
+	VTXTEX* pVertices = new VTXTEX[m_numVertices];
+	pVertices[0].position = _float3(-0.5f, 0.5f, 0.f);
+	pVertices[0].texcoord = _float2(0.f, 0.f);
 
-	pVertices[1].vPosition = _float3(0.5f, 0.5f, 0.f);
-	pVertices[1].vTexcoord = _float2(1.f, 0.f);
+	pVertices[1].position = _float3(0.5f, 0.5f, 0.f);
+	pVertices[1].texcoord = _float2(1.f, 0.f);
 
-	pVertices[2].vPosition = _float3(0.5f, -0.5f, 0.f);
-	pVertices[2].vTexcoord = _float2(1.f, 1.f);
+	pVertices[2].position = _float3(0.5f, -0.5f, 0.f);
+	pVertices[2].texcoord = _float2(1.f, 1.f);
 
-	pVertices[3].vPosition = _float3(-0.5f, -0.5f, 0.f);
-	pVertices[3].vTexcoord = _float2(0.f, 1.f);
+	pVertices[3].position = _float3(-0.5f, -0.5f, 0.f);
+	pVertices[3].texcoord = _float2(0.f, 1.f);
 
 
 	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
 	VertexInitialData.pSysMem = pVertices;
 
-	if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
+	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
 		return E_FAIL;
 
 
 	//Index Buffer
 
 	D3D11_BUFFER_DESC	IndexBufferDesc{};
-	IndexBufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
+	IndexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
 	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.StructureByteStride = m_iIndexStride;
+	IndexBufferDesc.StructureByteStride = m_indexStride;
 	IndexBufferDesc.CPUAccessFlags = 0;
 	IndexBufferDesc.MiscFlags = 0;
 
-	_ushort* pIndices = new _ushort[m_iNumIndices];
+	_ushort* pIndices = new _ushort[m_numIndices];
 
 	pIndices[0] = 0;
 	pIndices[1] = 1;
@@ -102,49 +102,49 @@ HRESULT CVIBuffer_Particle_Rect::Initialize_Prototype(const CVIBuffer_Instance::
 	IndexInitialData.pSysMem = pIndices;
 
 
-	if (FAILED(m_pDevice->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_pIB)))
+	if (FAILED(m_device->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_IB)))
 		return E_FAIL;
 
 	/* Instance Buffer */
 
 
 	D3D11_BUFFER_DESC InstanceBufferDesc{};
-	InstanceBufferDesc.ByteWidth = m_iInstanceStride * m_iNumInstances;
+	InstanceBufferDesc.ByteWidth = m_instanceStride * m_numInstances;
 	InstanceBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 	InstanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	InstanceBufferDesc.StructureByteStride = m_iInstanceStride;
+	InstanceBufferDesc.StructureByteStride = m_instanceStride;
 	InstanceBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	InstanceBufferDesc.MiscFlags = 0;
 
 
-	m_pInstanceVertices = std::make_unique<VTXPARTICLE_INSTANCE[]>(m_iNumInstances);
-	ZeroMemory(m_pInstanceVertices.get(), sizeof(VTXPARTICLE_INSTANCE) * m_iNumInstances);
-	m_pSpeeds = std::make_unique<_float[]>(m_iNumInstances);
+	m_instanceVertices = std::make_unique<VTXPARTICLE_INSTANCE[]>(m_numInstances);
+	ZeroMemory(m_instanceVertices.get(), sizeof(VTXPARTICLE_INSTANCE) * m_numInstances);
+	m_speeds = std::make_unique<_float[]>(m_numInstances);
 
-	 auto pGameInstance = m_pGameInstance.lock();
-	for(size_t i=0; i<m_iNumInstances;i++)
+	 auto pGameInstance = m_gameInstance.lock();
+	for(size_t i=0; i<m_numInstances;i++)
 	{
 		
 
 
-		m_pSpeeds[i] = pGameInstance->Random(pDesc->vSpeed.x, pDesc->vSpeed.y);
+		m_speeds[i] = pGameInstance->Random(pDesc->speed.x, pDesc->speed.y);
 		_float fScaleX = .02f;
 		_float fScaleY = pGameInstance->Random(0.4f, 0.6f);
-	//	_float fScaleZ = pGameInstance->Random(pDesc->vScaleZ.x, pDesc->vScaleZ.y); // ÇÊ¿äÇÏ¸é
+	//	_float fScaleZ = pGameInstance->Random(pDesc->vScaleZ.x, pDesc->vScaleZ.y); // í•„ìš”í•˜ë©´
 
-		_float life = m_pGameInstance.lock()->Random(pDesc->vLifeTime.x, pDesc->vLifeTime.y);
-		_float start = m_pGameInstance.lock()->Random(0.f, life);
+		_float life = m_gameInstance.lock()->Random(pDesc->lifeTime.x, pDesc->lifeTime.y);
+		_float start = m_gameInstance.lock()->Random(0.f, life);
 
-		m_pInstanceVertices[i].vLifeTime = _float2(life, start);
+		m_instanceVertices[i].lifeTime = _float2(life, start);
 
 
-		m_pInstanceVertices[i].vRight = _float4(fScaleX, 0.f, 0.f, 0.f);
-		m_pInstanceVertices[i].vUp = _float4(0.f, fScaleY, 0.f, 0.f);
-		m_pInstanceVertices[i].vLook = _float4(0.f, 0.f, 1.f, 0.f);
-		m_pInstanceVertices[i].vTranslation = _float4(
-			pGameInstance->Random(pDesc->vCenter.x - pDesc->vRange.x * 0.5f, pDesc->vCenter.x + pDesc->vRange.x * 0.5f),
-			pGameInstance->Random(pDesc->vCenter.y - pDesc->vRange.y * 0.5f, pDesc->vCenter.y + pDesc->vRange.y * 0.5f),
-			pGameInstance->Random(pDesc->vCenter.z - pDesc->vRange.z * 0.5f, pDesc->vCenter.z + pDesc->vRange.z * 0.5f),
+		m_instanceVertices[i].right = _float4(fScaleX, 0.f, 0.f, 0.f);
+		m_instanceVertices[i].up = _float4(0.f, fScaleY, 0.f, 0.f);
+		m_instanceVertices[i].look = _float4(0.f, 0.f, 1.f, 0.f);
+		m_instanceVertices[i].translation = _float4(
+			pGameInstance->Random(pDesc->center.x - pDesc->range.x * 0.5f, pDesc->center.x + pDesc->range.x * 0.5f),
+			pGameInstance->Random(pDesc->center.y - pDesc->range.y * 0.5f, pDesc->center.y + pDesc->range.y * 0.5f),
+			pGameInstance->Random(pDesc->center.z - pDesc->range.z * 0.5f, pDesc->center.z + pDesc->range.z * 0.5f),
 			1.f
 		);
 	//	m_pInstanceVertices[i].vLifeTime = _float2(m_pGameInstance.lock()->Random(pDesc->vLifeTime.x, pDesc->vLifeTime.y), 0.f);
@@ -153,9 +153,9 @@ HRESULT CVIBuffer_Particle_Rect::Initialize_Prototype(const CVIBuffer_Instance::
 
 
 	D3D11_SUBRESOURCE_DATA			InstanceInitialData{};
-	InstanceInitialData.pSysMem = m_pInstanceVertices.get();
+	InstanceInitialData.pSysMem = m_instanceVertices.get();
 
-	if (FAILED(m_pDevice->CreateBuffer(&InstanceBufferDesc, &InstanceInitialData, &m_pVBInstance)))
+	if (FAILED(m_device->CreateBuffer(&InstanceBufferDesc, &InstanceInitialData, &m_VBInstance)))
 		return E_FAIL;
 
 	Safe_Delete_Array(pVertices);
@@ -176,25 +176,25 @@ void CVIBuffer_Particle_Rect::Drop(_float fTimeDelta)
 
 	D3D11_MAPPED_SUBRESOURCE MappedSubResource{};
 
-	m_pContext->Map(m_pVBInstance.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &MappedSubResource);
+	m_context->Map(m_VBInstance.Get(), 0, D3D11_MAP_WRITE_NO_OVERWRITE, 0, &MappedSubResource);
 
 	auto pVertexInstance = static_cast<VTXPARTICLE_INSTANCE*>(MappedSubResource.pData);
 
-	for (size_t i = 0; i < m_iNumInstances; i++)
+	for (size_t i = 0; i < m_numInstances; i++)
 	{
 
-		pVertexInstance[i].vTranslation.y -= m_pSpeeds[i] * fTimeDelta;
+		pVertexInstance[i].translation.y -= m_speeds[i] * fTimeDelta;
 
-		pVertexInstance[i].vLifeTime.y += fTimeDelta;
-		if (pVertexInstance[i].vLifeTime.y >= pVertexInstance[i].vLifeTime.x &&
+		pVertexInstance[i].lifeTime.y += fTimeDelta;
+		if (pVertexInstance[i].lifeTime.y >= pVertexInstance[i].lifeTime.x &&
 			true == m_isLoop)
 		{
-			pVertexInstance[i].vLifeTime.y = 0.f;
-			pVertexInstance[i].vTranslation = m_pInstanceVertices[i].vTranslation;
+			pVertexInstance[i].lifeTime.y = 0.f;
+			pVertexInstance[i].translation = m_instanceVertices[i].translation;
 		}
 	}
 
-	m_pContext->Unmap(m_pVBInstance.Get(), 0);
+	m_context->Unmap(m_VBInstance.Get(), 0);
 }
 
 void CVIBuffer_Particle_Rect::Spread(_float fTimeDelta)
@@ -202,7 +202,7 @@ void CVIBuffer_Particle_Rect::Spread(_float fTimeDelta)
 }
 
 shared_ptr<CVIBuffer_Particle_Rect> CVIBuffer_Particle_Rect::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext, const CVIBuffer_Instance::INSTANCE_DESC* pParticleDesc)
+	ComPtr<ID3D11DeviceContext> pContext, const CVIBuffer_Instance::InstanceDesc* pParticleDesc)
 {
 	shared_ptr<CVIBuffer_Particle_Rect> pInstance(new CVIBuffer_Particle_Rect(pDevice, pContext), [](CVIBuffer_Particle_Rect* p) {p->Free(); delete(p); });
 

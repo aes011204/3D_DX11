@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Editor_Define.h"
 
 NS_BEGIN(Editor)
@@ -19,8 +19,8 @@ public:
     shared_ptr<CEditor_Win> Get_Window(string name);
 
 private:
-    // Ã¢ ÀÌ¸§(_string)À» Å°°ªÀ¸·Î °ü¸®ÇÏ´Â ÄÁÅ×ÀÌ³Ê
-    map<_string, shared_ptr<CEditor_Win>> m_Windows;
+    // ì°½ ì´ë¦„(_string)ì„ í‚¤ê°’ìœ¼ë¡œ ê´€ë¦¬í•˜ëŠ” ì»¨í…Œì´ë„ˆ
+    map<_string, shared_ptr<CEditor_Win>> m_windows;
 
 public:
     static unique_ptr<CWin_Mananger> Create();

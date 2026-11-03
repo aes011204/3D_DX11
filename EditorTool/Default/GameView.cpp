@@ -1,4 +1,4 @@
-
+Ôªø
 #include"GameView.h"
 #include"GameInstance.h"
 #include"Camera.h"
@@ -18,44 +18,44 @@ CGameView::~CGameView()
 bool CGameView::CreateRT(UINT width, UINT height)
 {
 
-	if (!m_pDevice || width == 0 || height == 0) return false;
+	if (!m_device || width == 0 || height == 0) return false;
 
-	m_pTexture.Reset();
-	m_pSRV.Reset();
+	m_texture.Reset();
+	m_SRV.Reset();
 
 	D3D11_TEXTURE2D_DESC desc{};
 	desc.Width = width;
 	desc.Height = height;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // ≥  swapchain ∆˜∏À∞˙ µø¿œ
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;  // ÎÑà swapchain Ìè¨Îß∑Í≥º ÎèôÏùº
 	desc.SampleDesc.Count = 1;
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
-	if (FAILED(m_pDevice->CreateTexture2D(&desc, nullptr, m_pTexture.ReleaseAndGetAddressOf())))
+	if (FAILED(m_device->CreateTexture2D(&desc, nullptr, m_texture.ReleaseAndGetAddressOf())))
 		return false;
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_pTexture.Get(), nullptr, m_pSRV.ReleaseAndGetAddressOf())))
+	if (FAILED(m_device->CreateShaderResourceView(m_texture.Get(), nullptr, m_SRV.ReleaseAndGetAddressOf())))
 		return false;
 
-	m_Width = width;
-	m_Height = height;
+	m_width = width;
+	m_height = height;
 
 
 
 	return true;
 }
 
-HRESULT CGameView::Initialize(const ENGINE_DESC& EngineDesc, ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+HRESULT CGameView::Initialize(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 {
-	m_pDevice = pDevice;
-	m_pContext = pContext;
+	m_device = pDevice;
+	m_context = pContext;
 
-	m_Width = EngineDesc.iViewportWidth;
-	m_Height = EngineDesc.iViewportHeight;
+	m_width = engineDesc.viewportWidth;
+	m_height = engineDesc.viewportHeight;
 
-	CreateRT(EngineDesc.iViewportWidth, EngineDesc.iViewportHeight);
+	CreateRT(engineDesc.viewportWidth, engineDesc.viewportHeight);
 
 
 
@@ -67,7 +67,7 @@ bool CGameView::Resize(UINT width, UINT height)
 	if (width < 16) width = 16;
 	if (height < 16) height = 16;
 
-	if (m_pTexture && width == m_Width && height == m_Height)
+	if (m_texture && width == m_width && height == m_height)
 		return true;
 
 	return CreateRT(width, height);
@@ -75,7 +75,7 @@ bool CGameView::Resize(UINT width, UINT height)
 
 void CGameView::CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV)
 {
-	if (!m_pContext || !backBufferRTV || !m_pTexture) return;
+	if (!m_context || !backBufferRTV || !m_texture) return;
 
 	ComPtr<ID3D11Resource> srcRes;
 	backBufferRTV->GetResource(srcRes.GetAddressOf());
@@ -88,8 +88,8 @@ void CGameView::CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV)
 	D3D11_TEXTURE2D_DESC srcDesc{};
 	srcTex->GetDesc(&srcDesc);
 
-	UINT copyW = min(m_Width, srcDesc.Width);
-	UINT copyH = min(m_Height, srcDesc.Height);
+	UINT copyW = min(m_width, srcDesc.Width);
+	UINT copyH = min(m_height, srcDesc.Height);
 
 	D3D11_BOX box{};
 	box.left = 0; box.top = 0; box.front = 0;
@@ -97,8 +97,8 @@ void CGameView::CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV)
 	box.bottom = copyH;
 	box.back = 1;
 
-	m_pContext->CopySubresourceRegion(
-		m_pTexture.Get(), 0,
+	m_context->CopySubresourceRegion(
+		m_texture.Get(), 0,
 		0, 0, 0,
 		srcTex.Get(), 0,
 		&box
@@ -112,51 +112,51 @@ void CGameView::Render()
 
 	//Render_CameraToolbar();
 
-	{// ∏∂øÏΩ∫ ¿ßƒ° 
+	{// ÎßàÏö∞Ïä§ ÏúÑÏπò 
 		ImVec2 vPanelSize = ImGui::GetContentRegionAvail();
 		if (vPanelSize.x > 0 && vPanelSize.y > 0)
 		{
-			// ∫Ò¿≤ π◊ ≈©±‚ ∞ËªÍ
-			float fTargetRatio = (float)m_Width / (float)m_Height;
+			// ÎπÑÏú® Î∞è ÌÅ¨Í∏∞ Í≥ÑÏÇ∞
+			float fTargetRatio = (float)m_width / (float)m_height;
 			float fPanelRatio = vPanelSize.x / vPanelSize.y;
 
 			if (fPanelRatio > fTargetRatio) {
-				m_vRenderSize.y = vPanelSize.y;
-				m_vRenderSize.x = vPanelSize.y * fTargetRatio;
+				m_renderSize.y = vPanelSize.y;
+				m_renderSize.x = vPanelSize.y * fTargetRatio;
 			}
 			else {
-				m_vRenderSize.x = vPanelSize.x;
-				m_vRenderSize.y = vPanelSize.x / fTargetRatio;
+				m_renderSize.x = vPanelSize.x;
+				m_renderSize.y = vPanelSize.x / fTargetRatio;
 			}
 
-			// ¡ﬂæ” ¡§∑ƒ π◊ Ω√¿€¡° ¿˙¿Â
-			float fOffsetX = (vPanelSize.x - m_vRenderSize.x) * 0.5f;
-			float fOffsetY = (vPanelSize.y - m_vRenderSize.y) * 0.5f;
+			// Ï§ëÏïô Ï†ïÎ†¨ Î∞è ÏãúÏûëÏ†ê Ï†ÄÏû•
+			float fOffsetX = (vPanelSize.x - m_renderSize.x) * 0.5f;
+			float fOffsetY = (vPanelSize.y - m_renderSize.y) * 0.5f;
 
 			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + fOffsetX);
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + fOffsetY);
 
-			// ¡ﬂø‰: Updateø°º≠ æµ Ω√¿€¡°(0,0) ¡¬«• ¿˙¿Â
-			m_vContentPos = ImGui::GetCursorScreenPos();
+			// Ï§ëÏöî: UpdateÏóêÏÑú Ïì∏ ÏãúÏûëÏ†ê(0,0) Ï¢åÌëú Ï†ÄÏû•
+			m_contentPos = ImGui::GetCursorScreenPos();
 
-			//√‚∑¬ π◊ ªÛ≈¬ √º≈©
-			if (m_pSRV)
+			//Ï∂úÎ†• Î∞è ÏÉÅÌÉú Ï≤¥ÌÅ¨
+			if (m_SRV)
 			{
-				ImGui::Image((void*)m_pSRV.Get(), m_vRenderSize);
-				// ∏∂øÏΩ∫∞° Ω«¡¶ ±◊∏≤ øµø™ æ»ø° ¿÷¥¬¡ˆ √º≈©
-				m_bMouseInScene = ImGui::IsItemHovered();
+				ImGui::Image((void*)m_SRV.Get(), m_renderSize);
+				// ÎßàÏö∞Ïä§Í∞Ä Ïã§Ï†ú Í∑∏Î¶º ÏòÅÏó≠ ÏïàÏóê ÏûàÎäîÏßÄ Ï≤¥ÌÅ¨
+				m_isMouseInScene = ImGui::IsItemHovered();
 
-				if (m_bMouseInScene)
+				if (m_isMouseInScene)
 				{
-					//¿ÃπÃ ±∏«ÿ≥ı¿∫ m_vContentPos(±◊∏≤ Ω√¿€¡°)∏¶ ª©º≠ ªÛ¥Î ¡¬«• ±∏«‘
-					float fLocalX = ImGui::GetMousePos().x - m_vContentPos.x;
-					float fLocalY = ImGui::GetMousePos().y - m_vContentPos.y;
+					//Ïù¥ÎØ∏ Íµ¨Ìï¥ÎÜìÏùÄ m_vContentPos(Í∑∏Î¶º ÏãúÏûëÏ†ê)Î•º ÎπºÏÑú ÏÉÅÎåÄ Ï¢åÌëú Íµ¨Ìï®
+					float fLocalX = ImGui::GetMousePos().x - m_contentPos.x;
+					float fLocalY = ImGui::GetMousePos().y - m_contentPos.y;
 
-					// ¿ÃπÃ ±∏«ÿ≥ı¿∫ m_vRenderSize(Ω«¡¶ √‚∑¬ ≈©±‚)∑Œ ∫Ò¿≤ ∞ËªÍ »ƒ ∞°ªÛ «ÿªÛµµ ∞ˆ«‘
-					float fCalibratedX = (fLocalX / m_vRenderSize.x) * (float)m_Width;
-					float fCalibratedY = (fLocalY / m_vRenderSize.y) * (float)m_Height;
+					// Ïù¥ÎØ∏ Íµ¨Ìï¥ÎÜìÏùÄ m_vRenderSize(Ïã§Ï†ú Ï∂úÎ†• ÌÅ¨Í∏∞)Î°ú ÎπÑÏú® Í≥ÑÏÇ∞ ÌõÑ Í∞ÄÏÉÅ Ìï¥ÏÉÅÎèÑ Í≥±Ìï®
+					float fCalibratedX = (fLocalX / m_renderSize.x) * (float)m_width;
+					float fCalibratedY = (fLocalY / m_renderSize.y) * (float)m_height;
 
-					//  »≠∏Èø° √‚∑¬
+					//  ÌôîÎ©¥Ïóê Ï∂úÎ†•
                     //ImGui::SetCursorScreenPos(ImVec2(m_vContentPos.x + 10.f, m_vContentPos.y + 10.f));
                     //ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "X: %.1f, Y: %.1f", fCalibratedX, fCalibratedY);
 				}
@@ -176,21 +176,21 @@ void CGameView::Render()
 
 void CGameView::Update(float fTimeDelta)
 {
-	// ∆–≥Œ ¡§∫∏ πÃ∏Æ ∆ƒæ« (Begin/End ªÁ¿Ãø°º≠∏∏ ¿Ø»ø«— ∞™µÈ¿Ã∂Û ø©±‚º≠ √º≈©)
+	// Ìå®ÎÑê Ï†ïÎ≥¥ ÎØ∏Î¶¨ ÌååÏïÖ (Begin/End ÏÇ¨Ïù¥ÏóêÏÑúÎßå Ïú†Ìö®Ìïú Í∞íÎì§Ïù¥Îùº Ïó¨Í∏∞ÏÑú Ï≤¥ÌÅ¨)
 
-	if (m_bMouseInScene)
+	if (m_isMouseInScene)
 	{
 		ImVec2 vMousePos = ImGui::GetMousePos();
 
-		// ±◊∏≤ øµø™ ≥ª¿« ªÛ¥Î ¡¬«• ∞ËªÍ
-		float fLocalX = vMousePos.x - m_vContentPos.x;
-		float fLocalY = vMousePos.y - m_vContentPos.y;
+		// Í∑∏Î¶º ÏòÅÏó≠ ÎÇ¥Ïùò ÏÉÅÎåÄ Ï¢åÌëú Í≥ÑÏÇ∞
+		float fLocalX = vMousePos.x - m_contentPos.x;
+		float fLocalY = vMousePos.y - m_contentPos.y;
 
-		// 0.0 ~ 1.0 ∫Ò¿≤ ∞ËªÍ ,∏≈«Œ
-		float fCalibratedX = (fLocalX / m_vRenderSize.x) * m_Width;
-		float fCalibratedY = (fLocalY / m_vRenderSize.y) * m_Height;
+		// 0.0 ~ 1.0 ÎπÑÏú® Í≥ÑÏÇ∞ ,Îß§Ìïë
+		float fCalibratedX = (fLocalX / m_renderSize.x) * m_width;
+		float fCalibratedY = (fLocalY / m_renderSize.y) * m_height;
 
-		float fFixedY = (float)m_Height - fCalibratedY; //ƒ´∏£∆Æ ¡¬«•∞Ëø° ∏¬∞‘ ∫∏¡§
+		float fFixedY = (float)m_height - fCalibratedY; //Ïπ¥Î•¥Ìä∏ Ï¢åÌëúÍ≥ÑÏóê ÎßûÍ≤å Î≥¥Ï†ï
 
 		CGameInstance::GetInstance()->Set_MousePos(fCalibratedX, fFixedY);
 	}
@@ -198,12 +198,12 @@ void CGameView::Update(float fTimeDelta)
 		CGameInstance::GetInstance()->Set_MousePos(-10.f, -10.f);
 }
 
-unique_ptr<CGameView>  CGameView::Create(const ENGINE_DESC& EngineDesc,
+unique_ptr<CGameView>  CGameView::Create(const EngineDesc& engineDesc,
 	ComPtr<ID3D11Device> pDevice,
 	ComPtr<ID3D11DeviceContext> pContext)
 {
 	unique_ptr<CGameView> pInstance(new CGameView()/*, [](CGameView* p) {p->Free();delete p;}*/);
-	if (FAILED(pInstance->Initialize(EngineDesc, pDevice, pContext)))
+	if (FAILED(pInstance->Initialize(engineDesc, pDevice, pContext)))
 		return nullptr;
 
 	//CreateRT(EngineDesc.iViewportWidth, EngineDesc.iViewportHeight);
@@ -212,21 +212,21 @@ unique_ptr<CGameView>  CGameView::Create(const ENGINE_DESC& EngineDesc,
 
 void CGameView::Render_CameraToolbar()
 {
-//	ImGui::BeginGroup(); // ∞¸∑√ ø‰º“µÈ π≠±‚
+//	ImGui::BeginGroup(); // Í¥ÄÎ†® ÏöîÏÜåÎì§ Î¨∂Í∏∞
 //
 //	ImGui::TextColored(ImVec4(1.f, 1.f, 0.f, 1.f), " [CAM] ");
 //	ImGui::SameLine();
 //	CGameInstance::GetInstance()->CAM_Manger_OnGui();
 //
 //ImGui::EndGroup();
-//ImGui::NewLine(); // ≈¯πŸ ≥°≥µ¿∏¥œ ¥Ÿ¿Ω ¡Ÿ∑Œ
+//ImGui::NewLine(); // Ìà¥Î∞î ÎÅùÎÇ¨ÏúºÎãà Îã§Ïùå Ï§ÑÎ°ú
 }
 
 void CGameView::Free()
 {
-	m_pDevice.Reset();
-	m_pContext.Reset();
+	m_device.Reset();
+	m_context.Reset();
 
-	m_pTexture.Reset();
-	m_pSRV.Reset();
+	m_texture.Reset();
+	m_SRV.Reset();
 }

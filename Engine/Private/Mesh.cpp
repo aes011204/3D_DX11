@@ -1,4 +1,4 @@
-#include "Mesh.h"
+Ôªø#include "Mesh.h"
 #include "Model.h"
 #include "Shader.h"
 
@@ -12,47 +12,47 @@ CMesh::CMesh(const CMesh& Prototype)
 {
 }
 
-HRESULT CMesh::Initialize_Prototype(MODEL eType,
+HRESULT CMesh::Initialize_Prototype(EModelType eType,
 	 ifstream& InFile,
 	shared_ptr<CModel> pModel, _fmatrix PreTransformMatrix)
 {
 	Cvt_MeshInfo meshInfo;
 	InFile.read(reinterpret_cast<_char*>(&meshInfo), sizeof(Cvt_MeshInfo));
 
-	m_iMaterialIndex = meshInfo.iMaterialIndex;
+	m_materialIndex = meshInfo.materialIndex;
 	
-	m_iNumVertexBuffers = 1; 
-	m_iNumVertices = meshInfo.iNumVertices;
+	m_numVertexBuffers = 1; 
+	m_numVertices = meshInfo.numVertices;
 	//m_iVertexStride = sizeof(VTXMESH);
-	m_iNumIndices = meshInfo.iNumIndices;
-	m_iIndexStride = 4; // ≈©∞‘ 4πŸ¿Ã∆Æ∑Œ ¿‚¿Ω
-	m_ePrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_numIndices = meshInfo.numIndices;
+	m_indexStride = 4; // ÌÅ¨Í≤å 4Î∞îÏù¥Ìä∏Î°ú Ïû°Ïùå
+	m_primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	m_iNumBones = meshInfo.iNumBones;
-	memcpy(&m_szName, &meshInfo.szName, MAX_PATH);
-
-
+	m_numBones = meshInfo.numBones;
+	memcpy(&m_name, &meshInfo.name, MAX_PATH);
 
 
-		m_BoneIndices.reserve(m_iNumBones);
-		m_OffsetMatrices.reserve(m_iNumBones);
 
-		for (size_t i = 0; i < m_iNumBones; ++i)
+
+		m_boneIndices.reserve(m_numBones);
+		m_offsetMatrices.reserve(m_numBones);
+
+		for (size_t i = 0; i < m_numBones; ++i)
 		{
 			Cvt_BoneAdd boneAdd = {};
 			InFile.read(reinterpret_cast<_char*>(&boneAdd), sizeof(Cvt_BoneAdd));
 
-			// µ•¿Ã≈Õ ∫§≈Õø° ∫∏∞¸ (≥™¡ﬂø° Bind_BoneMatricesø°º≠ ªÁøÎ)
-			m_BoneIndices.push_back((_uint)boneAdd.iBoneIndex);
+			// Îç∞Ïù¥ÌÑ∞ Î≤°ÌÑ∞Ïóê Î≥¥Í¥Ä (ÎÇòÏ§ëÏóê Bind_BoneMatricesÏóêÏÑú ÏÇ¨Ïö©)
+			m_boneIndices.push_back((_uint)boneAdd.boneIndex);
 			_float4x4 offset = {  };
-			memcpy(&offset, &boneAdd.OffsetMatrix, sizeof(_float4x4));
-			m_OffsetMatrices.push_back(offset);
+			memcpy(&offset, &boneAdd.offsetMatrix, sizeof(_float4x4));
+			m_offsetMatrices.push_back(offset);
 		}
 	
 
 
 	//vertex Buffer
-	HRESULT hr = MODEL::NONANIM == eType ? Ready_VertexBuffer_For_NonAnim(InFile, PreTransformMatrix)
+	HRESULT hr = EModelType::NONANIM == eType ? Ready_VertexBuffer_For_NonAnim(InFile, PreTransformMatrix)
 		: Ready_VertexBuffer_For_Anim(InFile, pModel);
 
 	if (FAILED(hr))
@@ -62,16 +62,16 @@ HRESULT CMesh::Initialize_Prototype(MODEL eType,
 	//Index Buffer
 
 	D3D11_BUFFER_DESC	IndexBufferDesc{};
-	IndexBufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
+	IndexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
 	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.StructureByteStride = m_iIndexStride;
+	IndexBufferDesc.StructureByteStride = m_indexStride;
 	IndexBufferDesc.CPUAccessFlags = 0;
 	IndexBufferDesc.MiscFlags = 0;
 
 
-	_uint* pIndices = new _uint[m_iNumIndices];
-	InFile.read(reinterpret_cast<_char*>(pIndices), sizeof(_uint) * m_iNumIndices);
+	_uint* pIndices = new _uint[m_numIndices];
+	InFile.read(reinterpret_cast<_char*>(pIndices), sizeof(_uint) * m_numIndices);
 
 	/*_uint	iNumIndices = { 0 };
 
@@ -90,7 +90,7 @@ HRESULT CMesh::Initialize_Prototype(MODEL eType,
 	D3D11_SUBRESOURCE_DATA			IndexInitialData{};
 	IndexInitialData.pSysMem = pIndices;
 
-	if (FAILED(m_pDevice->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_pIB)))
+	if (FAILED(m_device->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_IB)))
 		return E_FAIL;
 
 
@@ -112,18 +112,18 @@ HRESULT CMesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* pConst
 	//ZeroMemory(m_BoneMatrices, sizeof(_float4x4) * 512);
 	for (int i = 0; i < 512; i++)
 	{
-		XMStoreFloat4x4(&m_BoneMatrices[i], XMMatrixIdentity());
+		XMStoreFloat4x4(&m_boneMatrices[i], XMMatrixIdentity());
 	}
-	for(size_t i =0; i<m_iNumBones; i++)
+	for(size_t i =0; i<m_numBones; i++)
 	{
-		XMStoreFloat4x4(&m_BoneMatrices[i], XMLoadFloat4x4(&m_OffsetMatrices[i] )*
-			XMLoadFloat4x4(bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrixPtr()));
+		XMStoreFloat4x4(&m_boneMatrices[i], XMLoadFloat4x4(&m_offsetMatrices[i] )*
+			XMLoadFloat4x4(bones[m_boneIndices[i]]->Get_CombinedTransformationMatrixPtr()));
 		//XMStoreFloat4x4(&m_BoneMatrices[i],
 		//	XMLoadFloat4x4(bones[m_BoneIndices[i]]->Get_CombinedTransformationMatrixPtr()) *
 		//	XMLoadFloat4x4(&m_OffsetMatrices[i]));
 	}
 	
-		return shader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
+		return shader->Bind_Matrices(pConstantName, m_boneMatrices, m_numBones);
 }
 
 
@@ -131,50 +131,50 @@ HRESULT CMesh::Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTran
 {
 	// Vertex Buffer
 
-	m_iVertexStride = sizeof(VTXMESH);
+	m_vertexStride = sizeof(VTXMESH);
 	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
 	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_iVertexStride;
+	VertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // µø¿˚ πˆ∆€«“ãö ¿«πÃ ¿÷¿Ω
-	VertexBufferDesc.MiscFlags = 0; // µø¿˚ πˆ∆€«“ãö ¿«πÃ ¿÷¿Ω
+	VertexBufferDesc.CPUAccessFlags = 0; // ÎèôÏ†Å Î≤ÑÌçºÌï†ÎñÑ ÏùòÎØ∏ ÏûàÏùå
+	VertexBufferDesc.MiscFlags = 0; // ÎèôÏ†Å Î≤ÑÌçºÌï†ÎñÑ ÏùòÎØ∏ ÏûàÏùå
 
 
 	// read
-	Cvt_VTXMESH* tmpVertices = new Cvt_VTXMESH[m_iNumVertices];
-	InFile.read(reinterpret_cast<_char*>(tmpVertices), sizeof(Cvt_VTXMESH) * m_iNumVertices);
+	Cvt_VTXMESH* tmpVertices = new Cvt_VTXMESH[m_numVertices];
+	InFile.read(reinterpret_cast<_char*>(tmpVertices), sizeof(Cvt_VTXMESH) * m_numVertices);
 
 
-	VTXMESH* pVertices = new VTXMESH[m_iNumVertices];
+	VTXMESH* pVertices = new VTXMESH[m_numVertices];
 
-	for (size_t i = 0; i < m_iNumVertices; i++)
+	for (size_t i = 0; i < m_numVertices; i++)
 	{
-		memcpy(&pVertices[i].vPosition, &tmpVertices[i].vPos, sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].vPosition,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PreTransformMatrix));
+		memcpy(&pVertices[i].position, &tmpVertices[i].pos, sizeof(_float3));
+		XMStoreFloat3(&pVertices[i].position,
+			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].position), PreTransformMatrix));
 
-		memcpy(&pVertices[i].vNormal, &tmpVertices[i].vNormal, sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].vNormal,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vNormal), PreTransformMatrix));
+		memcpy(&pVertices[i].normal, &tmpVertices[i].normal, sizeof(_float3));
+		XMStoreFloat3(&pVertices[i].normal,
+			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].normal), PreTransformMatrix));
 
-		memcpy(&pVertices[i].vTangent, &tmpVertices[i].vTangent, sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].vTangent,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vTangent), PreTransformMatrix));
+		memcpy(&pVertices[i].tangent, &tmpVertices[i].tangent, sizeof(_float3));
+		XMStoreFloat3(&pVertices[i].tangent,
+			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].tangent), PreTransformMatrix));
 
-		pVertices[i].vTexcoord.x = tmpVertices[i].vUV[0][0];
-		pVertices[i].vTexcoord.y = tmpVertices[i].vUV[0][1];
+		pVertices[i].texcoord.x = tmpVertices[i].uv[0][0];
+		pVertices[i].texcoord.y = tmpVertices[i].uv[0][1];
 
 		
-		// µ¶Ω∫ƒÌµÂ¥¬ ø©∑Ø∞≥¿œºˆµµ ¿÷¿∏¥œ ¿Ã¬˜πËø≠
-		// «œ≥™¿« ºº∆Æ¿Œµ• πŸµ ø° µ«ª¡Ó , ≥Î∏ª¿« ∏æÁ¿Ã ¥Ÿ∏£¥Ÿ∏È , ≈ÿΩ∫ƒÌµÂ∏¶¥ı º±æ«ÿæﬂ«‘
-		// ≈•∫Í ∂Û¥¯¡ˆ ±◊∞« xyz ¥Ÿ¿÷¿Ω 
+		// Îç±Ïä§Ïø†ÎìúÎäî Ïó¨Îü¨Í∞úÏùºÏàòÎèÑ ÏûàÏúºÎãà Ïù¥Ï∞®Î∞∞Ïó¥
+		// ÌïòÎÇòÏùò ÏÑ∏Ìä∏Ïù∏Îç∞ Î∞îÎîî Ïóê ÎîîÌì®Ï¶à , ÎÖ∏ÎßêÏùò Î™®ÏñëÏù¥ Îã§Î•¥Îã§Î©¥ , ÌÖçÏä§Ïø†ÎìúÎ•ºÎçî ÏÑ†Ïñ∏Ìï¥ÏïºÌï®
+		// ÌÅêÎ∏å ÎùºÎçòÏßÄ Í∑∏Í±¥ xyz Îã§ÏûàÏùå 
 	}
 	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
 	VertexInitialData.pSysMem = pVertices;
 
-	if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
+	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
 		return E_FAIL;
 
 	Safe_Delete_Array(pVertices);
@@ -185,66 +185,66 @@ HRESULT CMesh::Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTran
 
 HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> pModel)
 {
-	m_iVertexStride = sizeof(VTXANIMMESH);
+	m_vertexStride = sizeof(VTXANIMMESH);
 	
 	// Vertex Buffer
 	
 	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
 	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_iVertexStride;
+	VertexBufferDesc.StructureByteStride = m_vertexStride;
 	
-	VertexBufferDesc.CPUAccessFlags = 0; // µø¿˚ πˆ∆€«“ãö ¿«πÃ ¿÷¿Ω
-	VertexBufferDesc.MiscFlags = 0; // µø¿˚ πˆ∆€«“ãö ¿«πÃ ¿÷¿Ω
+	VertexBufferDesc.CPUAccessFlags = 0; // ÎèôÏ†Å Î≤ÑÌçºÌï†ÎñÑ ÏùòÎØ∏ ÏûàÏùå
+	VertexBufferDesc.MiscFlags = 0; // ÎèôÏ†Å Î≤ÑÌçºÌï†ÎñÑ ÏùòÎØ∏ ÏûàÏùå
 	
 
 
 
 	// read
-	Cvt_VTXMESH* tmpVertices = new Cvt_VTXMESH[m_iNumVertices];
-	InFile.read(reinterpret_cast<_char*>(tmpVertices), sizeof(Cvt_VTXMESH) * m_iNumVertices);
+	Cvt_VTXMESH* tmpVertices = new Cvt_VTXMESH[m_numVertices];
+	InFile.read(reinterpret_cast<_char*>(tmpVertices), sizeof(Cvt_VTXMESH) * m_numVertices);
 
 
-	VTXANIMMESH* pVertices = new VTXANIMMESH[m_iNumVertices];
+	VTXANIMMESH* pVertices = new VTXANIMMESH[m_numVertices];
 
-	for (size_t i = 0; i < m_iNumVertices; i++)
+	for (size_t i = 0; i < m_numVertices; i++)
 	{
-		memcpy(&pVertices[i].vPosition, &tmpVertices[i].vPos, sizeof(_float3));
+		memcpy(&pVertices[i].position, &tmpVertices[i].pos, sizeof(_float3));
 		//XMStoreFloat3(&pVertices[i].vPosition,
 		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PreTransformMatrix));
 
-		memcpy(&pVertices[i].vNormal, &tmpVertices[i].vNormal, sizeof(_float3));
+		memcpy(&pVertices[i].normal, &tmpVertices[i].normal, sizeof(_float3));
 		//XMStoreFloat3(&pVertices[i].vNormal,
 		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vNormal), PreTransformMatrix));
 
-		memcpy(&pVertices[i].vTangent, &tmpVertices[i].vTangent, sizeof(_float3));
+		memcpy(&pVertices[i].tangent, &tmpVertices[i].tangent, sizeof(_float3));
 		//XMStoreFloat3(&pVertices[i].vTangent,
 		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vTangent), PreTransformMatrix));
 
-		pVertices[i].vTexcoord.x = tmpVertices[i].vUV[0][0];
-		pVertices[i].vTexcoord.y = tmpVertices[i].vUV[0][1];
+		pVertices[i].texcoord.x = tmpVertices[i].uv[0][0];
+		pVertices[i].texcoord.y = tmpVertices[i].uv[0][1];
 
-		memcpy(&pVertices[i].vBlendIndex, tmpVertices[i].vIndices, sizeof(_uint) * 4);
-		memcpy(&pVertices[i].vBlendWeight, tmpVertices[i].vWeights, sizeof(_float) * 4);
+		memcpy(&pVertices[i].blendIndex, tmpVertices[i].indices, sizeof(_uint) * 4);
+		memcpy(&pVertices[i].blendWeight, tmpVertices[i].weights, sizeof(_float) * 4);
 
 
 	}
 
-	if (0 == m_iNumBones)
+	if (0 == m_numBones)
 	{
 
-		m_BoneIndices.push_back(pModel->Get_BoneIndex(m_szName));
+		m_boneIndices.push_back(pModel->Get_BoneIndex(m_name));
 
-		m_iNumBones = 1;
+		m_numBones = 1;
 
 		_float4x4		OffsetMatrix = {};
 		XMStoreFloat4x4(&OffsetMatrix, XMMatrixIdentity());
 
-		m_OffsetMatrices.push_back(OffsetMatrix);
-		for (size_t i = 0; i < m_iNumVertices; ++i) {
-			pVertices[i].vBlendIndex = { 0, 0, 0, 0 }; // ºŒ¿Ã¥ı∞° µ˝µ• æ» ∞°∞‘ ∞Ì¡§
-			pVertices[i].vBlendWeight = _float4(0.f, 0.f, 0.f, 0.f); // x,y,z∞° 0¿Ã∏È fWeightW∞° 1¿Ã µ 
+		m_offsetMatrices.push_back(OffsetMatrix);
+		for (size_t i = 0; i < m_numVertices; ++i) {
+			pVertices[i].blendIndex = { 0, 0, 0, 0 }; // ÏÖ∞Ïù¥ÎçîÍ∞Ä Îî¥Îç∞ Ïïà Í∞ÄÍ≤å Í≥†Ï†ï
+			pVertices[i].blendWeight = _float4(0.f, 0.f, 0.f, 0.f); // x,y,zÍ∞Ä 0Ïù¥Î©¥ fWeightWÍ∞Ä 1Ïù¥ Îê®
 		}
 		}
 
@@ -252,16 +252,16 @@ HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> 
 	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
 	VertexInitialData.pSysMem = pVertices;
 
-	if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
+	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
 		return E_FAIL;
 
 
 	//for (size_t i = 0; i < m_iNumBones; i++)
 	//{
-	//	// ¿Ã ∏ﬁΩ¨∞° ªÁøÎ«œ¥¬ ª¿¿« ¿Ã∏ß¿ª ¿–∞≈≥™ ¿Œµ¶Ω∫∏¶ ¿–æÓº≠ pModelø°º≠ √£æ∆æﬂ «’¥œ¥Ÿ.
-	//	// (∏∏æ‡ ƒ¡πˆ≈Õø°º≠ ∫ª ¿Œµ¶Ω∫∏¶ ¿˙¿Â«ﬂ¥Ÿ∏È ¿Œµ¶Ω∫∏¶ ¿–¿∏ººø‰)
+	//	// Ïù¥ Î©îÏâ¨Í∞Ä ÏÇ¨Ïö©ÌïòÎäî ÎºàÏùò Ïù¥Î¶ÑÏùÑ ÏùΩÍ±∞ÎÇò Ïù∏Îç±Ïä§Î•º ÏùΩÏñ¥ÏÑú pModelÏóêÏÑú Ï∞æÏïÑÏïº Ìï©ÎãàÎã§.
+	//	// (ÎßåÏïΩ Ïª®Î≤ÑÌÑ∞ÏóêÏÑú Î≥∏ Ïù∏Îç±Ïä§Î•º Ï†ÄÏû•ÌñàÎã§Î©¥ Ïù∏Îç±Ïä§Î•º ÏùΩÏúºÏÑ∏Ïöî)
 
-	//	// øπΩ√: ª¿¿« ¿Œµ¶Ω∫øÕ OffsetMatrix∏¶ ¿–¥¬ ∞ÊøÏ
+	//	// ÏòàÏãú: ÎºàÏùò Ïù∏Îç±Ïä§ÏôÄ OffsetMatrixÎ•º ÏùΩÎäî Í≤ΩÏö∞
 	//	
 
 	//	m_BoneIndices.push_back(tmpVertices->vIndices);
@@ -277,7 +277,7 @@ HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> 
 
 }
 
-shared_ptr<CMesh> CMesh::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, MODEL eType, ifstream& InFile , shared_ptr<CModel> pModel, _fmatrix PreTransformMatrix)
+shared_ptr<CMesh> CMesh::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, EModelType eType, ifstream& InFile , shared_ptr<CModel> pModel, _fmatrix PreTransformMatrix)
 {
     shared_ptr<CMesh> pInstance(new CMesh(pDevice, pContext), [](CMesh* p) {p->Free(); delete p;});
 

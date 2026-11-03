@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 
@@ -31,19 +31,19 @@ public:
 protected:
 
 private:
-	ComPtr<ID3D11Device> m_pDevice = { nullptr };
-	ComPtr <ID3D11DeviceContext> m_pContext = { nullptr };
+	ComPtr<ID3D11Device> m_device = { nullptr };
+	ComPtr <ID3D11DeviceContext> m_context = { nullptr };
 
 private:
-	map<const _wstring, shared_ptr<class CRenderTarget>> m_RenderTargets;
+	map<const _wstring, shared_ptr<class CRenderTarget>> m_renderTargets;
 	map<const _wstring, list<shared_ptr<class CRenderTarget>>> m_MRTs;
 
 
 	list<shared_ptr<class CRenderTarget>>* Find_MRT(const _wstring& strMRTTag);
 
 private:
-	ComPtr<ID3D11RenderTargetView> m_pBackBuffer = { nullptr };
-	ComPtr<ID3D11DepthStencilView> m_pOriginalDSV = { nullptr };
+	ComPtr<ID3D11RenderTargetView> m_backBuffer = { nullptr };
+	ComPtr<ID3D11DepthStencilView> m_originalDSV = { nullptr };
 private:
 	shared_ptr<class CRenderTarget> Find_RenderTarget(const _wstring& strTargetTag);
 public:

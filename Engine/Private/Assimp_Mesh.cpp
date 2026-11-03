@@ -1,4 +1,4 @@
-#include "Assimp_Mesh.h"
+ï»¿#include "Assimp_Mesh.h"
 #include "Assimp_Model.h"
 #include "Shader.h"
 
@@ -12,19 +12,19 @@ CAssimp_Mesh::CAssimp_Mesh(const CAssimp_Mesh& Prototype)
 {
 }
 
-HRESULT CAssimp_Mesh::Initialize_Prototype(MODEL eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix)
+HRESULT CAssimp_Mesh::Initialize_Prototype(EModelType eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix)
 {
-	m_iMaterialIndex = pAIMesh->mMaterialIndex;
+	m_materialIndex = pAIMesh->mMaterialIndex;
 	
-	m_iNumVertexBuffers = 1; 
-	m_iNumVertices = pAIMesh->mNumVertices;
+	m_numVertexBuffers = 1; 
+	m_numVertices = pAIMesh->mNumVertices;
 	//m_iVertexStride = sizeof(VTXMESH);
-	m_iNumIndices = pAIMesh->mNumFaces * 3;// mNumFaces »ï°¢ÇöÀÌµç »ç°¢ÇüÀÌµç ÇÑ ¸éÀÇ°¹¼ö ¿ì¸®´Â »ï°¢ÇüÀÌ´Ï±î *3 ÇÏ¸é ÀÎµ¦½º 
-	m_iIndexStride = 4; // Å©°Ô 4¹ÙÀÌÆ®·Î ÀâÀ½
-	m_ePrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_numIndices = pAIMesh->mNumFaces * 3;// mNumFaces ì‚¼ê°í˜„ì´ë“  ì‚¬ê°í˜•ì´ë“  í•œ ë©´ì˜ê°¯ìˆ˜ ìš°ë¦¬ëŠ” ì‚¼ê°í˜•ì´ë‹ˆê¹Œ *3 í•˜ë©´ ì¸ë±ìŠ¤ 
+	m_indexStride = 4; // í¬ê²Œ 4ë°”ì´íŠ¸ë¡œ ì¡ìŒ
+	m_primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	//vertex Buffer
-	HRESULT hr = MODEL::NONANIM == eType ? Ready_VertexBuffer_For_NonAnim(pAIMesh, PreTransformMatrix)
+	HRESULT hr = EModelType::NONANIM == eType ? Ready_VertexBuffer_For_NonAnim(pAIMesh, PreTransformMatrix)
 		: Ready_VertexBuffer_For_Anim(pAIMesh, pModel);
 
 	if (FAILED(hr))
@@ -33,16 +33,16 @@ HRESULT CAssimp_Mesh::Initialize_Prototype(MODEL eType, const aiMesh* pAIMesh, s
 	//Index Buffer
 
 	D3D11_BUFFER_DESC	IndexBufferDesc{};
-	IndexBufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
+	IndexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
 	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.StructureByteStride = m_iIndexStride;
+	IndexBufferDesc.StructureByteStride = m_indexStride;
 	IndexBufferDesc.CPUAccessFlags = 0;
 	IndexBufferDesc.MiscFlags = 0;
 
 	_uint	iNumIndices = { 0 };
 
-	_uint* pIndices = new _uint[m_iNumIndices];
+	_uint* pIndices = new _uint[m_numIndices];
 
 	for (_uint i = 0; i < pAIMesh->mNumFaces; i++)
 	{
@@ -58,7 +58,7 @@ HRESULT CAssimp_Mesh::Initialize_Prototype(MODEL eType, const aiMesh* pAIMesh, s
 	D3D11_SUBRESOURCE_DATA			IndexInitialData{};
 	IndexInitialData.pSysMem = pIndices;
 
-	if (FAILED(m_pDevice->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_pIB)))
+	if (FAILED(m_device->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_IB)))
 		return E_FAIL;
 
 
@@ -77,60 +77,60 @@ HRESULT CAssimp_Mesh::Initialize(void* pArg)
 HRESULT CAssimp_Mesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* pConstantName,
 	const vector<shared_ptr<CAssimp_Bone>>& bones)
 {
-	ZeroMemory(m_BoneMatrices, sizeof(_float4x4) * 512);
+	ZeroMemory(m_boneMatrices, sizeof(_float4x4) * 512);
 
-	for(size_t i =0; i<m_iNumBones; i++)
+	for(size_t i =0; i<m_numBones; i++)
 	{
-		XMStoreFloat4x4(&m_BoneMatrices[i], XMLoadFloat4x4(&m_OffsetMatrices[i] )*
-			XMLoadFloat4x4(bones[m_BoneIndices[i]]->Get_m_CombinedTransformationMatrixPtr()));
+		XMStoreFloat4x4(&m_boneMatrices[i], XMLoadFloat4x4(&m_offsetMatrices[i] )*
+			XMLoadFloat4x4(bones[m_boneIndices[i]]->Get_m_CombinedTransformationMatrixPtr()));
 	}
 	
-		return shader->Bind_Matrices(pConstantName, m_BoneMatrices, m_iNumBones);
+		return shader->Bind_Matrices(pConstantName, m_boneMatrices, m_numBones);
 }
 
 
 HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_NonAnim(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix)
 {
-	m_iVertexStride = sizeof(VTXMESH);
+	m_vertexStride = sizeof(VTXMESH);
 
 	// Vertex Buffer
 
 	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
 	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_iVertexStride;
+	VertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
-	VertexBufferDesc.MiscFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
+	VertexBufferDesc.CPUAccessFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìˆìŒ
+	VertexBufferDesc.MiscFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìˆìŒ
 
-	VTXMESH* pVertices = new VTXMESH[m_iNumVertices];
+	VTXMESH* pVertices = new VTXMESH[m_numVertices];
 
-	for (size_t i = 0; i < m_iNumVertices; i++)
+	for (size_t i = 0; i < m_numVertices; i++)
 	{
-		memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].vPosition,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PreTransformMatrix));
+		memcpy(&pVertices[i].position, &pAIMesh->mVertices[i], sizeof(_float3));
+		XMStoreFloat3(&pVertices[i].position,
+			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].position), PreTransformMatrix));
 
-		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].vNormal,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vNormal), PreTransformMatrix));
+		memcpy(&pVertices[i].normal, &pAIMesh->mNormals[i], sizeof(_float3));
+		XMStoreFloat3(&pVertices[i].normal,
+			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].normal), PreTransformMatrix));
 
-		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].vTangent,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vTangent), PreTransformMatrix));
+		memcpy(&pVertices[i].tangent, &pAIMesh->mTangents[i], sizeof(_float3));
+		XMStoreFloat3(&pVertices[i].tangent,
+			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].tangent), PreTransformMatrix));
 
-		memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+		memcpy(&pVertices[i].texcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
 
 		
-		// µ¦½ºÄíµå´Â ¿©·¯°³ÀÏ¼öµµ ÀÖÀ¸´Ï ÀÌÂ÷¹è¿­
-		// ÇÏ³ªÀÇ ¼¼Æ®ÀÎµ¥ ¹Ùµğ ¿¡ µğÇ»Áî , ³ë¸»ÀÇ ¸ğ¾çÀÌ ´Ù¸£´Ù¸é , ÅØ½ºÄíµå¸¦´õ ¼±¾ğÇØ¾ßÇÔ
-		// Å¥ºê ¶ó´øÁö ±×°Ç xyz ´ÙÀÖÀ½ 
+		// ë±ìŠ¤ì¿ ë“œëŠ” ì—¬ëŸ¬ê°œì¼ìˆ˜ë„ ìˆìœ¼ë‹ˆ ì´ì°¨ë°°ì—´
+		// í•˜ë‚˜ì˜ ì„¸íŠ¸ì¸ë° ë°”ë”” ì— ë””í“¨ì¦ˆ , ë…¸ë§ì˜ ëª¨ì–‘ì´ ë‹¤ë¥´ë‹¤ë©´ , í…ìŠ¤ì¿ ë“œë¥¼ë” ì„ ì–¸í•´ì•¼í•¨
+		// íë¸Œ ë¼ë˜ì§€ ê·¸ê±´ xyz ë‹¤ìˆìŒ 
 	}
 	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
 	VertexInitialData.pSysMem = pVertices;
 
-	if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
+	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
 		return E_FAIL;
 
 	Safe_Delete_Array(pVertices);
@@ -149,48 +149,48 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 	vector<vector<WeightData>> tempWeights(m_iNumVertices);*/
 
 
-	m_iVertexStride = sizeof(VTXANIMMESH);
+	m_vertexStride = sizeof(VTXANIMMESH);
 
 	// Vertex Buffer
 
 	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
 	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_iVertexStride;
+	VertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
-	VertexBufferDesc.MiscFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
+	VertexBufferDesc.CPUAccessFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìˆìŒ
+	VertexBufferDesc.MiscFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìˆìŒ
 
-	VTXANIMMESH* pVertices = new VTXANIMMESH[m_iNumVertices];
-	ZeroMemory(pVertices, sizeof(VTXANIMMESH) * m_iNumVertices);
+	VTXANIMMESH* pVertices = new VTXANIMMESH[m_numVertices];
+	ZeroMemory(pVertices, sizeof(VTXANIMMESH) * m_numVertices);
 
-	for (size_t i = 0; i < m_iNumVertices; i++)
+	for (size_t i = 0; i < m_numVertices; i++)
 	{
-		memcpy(&pVertices[i].vPosition, &pAIMesh->mVertices[i], sizeof(_float3));
+		memcpy(&pVertices[i].position, &pAIMesh->mVertices[i], sizeof(_float3));
 		
-		memcpy(&pVertices[i].vNormal, &pAIMesh->mNormals[i], sizeof(_float3));
+		memcpy(&pVertices[i].normal, &pAIMesh->mNormals[i], sizeof(_float3));
 		
-		memcpy(&pVertices[i].vTangent, &pAIMesh->mTangents[i], sizeof(_float3));
+		memcpy(&pVertices[i].tangent, &pAIMesh->mTangents[i], sizeof(_float3));
 
-		memcpy(&pVertices[i].vTexcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+		memcpy(&pVertices[i].texcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
 
-		// µ¦½ºÄíµå´Â ¿©·¯°³ÀÏ¼öµµ ÀÖÀ¸´Ï ÀÌÂ÷¹è¿­
-		// ÇÏ³ªÀÇ ¼¼Æ®ÀÎµ¥ ¹Ùµğ ¿¡ µğÇ»Áî , ³ë¸»ÀÇ ¸ğ¾çÀÌ ´Ù¸£´Ù¸é , ÅØ½ºÄíµå¸¦´õ ¼±¾ğÇØ¾ßÇÔ
-		// Å¥ºê ¶ó´øÁö ±×°Ç xyz ´ÙÀÖÀ½ 
+		// ë±ìŠ¤ì¿ ë“œëŠ” ì—¬ëŸ¬ê°œì¼ìˆ˜ë„ ìˆìœ¼ë‹ˆ ì´ì°¨ë°°ì—´
+		// í•˜ë‚˜ì˜ ì„¸íŠ¸ì¸ë° ë°”ë”” ì— ë””í“¨ì¦ˆ , ë…¸ë§ì˜ ëª¨ì–‘ì´ ë‹¤ë¥´ë‹¤ë©´ , í…ìŠ¤ì¿ ë“œë¥¼ë” ì„ ì–¸í•´ì•¼í•¨
+		// íë¸Œ ë¼ë˜ì§€ ê·¸ê±´ xyz ë‹¤ìˆìŒ 
 	}
 
-		m_iNumBones = pAIMesh->mNumBones;
+		m_numBones = pAIMesh->mNumBones;
 
-	for (size_t i = 0; i < m_iNumBones; i++)
+	for (size_t i = 0; i < m_numBones; i++)
 	{
 		aiBone* pAIBone = pAIMesh->mBones[i];
 
-		_int iBoneIndex = pModel->Get_BoneIndex(pAIBone->mName.data);//(ÀÌ°Ç ÀüÃ¼ ±âÁØ º» ÀÎµ¦½º)
+		_int iBoneIndex = pModel->Get_BoneIndex(pAIBone->mName.data);//(ì´ê±´ ì „ì²´ ê¸°ì¤€ ë³¸ ì¸ë±ìŠ¤)
 		if (-1 == iBoneIndex)
 			return E_FAIL;
 
-		m_BoneIndices.push_back(iBoneIndex); // ¿©±â ³ÖÀº ¼ø¼­°¡ ¸Ş½¬±âÁØ º» ÀÎ´ì½º ÀÓ 
+		m_boneIndices.push_back(iBoneIndex); // ì—¬ê¸° ë„£ì€ ìˆœì„œê°€ ë©”ì‰¬ê¸°ì¤€ ë³¸ ì¸ëŒìŠ¤ ì„ 
 
 		// set offset once in initialize 
 		_float4x4 OffsetMatrix = {};
@@ -198,33 +198,33 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 		memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
 		XMStoreFloat4x4(&OffsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
 
-		m_OffsetMatrices.push_back(OffsetMatrix);
+		m_offsetMatrices.push_back(OffsetMatrix);
 
 
-		//pAIBone->mNumWeights ÀÌ »À°¡ ¸î°³ÀÇ Á¤Á¡¿¡ ¿µÇâÀ» ÁÖ´Â°¡
+		//pAIBone->mNumWeights ì´ ë¼ˆê°€ ëª‡ê°œì˜ ì •ì ì— ì˜í–¥ì„ ì£¼ëŠ”ê°€
 		for (size_t j = 0; j < pAIBone->mNumWeights; j++)
 		{
 			aiVertexWeight AIVertexWeight = pAIBone->mWeights[j];
 
-			if(0== pVertices[AIVertexWeight.mVertexId].vBlendWeight.x) //pVertices[AIVertexWeight.mVertexId] ¿¡ ÀÌ¹ÌÀûÇô ÀÖ´ÂÁö ¾ø´ÂÁö È®ÀÎ¿ë
+			if(0== pVertices[AIVertexWeight.mVertexId].blendWeight.x) //pVertices[AIVertexWeight.mVertexId] ì— ì´ë¯¸ì í˜€ ìˆëŠ”ì§€ ì—†ëŠ”ì§€ í™•ì¸ìš©
 			{
-				pVertices[AIVertexWeight.mVertexId].vBlendIndex.x = i;  // »ÀÀÇ ÀÎ´ì½º (¸Ş½¬ ±âÁØ)
-				pVertices[AIVertexWeight.mVertexId].vBlendWeight.x = AIVertexWeight.mWeight;
+				pVertices[AIVertexWeight.mVertexId].blendIndex.x = i;  // ë¼ˆì˜ ì¸ëŒìŠ¤ (ë©”ì‰¬ ê¸°ì¤€)
+				pVertices[AIVertexWeight.mVertexId].blendWeight.x = AIVertexWeight.mWeight;
 			}
-			else if(0 == pVertices[AIVertexWeight.mVertexId].vBlendWeight.y)
+			else if(0 == pVertices[AIVertexWeight.mVertexId].blendWeight.y)
 			{
-				pVertices[AIVertexWeight.mVertexId].vBlendIndex.y = i;
-				pVertices[AIVertexWeight.mVertexId].vBlendWeight.y = AIVertexWeight.mWeight;
+				pVertices[AIVertexWeight.mVertexId].blendIndex.y = i;
+				pVertices[AIVertexWeight.mVertexId].blendWeight.y = AIVertexWeight.mWeight;
 			}
-			else if (0 == pVertices[AIVertexWeight.mVertexId].vBlendWeight.z)
+			else if (0 == pVertices[AIVertexWeight.mVertexId].blendWeight.z)
 			{
-				pVertices[AIVertexWeight.mVertexId].vBlendIndex.z = i;
-				pVertices[AIVertexWeight.mVertexId].vBlendWeight.z = AIVertexWeight.mWeight;
+				pVertices[AIVertexWeight.mVertexId].blendIndex.z = i;
+				pVertices[AIVertexWeight.mVertexId].blendWeight.z = AIVertexWeight.mWeight;
 			}
-			else if (0 == pVertices[AIVertexWeight.mVertexId].vBlendWeight.w)
+			else if (0 == pVertices[AIVertexWeight.mVertexId].blendWeight.w)
 			{
-				pVertices[AIVertexWeight.mVertexId].vBlendIndex.w = i;
-				pVertices[AIVertexWeight.mVertexId].vBlendWeight.w = AIVertexWeight.mWeight;
+				pVertices[AIVertexWeight.mVertexId].blendIndex.w = i;
+				pVertices[AIVertexWeight.mVertexId].blendWeight.w = AIVertexWeight.mWeight;
 			}
 			//int vtxId = AIVertexWeight.mVertexId;
 
@@ -236,13 +236,13 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 	//{
 	//	auto& weights = tempWeights[i];
 
-	//	// Å« weight ¼øÀ¸·Î Á¤·Ä
+	//	// í° weight ìˆœìœ¼ë¡œ ì •ë ¬
 	//	sort(weights.begin(), weights.end(), [](auto& a, auto& b)
 	//		{
 	//			return a.weight > b.weight;
 	//		});
 
-	//	// »óÀ§ 4°³¸¸ »ç¿ë
+	//	// ìƒìœ„ 4ê°œë§Œ ì‚¬ìš©
 	//	for (int k = 0; k < 4 && k < weights.size(); k++)
 	//	{
 	//		switch (k)
@@ -288,7 +288,7 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
 	VertexInitialData.pSysMem = pVertices;
 
-	if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
+	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
 		return E_FAIL;
 
 	Safe_Delete_Array(pVertices);
@@ -297,7 +297,7 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 
 }
 
-shared_ptr<CAssimp_Mesh> CAssimp_Mesh::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, MODEL eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix)
+shared_ptr<CAssimp_Mesh> CAssimp_Mesh::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, EModelType eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix)
 {
     shared_ptr<CAssimp_Mesh> pInstance(new CAssimp_Mesh(pDevice, pContext), [](CAssimp_Mesh* p) {p->Free(); delete p;});
 

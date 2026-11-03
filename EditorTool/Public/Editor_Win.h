@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Editor_Define.h"
 
 NS_BEGIN(Editor)
@@ -11,16 +11,16 @@ public:
 
     virtual HRESULT Initialize() ;
     virtual void Update(float fTimeDelta) ;
-    virtual void Render() ; // ¿©±â¼­ ImGui ÄÚµå¸¦ ÀÛ¼ºÇÕ´Ï´Ù.
+    virtual void Render() ; // ì—¬ê¸°ì„œ ImGui ì½”ë“œë¥¼ ì‘ì„±í•©ë‹ˆë‹¤.
 
 
 public:
-    bool* Get_OpenPtr() { return &m_bOpen; }
-    _string Get_Name() { return m_strName; }
+    bool* Get_OpenPtr() { return &m_isOpen; }
+    _string Get_Name() { return m_name; }
 
 protected:
-    _string m_strName; // Ã¢ÀÇ °íÀ¯ ÀÌ¸§ (ID °â¿ë)
-    bool m_bOpen = true;
+    _string m_name; // ì°½ì˜ ê³ ìœ  ì´ë¦„ (ID ê²¸ìš©)
+    bool m_isOpen = true;
 
 public:
     virtual void Free();

@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "UI.h"
 
 
@@ -9,15 +9,15 @@ class ENGINE_DLL CUIText :
     public CUI
 {
 public:
-    enum class FONTALINE { CENTER, RIGHT, LEFT, BOTTOM, UP,DEFAULT, END };
+    enum class EFontAlign { CENTER, RIGHT, LEFT, BOTTOM, UP,DEFAULT, END };
 
-    struct TEXT_DESC : public CUI::UI_DESC
+    struct TextDesc : public CUI::UIDesc
     {
-        _wstring strText = L"";
-        _wstring strFontTag = L"DefaultFont";
-        _float4 TextColor = _float4{ 1.f, 1.f, 1.f, 1.f };
+        _wstring text = L"";
+        _wstring fontTag = L"DefaultFont";
+        _float4 textColor = _float4{ 1.f, 1.f, 1.f, 1.f };
         //_bool Center = true;
-        FONTALINE fontaline = FONTALINE::CENTER;
+        EFontAlign fontAlign = EFontAlign::CENTER;
     };
 protected:
     CUIText(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -40,11 +40,11 @@ public:
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 
-    _float2 Get_TextSize() { return m_TextSize; }
+    _float2 Get_TextSize() { return m_textSize; }
 
-    void Set_Text(const _wstring& text) {m_strText = text; m_IsChangeText = true; m_TextSize = m_pGameInstance.lock()->Measure_String(m_strFontTag, m_strText.c_str());
+    void Set_Text(const _wstring& text) {m_text = text; m_isChangeText = true; m_textSize = m_gameInstance.lock()->Measure_String(m_fontTag, m_text.c_str());
     }
-    void Set_TextColor(const _float4 TextColor) { m_vTextColor = TextColor; }
+    void Set_TextColor(const _float4 TextColor) { m_textColor = TextColor; }
     /// <IMGUI>
     virtual void OnGui() override;
 
@@ -52,13 +52,13 @@ public:
 public:
  
 private:
-    _wstring m_strText = L"";
-    _wstring m_strFontTag = L"DefaultFont";
-    _float4 m_vTextColor = { 1.f, 1.f, 1.f, 1.f }; // ±‚∫ª »Úªˆ
+    _wstring m_text = L"";
+    _wstring m_fontTag = L"DefaultFont";
+    _float4 m_textColor = { 1.f, 1.f, 1.f, 1.f }; // Í∏∞Î≥∏ Ìù∞ÏÉâ
     //_bool m_bCenter = true;
-    FONTALINE m_FontAline = FONTALINE::END;
-    _float2 m_TextSize = {};
-    _bool m_IsChangeText = {true};
+    EFontAlign m_fontAline = EFontAlign::END;
+    _float2 m_textSize = {};
+    _bool m_isChangeText = {true};
 protected:
 
 public:

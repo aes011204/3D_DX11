@@ -17,7 +17,7 @@ HRESULT CTimer_Manager::Add_Timer(const _wstring& timerTag)
     if (nullptr == timer)
         return E_FAIL;
 
-    m_Timers.emplace( timerTag, timer );
+    m_timers.emplace( timerTag, timer );
 
     return S_OK;
 }
@@ -38,9 +38,9 @@ shared_ptr<CTimer> CTimer_Manager::Find_Timer(const _wstring& timerTag)
         = find_if(m_Timers.begin(), m_Timers.end(), CTag_Finder(move(timerTag)));*/
    
 	// wstring 으로 바꿔서 이제find() 가능 이진탐색
-    auto it = m_Timers.find(timerTag);
+    auto it = m_timers.find(timerTag);
 
-    if (it == m_Timers.end())
+    if (it == m_timers.end())
         return nullptr;
 
     return it->second;
@@ -58,6 +58,6 @@ void CTimer_Manager::Free()
 
     //for (auto& Pair : m_Timers)
     //    Safe_Release(Pair.second); // 실제 안의 내용을 삭제 변경 해야 하므로 참조로 받아옴
-    m_Timers.clear();
+    m_timers.clear();
 }
 

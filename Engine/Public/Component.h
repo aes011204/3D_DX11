@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
@@ -22,26 +22,26 @@ public:
     virtual HRESULT Render() { return S_OK; };
 
     HRESULT Set_Owner(shared_ptr<CEntity> pOwner);
-    shared_ptr<CUI> Get_UOwner() { return m_pUOwner.lock(); }
-    shared_ptr<CGameObject> Get_GOwner() { return m_pGOwner.lock(); }
+    shared_ptr<CUI> Get_UOwner() { return m_UOwner.lock(); }
+    shared_ptr<CGameObject> Get_GOwner() { return m_GOwner.lock(); }
 
     virtual void Save_ToJson(nlohmann::json& j) {};
 
 protected:
-    ComPtr<ID3D11Device> m_pDevice = { nullptr };
-    ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-    weak_ptr<class CGameInstance> m_pGameInstance = {};
+    ComPtr<ID3D11Device> m_device = { nullptr };
+    ComPtr<ID3D11DeviceContext> m_context = { nullptr };
+    weak_ptr<class CGameInstance> m_gameInstance = {};
 
 
     _bool m_isCloned = { false };
 protected:
-    weak_ptr<CGameObject> m_pGOwner = {};
-    CTransform* m_pGOwnerTransform = {nullptr};
+    weak_ptr<CGameObject> m_GOwner = {};
+    CTransform* m_GOwnerTransform = {nullptr};
 
-    weak_ptr<CUI> m_pUOwner = {};
-    CUITransform* m_pUOwnerUITransform = {nullptr};
+    weak_ptr<CUI> m_UOwner = {};
+    CUITransform* m_UOwnerUITransform = {nullptr};
 public:
-    //void* pArg : »çº»°´Ã¼ÀÇ Ãß°¡ÀûÀÎ ÃÊ±âÈ­°¡ ÇÊ¿ä ÇÒ¼ö ÀÖÀ½ ·±Å¸ÀÓ ÇÒ´ç µÇ´Â ÁÖ¼Ò °°Àº°Å
+    //void* pArg : ì‚¬ë³¸ê°ì²´ì˜ ì¶”ê°€ì ì¸ ì´ˆê¸°í™”ê°€ í•„ìš” í• ìˆ˜ ìˆìŒ ëŸ°íƒ€ì„ í• ë‹¹ ë˜ëŠ” ì£¼ì†Œ ê°™ì€ê±°
     virtual shared_ptr<CComponent> Clone(void* pArg) = 0;
 
 	void Free() override;

@@ -34,7 +34,7 @@ void CPlayer_Village::Enter()
 	{
 		// 시간 6시로
 
-		 m_pGameInstance.lock()->Set_TOD01(0.25);
+		 m_gameInstance.lock()->Set_TOD01(0.25);
 
 		 //Evt_ChangeCam event = {};
 		 //auto pLerp = make_shared<CAM_LERP_DESC>();
@@ -207,7 +207,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 		if(IsSleep == true)
 		{
 			CUI_Controller::GetInstance()->InActiveTime();
-			m_pGameInstance.lock()->Play_Once(L"Hold_Complete");
+			m_gameInstance.lock()->Play_Once(L"Hold_Complete");
 			return ETOI(eNextState);
 		}
 

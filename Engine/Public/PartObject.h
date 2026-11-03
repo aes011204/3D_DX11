@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 
 
@@ -9,9 +9,9 @@ class ENGINE_DLL CPartObject abstract:
 
 {
 public:
-    struct PARTOBJ_DESC : public CGameObject::GAMEOBJECT_DESC
+    struct PartObjDesc : public CGameObject::GameObjectDesc
     {
-        const _float4x4* pParentMatrix = {nullptr};
+        const _float4x4* parentMatrix = {nullptr};
     };
 protected:
     CPartObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -27,16 +27,16 @@ public:
     virtual HRESULT Render();
 
 protected:
-    const _float4x4* m_pParentMatrix = { nullptr };
-    _float4x4 m_CombinedWorldMatrix = {};
+    const _float4x4* m_parentMatrix = { nullptr };
+    _float4x4 m_combinedWorldMatrix = {};
 
 protected:
    void Update_CombinedWorldMatirix(_fmatrix ChildrenMatrix)
    {
-       XMStoreFloat4x4(&m_CombinedWorldMatrix, ChildrenMatrix * XMLoadFloat4x4(m_pParentMatrix));
+       XMStoreFloat4x4(&m_combinedWorldMatrix, ChildrenMatrix * XMLoadFloat4x4(m_parentMatrix));
    }
 public:
-    //void* pArg : »çº»°´Ã¼ÀÇ Ãß°¡ÀûÀÎ ÃÊ±âÈ­°¡ ÇÊ¿ä ÇÒ¼ö ÀÖÀ½ ·±Å¸ÀÓ ÇÒ´ç µÇ´Â ÁÖ¼Ò °°Àº°Å
+    //void* pArg : ì‚¬ë³¸ê°ì²´ì˜ ì¶”ê°€ì ì¸ ì´ˆê¸°í™”ê°€ í•„ìš” í• ìˆ˜ ìˆìŒ ëŸ°íƒ€ì„ í• ë‹¹ ë˜ëŠ” ì£¼ì†Œ ê°™ì€ê±°
     virtual shared_ptr<CGameObject> Clone(void* pArg)=0;
     void Free() override;
 };

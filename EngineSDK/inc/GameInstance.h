@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "Light.h"
 #include "Prototype_Manager.h"
 
@@ -22,11 +22,11 @@ public:
 	virtual ~CGameInstance();
 
 public:
-	HRESULT Initialize_Engine(const ENGINE_DESC& EngineDesc, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppContext);
+	HRESULT Initialize_Engine(const EngineDesc& engineDesc, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppContext);
 	void Update_Engine(float fTimeDelta);
 	void Draw();
 
-    struct FRAME_TIMINGS
+    struct FrameTimings
     {
         double updateMs = 0.0;
         double uiPrepareMs = 0.0;
@@ -38,7 +38,7 @@ public:
         double seaGpuMs = 0.0;
         bool seaGpuReady = false;
     };
-    const FRAME_TIMINGS& Get_FrameTimings() const { return m_frameTimings; }
+    const FrameTimings& Get_FrameTimings() const { return m_frameTimings; }
 
 	void Clear_Resources(_uint iLevelIndex);
 
@@ -47,12 +47,12 @@ public:
 
 	void SetImguiContext(ImGuiContext* imgContext);
 
-	bool m_bDebug = {true};
-	_float3 m_SyColor = {};
-	bool Get_IsDebug() { return m_bDebug; };
+	bool m_isDebug = {true};
+	_float3 m_syColor = {};
+	bool Get_IsDebug() { return m_isDebug; };
 
-	const _float3& Get_SkyColor() const{return m_SyColor;}
-	void Set_SkyColor(const _float3& vColor){m_SyColor = vColor;}
+	const _float3& Get_SkyColor() const{return m_syColor;}
+	void Set_SkyColor(const _float3& vColor){m_syColor = vColor;}
 public:  /* For.Graphic_Device */
 	HRESULT Clear_Buffers(const _float4* pClearColor);
 	HRESULT Bind_BackBufferRenderTarget(HWND hwnd);
@@ -70,7 +70,7 @@ public:/* For.levelManager*/
 
 public: /* For.PrototypeManager*/
 	HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
-	shared_ptr<CBase> Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);;
+	shared_ptr<CBase> Clone_Prototype(EPrototype ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);;
 	//shared_ptr<CBase> Get_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);;
 
 public: /*For.GameObject_Manager*/
@@ -80,7 +80,7 @@ public: /*For.GameObject_Manager*/
 
 public:
 	/*For.Renderer*/
-	void Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<class CEntity> pNTT);
+	void Add_RenderGroup(ERenderGroup eRenderGroup, shared_ptr<class CEntity> pNTT);
 	void Add_DebugenderGroup(shared_ptr<CComponent> pDebugComponent);
 
 public: /*For.Editor*/
@@ -94,40 +94,40 @@ public: /*For.Editor*/
 	void Push_ManagerClass(_wstring strKey, CBase* ManagerClass);
 
 public:/*For.UI_Manager*/
-	void UI_Push(UI_LAYER layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);
-	void UI_Pop(UI_LAYER layer, wstring type); // ∑π¿ÃæÓø°º≠ ≥÷ûZ¥Ÿ ñP¥Ÿ«œ¥¬∞« æ»æ∏ 
-	void UI_Detach_All(); // æ¿ ¿¸»Ø «“ãö ∑π¿ÃæÓø° ¿÷¥¬∞≈ ∞¥√º∏¶ ¡ˆøÏ¥œ±Ó ±◊¿¸ø° 
+	void UI_Push(EUILayer layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);
+	void UI_Pop(EUILayer layer, wstring type); // Î†àÏù¥Ïñ¥ÏóêÏÑú ÎÑ£Ïñ∂Îã§ ÎªáÎã§ÌïòÎäîÍ±¥ ÏïàÏîÄ 
+	void UI_Detach_All(); // Ïî¨ Ï†ÑÌôò Ìï†ÎñÑ Î†àÏù¥Ïñ¥Ïóê ÏûàÎäîÍ±∞ Í∞ùÏ≤¥Î•º ÏßÄÏö∞ÎãàÍπå Í∑∏Ï†ÑÏóê 
 	void UI_InsertToPool(wstring UIType, shared_ptr<CUI> UI);
 	Rect Get_WinSize();
-	shared_ptr<CUI> Find_UI_InCurLevel(UI_LAYER layer, wstring type);
+	shared_ptr<CUI> Find_UI_InCurLevel(EUILayer layer, wstring type);
 
 public:/*For.EventBus*/
 	CEventBus* Get_EventBus();
 
 public:/*For.DInput_Manager*/
-	class CDInput_Manager* Get_DInput_Manger() { return m_pDInput_Manager.get(); }
+	class CDInput_Manager* Get_DInput_Manger() { return m_DInputManager.get(); }
 	void Set_MousePos(float x, float y);
 	_float2 Get_MousePos();
 
 public:/*For.Data_Manager*/
-	class CData_Manager* Get_Data_Manager() { return m_pData_Manager.get(); }
-	bool ClearMap(SAVETYPE eDATATYPE);
-	bool Load(SAVETYPE eDATATYPE, const string& fileName);
-	bool Save(SAVETYPE eDATATYPE, const string& fileName);
+	class CData_Manager* Get_Data_Manager() { return m_dataManager.get(); }
+	bool ClearMap(ESaveType eDATATYPE);
+	bool Load(ESaveType eDATATYPE, const string& fileName);
+	bool Save(ESaveType eDATATYPE, const string& fileName);
 
 public:/*For.PipeLine*/
-	const _float4x4* Get_Transform(D3DTS eTransformState) const;
-	const _float4x4* Get_InverseTransfrom(D3DTS eTransformState) const;
+	const _float4x4* Get_Transform(ED3DTS eTransformState) const;
+	const _float4x4* Get_InverseTransfrom(ED3DTS eTransformState) const;
 	const _float4* Get_CamPositon() const;
-	void Set_Transform(D3DTS eTransformState, _fmatrix TransformStateMatrix);
+	void Set_Transform(ED3DTS eTransformState, _fmatrix TransformStateMatrix);
 	HRESULT Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName);
-	HRESULT Bind_TransformMatrix(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
-	HRESULT Bind_TransformMatrix_Inverse(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
+	HRESULT Bind_TransformMatrix(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
+	HRESULT Bind_TransformMatrix_Inverse(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
 
 public:/*For.Light_Manager*/
-	const LIGHT_DESC* Get_LightDesc(_uint iIndex);
-	shared_ptr<CLight> Add_Light(const LIGHT_DESC& LightDesc);
-	void Set_LightDesc(_uint iIndex, LIGHT_DESC Desc);
+	const LightDesc* Get_LightDesc(_uint iIndex);
+	shared_ptr<CLight> Add_Light(const LightDesc& lightDesc);
+	void Set_LightDesc(_uint iIndex, LightDesc Desc);
 	void Clear_Light();
 public:/*For.Picking_Manager*/
 	_bool Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag = L"Layer_BackGround", _uint TerrainIndex = 0);
@@ -175,38 +175,38 @@ public:
 
 
 public:// SoundManager
-	HRESULT Register_Sounds(const vector<SOUND_ASSET_DESC>& vecSoundDescs);
+	HRESULT Register_Sounds(const vector<SoundAssetDesc>& vecSoundDescs);
 	void Update(_float fTimeDelta);
 	void Play_Once(const _wstring& strSoundTag, _float fVolumeScale = 1.f);
 	void Play_Loop(const _wstring& strSoundTag, _float fVolumeScale = 1.f);
 	void Stop(const _wstring& strSoundTag, float fadeOutTime=0);
 	void Stop_All();
-	void Set_CategoryVolume(SOUND_CATEGORY eCategory, _float fVolume);
+	void Set_CategoryVolume(ESoundCategory eCategory, _float fVolume);
 
 private:
-    FRAME_TIMINGS m_frameTimings;
-	unique_ptr<class CGraphic_Device> m_pGraphic_Device = { nullptr };
-	unique_ptr<class CTimer_Manager> m_pTimer_Manager = { nullptr };
-	unique_ptr<class CLevel_Manager> m_pLevel_Manager = { nullptr };
-	unique_ptr<class CPrototype_Manager> m_pProto_Manager = { nullptr };
-	unique_ptr<class CObject_Manager> m_pObject_Manager = { nullptr };
-	unique_ptr<class CRenderer> m_Renderer = { nullptr };
-	unique_ptr<class CUI_Manager> m_UI_Manager = { nullptr };
-	unique_ptr<class CDInput_Manager> m_pDInput_Manager = { nullptr };
-	unique_ptr<class CData_Manager> m_pData_Manager = { nullptr };
-	unique_ptr<class CPipeLine> m_pPipeLine = { nullptr };
-	unique_ptr<class CLight_Manager> m_pLight_Manager = { nullptr };
-	unique_ptr<class CCamera_Manager> m_pCamera_Manager = { nullptr };
-	unique_ptr<class CPicking_Manager> m_pPicking_Manager = { nullptr };
-	unique_ptr<class CFont_Manager> m_pFont_Manager = { nullptr };
-	unique_ptr<class CTimeOfDay> m_pTimeOfDay = { nullptr };
-	unique_ptr<class CCollision_Manager> m_pCollision_Manager = { nullptr };
-	unique_ptr<class CTarget_Manager> m_pTarget_Manager = { nullptr };
+    FrameTimings m_frameTimings;
+	unique_ptr<class CGraphic_Device> m_graphicDevice = { nullptr };
+	unique_ptr<class CTimer_Manager> m_timerManager = { nullptr };
+	unique_ptr<class CLevel_Manager> m_levelManager = { nullptr };
+	unique_ptr<class CPrototype_Manager> m_protoManager = { nullptr };
+	unique_ptr<class CObject_Manager> m_objectManager = { nullptr };
+	unique_ptr<class CRenderer> m_renderer = { nullptr };
+	unique_ptr<class CUI_Manager> m_UIManager = { nullptr };
+	unique_ptr<class CDInput_Manager> m_DInputManager = { nullptr };
+	unique_ptr<class CData_Manager> m_dataManager = { nullptr };
+	unique_ptr<class CPipeLine> m_pipeLine = { nullptr };
+	unique_ptr<class CLight_Manager> m_lightManager = { nullptr };
+	unique_ptr<class CCamera_Manager> m_cameraManager = { nullptr };
+	unique_ptr<class CPicking_Manager> m_pickingManager = { nullptr };
+	unique_ptr<class CFont_Manager> m_fontManager = { nullptr };
+	unique_ptr<class CTimeOfDay> m_timeOfDay = { nullptr };
+	unique_ptr<class CCollision_Manager> m_collisionManager = { nullptr };
+	unique_ptr<class CTarget_Manager> m_targetManager = { nullptr };
 //	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
-	unique_ptr<class CSoundManager>m_pSound_Manager = { nullptr };
-	map<_wstring,CBase*> m_ManagerForImgui = {}; // rawPointer ¬¸¡∂øÎ
+	unique_ptr<class CSoundManager>m_soundManager = { nullptr };
+	map<_wstring,CBase*> m_managerForImgui = {}; // rawPointer Ï∞∏Ï°∞Ïö©
 
-	unique_ptr<CEventBus> m_pEventBus;
+	unique_ptr<CEventBus> m_eventBus;
 public:
 	virtual void Free() override;
 };

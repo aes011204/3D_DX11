@@ -11,7 +11,7 @@ class CMiniGame;
     public CGameObject
 {
 public:
-    struct FISH_DESC : public CGameObject::GAMEOBJECT_DESC
+    struct FISH_DESC : public CGameObject::GameObjectDesc
     {
         _uint FishCount = {};
 
@@ -85,7 +85,7 @@ protected:
     HRESULT Ready_Components();
 private:
 
-    shared_ptr<CShader> m_pShaderCom = {nullptr};
+    shared_ptr<CShader> m_shaderCom = {nullptr};
     shared_ptr<CModel> m_pModelCom = {nullptr};
     shared_ptr<CCollider> m_pColliderCom = { nullptr };
 

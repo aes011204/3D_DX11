@@ -18,7 +18,7 @@ class CMiniGame_Logic;
 {
 public:
 	
-	struct MINIGAEMEPANEL_DESC : public CUIPanel::UIPANEL_DESC
+	struct MINIGAEMEPANEL_DESC : public CUIPanel::UIPanelDesc
 	{
 
 	};

@@ -1,10 +1,10 @@
-#include "CScaleModifier.h"
+ï»¿#include "CScaleModifier.h"
 #include "UITransform.h"
 #include "UI.h"
 #include "Log_Manager.h"
 
 CScaleModifier::CScaleModifier(_float range, _float duration, _float startPosRad, _float2 baseScale, _bool continuous)
-	: m_Range (range),
+	: m_range (range),
 	m_StartPosRad(startPosRad),
 	m_BaseScale (baseScale),m_Continuous (continuous),
 	m_Duration(duration)
@@ -30,14 +30,14 @@ void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 	if (m_Continuous == true)
 	{
-		// ÀÌ°Ç µà·¹ÀÌ¼Ç À» ½ºÇÇµå·Î
+		// ì´ê±´ ë“€ë ˆì´ì…˜ ì„ ìŠ¤í”¼ë“œë¡œ
 		float CurSin = sinf(m_Duration * m_fAccTime + m_StartPosRad);
 		float sinValue = sinf(CurSin * PI / 2.0f);
 
 		Vector2 size = {};
 
-		_float sinX = m_Range * sinValue + m_BaseScale.x;
-		_float sinY = m_Range * sinValue + m_BaseScale.y;
+		_float sinX = m_range * sinValue + m_BaseScale.x;
+		_float sinY = m_range * sinValue + m_BaseScale.y;
 		m_pOwnerTransform->SetLocalScale({ sinX,sinY });
 
 
@@ -54,8 +54,8 @@ void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		Vector2 size = {};
 
-		_float sinX = m_Range * sinValue + m_BaseScale.x;
-		_float sinY = m_Range * sinValue + m_BaseScale.y;
+		_float sinX = m_range * sinValue + m_BaseScale.x;
+		_float sinY = m_range * sinValue + m_BaseScale.y;
 		m_pOwnerTransform->SetLocalScale({ sinX,sinY });
 
 

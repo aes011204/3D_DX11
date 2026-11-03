@@ -29,7 +29,7 @@ HRESULT CMon_Tentacle::Initialize(void* pArg)
 	m_IsColl = false;
 
 
-	m_pPlayer = m_pGameInstance.lock()->Get_GameObject(
+	m_pPlayer = m_gameInstance.lock()->Get_GameObject(
 		ETOI(LEVEL::GAMEPLAY),
 		L"Layer_Player",0
 	);
@@ -37,11 +37,11 @@ HRESULT CMon_Tentacle::Initialize(void* pArg)
 	_float3 targetPos = {};
 	XMStoreFloat3(&targetPos,m_pPlayer.lock()->Get_TransformCom()->Get_Position());
 
-	float x = m_pGameInstance.lock()->Random(-1.5, 1.5);
-	float z = m_pGameInstance.lock()->Random(-1.5, 1.5);
+	float x = m_gameInstance.lock()->Random(-1.5, 1.5);
+	float z = m_gameInstance.lock()->Random(-1.5, 1.5);
 	_vector finalPos =XMVectorSet(targetPos.x + x, 0.f, targetPos.z + z, 1.f);
 
-	m_pTransformCom->Set_Position(finalPos);
+	m_transformCom->Set_Position(finalPos);
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
@@ -68,7 +68,7 @@ void CMon_Tentacle::Update(_float fTimeDelta)
 {
 	if(m_Flag==false)
 	{
-	m_pGameInstance.lock()->Play_Once(L"OozeTentacleAttack");
+	m_gameInstance.lock()->Play_Once(L"OozeTentacleAttack");
 	m_Flag = true;
 	}
 
@@ -81,7 +81,7 @@ void CMon_Tentacle::Update(_float fTimeDelta)
 	if (curFrame < 140)
 	{
 
-		dir = XMVector3Normalize(TargetPos - m_pTransformCom->Get_Position());
+		dir = XMVector3Normalize(TargetPos - m_transformCom->Get_Position());
 		dir = XMVectorSetY(dir, 0.f);
 		dir = XMVector3Normalize(dir);
 		m_LastDir = dir;
@@ -90,17 +90,17 @@ void CMon_Tentacle::Update(_float fTimeDelta)
 	{
 		dir = m_LastDir;
 	}
-	_vector Look = m_pTransformCom->Get_State(Engine::STATE::LOOK);
+	_vector Look = m_transformCom->Get_State(Engine::ETransformState::LOOK);
 
 	_vector NewLook  = XMVector3Normalize(XMVectorLerp(Look, dir , fTimeDelta * m_TurnSpeed));
 	
-	m_pTransformCom->LookAt(m_pTransformCom->Get_Position() +NewLook);
+	m_transformCom->LookAt(m_transformCom->Get_Position() +NewLook);
 
 
 
 	if (m_pModelCom->Get_IsFinishAnim() == true )
 	{
-		if (20.f <= XMVectorGetX(XMVector3Length(TargetPos - m_pTransformCom->Get_Position())) || m_IsColl == true)
+		if (20.f <= XMVectorGetX(XMVector3Length(TargetPos - m_transformCom->Get_Position())) || m_IsColl == true)
 		{
 			Mark_Destroy();
 		}
@@ -124,7 +124,7 @@ void CMon_Tentacle::Update(_float fTimeDelta)
 
 void CMon_Tentacle::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CMon_Tentacle>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CMon_Tentacle>(shared_from_this()));
 }
 
 HRESULT CMon_Tentacle::Render()
@@ -137,11 +137,11 @@ HRESULT CMon_Tentacle::Render()
 
 	for(size_t i=0; i< iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		m_pModelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_pModelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_pModelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
 	if (FAILED(m_pModelCom->Render(i)))
@@ -152,12 +152,12 @@ HRESULT CMon_Tentacle::Render()
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_Btm_F_Collider);
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_Btm_Collider);
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_Top_Collider);
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_Mid_Collider);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_Btm_F_Collider);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_Btm_Collider);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_Top_Collider);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_Mid_Collider);
 
 #endif
 
@@ -180,7 +180,7 @@ void CMon_Tentacle::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CColli
 
 	//if(m_State == ATTACK)
 	{
-		if (other->Get_MyLayer()==COLLISION_LAYER::PLAYER)
+		if (other->Get_MyLayer()==ECollisionLayer::PLAYER)
 		{
 			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Damage();
 			m_IsColl = true;
@@ -210,7 +210,7 @@ void CMon_Tentacle::OnGui()
 	float dist = XMVectorGetX(
 		XMVector3Length(
 			m_pPlayer.lock()->Get_TransformCom()->Get_Position()
-			- m_pTransformCom->Get_Position()
+			- m_transformCom->Get_Position()
 		)
 	);
 
@@ -219,25 +219,25 @@ void CMon_Tentacle::OnGui()
 void CMon_Tentacle::RebindCom()
 {
 
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
 	m_pModelCom = Get_Component<CModel>(L"Com_Model");
 
 }
 
 HRESULT CMon_Tentacle::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -253,12 +253,12 @@ HRESULT CMon_Tentacle::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float fFar = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
 
 	float emissive = 4.f;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
 		return E_FAIL;
 	return S_OK;
 }
@@ -267,7 +267,7 @@ HRESULT CMon_Tentacle::Ready_Components()
 {
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Tentacle"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
@@ -284,50 +284,50 @@ HRESULT CMon_Tentacle::Ready_Components()
 		return E_FAIL;
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);*/
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc{};
+	CBounding_Sphere::BoundingSphereDesc		SPhereDesc{};
 	
-	SPhereDesc.fRadius = .5f;
-	SPhereDesc.vCenter = _float3(0.f, 0.f,0.f);
-	SPhereDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc.OtherMask = COLLISION_LAYER::PLAYER;
+	SPhereDesc.radius = .5f;
+	SPhereDesc.center = _float3(0.f, 0.f,0.f);
+	SPhereDesc.myLayer = ECollisionLayer::MONSTERATT;
+	SPhereDesc.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
 		TEXT("Com_Top_Collider"), &m_Top_Collider , &SPhereDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Top_Collider);
+	m_gameInstance.lock()->Add_Collider(m_Top_Collider);
 
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc1{};
-	SPhereDesc1.fRadius = .75f;
-	SPhereDesc1.vCenter = _float3(0.f, 0.f, 0.f);
-	SPhereDesc1.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc1.OtherMask = COLLISION_LAYER::PLAYER;
+	CBounding_Sphere::BoundingSphereDesc		SPhereDesc1{};
+	SPhereDesc1.radius = .75f;
+	SPhereDesc1.center = _float3(0.f, 0.f, 0.f);
+	SPhereDesc1.myLayer = ECollisionLayer::MONSTERATT;
+	SPhereDesc1.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
 		TEXT("Com_Mid_Collider"), &m_Mid_Collider, &SPhereDesc1)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Mid_Collider);
+	m_gameInstance.lock()->Add_Collider(m_Mid_Collider);
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc3{};
+	CBounding_Sphere::BoundingSphereDesc		SPhereDesc3{};
 
-	SPhereDesc3.fRadius = 1.f;
-	SPhereDesc3.vCenter = _float3(0.f, 0.f, 0.f);
-	SPhereDesc3.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc3.OtherMask = COLLISION_LAYER::PLAYER;
+	SPhereDesc3.radius = 1.f;
+	SPhereDesc3.center = _float3(0.f, 0.f, 0.f);
+	SPhereDesc3.myLayer = ECollisionLayer::MONSTERATT;
+	SPhereDesc3.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
 		TEXT("Com_Btm_Collider"), &m_Btm_Collider, &SPhereDesc3)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Btm_Collider);
+	m_gameInstance.lock()->Add_Collider(m_Btm_Collider);
 
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc4{};
+	CBounding_Sphere::BoundingSphereDesc		SPhereDesc4{};
 
-	SPhereDesc4.fRadius = 1.f;
-	SPhereDesc4.vCenter = _float3(0.f, 0.f, 0.f);
-	SPhereDesc4.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc4.OtherMask = COLLISION_LAYER::PLAYER;
+	SPhereDesc4.radius = 1.f;
+	SPhereDesc4.center = _float3(0.f, 0.f, 0.f);
+	SPhereDesc4.myLayer = ECollisionLayer::MONSTERATT;
+	SPhereDesc4.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
 		TEXT("Com_Btm_F_Collider"), &m_Btm_F_Collider, &SPhereDesc4)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Btm_F_Collider);
+	m_gameInstance.lock()->Add_Collider(m_Btm_F_Collider);
 
 	return S_OK;
 }

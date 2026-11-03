@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 class CPicking_Manager :
@@ -12,21 +12,21 @@ public:
 public:
     HRESULT Initialize(); 
 public:
-    void Update();   // ¿©±â¼­ ¹«°Å¿î°Å ÇÑ ¹ø¸¸ °è»ê ÈÄ Ä³½Ì
+    void Update();   // ì—¬ê¸°ì„œ ë¬´ê±°ìš´ê±° í•œ ë²ˆë§Œ ê³„ì‚° í›„ ìºì‹±
     _bool Culaulate_Terrain(class CVIBuffer_Terrain* pBuffer,class CTransform* pTransform, _float3* pOutPos);
     _bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
     _float Calculate_HeightOnTerrain(_fvector pPos, _fvector vPointA, _fvector vPointB, _fvector vPointC);
     _bool Compute_HeightOnTerrain(_wstring layerTag, _uint TerrainIndex, _fvector pCurPos, _float* Out);
    
 
-    const Ray& GetRay() const { return m_CurrentRay; }
+    const Ray& GetRay() const { return m_currentRay; }
 private:
-    Ray m_CurrentRay;
+    Ray m_currentRay;
 
 private:
-    ComPtr<ID3D11Device> m_pDevice;
-    ComPtr<ID3D11DeviceContext> m_pContext;
-    weak_ptr<class CGameInstance> m_pGameInstance = {};
+    ComPtr<ID3D11Device> m_device;
+    ComPtr<ID3D11DeviceContext> m_context;
+    weak_ptr<class CGameInstance> m_gameInstance = {};
 public:
     static unique_ptr<CPicking_Manager> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;

@@ -15,7 +15,7 @@ class CUI_Item :
     public CUIImage
 {
 public:
-    struct ITEM_DESC : public CUIImage::UIIMAGE_DESC
+    struct ITEM_DESC : public CUIImage::UIImageDesc
     {
         
     };

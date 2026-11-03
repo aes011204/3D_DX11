@@ -1,4 +1,4 @@
-#include "Loader.h"
+ï»¿#include "Loader.h"
 
 #include "GameInstance.h"
 
@@ -29,20 +29,20 @@
 #include "WaterEff.h"
 
 CLoader::CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice(pDevice), m_pContext(pContext),
-	m_pGameInstance(CGameInstance::GetInstance())
+	: m_device(pDevice), m_context(pContext),
+	m_gameInstance(CGameInstance::GetInstance())
 {
 
 }
 
 unsigned int APIENTRY ThreadMain(void* pArg)
 {
-	// pArg·Î pLoader ÁÖ¼Ò¸¦ ¹Ş¾Æ¿È ±Ùµ¥  void* ÇüÀÌ¶ó¼­ Çüº¯È¯ÈÄ »ç¿ë °¡´É
+	// pArgë¡œ pLoader ì£¼ì†Œë¥¼ ë°›ì•„ì˜´ ê·¼ë°  void* í˜•ì´ë¼ì„œ í˜•ë³€í™˜í›„ ì‚¬ìš© ê°€ëŠ¥
 	CLoader* pLoader = static_cast<CLoader*>(pArg);
 	if (nullptr == pLoader)
 		return 1;
 
-	// ¾²·¹µå¸¦ ÀÌ¿ëÇØ¼­ ·Îµù Å¬·¡½º¿¡ ÀÖ´Â ·Îµù ÇÔ¼ö¸¦ µ¹¸°´Ù
+	// ì“°ë ˆë“œë¥¼ ì´ìš©í•´ì„œ ë¡œë”© í´ë˜ìŠ¤ì— ìˆëŠ” ë¡œë”© í•¨ìˆ˜ë¥¼ ëŒë¦°ë‹¤
 	if (FAILED(pLoader->Loading()))
 		return 1;
 
@@ -51,7 +51,7 @@ unsigned int APIENTRY ThreadMain(void* pArg)
 
 HRESULT CLoader::Initialize(LEVEL eNextLevelID)
 {
-	// ½ÇÁ¦ ÀÚ¿øÀ» ·ÎµåÇØÁÖ±â À§ÇÑ ½º·¹µå¸¦ Çü¼ºÇÑ´Ù
+	// ì‹¤ì œ ìì›ì„ ë¡œë“œí•´ì£¼ê¸° ìœ„í•œ ìŠ¤ë ˆë“œë¥¼ í˜•ì„±í•œë‹¤
 	m_eNextLevelID = eNextLevelID;
 
 	InitializeCriticalSection(&m_CriticalSection);
@@ -71,7 +71,7 @@ HRESULT CLoader::Initialize(LEVEL eNextLevelID)
 
 HRESULT CLoader::Loading()
 {
-	// ´Ù¸¥ ¾²·¹µå°¡ °øÀ¯ÇÏ´Â ¸Ş¸ğ¸®¿µ¿ª(ÀÓ°è¿µ¿ª) Á¢±Ù½Ã ¸·¾ÆÁÖ´Â(´ë±â·Î ¹Ù²ãÁÖ´Â) ÇÔ¼ö (¶ô)
+	// ë‹¤ë¥¸ ì“°ë ˆë“œê°€ ê³µìœ í•˜ëŠ” ë©”ëª¨ë¦¬ì˜ì—­(ì„ê³„ì˜ì—­) ì ‘ê·¼ì‹œ ë§‰ì•„ì£¼ëŠ”(ëŒ€ê¸°ë¡œ ë°”ê¿”ì£¼ëŠ”) í•¨ìˆ˜ (ë½)
 	EnterCriticalSection(&m_CriticalSection);
 
 	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
@@ -82,19 +82,19 @@ HRESULT CLoader::Loading()
 	{
 	case LEVEL::LOGO:
 		hr = Loading_For_LogoLevel();
-		m_bFinished = true;
+		m_isFinished = true;
 		break;
 	case LEVEL::GAMEPLAY:
 		hr = Loading_For_GamePlayLevel();
-		m_bFinished = true;
+		m_isFinished = true;
 		break;
 	case LEVEL::EDITOR:
-		// ¿¡µğÅÍ´Â ½ºÅÂÆ½ Á¦¿Ü ¸ğµç ·¹º§À» ·ÎµùÀ» µ¹¸®°í µé¾î°¡¾ßÇÔ
+		// ì—ë””í„°ëŠ” ìŠ¤íƒœí‹± ì œì™¸ ëª¨ë“  ë ˆë²¨ì„ ë¡œë”©ì„ ëŒë¦¬ê³  ë“¤ì–´ê°€ì•¼í•¨
 		//hr = Loading_For_EditorLevel();
 		if (Loading_For_GamePlayLevel() == S_OK && Loading_For_LogoLevel() == S_OK)
 		{
 			hr = S_OK;
-			m_bFinished = true;
+			m_isFinished = true;
 		}
 		else
 			hr = E_FAIL;
@@ -105,7 +105,7 @@ HRESULT CLoader::Loading()
 
 	CoUninitialize();
 
-	LeaveCriticalSection(&m_CriticalSection);// ¾ğ¶ô - ÀÌÁ¦ ´Ù¸¥¾²·¹µåµµ Á¢±Ù°¡´É
+	LeaveCriticalSection(&m_CriticalSection);// ì–¸ë½ - ì´ì œ ë‹¤ë¥¸ì“°ë ˆë“œë„ ì ‘ê·¼ê°€ëŠ¥
 
 	return hr;
 }
@@ -113,31 +113,31 @@ HRESULT CLoader::Loading()
 HRESULT CLoader::Loading_For_LogoLevel()
 {
 
-	lstrcpy(m_szLoadingText, TEXT("ÅØ½ºÃÄ¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("í…ìŠ¤ì³ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 	/* Prototype_Component_Texture_BackGround */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::LOGO), TEXT("Prototype_Component_Texture_BackGround"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::LOGO), TEXT("Prototype_Component_Texture_BackGround"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
-	lstrcpy(m_szLoadingText, TEXT("¼ÎÀÌ´õ¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ì…°ì´ë”ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 	
-	lstrcpy(m_szLoadingText, TEXT("»ç¿îµå¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ì‚¬ìš´ë“œë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 
-	lstrcpy(m_szLoadingText, TEXT("¸ğµ¨¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ëª¨ë¸ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 	
-	lstrcpy(m_szLoadingText, TEXT("°´Ã¼¿øÇü¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ê°ì²´ì›í˜•ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 	/* Prototype_GameObject_BackGround */
-	if(FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::LOGO), TEXT("Prototype_GameObject_BackGround"),
-		CBackGround::Create(m_pDevice, m_pContext))))
+	if(FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::LOGO), TEXT("Prototype_GameObject_BackGround"),
+		CBackGround::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CBackGround");
 		return E_FAIL;
 	}
 
-	lstrcpy(m_szLoadingText, TEXT("·ÎµùÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ë¡œë”©ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤."));
 
 	//m_bFinished = true;
 
@@ -148,7 +148,7 @@ HRESULT CLoader::Loading_For_LogoLevel()
 
 HRESULT CLoader::Loading_For_GamePlayLevel()
 {
-	lstrcpy(m_szLoadingText, TEXT("ÅØ½ºÃÄ¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("í…ìŠ¤ì³ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 	///* Prototype_Component_Texture_Terrain */
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Texture_Terrain"),
 	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_RGB.png"), 1))))
@@ -168,13 +168,13 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	
 
 
-	lstrcpy(m_szLoadingText, TEXT("¼ÎÀÌ´õ¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ì…°ì´ë”ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 
 	
 
 	/* Prototype_Component_Shader_VtxParticleRect */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticleRect"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxParticleRect.hlsl"), VTXPARTICLE_RECTINSTANCE_DESC::Elements, VTXPARTICLE_RECTINSTANCE_DESC::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticleRect"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/ShaderFiles/Shader_VtxParticleRect.hlsl"), VTXPARTICLE_RECTINSTANCE_DESC::Elements, VTXPARTICLE_RECTINSTANCE_DESC::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxCube");
 		return E_FAIL;
@@ -184,17 +184,17 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	/* Prototype_Component_Shader_VtxParticlePoint */
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxParticlePoint.hlsl"), VTXPARTICLE_POINTINSTANCE_DESC::Elements, VTXPARTICLE_POINTINSTANCE_DESC::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/ShaderFiles/Shader_VtxParticlePoint.hlsl"), VTXPARTICLE_POINTINSTANCE_DESC::Elements, VTXPARTICLE_POINTINSTANCE_DESC::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxParticlePoint");
 		return E_FAIL;
 	}
 
-	lstrcpy(m_szLoadingText, TEXT("»ç¿îµå¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ì‚¬ìš´ë“œë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 
 
-	lstrcpy(m_szLoadingText, TEXT("¸ğµ¨¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ëª¨ë¸ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 	///* Prototype_Component_VIBuffer_Terrain */
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Terrain"),
 	//	CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_1500.raw")))))
@@ -202,17 +202,17 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	//	MSG_BOX("Faild to Add_Prototype : VIBuffer_Terrain");
 	//	return E_FAIL;
 	//}
-	CVIBuffer_Particle_Rect::PARTICLE_RECT_DESC		SnowDesc{};
-	SnowDesc.iNumInstances = 5000;
-	SnowDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	SnowDesc.vRange = _float3(129.f, 1.f, 129.f);
-	SnowDesc.vScale = _float2(0.2f, 0.5f);
-	SnowDesc.vSpeed = _float2(9.0f, 11.0f);
-	SnowDesc.vLifeTime = _float2(.5f, 4.0f);
+	CVIBuffer_Particle_Rect::ParticleRectDesc		SnowDesc{};
+	SnowDesc.numInstances = 5000;
+	SnowDesc.center = _float3(0.f, 0.f, 0.f);
+	SnowDesc.range = _float3(129.f, 1.f, 129.f);
+	SnowDesc.scale = _float2(0.2f, 0.5f);
+	SnowDesc.speed = _float2(9.0f, 11.0f);
+	SnowDesc.lifeTime = _float2(.5f, 4.0f);
 	SnowDesc.isLoop = true;
 	/* Prototype_Component_VIBuffer_Particle_Rect_Snow */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Rect_Snow"),
-		CVIBuffer_Particle_Rect::Create(m_pDevice, m_pContext, &SnowDesc))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Rect_Snow"),
+		CVIBuffer_Particle_Rect::Create(m_device, m_context, &SnowDesc))))
 	{
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
 		return E_FAIL;
@@ -220,41 +220,41 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 
-	CVIBuffer_Particle_Point::PARTICLE_POINT_DESC		ExploDesc{};
-	ExploDesc.iNumInstances = 500;
-	ExploDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	ExploDesc.vRange = _float3(0.3f, 0.3f, 0.3f);
-	ExploDesc.vScale = _float2(0.1f, 0.2f);
-	ExploDesc.vSpeed = _float2(3.0f, 7.0f);
-	ExploDesc.vLifeTime = _float2(0.3f, .6f);
-	ExploDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	CVIBuffer_Particle_Point::ParticlePointDesc		ExploDesc{};
+	ExploDesc.numInstances = 500;
+	ExploDesc.center = _float3(0.f, 0.f, 0.f);
+	ExploDesc.range = _float3(0.3f, 0.3f, 0.3f);
+	ExploDesc.scale = _float2(0.1f, 0.2f);
+	ExploDesc.speed = _float2(3.0f, 7.0f);
+	ExploDesc.lifeTime = _float2(0.3f, .6f);
+	ExploDesc.pivot = _float3(0.f, 0.f, 0.f);
 	ExploDesc.isLoop = true;
 
 
 	/* Prototype_Component_VIBuffer_Particle_Point_Explosion */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_Explosion"),
-		CVIBuffer_Particle_Point::Create(m_pDevice, m_pContext, &ExploDesc))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_Explosion"),
+		CVIBuffer_Particle_Point::Create(m_device, m_context, &ExploDesc))))
 	{
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
 		return E_FAIL;
 	}
 
-	CVIBuffer_Particle_Point::PARTICLE_POINT_DESC		WaterDesc{};
-	WaterDesc.iNumInstances = 10;
-	WaterDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	WaterDesc.vRange = _float3(1.5f, 0.f, 1.5f);
-	WaterDesc.vSizeRange = _float2(0.3f, 0.6f);
-	WaterDesc.vScale = _float2(0.1f, 0.2f);
-	WaterDesc.Angle = _float3(0.f,0.f,0.0f);
-	WaterDesc.vSpeed = _float2(3.0f, 7.0f);
-	WaterDesc.vLifeTime = _float2(0.2f, 1.0f);
-	WaterDesc.vPivot = _float3(0.f, 0.f, 0.f);
+	CVIBuffer_Particle_Point::ParticlePointDesc		WaterDesc{};
+	WaterDesc.numInstances = 10;
+	WaterDesc.center = _float3(0.f, 0.f, 0.f);
+	WaterDesc.range = _float3(1.5f, 0.f, 1.5f);
+	WaterDesc.sizeRange = _float2(0.3f, 0.6f);
+	WaterDesc.scale = _float2(0.1f, 0.2f);
+	WaterDesc.angle = _float3(0.f,0.f,0.0f);
+	WaterDesc.speed = _float2(3.0f, 7.0f);
+	WaterDesc.lifeTime = _float2(0.2f, 1.0f);
+	WaterDesc.pivot = _float3(0.f, 0.f, 0.f);
 	WaterDesc.isLoop = true;
 
 
 	/* Prototype_Component_VIBuffer_Particle_Point_Explosion */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_WaterEff"),
-		CVIBuffer_Particle_Point::Create(m_pDevice, m_pContext, &WaterDesc))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_WaterEff"),
+		CVIBuffer_Particle_Point::Create(m_device, m_context, &WaterDesc))))
 	{
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Particle_Point");
 		return E_FAIL;
@@ -291,24 +291,24 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	/* Prototype_Component_Model_FullBoatCrab */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/FullBoatCrab/FullBoatCrab.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/FullBoatCrab/FullBoatCrab.dat", EModelType::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_Tentacle */
 	PreLocalTransformMatrix = XMMatrixScaling(0.5f, 0.5f, 0.5f) * XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Tentacle"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tentacle/Tentacle_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Tentacle"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tentacle/Tentacle_Tex.dat", EModelType::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_R_Act */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(45.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R/R.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/R/R.dat", EModelType::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
@@ -316,16 +316,16 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	/* Prototype_Component_Model_R_Act_One */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_One"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R_Act/R_Act_oNE.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_One"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/R_Act/R_Act_oNE.dat", EModelType::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_R_Act_Etc */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f)) * XMMatrixTranslation(0.f, 5.f, 0.f);
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/R_Act/Rffffffff_Act_Fix.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/R_Act/Rffffffff_Act_Fix.dat", EModelType::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
@@ -335,16 +335,16 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	/* Prototype_Component_Model_Marrow_Mon */
  	PreLocalTransformMatrix = XMMatrixScaling(0.0001f, 0.0001f, 0.0001f) *XMMatrixRotationZ(XMConvertToRadians(180.f))*XMMatrixRotationX(XMConvertToRadians(-90.f)) *XMMatrixRotationY(XMConvertToRadians(-30.f)) ;
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Marrow_Mon"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Marrow_Mon/Marrow_Mon_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Marrow_Mon"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Marrow_Mon/Marrow_Mon_Tex.dat", EModelType::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_Marrow_Boat */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Marrow_Boat"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Marrow_Mon/Marrow_Boat_Tex.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Marrow_Boat"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Marrow_Mon/Marrow_Boat_Tex.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
@@ -353,8 +353,8 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	/* Prototype_Component_Model_HalfBoat */
 	PreLocalTransformMatrix = XMMatrixScaling(1.f, 1.f, 1.f) * XMMatrixRotationY(XMConvertToRadians(180.f));
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_HalfBoat"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/HalfBoat/HalfBoat_Tex.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_HalfBoat"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/HalfBoat/HalfBoat_Tex.dat", EModelType::ANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : FullBoatCrab");
 		return E_FAIL;
@@ -370,8 +370,8 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	PreLocalTransformMatrix = XMMatrixRotationY(XMConvertToRadians(180.f));
 	/*Prototype_Component_Model_Fiona_Anim*/
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona_Anim"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Fiona/Fiona.dat", MODEL::ANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona_Anim"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Fiona/Fiona.dat", EModelType::ANIM, PreLocalTransformMatrix))))
 	{ 
 		MSG_BOX("Faild to Add_Prototype : Model_Fiona");
 		return E_FAIL;
@@ -388,8 +388,8 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	/* Prototype_Component_Model_PlayerBoat */
 	PreLocalTransformMatrix = XMMatrixScaling(0.008f, 0.008f, 0.008f) * XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Boat/PlayerBoat4.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Boat/PlayerBoat4.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : PlayerBoat");
 		return E_FAIL;
@@ -397,8 +397,8 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	/* Prototype_Component_Model_Town */
 	PreLocalTransformMatrix =  XMMatrixScaling(0.01f,0.01f,0.01f) * XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Town"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/GM_TOWN/GM_Town_tx.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Town"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/GM_TOWN/GM_Town_tx.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -407,14 +407,14 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 	/* Prototype_Component_Model_Fish */
 	PreLocalTransformMatrix = XMMatrixScaling(0.001f, 0.001f, 0.001f) * XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fish"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Fish/Fish.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fish"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Fish/Fish.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Fish");
 		return E_FAIL;
 	}
 
-	lstrcpy(m_szLoadingText, TEXT("°´Ã¼¿øÇü¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));////////////////////////////////
+	lstrcpy(m_szLoadingText, TEXT("ê°ì²´ì›í˜•ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));////////////////////////////////
 	///* Prototype_GameObject_Terrain */
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
 	//	CTerrain::Create(m_pDevice, m_pContext))))
@@ -426,8 +426,8 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 	
 
 	/* Prototype_GameObject_Monster */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster"),
-		CMonster::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster"),
+		CMonster::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GameObject_Monster");
 		return E_FAIL;
@@ -435,40 +435,40 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	/* Prototype_GameObject_Monster_Anim */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster_Anim"),
-		CMonster_Anim::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Monster_Anim"),
+		CMonster_Anim::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Prototype_GameObject_Monster_Anim");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_PlayerBoat */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_PlayerBoat"),
-		CPlayerBoat::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_PlayerBoat"),
+		CPlayerBoat::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : PlayerBoat");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_Body_Player */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Body_Player"),
-		CBody_Player::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Body_Player"),
+		CBody_Player::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Body_Player");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_Village */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Village"),
-		CVillage::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Village"),
+		CVillage::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Villsge");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_Fish */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		CFish::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
+		CFish::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : fish");
 		return E_FAIL;
@@ -480,24 +480,24 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	/* Prototype_GameObject_R */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
-		CMon_R::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R"),
+		CMon_R::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : R");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_R_Act */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
-		CMon_R_Act::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
+		CMon_R_Act::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : R");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_Tentacle */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
-		CMon_Tentacle::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
+		CMon_Tentacle::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : R");
 		return E_FAIL;
@@ -506,8 +506,8 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	/* Prototype_GameObject_MonkFish */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
-		CMon_MonkFish::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
+		CMon_MonkFish::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : R");
 		return E_FAIL;
@@ -518,16 +518,16 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	/* Prototype_GameObject_Box */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Box"),
-		CBox::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Box"),
+		CBox::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : R");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_ColliderObject */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_ColliderObject"),
-		CColliderObject::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_ColliderObject"),
+		CColliderObject::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : R");
 		return E_FAIL;
@@ -542,46 +542,46 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 	/* Prototype_GameObject_WaterEff */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"),
-		CWaterEff::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"),
+		CWaterEff::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GameObject_WaterEff");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_Snow */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
-		CSnow::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
+		CSnow::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GameObject_Snow");
 		return E_FAIL;
 	}
 	/* Prototype_GameObject_Explosion */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
-		CExplosion::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
+		CExplosion::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GameObject_Explosion");
 		return E_FAIL;
 	}
 
-	lstrcpy(m_szLoadingText, TEXT("Ãæµ¹Ã¼¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ì¶©ëŒì²´ë¥¼ ë¡œë”© ì¤‘ ì…ë‹ˆë‹¤."));
 	/* Prototype_Component_Collider_AABB */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"),
-		CCollider::Create(m_pDevice, m_pContext, COLLIDER::AABB))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"),
+		CCollider::Create(m_device, m_context, EColliderType::AABB))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_AABB");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Collider_OBB */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"),
-		CCollider::Create(m_pDevice, m_pContext, COLLIDER::OBB))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"),
+		CCollider::Create(m_device, m_context, EColliderType::OBB))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_OBB");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Collider_Sphere*/
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		CCollider::Create(m_pDevice, m_pContext, COLLIDER::SPHERE))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
+		CCollider::Create(m_device, m_context, EColliderType::SPHERE))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Prototype_Component_Collider_Sphere");
 		return E_FAIL;
@@ -589,7 +589,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 
 
 
-	lstrcpy(m_szLoadingText, TEXT("·ÎµùÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ë¡œë”©ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤."));
 
 	//m_bFinished = true;
 
@@ -598,7 +598,7 @@ HRESULT CLoader::Loading_For_GamePlayLevel()
 }
 HRESULT CLoader::Loading_For_EditorLevel()
 {
-	lstrcpy(m_szLoadingText, TEXT("·ÎµùÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù."));
+	lstrcpy(m_szLoadingText, TEXT("ë¡œë”©ì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤."));
 
 	//m_bFinished = true;
 
@@ -627,7 +627,7 @@ void CLoader::Free()
 {
 	__super::Free();
 
-	//¾²·¹µå »ç¿ëÇÏ°í ÀÖÀ½ °©ÀÚ±â ³¡³ª¸é ¹«ÇÑ·çÇÁ·Î ¾²·¹µå ³¡³¯‹š±îÁö ±â´Ù¸®°í ´Ù ³¡³ª¸é Áö¿î´Ù
+	//ì“°ë ˆë“œ ì‚¬ìš©í•˜ê³  ìˆìŒ ê°‘ìê¸° ëë‚˜ë©´ ë¬´í•œë£¨í”„ë¡œ ì“°ë ˆë“œ ëë‚ ë–„ê¹Œì§€ ê¸°ë‹¤ë¦¬ê³  ë‹¤ ëë‚˜ë©´ ì§€ìš´ë‹¤
 	WaitForSingleObject(m_hThread, INFINITE);
 	CloseHandle(m_hThread);
 

@@ -30,9 +30,9 @@ protected:
     HRESULT Ready_Components();
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
     shared_ptr<CModel> m_pModelCom = { nullptr };
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
     shared_ptr<CCollider> m_pColliderCom = { nullptr };
 
 

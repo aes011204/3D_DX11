@@ -1,8 +1,8 @@
-#include "Assimp_Material.h"
+﻿#include "Assimp_Material.h"
 #include "Shader.h"
 
 CAssimp_Material::CAssimp_Material(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice(pDevice),m_pContext(pContext)
+	: m_device(pDevice),m_context(pContext)
 {
 }
 
@@ -21,7 +21,7 @@ HRESULT CAssimp_Material::Initialize(const aiMaterial* pAIMaterial, const _char*
 		if (0 == iNumTextures)
 			continue;
 
-		m_MaterialTextures[i].reserve(iNumTextures);
+		m_materialTextures[i].reserve(iNumTextures);
 
 		for(size_t j =0; j < iNumTextures;j++)
 		{
@@ -51,18 +51,18 @@ HRESULT CAssimp_Material::Initialize(const aiMaterial* pAIMaterial, const _char*
 			ComPtr<ID3D11ShaderResourceView> pSRV = { nullptr };
 
 			if (false == strcmp(szEXT, (".dds")))
-				hr = CreateDDSTextureFromFile(m_pDevice.Get(), szTextureFilePath, nullptr, &pSRV);
+				hr = CreateDDSTextureFromFile(m_device.Get(), szTextureFilePath, nullptr, &pSRV);
 
 			else if (false == strcmp(szEXT, (".tga")))
 				hr = E_FAIL;
 
 			else
-				hr = CreateWICTextureFromFile(m_pDevice.Get(), szTextureFilePath, nullptr, &pSRV);
+				hr = CreateWICTextureFromFile(m_device.Get(), szTextureFilePath, nullptr, &pSRV);
 
 			if (FAILED(hr))
 				return E_FAIL;
 
-			m_MaterialTextures[i].push_back(pSRV);
+			m_materialTextures[i].push_back(pSRV);
 
 		}
 	}
@@ -77,11 +77,11 @@ HRESULT CAssimp_Material::Initialize(const aiMaterial* pAIMaterial, const _char*
 HRESULT CAssimp_Material::Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, aiTextureType eMaterialType,
 	_uint iTextureIndex)
 {
-	if (nullptr == m_MaterialTextures[eMaterialType][iTextureIndex] ||
-		iTextureIndex >= m_MaterialTextures[eMaterialType].size())
+	if (nullptr == m_materialTextures[eMaterialType][iTextureIndex] ||
+		iTextureIndex >= m_materialTextures[eMaterialType].size())
 		return E_FAIL;
 
-	pShader->Bind_SRV(pConstantName, m_MaterialTextures[eMaterialType][iTextureIndex]);
+	pShader->Bind_SRV(pConstantName, m_materialTextures[eMaterialType][iTextureIndex]);
 
 	return S_OK;
 }
@@ -101,7 +101,7 @@ void CAssimp_Material::Free()
 {
 	for (size_t i = 0; i < AI_TEXTURE_TYPE_MAX; i++)
 	{
-		m_MaterialTextures[i].clear();
+		m_materialTextures[i].clear();
 	}
 
 	__super::Free();

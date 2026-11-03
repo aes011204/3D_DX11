@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 class CFont_Manager :
@@ -13,9 +13,9 @@ public:
 	void Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor);
 	_float2 Measure_String(const _wstring& strFontTag, const _tchar* pText);
 private:
-	ComPtr<ID3D11Device> m_pDevice = {  };
-	ComPtr<ID3D11DeviceContext> m_pContext = {  };
-	map<const _wstring, shared_ptr<class CCustomFont>> m_Fonts;
+	ComPtr<ID3D11Device> m_device = {  };
+	ComPtr<ID3D11DeviceContext> m_context = {  };
+	map<const _wstring, shared_ptr<class CCustomFont>> m_fonts;
 
 
 	shared_ptr<class CCustomFont> Find_Font(const _wstring& strFontTag);

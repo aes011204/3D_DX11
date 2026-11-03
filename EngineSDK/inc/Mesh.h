@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Bone.h"
 #include "VIBuffer.h"
 
@@ -16,29 +16,29 @@ public:
 
 
 public:
-	virtual HRESULT Initialize_Prototype(MODEL eType, ifstream& InFile, shared_ptr<class CModel> pModel, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(EModelType eType, ifstream& InFile, shared_ptr<class CModel> pModel, _fmatrix PreTransformMatrix);
 	virtual HRESULT Initialize(void* pArg);
 
 
-	_uint Get_MaterialIndex() const {return m_iMaterialIndex;}
+	_uint Get_MaterialIndex() const {return m_materialIndex;}
 
 	HRESULT Bind_BoneMatrices(shared_ptr<class CShader> shader, const _char* pConstantName, const vector<shared_ptr<CBone>>& bones);
 
 private:
-	_char m_szName[MAX_PATH] = {};
+	_char m_name[MAX_PATH] = {};
 
-	_uint m_iMaterialIndex = {};
+	_uint m_materialIndex = {};
 
-	_uint m_iNumBones = {};
-	vector<_uint> m_BoneIndices = {};
-	_float4x4 m_BoneMatrices[512] = {};
-	vector<_float4x4 > m_OffsetMatrices = {}; // vectorÀÎ ÀÌÀ¯´Â »À°¹¼ö ¸¸Å­ ¿ÀÇÁ¼Â °¡Áö°í ÀÖÀ½
+	_uint m_numBones = {};
+	vector<_uint> m_boneIndices = {};
+	_float4x4 m_boneMatrices[512] = {};
+	vector<_float4x4 > m_offsetMatrices = {}; // vectorì¸ ì´ìœ ëŠ” ë¼ˆê°¯ìˆ˜ ë§Œí¼ ì˜¤í”„ì…‹ ê°€ì§€ê³  ìˆìŒ
 
 private:
 	HRESULT Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTransformMatrix);
 	HRESULT Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel>);
 public:
-	static shared_ptr<CMesh> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, MODEL eType, ifstream& InFile, shared_ptr<class CModel>
+	static shared_ptr<CMesh> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, EModelType eType, ifstream& InFile, shared_ptr<class CModel>
 	                                pModel, _fmatrix PreTransformMatrix);
 	virtual shared_ptr<CComponent> Clone(void* pArg);
 	virtual void Free() override;

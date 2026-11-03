@@ -1,11 +1,11 @@
-#include "Level.h"
+﻿#include "Level.h"
 
 #include "GameInstance.h"
 
 CLevel::CLevel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice(pDevice)
-	, m_pContext(pContext)
-	,m_pGameInstance(CGameInstance::GetInstance())
+	: m_device(pDevice)
+	, m_context(pContext)
+	,m_gameInstance(CGameInstance::GetInstance())
 {
 }
 

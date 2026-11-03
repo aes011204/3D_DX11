@@ -1,4 +1,4 @@
-#include "Client_Define.h"
+Ôªø#include "Client_Define.h"
 //#include"Engine_Define.h"
 #include "Level_Editor.h"
 
@@ -22,7 +22,7 @@ HRESULT CLevel_Editor::Initialize()
 		{
 			if (CGameInstance::GetInstance()->Get_Current_LevelIdx() == ETOI(LEVEL::EDITOR)) 
 			{
-				m_pGameInstance.lock()->Add_GameObject(e.iLevel, e.Tag,
+				m_gameInstance.lock()->Add_GameObject(e.level, e.tag,
 					ETOI(LEVEL::EDITOR), L"GameObject",nullptr);
 			}
 		});
@@ -46,7 +46,7 @@ void CLevel_Editor::Update(_float fTimeDelta)
 {
 	if (GetKeyState(VK_NUMPAD1) & 0x8000)
 	{
-		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::LOGO))))
+		if (FAILED(m_gameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_device, m_context, LEVEL::LOGO))))
 			return;
 	}
 	int a = 10;
@@ -62,16 +62,16 @@ void CLevel_Editor::Update(_float fTimeDelta)
 HRESULT CLevel_Editor::Ready_Lights()
 {
 
-	LIGHT_DESC LightDesc{};
+	LightDesc lightDesc{};
 
-	LightDesc.eType = LIGHT::DIRECTIONAL;
+	lightDesc.type = ELightType::DIRECTIONAL;
 
-	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	lightDesc.direction = _float4(1.f, -1.f, 1.f, 0.f);
+	lightDesc.diffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	lightDesc.ambient = _float4(1.f, 1.f, 1.f, 1.f);
+	lightDesc.specular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (nullptr==(m_pGameInstance.lock()->Add_Light(LightDesc)))
+	if (nullptr==(m_gameInstance.lock()->Add_Light(lightDesc)))
 		return E_FAIL;
 
 	return S_OK;
@@ -79,7 +79,7 @@ HRESULT CLevel_Editor::Ready_Lights()
 
 HRESULT CLevel_Editor::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
+	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
 		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 
@@ -110,22 +110,22 @@ HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 
 
-	CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
-	FRCamDesc.fFar = 500.f;
-	FRCamDesc.fNear = 0.1f;
-	FRCamDesc.fFovY = XMConvertToRadians(60.f);
-	FRCamDesc.vEyes = _float4(0.f, 10.f, -7.f, 1.f);
-	FRCamDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
-	FRCamDesc.fSpeedPerSec = 10.f;
-	FRCamDesc.fDegreePerSec = 180.f;
-	FRCamDesc.fMouseSensor = 0.01f;
+	CCamera_Free::CameraFreeDesc FRCamDesc = {};
+	FRCamDesc.farZ = 500.f;
+	FRCamDesc.nearZ = 0.1f;
+	FRCamDesc.fovY = XMConvertToRadians(60.f);
+	FRCamDesc.eyes = _float4(0.f, 10.f, -7.f, 1.f);
+	FRCamDesc.at = _float4(0.f, 0.f, 0.f, 1.f);
+	FRCamDesc.speedPerSec = 10.f;
+	FRCamDesc.degreePerSec = 180.f;
+	FRCamDesc.mouseSensor = 0.01f;
 
-	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
+	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
 		ETOI(LEVEL::STATIC), strLayerTag, &FRCamDesc));
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::STATIC), L"FREE_CAM", freeCamera);
+	m_gameInstance.lock()->Add_Camera(ETOI(LEVEL::STATIC), L"FREE_CAM", freeCamera);
 
 
 
@@ -136,7 +136,7 @@ HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& strLayerTag)
 HRESULT CLevel_Editor::Render()
 {
 #ifdef _DEBUG
-	SetWindowText(g_hWnd, TEXT("«ˆ¿Á ø°µ≈Õ∑π∫ß ±∏µø ¡ﬂ"));
+	SetWindowText(g_hWnd, TEXT("ÌòÑÏû¨ ÏóêÎîîÌÑ∞Î†àÎ≤® Íµ¨Îèô Ï§ë"));
 #endif
     return S_OK;
 }

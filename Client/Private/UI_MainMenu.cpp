@@ -1,4 +1,4 @@
-#include "UI_MainMenu.h"
+Ôªø#include "UI_MainMenu.h"
 
 #include "UIText.h"
 
@@ -34,7 +34,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 	hr = __super::OnInit(pDesc);
     
 
-	// ∂˜¥Ÿ ¡¶ø‹ ¿¸∫Œ µ•¿Ã≈Õ∑Œ ºˆ¡§ ∞°¥…
+	// ÎûåÎã§ Ï†úÏô∏ Ï†ÑÎ∂Ä Îç∞Ïù¥ÌÑ∞Î°ú ÏàòÏ†ï Í∞ÄÎä•
 	{
 		wstring name = {};
 		LEVEL eLevel = {};
@@ -44,30 +44,30 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			{
 			case 0:
 				eLevel = LEVEL::GAMEPLAY;
-				name = L"ªı ∞‘¿”";
+				name = L"ÏÉà Í≤åÏûÑ";
 				break;
 			case 1:
 				eLevel = LEVEL::END;
-				name = L"º≥¡§";
+				name = L"ÏÑ§Ï†ï";
 
 				break;
 			case 2:
 				eLevel = LEVEL::EDITOR;
-				name = L"ø°µ≈Õ";
+				name = L"ÏóêÎîîÌÑ∞";
 
 				break;
 
 			}
 
 
-			CUIButton::UIBUTTON_DESC pDesc = {};
-			pDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-			pDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
-			pDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f * i) };
-			pDesc.vSizeDelta = Vector2{ 50.f,50.f };// æ»∞«µÂ∑¡µµ µ  ≈ÿΩ∫√ƒø°º≠ √ ±‚»≠ øπ¡§
-			pDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
-			pDesc.vPivot = Vector2{ 0.5f, 0.5f };
-			pDesc.vScale = Vector2{ 1.3f, 1.0f };
+			CUIButton::UIButtonDesc pDesc = {};
+			pDesc.textureComLevel = ETOI(LEVEL::STATIC);
+			pDesc.textureProtoName = L"Prototype_Component_Texture_Button";
+			pDesc.anchoredPos = Vector2{ 0.f,16.7f + (98.f * i) };
+			pDesc.sizeDelta = Vector2{ 50.f,50.f };// ÏïàÍ±¥ÎìúÎ†§ÎèÑ Îê® ÌÖçÏä§Ï≥êÏóêÏÑú Ï¥àÍ∏∞Ìôî ÏòàÏ†ï
+			pDesc.anchorPoint = Vector2{ 0.254f,0.5f };
+			pDesc.pivot = Vector2{ 0.5f, 0.5f };
+			pDesc.scale = Vector2{ 1.3f, 1.0f };
 			pDesc.OverlapStartEvent = [this](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			for (auto& it : ch)
 			{
@@ -83,7 +83,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			}
 			//CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
 			//	make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .1f, false, _float4{ 0.f,0.f,0.f,0.f }));
-			m_pGameInstance.lock()->Play_Once(L"Hover");
+			m_gameInstance.lock()->Play_Once(L"Hover");
 
 			};
 
@@ -109,20 +109,20 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 					Evt_ChangeLevel e = {};
 					e.IsChange = true;
 					e.level = ETOI(eLevel);
-					m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+					m_gameInstance.lock()->Get_EventBus()->Publish(e);
 					//});
-					m_pGameInstance.lock()->Play_Once(L"Click");
+					m_gameInstance.lock()->Play_Once(L"Click");
 
 			};
-			shared_ptr<CUIButton> pChild = CUIButton::Create(m_pDevice, m_pContext);
+			shared_ptr<CUIButton> pChild = CUIButton::Create(m_device, m_context);
 			pChild->Initialize(&pDesc);
 			
 
 			{
-				CUIText::TEXT_DESC text_Name = {};
-				text_Name.strFontTag = L"Noto_Sans_CJK_SC_24";
-				text_Name.strText = name;
-				shared_ptr<CUIText> Text_Name = CUIText::Create(m_pDevice, m_pContext);
+				CUIText::TextDesc text_Name = {};
+				text_Name.fontTag = L"Noto_Sans_CJK_SC_24";
+				text_Name.text = name;
+				shared_ptr<CUIText> Text_Name = CUIText::Create(m_device, m_context);
 				Text_Name->Initialize(&text_Name);
 
 				pChild->Add_Child(Text_Name, L"text_Name_" + S2W(string(magic_enum::enum_name(eLevel))), false);
@@ -140,13 +140,13 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 
 			//
 
-			CUIImage::UIIMAGE_DESC selectImage{};
-			selectImage.TextureComLevel = ETOI(LEVEL::STATIC);
-			selectImage.TextureProtoName = L"Prototype_Component_Texture_Select";
-			selectImage.PxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
-			selectImage.bUseNineSlice = true;
+			CUIImage::UIImageDesc selectImage{};
+			selectImage.textureComLevel = ETOI(LEVEL::STATIC);
+			selectImage.textureProtoName = L"Prototype_Component_Texture_Select";
+			selectImage.pxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
+			selectImage.useNineSlice = true;
 			//selectImage. = true;
-			shared_ptr<CUIImage> Select = CUIImage::Create(m_pDevice, m_pContext);
+			shared_ptr<CUIImage> Select = CUIImage::Create(m_device, m_context);
 			Select->Initialize(&selectImage);
 			Select->UI_InActive();
 
@@ -156,15 +156,15 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			Select->Set_Zorder(2);
 		}
 
-		CUIImage::UIIMAGE_DESC image_desc{};
-		image_desc.TextureComLevel = ETOI(LEVEL::STATIC);
-		image_desc.TextureProtoName = L"Prototype_Component_Texture_Dredge";
-		image_desc.vAnchoredPos = Vector2{ 0.f,0.f };
-		image_desc.vSizeDelta = Vector2{ 50.f,50.f };// æ»∞«µÂ∑¡µµ µ  ≈ÿΩ∫√ƒø°º≠ √ ±‚»≠ øπ¡§
-		image_desc.vAnchorPoint = Vector2{ 0.254f,0.319f };
-		image_desc.vPivot = Vector2{ 0.5f, 0.5f };
-		image_desc.vScale = Vector2{ 0.5f, 0.5f };
-		shared_ptr<CUIImage> pChild2 = CUIImage::Create(m_pDevice, m_pContext);
+		CUIImage::UIImageDesc image_desc{};
+		image_desc.textureComLevel = ETOI(LEVEL::STATIC);
+		image_desc.textureProtoName = L"Prototype_Component_Texture_Dredge";
+		image_desc.anchoredPos = Vector2{ 0.f,0.f };
+		image_desc.sizeDelta = Vector2{ 50.f,50.f };// ÏïàÍ±¥ÎìúÎ†§ÎèÑ Îê® ÌÖçÏä§Ï≥êÏóêÏÑú Ï¥àÍ∏∞Ìôî ÏòàÏ†ï
+		image_desc.anchorPoint = Vector2{ 0.254f,0.319f };
+		image_desc.pivot = Vector2{ 0.5f, 0.5f };
+		image_desc.scale = Vector2{ 0.5f, 0.5f };
+		shared_ptr<CUIImage> pChild2 = CUIImage::Create(m_device, m_context);
 		pChild2->Initialize(&image_desc);
 
 		Add_Child(pChild2, L"IMAGE_DRADGELOGO", false);

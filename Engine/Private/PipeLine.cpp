@@ -1,4 +1,4 @@
-#include "PipeLine.h"
+﻿#include "PipeLine.h"
 #include "Shader.h"
 
 CPipeLine::CPipeLine()
@@ -15,22 +15,22 @@ HRESULT CPipeLine::Bind_CamPosition(shared_ptr<class CShader> pShader, const _ch
 	return pShader->Bind_RawValue(pConstantName, Get_CamPosition(), sizeof(_float4));
 }
 
-HRESULT CPipeLine::Bind_TransformMatrix(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
+HRESULT CPipeLine::Bind_TransformMatrix(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
 {
-	return pShader->Bind_Matrix(pConstantName,&m_TransformStateMatrices[ETOI(eTransformState)]);
+	return pShader->Bind_Matrix(pConstantName,&m_transformStateMatrices[ETOI(eTransformState)]);
 }
 
-HRESULT CPipeLine::Bind_TransformMatrix_Inverse(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
+HRESULT CPipeLine::Bind_TransformMatrix_Inverse(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
 {
-	return pShader->Bind_Matrix(pConstantName, &m_TransformInverseStateMatrices[ETOI(eTransformState)]);
+	return pShader->Bind_Matrix(pConstantName, &m_transformInverseStateMatrices[ETOI(eTransformState)]);
 }
 
 void CPipeLine::Update()
 {
-	for (int i = 0; i < ETOI(D3DTS::END); i++)
+	for (int i = 0; i < ETOI(ED3DTS::END); i++)
 	{
-		XMStoreFloat4x4(&m_TransformInverseStateMatrices[i],
-			XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_TransformStateMatrices[i])));
+		XMStoreFloat4x4(&m_transformInverseStateMatrices[i],
+			XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_transformStateMatrices[i])));
 	}
 }
 

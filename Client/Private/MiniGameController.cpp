@@ -8,12 +8,12 @@
 #include "EventBus.h"
 
 Client::CMiniGameController::CMiniGameController()
-	: m_pGameInstance(CGameInstance::GetInstance())
+	: m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
 Client::CMiniGameController::CMiniGameController(const CMiniGameController& prototype)
-	: m_pGameInstance(CGameInstance::GetInstance())
+	: m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -99,9 +99,9 @@ void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_pt
 	Evt_BindMiniGameLogic e;
 	e.logic = pInstance;
 
-	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+	m_gameInstance.lock()->Get_EventBus()->Publish(e);
 
-	auto miniGameUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"MiniGame");
+	auto miniGameUI = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"MiniGame");
 	auto ui = dynamic_pointer_cast<CUI_MiniGame>(miniGameUI);
 	
 	

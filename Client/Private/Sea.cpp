@@ -71,7 +71,7 @@ void CSea::Update(_float fTimeDelta)
 {
 	// 스냅핑
 	_float3 snapedPos = m_pVIBufferComCashing->Snapping((m_SeaManager.lock()->Get_GlobalY()));
-	m_pTransformCom->Set_Position(XMLoadFloat3(&snapedPos));
+	m_transformCom->Set_Position(XMLoadFloat3(&snapedPos));
 
 
 	//m_fX += 10.f * fTimeDelta;
@@ -83,7 +83,7 @@ void CSea::Update(_float fTimeDelta)
 void CSea::Late_Update(_float fTimeDelta)
 {
 	int a = 1;
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::SEA, static_pointer_cast<CSea>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::SEA, static_pointer_cast<CSea>(shared_from_this()));
 }
 
 
@@ -96,13 +96,13 @@ HRESULT CSea::Render()
 		return E_FAIL;
 
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Bind_Resources()))
+	if (FAILED(m_VIBufferCom->Bind_Resources()))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferComCashing->Render(m_pShaderCom)))
+	if (FAILED(m_pVIBufferComCashing->Render(m_shaderCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -111,7 +111,7 @@ HRESULT CSea::Render()
 _vector CSea::Get_WorldPos()
 {
 	{
-		return m_pTransformCom->Get_Position();
+		return m_transformCom->Get_Position();
 	}
 }
 
@@ -122,12 +122,12 @@ void CSea::OnGui()
 
 HRESULT CSea::Ready_Components()
 {
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	m_pVIBufferComCashing = dynamic_pointer_cast<CVIBuffer_Sea> (m_pVIBufferCom);
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_Sea"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	m_pVIBufferComCashing = dynamic_pointer_cast<CVIBuffer_Sea> (m_VIBufferCom);
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_Sea"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;
@@ -141,38 +141,38 @@ HRESULT CSea::Bind_ShaderResources()
 	//float depthMask01 = Sea->Get_DepthMask01();
 	const WaveDesc* waveDesc = Sea->Get_WaveDescArray();
 
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
-		return E_FAIL;
-
-
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Time", &fTime, sizeof(_float))))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 
-	const LIGHT_DESC* desc = m_pGameInstance.lock()->Get_LightDesc(0);
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Time", &fTime, sizeof(_float))))
+		return E_FAIL;
+
+
+	const LightDesc* desc = m_gameInstance.lock()->Get_LightDesc(0);
 	if (nullptr == desc)
 		return E_FAIL;
 	const _float4& dir = m_SkyContrl->Get_Direction();
 	const _float4& diff = m_SkyContrl->Get_Diffuse();
 	const _float4& amb = m_SkyContrl->Get_Ambient();
 	const _float4& spec = m_SkyContrl->Get_Specular();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDir", &dir, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vLightDir", &dir, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightDiffuse", &diff, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vLightDiffuse", &diff, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightAmbient", &amb, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vLightAmbient", &amb, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &spec, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vLightSpecular", &spec, sizeof(_float4))))
 		return E_FAIL;
 
 		_int iPlayerPointLightActive = 0;
@@ -181,48 +181,48 @@ HRESULT CSea::Bind_ShaderResources()
 	_float4 vPlayerLightDiffuse = _float4(0.f, 0.f, 0.f, 1.f);
 	_float4 vPlayerLightSpecular = _float4(0.f, 0.f, 0.f, 1.f);
 
-	auto pPlayerObject = m_pGameInstance.lock()->Get_GameObject(m_pGameInstance.lock()->Get_Current_LevelIdx(), L"Layer_Player", 0);
+	auto pPlayerObject = m_gameInstance.lock()->Get_GameObject(m_gameInstance.lock()->Get_Current_LevelIdx(), L"Layer_Player", 0);
 	auto pPlayerBoat = dynamic_pointer_cast<CPlayerBoat>(pPlayerObject);
 	auto pPlayerLight = pPlayerBoat ? pPlayerBoat->Get_Light().lock() : nullptr;
 	if (pPlayerLight != nullptr && pPlayerLight->Get_Active())
 	{
-		const LIGHT_DESC* pPlayerLightDesc = pPlayerLight->Get_LightDesc();
-		if (pPlayerLightDesc != nullptr && pPlayerLightDesc->eType == LIGHT::POINT)
+		const LightDesc* pPlayerLightDesc = pPlayerLight->Get_LightDesc();
+		if (pPlayerLightDesc != nullptr && pPlayerLightDesc->type == ELightType::POINT)
 		{
 			iPlayerPointLightActive = 1;
-			vPlayerLightPos = pPlayerLightDesc->vPosition;
-			fPlayerLightRange = max(pPlayerLightDesc->fRange, 12.f);
-			vPlayerLightDiffuse = pPlayerLightDesc->vDiffuse;
-			vPlayerLightSpecular = pPlayerLightDesc->vSpecular;
+			vPlayerLightPos = pPlayerLightDesc->position;
+			fPlayerLightRange = max(pPlayerLightDesc->range, 12.f);
+			vPlayerLightDiffuse = pPlayerLightDesc->diffuse;
+			vPlayerLightSpecular = pPlayerLightDesc->specular;
 		}
 	}
-if (FAILED(m_pShaderCom->Bind_RawValue("g_iPlayerPointLightActive", &iPlayerPointLightActive, sizeof(_int))))
+if (FAILED(m_shaderCom->Bind_RawValue("g_iPlayerPointLightActive", &iPlayerPointLightActive, sizeof(_int))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vPlayerLightPos", &vPlayerLightPos, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightPos", &vPlayerLightPos, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fPlayerLightRange", &fPlayerLightRange, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_fPlayerLightRange", &fPlayerLightRange, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vPlayerLightDiffuse", &vPlayerLightDiffuse, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightDiffuse", &vPlayerLightDiffuse, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_vPlayerLightSpecular", &vPlayerLightSpecular, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightSpecular", &vPlayerLightSpecular, sizeof(_float4))))
 		return E_FAIL;
 
 	///////Wave///////
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_WaveCount", &WaveCount, sizeof(int))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_WaveCount", &WaveCount, sizeof(int))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Waves", waveDesc, sizeof(WaveDesc)*10)))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Waves", waveDesc, sizeof(WaveDesc)*10)))
 		return E_FAIL; // 고정 배열 10
 	
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_TerrainSize", &Sea->m_terrainSize, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_TerrainSize", &Sea->m_terrainSize, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_TerrainPos", &Sea->m_terrainPos, sizeof(_float3))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_TerrainPos", &Sea->m_terrainPos, sizeof(_float3))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_deepColor", &Sea->m_deepColor, sizeof(_float3))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_deepColor", &Sea->m_deepColor, sizeof(_float3))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_shallowColor", &Sea->m_shallowColor, sizeof(_float3))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_shallowColor", &Sea->m_shallowColor, sizeof(_float3))))
 		return E_FAIL;
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_TerrainHeight", 0)))
+	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_TerrainHeight", 0)))
 		return E_FAIL;
 	return S_OK;
 }

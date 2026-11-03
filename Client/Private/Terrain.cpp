@@ -1,4 +1,4 @@
-#include "Terrain.h"
+ï»¿#include "Terrain.h"
 
 #include "GameInstance.h"
 #include "Transform.h"
@@ -30,7 +30,7 @@ HRESULT CTerrain::Initialize_Prototype()
 
 HRESULT CTerrain::Initialize(void* pArg)
 {
-	/* ¹é±×¶ó¿îµåÀÇ ¸â¹ö¸¦ Ã¤¿ö³Ö¾î¾ßÇÑ´Ù¸é ¿©±â¼­ Ã¤¿î´Ù. */
+	/* ë°±ê·¸ë¼ìš´ë“œì˜ ë©¤ë²„ë¥¼ ì±„ì›Œë„£ì–´ì•¼í•œë‹¤ë©´ ì—¬ê¸°ì„œ ì±„ìš´ë‹¤. */
 	TERRAIN_DESC			Desc{};
 
 	if (FAILED(__super::Initialize(&Desc)))
@@ -40,10 +40,10 @@ HRESULT CTerrain::Initialize(void* pArg)
 		return E_FAIL;
 	_float3 pos = { -750.f, -100.f, -750.f };
 
-	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
+	m_transformCom->Set_Position(XMLoadFloat3(&pos));
 
 
-	CSea_Manager::GetInstance()->Set_TerrainBuffer(dynamic_pointer_cast<Engine::CVIBuffer_Terrain>(m_pVIBufferCom));
+	CSea_Manager::GetInstance()->Set_TerrainBuffer(dynamic_pointer_cast<Engine::CVIBuffer_Terrain>(m_VIBufferCom));
 	return S_OK;
 }
 
@@ -64,7 +64,7 @@ void CTerrain::Update(_float fTimeDelta)
 void CTerrain::Late_Update(_float fTimeDelta)
 {
 	int a = 1;
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CTerrain>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CTerrain>(shared_from_this()));
 }
 
 HRESULT CTerrain::Render()
@@ -74,13 +74,13 @@ HRESULT CTerrain::Render()
 		return E_FAIL;
 
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Bind_Resources()))
+	if (FAILED(m_VIBufferCom->Bind_Resources()))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	if (FAILED(m_VIBufferCom->Render()))
 		return E_FAIL;
 
 	return S_OK;
@@ -93,11 +93,11 @@ void CTerrain::OnGui()
 
 HRESULT CTerrain::Ready_Components()
 {
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"),& m_pVIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"),& m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"),& m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"),& m_shaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"),& m_pTextureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"),& m_textureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;
@@ -105,20 +105,20 @@ HRESULT CTerrain::Ready_Components()
 
 HRESULT CTerrain::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	//const LIGHT_DESC* desc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -140,13 +140,13 @@ HRESULT CTerrain::Bind_ShaderResources()
 	_float4 vRockColor = _float4(0.283f, 0.283f, 0.283f, 1.f);
 	//_float fTiling = 80.f; 
 
-	m_pShaderCom->Bind_RawValue("g_vSandColor", &vSandColor, sizeof(_float4));
-	m_pShaderCom->Bind_RawValue("g_vAlgaeColor", &vAlgaeColor, sizeof(_float4));
-	m_pShaderCom->Bind_RawValue("g_vRockColor", &vRockColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vSandColor", &vSandColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vAlgaeColor", &vAlgaeColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vRockColor", &vRockColor, sizeof(_float4));
 	//m_pShaderCom->Bind_RawValue("g_fTiling", &fTiling, sizeof(_float));
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float fFar = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 
 	return S_OK;
 }

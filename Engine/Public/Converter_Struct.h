@@ -1,82 +1,82 @@
-#pragma once
+ï»¿#pragma once
 #pragma once
 #include <cstdint>
 #include <windows.h>
 
 struct Cvt_Header
 {
-    uint32_t iMagic{}; // 
-    uint32_t bIsAnim = {};
-    uint32_t iNumMeshes = {};
-    uint32_t iNumMaterial = {};
-    uint32_t iNumAnimation = { 0 };
-    uint32_t iTotalNumBone = {0};
+    uint32_t magic{}; // 
+    uint32_t isAnim = {};
+    uint32_t numMeshes = {};
+    uint32_t numMaterial = {};
+    uint32_t numAnimation = { 0 };
+    uint32_t totalNumBone = {0};
 
 };
 
 struct Cvt_MeshInfo
 {
-    char szName[MAX_PATH];
-    uint32_t iMaterialIndex;
-    uint32_t iNumVertices;
-    uint32_t iNumIndices;
-    uint32_t iNumBones = { 0 };
+    char name[MAX_PATH];
+    uint32_t materialIndex;
+    uint32_t numVertices;
+    uint32_t numIndices;
+    uint32_t numBones = { 0 };
 
 };
 
 struct Cvt_VTXMESH {
 
 
-    float vPos[3] = {};
-    float vUV[8][2] = {};
-    float vNormal[3] = {};
-    float vTangent[3] = {};
+    float pos[3] = {};
+    float uv[8][2] = {};
+    float normal[3] = {};
+    float tangent[3] = {};
 
-    int32_t vIndices[4] = { -1, -1, -1, -1 }; // Bone Indices
-    float vWeights[4] = { 0.f, 0.f, 0.f, 0.f }; // Bone Weights
+    int32_t indices[4] = { -1, -1, -1, -1 }; // Bone Indices
+    float weights[4] = { 0.f, 0.f, 0.f, 0.f }; // Bone Weights
 };
 
 
 struct Cvt_Bone {
-    char szName[MAX_PATH] = {};
-    float OffsetMatrix[4][4];
-    float TransformationMatrix[4][4];
-    int iParentBoneIndex = { -1 }; // -1 ÀÌ¸é  root bone ÀÓ
+    char name[MAX_PATH] = {};
+    float offsetMatrix[4][4];
+    float transformationMatrix[4][4];
+    int parentBoneIndex = { -1 }; // -1 ì´ë©´  root bone ì„
 };
 
 
 struct Cvt_BoneAdd
 {
-    uint32_t iBoneIndex;
-    float OffsetMatrix[4][4];
+    uint32_t boneIndex;
+    float offsetMatrix[4][4];
 
 };
 
 struct Cvt_Keyframe
 {
-    double dTrackPosition;       // ½Ã°£ (Ticks)
-    float vPos[3];      // À§Ä¡
-    float qRotation[4];      // È¸Àü (Quaternion: x, y, z, w)
-    float vScale[3];    // Å©±â
+    double trackPosition;       // ì‹œê°„ (Ticks)
+    float pos[3];      // ìœ„ì¹˜
+    float rotation[4];      // íšŒì „ (Quaternion: x, y, z, w)
+    float scale[3];    // í¬ê¸°
 };
 
-// 2. Ã¤³Î (Æ¯Á¤ º»ÀÇ ¸ğµç Å°ÇÁ·¹ÀÓµé)
+// 2. ì±„ë„ (íŠ¹ì • ë³¸ì˜ ëª¨ë“  í‚¤í”„ë ˆì„ë“¤)
 struct Cvt_Channel 
 {
-    char szName[MAX_PATH]; // Ã¤³ÎÀÇ ÀÌ¸§
+    char name[MAX_PATH]; // ì±„ë„ì˜ ì´ë¦„
 
-    char szBoneName[MAX_PATH];    // ÀÌ Ã¤³ÎÀÌ ¿µÇâÀ» ÁÙ º»ÀÇ ÀÌ¸§
-    uint32_t iBoneIndex;   
-    uint32_t iNumKeyframes; // Å°ÇÁ·¹ÀÓ °³¼ö
+    char boneName[MAX_PATH];    // ì´ ì±„ë„ì´ ì˜í–¥ì„ ì¤„ ë³¸ì˜ ì´ë¦„
+    uint32_t boneIndex;   
+    uint32_t numKeyframes; // í‚¤í”„ë ˆì„ ê°œìˆ˜
 };
 
-// 3. ¾Ö´Ï¸ŞÀÌ¼Ç (ÀüÃ¼ µ¿ÀÛ Á¤º¸)
+// 3. ì• ë‹ˆë©”ì´ì…˜ (ì „ì²´ ë™ì‘ ì •ë³´)
 struct Cvt_Animation 
 {
-    char szName[MAX_PATH];        // ¾Ö´Ï¸ŞÀÌ¼Ç ÀÌ¸§ (¿¹: "Run", "Attack")
-    double dDuration;       // ÀüÃ¼ Àç»ı ½Ã°£
-    double dTickPerSecond;  // ÃÊ´ç Æ¼Å© ¼ö (¼Óµµ)
-    uint32_t iNumChannels;  // Ã¤³Î °³¼ö
+    char name[MAX_PATH];        // ì• ë‹ˆë©”ì´ì…˜ ì´ë¦„ (ì˜ˆ: "Run", "Attack")
+    double duration;       // ì „ì²´ ì¬ìƒ ì‹œê°„
+    double tickPerSecond;  // ì´ˆë‹¹ í‹°í¬ ìˆ˜ (ì†ë„)
+    uint32_t numChannels;  // ì±„ë„ ê°œìˆ˜
 };
 
 
@@ -85,17 +85,17 @@ struct Cvt_Animation
 
 //struct Cvt_MaterialInfo
 //{
-//    char szName[MAX_PATH]; // ÀçÁú ÀÌ¸§
+//    char szName[MAX_PATH]; // ì¬ì§ˆ ì´ë¦„
 //    char szTexturePaths[MAX_TEXTURE_SLOT][MAX_PATH];
 //};
 
 struct Cvt_Material
 {
-    char szName[64];
-    char szDiffusePath[_MAX_PATH];
-    char szNormalPath[_MAX_PATH];
-    char szSpecularPath[_MAX_PATH];
-    char szOpacityPath[_MAX_PATH];
+    char name[64];
+    char diffusePath[_MAX_PATH];
+    char normalPath[_MAX_PATH];
+    char specularPath[_MAX_PATH];
+    char opacityPath[_MAX_PATH];
 
     /* Color  ambient;
      Color  diffuse;
@@ -107,9 +107,9 @@ struct Cvt_Material
 //struct Cvt_VTXANIMMESH : public Cvt_VTXMESH
 //{
 //
-//    // --- Ãß°¡ µ¥ÀÌÅÍ ---
-//    uint32_t iBlendIndex[4];  // 4¹ÙÀÌÆ® * 4 = 16¹ÙÀÌÆ®
-//    float    fBlendWeight[4]; // 4¹ÙÀÌÆ® * 4 = 16¹ÙÀÌÆ®
+//    // --- ì¶”ê°€ ë°ì´í„° ---
+//    uint32_t iBlendIndex[4];  // 4ë°”ì´íŠ¸ * 4 = 16ë°”ì´íŠ¸
+//    float    fBlendWeight[4]; // 4ë°”ì´íŠ¸ * 4 = 16ë°”ì´íŠ¸
 //};
 
 enum Cvt_TexType {

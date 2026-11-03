@@ -1,5 +1,5 @@
-#pragma once
-#include "Transform.h" // ÀÌ ¾È¿¡ º£ÀÌ½º Æ÷ÇÔµÇÀÖÀ½
+ï»¿#pragma once
+#include "Transform.h" // ì´ ì•ˆì— ë² ì´ìŠ¤ í¬í•¨ë˜ìˆìŒ
 #include "Entity.h"
 
 NS_BEGIN(Engine)
@@ -7,9 +7,9 @@ class CCollider;
 class ENGINE_DLL CGameObject abstract : public CEntity
 {
 public:
-    struct GAMEOBJECT_DESC : public CTransform::TRANSFOM_DESC
+    struct GameObjectDesc : public CTransform::TransformDesc
     {
-        _uint iFlag = {};
+        _uint flag = {};
 
         //_float fX = {};
         //_float fY = {};
@@ -36,13 +36,13 @@ public:
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) {};
 
 
-    shared_ptr<CTransform> Get_TransformCom() {return m_pTransformCom;}
+    shared_ptr<CTransform> Get_TransformCom() {return m_transformCom;}
 protected:
     
-    class shared_ptr<CTransform> m_pTransformCom = { nullptr };
+    class shared_ptr<CTransform> m_transformCom = { nullptr };
 
 public:
-    //void* pArg : »çº»°´Ã¼ÀÇ Ãß°¡ÀûÀÎ ÃÊ±âÈ­°¡ ÇÊ¿ä ÇÒ¼ö ÀÖÀ½ ·±Å¸ÀÓ ÇÒ´ç µÇ´Â ÁÖ¼Ò °°Àº°Å
+    //void* pArg : ì‚¬ë³¸ê°ì²´ì˜ ì¶”ê°€ì ì¸ ì´ˆê¸°í™”ê°€ í•„ìš” í• ìˆ˜ ìˆìŒ ëŸ°íƒ€ì„ í• ë‹¹ ë˜ëŠ” ì£¼ì†Œ ê°™ì€ê±°
     virtual shared_ptr<CGameObject> Clone(void* pArg) = 0 ;
     void Free() override;
 };

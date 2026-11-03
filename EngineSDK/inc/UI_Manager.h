@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 
@@ -12,8 +12,8 @@ public:
     struct RequestUI
     {
         wstring UIKey;      
-        UI_LAYER Layer;
-        void* pArg;
+        EUILayer layer;
+        void* arg;
     };
 private:
     CUI_Manager();
@@ -22,24 +22,24 @@ public:
 
 public:
     HRESULT Initialize(_uint width, _uint height);
-    void Update(float m_fDeltaTime); //  request ¿äÃ» Ã³¸®±â (ui ¾÷µ« µ¹¸®Áö ¾ÊÀ½)
-    void Late_Update(float m_fDeltaTime);
+    void Update(float m_deltaTime); //  request ìš”ì²­ ì²˜ë¦¬ê¸° (ui ì—…ëƒ ëŒë¦¬ì§€ ì•ŠìŒ)
+    void Late_Update(float m_deltaTime);
     void Prepare_Render();
-    void Render(); // ¾È¾µµí ÀÌ°Å´Â ·»´õ·¯¿¡¼­ ÇÏ´Ï±î
+    void Render(); // ì•ˆì“¸ë“¯ ì´ê±°ëŠ” ë Œë”ëŸ¬ì—ì„œ í•˜ë‹ˆê¹Œ
 
-    void Push(UI_LAYER layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);
-    void Pop(UI_LAYER layer,wstring type); // ·¹ÀÌ¾î¿¡¼­ ³ÖZ´Ù –P´ÙÇÏ´Â°Ç ¾È¾¸ 
+    void Push(EUILayer layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);
+    void Pop(EUILayer layer,wstring type); // ë ˆì´ì–´ì—ì„œ ë„£ì–¶ë‹¤ ë»‡ë‹¤í•˜ëŠ”ê±´ ì•ˆì”€ 
 
-    shared_ptr<CUI> Find_UI_InCurLevel(UI_LAYER layer, wstring type);
+    shared_ptr<CUI> Find_UI_InCurLevel(EUILayer layer, wstring type);
 
-    void Detach_All(); // ¾À ÀüÈ¯ ÇÒ‹š ·¹ÀÌ¾î¿¡ ÀÖ´Â°Å °´Ã¼¸¦ Áö¿ì´Ï±î ±×Àü¿¡ 
+    void Detach_All(); // ì”¬ ì „í™˜ í• ë–„ ë ˆì´ì–´ì— ìˆëŠ”ê±° ê°ì²´ë¥¼ ì§€ìš°ë‹ˆê¹Œ ê·¸ì „ì— 
 
     void InsertToPool(wstring UIType, shared_ptr<CUI> UI);
 
     Rect Get_WinSize();
 
     ///IMGUI///
-    const vector<shared_ptr<CUI>>& GetUIList(UI_LAYER layer)
+    const vector<shared_ptr<CUI>>& GetUIList(EUILayer layer)
     {
         return m_UI[ETOI(layer)];
     }
@@ -47,7 +47,7 @@ public:
     {
         return m_UIPool;
     }
-    shared_ptr<CUI> GetActiveUI() const { return m_ActiveUI; }
+    shared_ptr<CUI> GetActiveUI() const { return m_activeUI; }
 
 
 
@@ -59,27 +59,27 @@ private:
 
     void DrawUITree(const shared_ptr<Engine::CUI>& ui);
     wstring m_UIKey;
-    shared_ptr<CUI> m_pSelectedObject;
+    shared_ptr<CUI> m_selectedObject;
 
     ///IMGUI///
 
 
 private:
-    shared_ptr<CUI> FindUIOnPool(wstring type); // ÇØ´ç UI°¡ ÀÖ´ÂÁö È®ÀÎ ÀÖÀ¸¸é ÇØ´Ü ui ¹İÈ¯
-    //void OnComplete(UI_LAYER layer, shared_ptr<CUI> addUI, void* pArg); // ÇÒ°Å ÇÏ°í   push 
+    shared_ptr<CUI> FindUIOnPool(wstring type); // í•´ë‹¹ UIê°€ ìˆëŠ”ì§€ í™•ì¸ ìˆìœ¼ë©´ í•´ë‹¨ ui ë°˜í™˜
+    //void OnComplete(UI_LAYER layer, shared_ptr<CUI> addUI, void* pArg); // í• ê±° í•˜ê³    push 
   //  void ProcessUIQ();
     void OnFail();
 
 private:
-    weak_ptr<class CGameInstance> m_pGameInstance = {};
-    unordered_map<wstring, shared_ptr<CUI>> m_UIPool = {}; // ¸¸µé¾îÁø UI¸¦ ¼ÒÀ¯ÇÏ°í ÀÖ´Â Ã¢°í(Ç®)
+    weak_ptr<class CGameInstance> m_gameInstance = {};
+    unordered_map<wstring, shared_ptr<CUI>> m_UIPool = {}; // ë§Œë“¤ì–´ì§„ UIë¥¼ ì†Œìœ í•˜ê³  ìˆëŠ” ì°½ê³ (í’€)
 
-    vector<shared_ptr<CUI>> m_UI[ETOI(UI_LAYER::END)] = {};
+    vector<shared_ptr<CUI>> m_UI[ETOI(EUILayer::END)] = {};
 
-	//queue<RequestUI> m_RequestUIQueue = {}; // UI ÀüÈ¯ ¿äÃ» Å¥ (¾À ¸Å´ÏÁ®ÀÇ ¿äÃ» ÇÏ´Â°Å¶û °°À½)
-    shared_ptr<CUI> m_ActiveUI = nullptr; // º¸Åë m_UIBases.top()°ú µ¿ÀÏ
+	//queue<RequestUI> m_RequestUIQueue = {}; // UI ì „í™˜ ìš”ì²­ í (ì”¬ ë§¤ë‹ˆì ¸ì˜ ìš”ì²­ í•˜ëŠ”ê±°ë‘ ê°™ìŒ)
+    shared_ptr<CUI> m_activeUI = nullptr; // ë³´í†µ m_UIBases.top()ê³¼ ë™ì¼
 
-    Rect m_Winsize = {};
+    Rect m_winsize = {};
 
    
 public:

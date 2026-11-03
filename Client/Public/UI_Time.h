@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 
@@ -15,7 +15,7 @@ NS_BEGIN(Client)
 
 {
 public:
-    struct UITIME_DESC : public CUIPanel::UIPANEL_DESC
+    struct UITIME_DESC : public CUIPanel::UIPanelDesc
     {
     };
 protected:

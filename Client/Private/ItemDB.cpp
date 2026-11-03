@@ -162,7 +162,7 @@ HRESULT CItemDB::Load_ItemData(const string& fileName)
 
 		// 일단 이러면 복사된 택스쳐의 얕은 복사인데 일단 문제는 없을듯 문제 생기면 수정
 		itemDef.texture = dynamic_pointer_cast<CTexture>(m_gameInstance.lock()->
-			Clone_Prototype(PROTOTYPE::COMPONENT, ETOI(LEVEL::STATIC), S2W(itemDef.texturePath)));
+			Clone_Prototype(EPrototype::COMPONENT, ETOI(LEVEL::STATIC), S2W(itemDef.texturePath)));
 
 
 
@@ -217,7 +217,7 @@ void CItemDB::Parse_Fish_Def(FishDef& fishDef, const nlohmann::json& node)
 
 
 			fishDef.vecMutation[i].texture = dynamic_pointer_cast<CTexture>(m_gameInstance.lock()->
-				Clone_Prototype(PROTOTYPE::COMPONENT, ETOI(LEVEL::STATIC), S2W(fishDef.vecMutation[i].mutTexturePath)));
+				Clone_Prototype(EPrototype::COMPONENT, ETOI(LEVEL::STATIC), S2W(fishDef.vecMutation[i].mutTexturePath)));
 
 		}
 	}

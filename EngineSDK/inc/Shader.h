@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Component.h"
 
 NS_BEGIN(Engine)
@@ -27,10 +27,10 @@ public:
 	virtual void Load_FromJson(nlohmann::json& j) override;
 
 private:
-	_uint m_iNumPasses = {};
-	ComPtr<ID3DX11Effect> m_pEffect = {};
+	_uint m_numPasses = {};
+	ComPtr<ID3DX11Effect> m_effect = {};
 
-	vector<ComPtr<ID3D11InputLayout>> m_pInputLayouts = {};
+	vector<ComPtr<ID3D11InputLayout>> m_inputLayouts = {};
 
 public:
 	static shared_ptr<CShader> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pShaderFilePath, const D3D11_INPUT_ELEMENT_DESC* pElement, _uint iNumElement);

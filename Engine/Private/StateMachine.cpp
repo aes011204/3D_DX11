@@ -1,6 +1,6 @@
-#include "StateMachine.h"
+﻿#include "StateMachine.h"
 #include "State.h"
-CStateMachine::CStateMachine() :m_CurState(nullptr), m_PrevStateKey(0), m_CurStateKey(0)
+CStateMachine::CStateMachine() :m_curState(nullptr), m_prevStateKey(0), m_curStateKey(0)
 {
 }
 

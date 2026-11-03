@@ -7,7 +7,7 @@
 IMPLEMENT_SINGLETON(CDialogueDB)
 
 CDialogueDB::CDialogueDB():
-    m_pGameInstance(CGameInstance::GetInstance())
+    m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -112,8 +112,8 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
 
             // 3. Clone 후 캐스팅
             dialogue.Texture_Back_Path = dynamic_pointer_cast<CTexture>(
-                m_pGameInstance.lock()->Clone_Prototype(
-                    PROTOTYPE::COMPONENT,
+                m_gameInstance.lock()->Clone_Prototype(
+                    EPrototype::COMPONENT,
                     ETOI(LEVEL::STATIC),
                     wstrBack.c_str() // c_str()로 확실히 넘기기
                 )
@@ -125,8 +125,8 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
         {
             wstring wstrChar = Utf8ToWstring(strChar);
             dialogue.Texture_Char_Path = dynamic_pointer_cast<CTexture>(
-                m_pGameInstance.lock()->Clone_Prototype(
-                    PROTOTYPE::COMPONENT,
+                m_gameInstance.lock()->Clone_Prototype(
+                    EPrototype::COMPONENT,
                     ETOI(LEVEL::STATIC),
                     wstrChar.c_str()
                 )

@@ -1,4 +1,4 @@
-#include "UITransform.h"
+ï»¿#include "UITransform.h"
 #include "GameInstance.h"
 
 CUITransform::CUITransform(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -20,17 +20,17 @@ HRESULT CUITransform::Initialize_Prototype()
 
 HRESULT CUITransform::Initialize(void* Arg)
 {
-    UITRANSFORM_DESC* pDesc = static_cast<UITRANSFORM_DESC*>(Arg);
+    UITransformDesc* pDesc = static_cast<UITransformDesc*>(Arg);
 
-    m_AnchorPoint = pDesc->vAnchorPoint;
-    m_Pivot = pDesc->vPivot;
+    m_anchorPoint = pDesc->anchorPoint;
+    m_pivot = pDesc->pivot;
 
-    m_SizeDelta = pDesc->vSizeDelta;
-    m_AnchoredPos = pDesc->vAnchoredPos;
+    m_sizeDelta = pDesc->sizeDelta;
+    m_anchoredPos = pDesc->anchoredPos;
 
-    m_LocalScale = pDesc->vScale;
+    m_localScale = pDesc->scale;
 
-    m_bSetParentSize = pDesc->bSetParentSize;
+    m_isSetParentSize = pDesc->isSetParentSize;
 
     MarkDirtyRecursive();
     
@@ -39,38 +39,38 @@ HRESULT CUITransform::Initialize(void* Arg)
 
 void CUITransform::SetParent(weak_ptr<CUITransform> newParent, bool keepWorldRect)
 {
-    if (m_Parent.lock() == newParent.lock())
+    if (m_parent.lock() == newParent.lock())
         return;
 
     UpdateLayoutIfDirty();
-    Rect oldWorld = m_WorldRect;
+    Rect oldWorld = m_worldRect;
 
-    // ±âÁ¸ ºÎ¸ğ°¡ ÀÖ¾úÀ¸¸é ±âÁ¸ ºÎ¸ğÀÇ ÀÚ½Ä ¸ñ·Ï¿¡¼­ ÀÚ½Å Á¦°Å ÇÏ±â 
-    if (m_Parent.lock())
+    // ê¸°ì¡´ ë¶€ëª¨ê°€ ìˆì—ˆìœ¼ë©´ ê¸°ì¡´ ë¶€ëª¨ì˜ ìì‹ ëª©ë¡ì—ì„œ ìì‹  ì œê±° í•˜ê¸° 
+    if (m_parent.lock())
     {
-        vector<shared_ptr<CUITransform>>& sibling = m_Parent.lock()->m_Children;
+        vector<shared_ptr<CUITransform>>& sibling = m_parent.lock()->m_children;
         for (auto it = sibling.begin(); it != sibling.end(); it++)
         {
             if ((*it) == static_pointer_cast<CUITransform>(shared_from_this()))
             {
                 sibling.erase(it);
-                break; // Ã£¾Æ¼­ Áö¿üÀ¸´Ï ´õ µ¹ ÇÊ¿ä ¾øÀ½  else it++ µµ ¾ÈÇØµµ µÊ
+                break; // ì°¾ì•„ì„œ ì§€ì› ìœ¼ë‹ˆ ë” ëŒ í•„ìš” ì—†ìŒ  else it++ ë„ ì•ˆí•´ë„ ë¨
             }
         }
     }
 
-    m_Parent = newParent;
+    m_parent = newParent;
 
-    if (m_Parent.lock())
+    if (m_parent.lock())
     {
-        m_Parent.lock()->GetChildren().push_back(static_pointer_cast<CUITransform>(shared_from_this()));
-        if (!m_Canvas)
-            m_Canvas = m_Parent.lock()->m_Canvas;
+        m_parent.lock()->GetChildren().push_back(static_pointer_cast<CUITransform>(shared_from_this()));
+        if (!m_canvas)
+            m_canvas = m_parent.lock()->m_canvas;
     }
 
     //    if (keepWorldRect)
     //    {
-    //          // ÀÏ´Ü ÀÌ±â´ÉÀº ÆĞ½º
+    //          // ì¼ë‹¨ ì´ê¸°ëŠ¥ì€ íŒ¨ìŠ¤
     //    }
 
 
@@ -79,8 +79,8 @@ void CUITransform::SetParent(weak_ptr<CUITransform> newParent, bool keepWorldRec
 
 _bool CUITransform::SetRotationTo(_float _fTargetDegree, _float fTimeDelta)
 {
-    _float fRatio = 0.1f; // º¸°£ ¼Óµµ (0.0 ~ 1.0)
-    _float degree = XMConvertToDegrees(m_RotationRadian);
+    _float fRatio = 0.1f; // ë³´ê°„ ì†ë„ (0.0 ~ 1.0)
+    _float degree = XMConvertToDegrees(m_rotationRadian);
     if (degree != _fTargetDegree)
     {
         _float Diff = _fTargetDegree - degree;
@@ -106,19 +106,19 @@ _bool CUITransform::SetRotationTo(_float _fTargetDegree, _float fTimeDelta)
 
 void CUITransform::UpdateLayoutIfDirty()
 {
-    if (!m_Dirty)
+    if (!m_isDirty)
         return;
 
     Computing_WorldRect();
-	        if(m_bSetParentSize==true&& m_Parent.lock() !=nullptr)
+	        if(m_isSetParentSize==true&& m_parent.lock() !=nullptr)
 	        {
-                m_LocalScale = m_Parent.lock()->Get_LocalScale();
-                m_SizeDelta = m_Parent.lock()->Get_SizeDelta();
+                m_localScale = m_parent.lock()->Get_LocalScale();
+                m_sizeDelta = m_parent.lock()->Get_SizeDelta();
 
 	        }
-    m_Dirty = false;
+    m_isDirty = false;
 
-    for (auto& children : m_Children)
+    for (auto& children : m_children)
     {
         if (children)
         {
@@ -135,7 +135,7 @@ void CUITransform::OnGui()
         bool bChanged = false;
         bool bPopPivotColor = false;
         bool bPopColor = false;
-        if (m_bKeepSizeRatio)
+        if (m_isKeepSizeRatio)
         {
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.4f, 0.8f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.5f, 0.9f, 1.0f));
@@ -143,74 +143,74 @@ void CUITransform::OnGui()
             bPopColor = true;
         }
 
-        // 2. Åä±Û ¹öÆ°
-        if (ImGui::Button(m_bKeepSizeRatio ? "Ratio: Locked" : "Ratio: Unlocked", ImVec2(-1, 0)))
+        // 2. í† ê¸€ ë²„íŠ¼
+        if (ImGui::Button(m_isKeepSizeRatio ? "Ratio: Locked" : "Ratio: Unlocked", ImVec2(-1, 0)))
         {
-            m_bKeepSizeRatio = !m_bKeepSizeRatio;
+            m_isKeepSizeRatio = !m_isKeepSizeRatio;
         }
 
-        // 3. »ö»ó º¹±¸ (Pop) - ¹İµå½Ã PushÇÑ ¸¸Å­¸¸ Á¤È®È÷!
+        // 3. ìƒ‰ìƒ ë³µêµ¬ (Pop) - ë°˜ë“œì‹œ Pushí•œ ë§Œí¼ë§Œ ì •í™•íˆ!
         if (bPopColor)
         {
             ImGui::PopStyleColor(3);
         }
 
-        if (m_bFreePivot)
+        if (m_isFreePivot)
         {
-            // È°¼ºÈ­ ½Ã ³ë¶õ»öÀÌ³ª ÁÖÈ²»ö °è¿­·Î °­Á¶ (ÁÖÀÇ Ç¥½Ã)
+            // í™œì„±í™” ì‹œ ë…¸ë€ìƒ‰ì´ë‚˜ ì£¼í™©ìƒ‰ ê³„ì—´ë¡œ ê°•ì¡° (ì£¼ì˜ í‘œì‹œ)
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.4f, 0.1f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.5f, 0.2f, 1.0f));
             bPopPivotColor = true;
         }
 
-        if (ImGui::Button(m_bFreePivot ? "Pivot: Free (Unlocked)" : "Pivot: Standard (0-1)"))
+        if (ImGui::Button(m_isFreePivot ? "Pivot: Free (Unlocked)" : "Pivot: Standard (0-1)"))
         {
-            m_bFreePivot = !m_bFreePivot;
+            m_isFreePivot = !m_isFreePivot;
         }
 
         if (bPopPivotColor) ImGui::PopStyleColor(2);
 
         // Anchored Position
-        if (ImGui::DragFloat2("Pos (Anchored)", (float*)&m_AnchoredPos, 0.1f))
+        if (ImGui::DragFloat2("Pos (Anchored)", (float*)&m_anchoredPos, 0.1f))
             bChanged = true;
 
-        //// UIÀÇ Å©±â
+        //// UIì˜ í¬ê¸°
         //if (ImGui::DragFloat2("Size", (float*)&m_SizeDelta, 0.1f))
         //    bChanged = true;
 
-        _float2 vPrevSize = m_SizeDelta; // ÀÌÀü »çÀÌÁî ÀúÀå
+        _float2 vPrevSize = m_sizeDelta; // ì´ì „ ì‚¬ì´ì¦ˆ ì €ì¥
 
-        if (ImGui::DragFloat2("Size", (float*)&m_SizeDelta, 0.1f))
+        if (ImGui::DragFloat2("Size", (float*)&m_sizeDelta, 0.1f))
         {
             bChanged = true;
 
-            // ºñÀ² À¯Áö°¡ ÄÑÁ® ÀÖ°í, »çÀÌÁî°¡ 0ÀÌ ¾Æ´Ò ¶§
-            if (m_bKeepSizeRatio && vPrevSize.x != 0.f && vPrevSize.y != 0.f)
+            // ë¹„ìœ¨ ìœ ì§€ê°€ ì¼œì ¸ ìˆê³ , ì‚¬ì´ì¦ˆê°€ 0ì´ ì•„ë‹ ë•Œ
+            if (m_isKeepSizeRatio && vPrevSize.x != 0.f && vPrevSize.y != 0.f)
             {
-                // ¾î´À ÃàÀÌ º¯Çß´ÂÁö È®ÀÎÇÏ¿© ºñÀ² °è»ê
-                if (m_SizeDelta.x != vPrevSize.x) // X°¡ º¯Çß´Ù¸é
+                // ì–´ëŠ ì¶•ì´ ë³€í–ˆëŠ”ì§€ í™•ì¸í•˜ì—¬ ë¹„ìœ¨ ê³„ì‚°
+                if (m_sizeDelta.x != vPrevSize.x) // Xê°€ ë³€í–ˆë‹¤ë©´
                 {
                     float fRatio = vPrevSize.y / vPrevSize.x;
-                    m_SizeDelta.y = m_SizeDelta.x * fRatio;
+                    m_sizeDelta.y = m_sizeDelta.x * fRatio;
                 }
-                else if (m_SizeDelta.y != vPrevSize.y) // Y°¡ º¯Çß´Ù¸é
+                else if (m_sizeDelta.y != vPrevSize.y) // Yê°€ ë³€í–ˆë‹¤ë©´
                 {
                     float fRatio = vPrevSize.x / vPrevSize.y;
-                    m_SizeDelta.x = m_SizeDelta.y * fRatio;
+                    m_sizeDelta.x = m_sizeDelta.y * fRatio;
                 }
             }
         }
         ImGui::Separator();
 
-        // 0.0 ~ 1.0 ºñÀ²
-        if (ImGui::SliderFloat2("Anchor", (float*)&m_AnchorPoint, 0.0f, 1.0f))
+        // 0.0 ~ 1.0 ë¹„ìœ¨
+        if (ImGui::SliderFloat2("Anchor", (float*)&m_anchorPoint, 0.0f, 1.0f))
             bChanged = true;
 
-        // 0.0 ~ 1.0 ºñÀ²
-        if (m_bFreePivot)
+        // 0.0 ~ 1.0 ë¹„ìœ¨
+        if (m_isFreePivot)
         {
-            // ¹üÀ§ Á¦ÇÑ ¾ø´Â µå·¡±× (0.01f ¼Óµµ·Î ¹Ì¼¼ Á¶Àı)
-            if (ImGui::DragFloat2("Pivot (Free)", (float*)&m_Pivot, 0.01f))
+            // ë²”ìœ„ ì œí•œ ì—†ëŠ” ë“œë˜ê·¸ (0.01f ì†ë„ë¡œ ë¯¸ì„¸ ì¡°ì ˆ)
+            if (ImGui::DragFloat2("Pivot (Free)", (float*)&m_pivot, 0.01f))
             {
                 MarkDirtyRecursive();
                 bChanged = true;
@@ -218,8 +218,8 @@ void CUITransform::OnGui()
         }
         else
         {
-            // Ç¥ÁØ 0.0 ~ 1.0 ½½¶óÀÌ´õ
-            if (ImGui::SliderFloat2("Pivot (Fixed)", (float*)&m_Pivot, 0.0f, 1.0f))
+            // í‘œì¤€ 0.0 ~ 1.0 ìŠ¬ë¼ì´ë”
+            if (ImGui::SliderFloat2("Pivot (Fixed)", (float*)&m_pivot, 0.0f, 1.0f))
             {
                 MarkDirtyRecursive();
                 bChanged = true;
@@ -229,7 +229,7 @@ void CUITransform::OnGui()
         ImGui::Separator();
 
         // Local Scale 
-        if (ImGui::DragFloat2("Scale", (float*)&m_LocalScale, 0.01f, 0.0f, 10.0f))
+        if (ImGui::DragFloat2("Scale", (float*)&m_localScale, 0.01f, 0.0f, 10.0f))
             bChanged = true;
       /*  ImGui::Separator();
         if (ImGui::DragFloat("Rotation (Rad)", &m_RotationRadian, 0.01f, -6.28f, 6.28f))
@@ -242,9 +242,9 @@ void CUITransform::OnGui()
             m_RotationRadian = XMConvertToRadians(m_RotationDegreeView);
             bChanged = true;
         }*/
-        if (ImGui::DragFloat("Rotation Degree", &m_RotationDegreeView, 0.5f))
+        if (ImGui::DragFloat("Rotation Degree", &m_rotationDegreeView, 0.5f))
         {
-            m_RotationRadian = XMConvertToRadians(m_RotationDegreeView);
+            m_rotationRadian = XMConvertToRadians(m_rotationDegreeView);
             MarkDirtyRecursive();
             bChanged = true;
         }
@@ -271,7 +271,7 @@ void CUITransform::OnGui()
                 {
                     ImGui::TableSetColumnIndex(j);
 
-                    float val = m_WorldMatrix.m[i][j];
+                    float val = m_worldMatrix.m[i][j];
 
                     if (isnan(val))
                         ImGui::TextColored(ImVec4(1, 0, 0, 1), "nan");
@@ -286,18 +286,18 @@ void CUITransform::OnGui()
 
 void CUITransform::MarkDirtyRecursive()
 {
-    if (m_Dirty)
+    if (m_isDirty)
     {
-        // ÀÌ¹Ì ¹Ù²ï »óÅÂ¸é ÀÚ½Äµµ ´Ù½Ã ¸¶Å·
-        for (auto& children : m_Children)
+        // ì´ë¯¸ ë°”ë€ ìƒíƒœë©´ ìì‹ë„ ë‹¤ì‹œ ë§ˆí‚¹
+        for (auto& children : m_children)
         {
             if (children)
                 children->MarkDirtyRecursive();
         }
     }
-    m_Dirty = true;
+    m_isDirty = true;
 
-    for (auto& children : m_Children)
+    for (auto& children : m_children)
     {
         if (children)
             children->MarkDirtyRecursive();
@@ -306,15 +306,15 @@ void CUITransform::MarkDirtyRecursive()
 
 Rect CUITransform::GetParent_WorldRect()
 {
-    if (m_Parent.lock())
+    if (m_parent.lock())
     {
-        m_Parent.lock()->UpdateLayoutIfDirty();
-        return m_Parent.lock()->Get_WorldRect();
+        m_parent.lock()->UpdateLayoutIfDirty();
+        return m_parent.lock()->Get_WorldRect();
     }
 
-    // ºÎ¸ğ°¡ ¾øÀ»°æ¿ì Äµ¹ö½º ±âÁØ
+    // ë¶€ëª¨ê°€ ì—†ì„ê²½ìš° ìº”ë²„ìŠ¤ ê¸°ì¤€
     else
-        return m_pGameInstance.lock()->Get_WinSize();
+        return m_gameInstance.lock()->Get_WinSize();
 
     //return Rect{ 0.f, 0.f, 1280.f, 720.f };
 
@@ -324,10 +324,10 @@ Rect CUITransform::GetParent_WorldRect()
 
 XMMATRIX CUITransform::GetParent_Mat()
 {
-    if (m_Parent.lock())
+    if (m_parent.lock())
     {
-        m_Parent.lock()->UpdateLayoutIfDirty();
-        return m_Parent.lock()->Get_Mat();
+        m_parent.lock()->UpdateLayoutIfDirty();
+        return m_parent.lock()->Get_Mat();
     }
     else
     {
@@ -341,43 +341,43 @@ void CUITransform::Computing_WorldRect()
     Vector2 parentPos = parentRect.Pos();
     Vector2 parentSize = parentRect.Size();
 
-    // ¾ŞÄ¿ À§Ä¡ ()
-    Vector2 anchorPoint = parentPos + Hadamard(parentSize, m_AnchorPoint);
+    // ì•µì»¤ ìœ„ì¹˜ ()
+    Vector2 anchorPoint = parentPos + Hadamard(parentSize, m_anchorPoint);
 
-    // ÀÚ½ÅÀÇ Å©±â
-    Vector2 size = Hadamard(m_SizeDelta, m_LocalScale);
+    // ìì‹ ì˜ í¬ê¸°
+    Vector2 size = Hadamard(m_sizeDelta, m_localScale);
 
-    //³» UIÀÇ ÇÇ¹şÁ¡ÀÌ À§Ä¡ÇÒ°÷ ¿¨Ä¿¿¡ ¿ÀÇÁ¼Â(m_AnchoredPos) ´õÇÑ°Å
-    Vector2 pivotWorld = anchorPoint + m_AnchoredPos;
+    //ë‚´ UIì˜ í”¼ë²—ì ì´ ìœ„ì¹˜í• ê³³ ì—¥ì»¤ì— ì˜¤í”„ì…‹(m_AnchoredPos) ë”í•œê±°
+    Vector2 pivotWorld = anchorPoint + m_anchoredPos;
 
-   // // ÇÇ¹şÁ¡ÀÌ À§Ä¡ÇÒ°÷¿¡¼­ ³» Å©±âÀÇ ÇÇ¹ş ºñÀ²¸¸Å­ ¿ŞÂÊ À§·Î ÀÌµ¿ 
+   // // í”¼ë²—ì ì´ ìœ„ì¹˜í• ê³³ì—ì„œ ë‚´ í¬ê¸°ì˜ í”¼ë²— ë¹„ìœ¨ë§Œí¼ ì™¼ìª½ ìœ„ë¡œ ì´ë™ 
    // Vector2 topLeft = pivotWorld - Hadamard(m_Pivot, size);
 
    // m_WorldRect = { topLeft.x, topLeft.y ,topLeft.x+size.x, topLeft.y+size.y };
 
-   // //Çà·Ä·Î È¸ÀüÀÌ Æ÷ÇÔµÈ »óÅÂ ÀúÀå
+   // //í–‰ë ¬ë¡œ íšŒì „ì´ í¬í•¨ëœ ìƒíƒœ ì €ì¥
 
    // XMVECTOR rotationMat = XMVectorSet( Hadamard(m_Pivot, size).x, Hadamard(m_Pivot, size).y, 0,0);
 
 
    //XMStoreFloat4x4(&m_WorldMatrix,XMMatrixTransformation2D(rotationMat, 0.f, XMVectorSet(1, 1, 1, 1), rotationMat, m_RotationRadian, XMVectorSet(topLeft.x, topLeft.y, 0, 0)));
 
-    // µğ¹ö±×¿ë Rect
-    Vector2 topLeft = pivotWorld - Hadamard(m_Pivot, size);
-    m_WorldRect = { topLeft.x, topLeft.y, topLeft.x + size.x, topLeft.y + size.y };
+    // ë””ë²„ê·¸ìš© Rect
+    Vector2 topLeft = pivotWorld - Hadamard(m_pivot, size);
+    m_worldRect = { topLeft.x, topLeft.y, topLeft.x + size.x, topLeft.y + size.y };
 
     float renderY = pivotWorld.y;
 
-    // VIBuffer_Rect°¡ (-0.5 ~ 0.5) Áß½É ±âÁØÀÌ¶ó´Â ÀüÁ¦
-    // pivot º¸Á¤
+    // VIBuffer_Rectê°€ (-0.5 ~ 0.5) ì¤‘ì‹¬ ê¸°ì¤€ì´ë¼ëŠ” ì „ì œ
+    // pivot ë³´ì •
     Vector2 pivotOffset = {
-        (0.5f - m_Pivot.x)* size.x,
-        (0.5f - m_Pivot.y)* size.y
+        (0.5f - m_pivot.x)* size.x,
+        (0.5f - m_pivot.y)* size.y
     };
 
     XMMATRIX S = XMMatrixScaling(size.x, size.y, 1.f);
     XMMATRIX matPivot = XMMatrixTranslation(pivotOffset.x, pivotOffset.y, 0.f);
-    XMMATRIX R = XMMatrixRotationZ(m_RotationRadian);
+    XMMATRIX R = XMMatrixRotationZ(m_rotationRadian);
    /* XMMATRIX T = XMMatrixTranslation(
         pivotWorld.x + pivotOffset.x,
         renderY + pivotOffset.y,
@@ -387,8 +387,8 @@ void CUITransform::Computing_WorldRect()
 
     //XMMATRIX Par = GetParent_Mat();
 
-    //  ÇÙ½É
-    XMStoreFloat4x4(&m_WorldMatrix, S *matPivot * R * T );
+    //  í•µì‹¬
+    XMStoreFloat4x4(&m_worldMatrix, S *matPivot * R * T );
 
     
 }
@@ -401,55 +401,55 @@ Vector2 CUITransform::Hadamard(const Vector2& a, const Vector2& b)
 void CUITransform::Save_ToJson(nlohmann::json& j)
 {
 
-    j["AnchorPoint"] = { m_AnchorPoint.x , m_AnchorPoint.y };
-    j["Pivot"] = { m_Pivot.x , m_Pivot.y };
-    j["SizeDelta"] = { m_SizeDelta.x , m_SizeDelta.y };
-    j["AnchoredPos"] = { m_AnchoredPos.x , m_AnchoredPos.y };
-    j["LocalScale"] = { m_LocalScale.x , m_LocalScale.y};
-    j["RotationRadian"] = m_RotationRadian;
+    j["AnchorPoint"] = { m_anchorPoint.x , m_anchorPoint.y };
+    j["Pivot"] = { m_pivot.x , m_pivot.y };
+    j["SizeDelta"] = { m_sizeDelta.x , m_sizeDelta.y };
+    j["AnchoredPos"] = { m_anchoredPos.x , m_anchoredPos.y };
+    j["LocalScale"] = { m_localScale.x , m_localScale.y};
+    j["RotationRadian"] = m_rotationRadian;
 
-    j["SetParentSize"] = m_bSetParentSize;
+    j["SetParentSize"] = m_isSetParentSize;
 }
 
 void CUITransform::Load_FromJson(nlohmann::json& j)
 {
-    // 1. AnchorPoint ·Îµå (x, y)
+    // 1. AnchorPoint ë¡œë“œ (x, y)
     if (j.contains("AnchorPoint") && j["AnchorPoint"].is_array())
     {
-        m_AnchorPoint.x = j["AnchorPoint"][0];
-        m_AnchorPoint.y = j["AnchorPoint"][1];
+        m_anchorPoint.x = j["AnchorPoint"][0];
+        m_anchorPoint.y = j["AnchorPoint"][1];
     }
 
-    // 2. Pivot ·Îµå (x, y)
+    // 2. Pivot ë¡œë“œ (x, y)
     if (j.contains("Pivot") && j["Pivot"].is_array())
     {
-        m_Pivot.x = j["Pivot"][0];
-        m_Pivot.y = j["Pivot"][1];
+        m_pivot.x = j["Pivot"][0];
+        m_pivot.y = j["Pivot"][1];
     }
 
-    // 3. SizeDelta ·Îµå (³Êºñ, ³ôÀÌ)
+    // 3. SizeDelta ë¡œë“œ (ë„ˆë¹„, ë†’ì´)
     if (j.contains("SizeDelta") && j["SizeDelta"].is_array())
     {
-        m_SizeDelta.x = j["SizeDelta"][0];
-        m_SizeDelta.y = j["SizeDelta"][1];
+        m_sizeDelta.x = j["SizeDelta"][0];
+        m_sizeDelta.y = j["SizeDelta"][1];
     }
 
-    // 4. AnchoredPos ·Îµå (À§Ä¡)
+    // 4. AnchoredPos ë¡œë“œ (ìœ„ì¹˜)
     if (j.contains("AnchoredPos") && j["AnchoredPos"].is_array())
     {
-        m_AnchoredPos.x = j["AnchoredPos"][0];
-        m_AnchoredPos.y = j["AnchoredPos"][1];
+        m_anchoredPos.x = j["AnchoredPos"][0];
+        m_anchoredPos.y = j["AnchoredPos"][1];
     }
 
-    // 5. LocalScale ·Îµå (¹èÀ²)
+    // 5. LocalScale ë¡œë“œ (ë°°ìœ¨)
     if (j.contains("LocalScale") && j["LocalScale"].is_array())
     {
-        m_LocalScale.x = j["LocalScale"][0];
-        m_LocalScale.y = j["LocalScale"][1];
+        m_localScale.x = j["LocalScale"][0];
+        m_localScale.y = j["LocalScale"][1];
     }
     if (j.contains("RotationRadian"))
     {
-        m_RotationRadian= j["RotationRadian"];
+        m_rotationRadian= j["RotationRadian"];
        
     }
     
@@ -459,7 +459,7 @@ void CUITransform::Load_FromJson(nlohmann::json& j)
 HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const _char* pConstantName)
 {
     UpdateLayoutIfDirty();
-    return 	pShaderCom->Bind_Matrix(pConstantName, &m_WorldMatrix);;
+    return 	pShaderCom->Bind_Matrix(pConstantName, &m_worldMatrix);;
 }
 
 

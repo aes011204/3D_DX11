@@ -1,4 +1,4 @@
-#include "Collison_Manager.h"
+ï»¿#include "Collison_Manager.h"
 
 #include "GameObject.h"
 #include "Collider.h"
@@ -20,33 +20,33 @@ HRESULT CCollision_Manager::Initialize()
 void CCollision_Manager::Update()
 {
 
-	if (m_Colliders.empty())
+	if (m_colliders.empty())
 		return;
 
-	for (size_t i = 0; i < m_Colliders.size(); ++i)
+	for (size_t i = 0; i < m_colliders.size(); ++i)
 	{
-		auto collider = m_Colliders[i].lock();
+		auto collider = m_colliders[i].lock();
 		if (collider)
 			collider->Set_IsColl(false);
 	}
 
 
 
-	for (_uint i = 0; i < m_Colliders.size(); i++)
+	for (_uint i = 0; i < m_colliders.size(); i++)
 	{
-		auto Src = m_Colliders[i].lock();
+		auto Src = m_colliders[i].lock();
 		if (Src == nullptr)
 			continue;
 		shared_ptr<CGameObject> ownerSrc = Src->Get_GOwner();
-		if (ownerSrc == nullptr || ownerSrc->Is_PendingDestroy()) // ¼Ò¸ê ¿¹Á¤ÀÎ ¾ÖµéÀº Ãæµ¹ X
+		if (ownerSrc == nullptr || ownerSrc->Is_PendingDestroy()) // ì†Œë©¸ ì˜ˆì •ì¸ ì• ë“¤ì€ ì¶©ëŒ X
 			continue;
-		for(_uint j = 0; j < m_Colliders.size(); j++)
+		for(_uint j = 0; j < m_colliders.size(); j++)
 		{
-			auto Dst = m_Colliders[j].lock();
+			auto Dst = m_colliders[j].lock();
 			if (Dst == nullptr)
 				continue;
 			shared_ptr<CGameObject> ownerDst = Dst->Get_GOwner();
-			if (ownerDst == nullptr || ownerDst->Is_PendingDestroy()) // ¼Ò¸ê ¿¹Á¤ÀÎ ¾ÖµéÀº Ãæµ¹ X
+			if (ownerDst == nullptr || ownerDst->Is_PendingDestroy()) // ì†Œë©¸ ì˜ˆì •ì¸ ì• ë“¤ì€ ì¶©ëŒ X
 				continue;
 
 			if (ownerSrc == ownerDst)
@@ -73,7 +73,7 @@ void CCollision_Manager::Update()
 
 				if(!wasOverlap)
 				{
-					// ÃÖÃÊ Ãæµ¹
+					// ìµœì´ˆ ì¶©ëŒ
 					Src->Get_GOwner()->OnBeginOverlap(Src, Dst);
 					Dst->Get_GOwner()->OnBeginOverlap(Dst,Src);
 
@@ -83,7 +83,7 @@ void CCollision_Manager::Update()
 				}
 				else
 				{
-					// À¯Áö
+					// ìœ ì§€
 					Src->Get_GOwner()->OnStayOverlap(Src, Dst);
 					Dst->Get_GOwner()->OnStayOverlap(Dst, Src);
 				}
@@ -93,7 +93,7 @@ void CCollision_Manager::Update()
 			{
 				if(wasOverlap)
 				{
-					// ³ª°¨
+					// ë‚˜ê°
 
 					Src->Get_GOwner()->OnEndOverlap(Src, Dst);
 					Dst->Get_GOwner()->OnEndOverlap(Dst, Src);
@@ -124,7 +124,7 @@ void CCollision_Manager::Add_Collider(shared_ptr<CCollider> coll)
 {
 	if (coll == nullptr)
 		return;
-	m_Colliders.push_back(coll);
+	m_colliders.push_back(coll);
 }
 
 void CCollision_Manager::Remove_Collider(shared_ptr<CCollider> coll)

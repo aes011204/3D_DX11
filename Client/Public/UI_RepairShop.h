@@ -21,7 +21,7 @@ class CUI_RepairShop :
 {
 public:
 
-	struct REPAIR_DESC : public CUIPanel::UIPANEL_DESC
+	struct REPAIR_DESC : public CUIPanel::UIPanelDesc
 	{
 
 	};
@@ -64,7 +64,7 @@ private:
 	Vector2 m_vecAni = {};
 	_bool m_bStart = false;
 	float m_TimeAcc = {};
-	float m_fDuration = {};
+	float m_duration = {};
 
 
 	//weak_ptr<CPlayerBoat> m_PlayerBoat = {  };

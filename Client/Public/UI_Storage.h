@@ -14,7 +14,7 @@ NS_BEGIN(Client)
     public CUIPanel
 {
 public:
-    struct STORAGE_DESC : public CUIPanel::UIPANEL_DESC
+    struct STORAGE_DESC : public CUIPanel::UIPanelDesc
     {
         EInvenType Inventype = { EInvenType::NONE };
         EShopTab shopTab = { EShopTab::NONE };

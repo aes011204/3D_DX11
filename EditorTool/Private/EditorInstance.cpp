@@ -1,4 +1,4 @@
-//#include "pch.h"
+﻿//#include "pch.h"
 #include "ImguiManager.h"
 #include "EditorInstance.h"
 #include "Win_Mananger.h"
@@ -29,22 +29,22 @@ Editor::CEditorInstance::CEditorInstance()
 }
 
 
-HRESULT Editor::CEditorInstance::Initialize_Editor(const ENGINE_DESC& EngineDesc, ComPtr<ID3D11Device> pDevice,
+HRESULT Editor::CEditorInstance::Initialize_Editor(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice,
 	ComPtr<ID3D11DeviceContext> pContext)
 {
-	m_pImgui_Manager = CImguiManager::Create();
-	m_pImgui_Manager->Initialize(EngineDesc.hWnd,pDevice, pContext);
+	m_imguiManager = CImguiManager::Create();
+	m_imguiManager->Initialize(engineDesc.hWnd,pDevice, pContext);
 
-	m_pWin_Manager = CWin_Mananger::Create();
-	if (!m_pWin_Manager)
+	m_winManager = CWin_Mananger::Create();
+	if (!m_winManager)
 		return E_FAIL;
 
-	m_pGameView = CGameView::Create(EngineDesc, pDevice, pContext);
-	if (!m_pGameView)
+	m_gameView = CGameView::Create(engineDesc, pDevice, pContext);
+	if (!m_gameView)
 		return E_FAIL;
 
-	m_pSelection = CSelection::Create();
-	if (!m_pSelection)
+	m_selection = CSelection::Create();
+	if (!m_selection)
 		return E_FAIL;
 
 	GetContext();
@@ -56,11 +56,11 @@ HRESULT Editor::CEditorInstance::Initialize_Editor(const ENGINE_DESC& EngineDesc
 void Editor::CEditorInstance::Update_Editor(float fTimeDelta)
 {
     const auto updateStart = EditorPerfClock::now();
-	if (m_pWin_Manager)
-		m_pWin_Manager->Update(fTimeDelta);
+	if (m_winManager)
+		m_winManager->Update(fTimeDelta);
 
-	if (m_pGameView)
-		m_pGameView->Update(fTimeDelta);
+	if (m_gameView)
+		m_gameView->Update(fTimeDelta);
 
 	
 	//m_pImgui_Manager->Example();
@@ -77,27 +77,27 @@ void Editor::CEditorInstance::Update_Editor(float fTimeDelta)
 void Editor::CEditorInstance::Render_Editor()
 {
     const auto renderStart = EditorPerfClock::now();
-	m_pImgui_Manager->Begin();
+	m_imguiManager->Begin();
 
-	if (m_pGameView)
-		m_pGameView->Render();
+	if (m_gameView)
+		m_gameView->Render();
 
 	auto* gd = CGameInstance::GetInstance()->Get_GraphicDevice();
     double captureMs = 0.0;
-	if (gd && m_pGameView)
+	if (gd && m_gameView)
 	{
         const auto captureStart = EditorPerfClock::now();
-		m_pGameView->CaptureFromBackBuffer(gd->GetBackBufferRTV());
+		m_gameView->CaptureFromBackBuffer(gd->GetBackBufferRTV());
         captureMs = EditorElapsedMs(captureStart);
     }
 
-	if (m_pWin_Manager)
-		m_pWin_Manager->Render();
+	if (m_winManager)
+		m_winManager->Render();
 
 
 
 
-	m_pImgui_Manager->Render();
+	m_imguiManager->Render();
 
     auto& timings = m_editorCpuTimings;
     timings.updateMs = m_editorUpdateMs;
@@ -115,13 +115,13 @@ void Editor::CEditorInstance::Render_Editor()
 bool CEditorInstance::Get_ImGuiGpuMs(double& milliseconds) const
 {
     milliseconds = 0.0;
-    return m_pImgui_Manager && m_pImgui_Manager->Get_GpuRenderMs(milliseconds);
+    return m_imguiManager && m_imguiManager->Get_GpuRenderMs(milliseconds);
 }
 
 ESelectType CEditorInstance::GetType() const
 {
-	if (m_pSelection->HasSelection())
-		return m_pSelection->GetType();
+	if (m_selection->HasSelection())
+		return m_selection->GetType();
 	else
 		return ESelectType::NONE;
 
@@ -129,26 +129,26 @@ ESelectType CEditorInstance::GetType() const
 
 shared_ptr<CEntity> CEditorInstance::GetEntity() const
 {
-	if (m_pSelection->HasSelection())
-		return m_pSelection->GetEntity();
+	if (m_selection->HasSelection())
+		return m_selection->GetEntity();
 	else
 		return nullptr;
 }
 
 ImGuiContext* CEditorInstance::GetContext()
 {
-	return m_pImgui_Manager->GetContext();
+	return m_imguiManager->GetContext();
 }
 
 shared_ptr<CEntity> CEditorInstance::GetCurSelect() const
 {
-	return m_pSelection->GetEntity();
+	return m_selection->GetEntity();
 }
 
 void CEditorInstance::Free()
 {
-	m_pSelection.reset();
-	m_pWin_Manager.reset();
-	m_pGameView.reset();
-	m_pImgui_Manager.reset();
+	m_selection.reset();
+	m_winManager.reset();
+	m_gameView.reset();
+	m_imguiManager.reset();
 }

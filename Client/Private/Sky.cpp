@@ -1,4 +1,4 @@
-#include "Sky.h"
+ï»¿#include "Sky.h"
 #include "GameInstance.h"
 #include "Sky_Controller.h"
 
@@ -41,9 +41,9 @@ void CSky::Update(_float fTimeDelta)
 
 void CSky::Late_Update(_float fTimeDelta)
 {
-	m_pTransformCom->Set_Position(
-		XMLoadFloat4(m_pGameInstance.lock()->Get_CamPositon()));
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::PRIORITY,static_pointer_cast<CEntity>( shared_from_this()));
+	m_transformCom->Set_Position(
+		XMLoadFloat4(m_gameInstance.lock()->Get_CamPositon()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::PRIORITY,static_pointer_cast<CEntity>( shared_from_this()));
 }
 
 HRESULT CSky::Render()
@@ -51,13 +51,13 @@ HRESULT CSky::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Bind_Resources()))
+	if (FAILED(m_VIBufferCom->Bind_Resources()))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	if (FAILED(m_VIBufferCom->Render()))
 		return E_FAIL;
 
 
@@ -65,13 +65,13 @@ HRESULT CSky::Render()
 }
 HRESULT CSky::Ready_Components()
 {
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxCube"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	// ì‰ì´ë”ëŠ” í´ëž˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ìž„
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxCube"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìžˆì–´ì•¼ í•˜ì§€ë§Œ í´ëž˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìžˆì–´ì•¼ í•¨ 
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
 		return E_FAIL;
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Noise"), TEXT("Com_TextureNoise"), &m_pTextureNoiseCom, nullptr)))
 		return E_FAIL;
@@ -83,40 +83,40 @@ HRESULT CSky::Ready_Components()
 
 HRESULT CSky::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
+	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_Texture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureNoiseCom->Bind_ShaderResourceView(m_pShaderCom, "g_NoiseTexture", 0)))
+	if (FAILED(m_pTextureNoiseCom->Bind_ShaderResourceView(m_shaderCom, "g_NoiseTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureDistiortionCom->Bind_ShaderResourceView(m_pShaderCom, "g_DistortaionTexture", 0)))
+	if (FAILED(m_pTextureDistiortionCom->Bind_ShaderResourceView(m_shaderCom, "g_DistortaionTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Bind_RawValue( "g_Acc", &m_Acc, sizeof(float))))
+	if (FAILED(m_shaderCom->Bind_RawValue( "g_Acc", &m_Acc, sizeof(float))))
 		return E_FAIL;
 
-	float tod01 = m_pGameInstance.lock()->Get_TOD01();
+	float tod01 = m_gameInstance.lock()->Get_TOD01();
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_fTOD01", &tod01, sizeof(float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_fTOD01", &tod01, sizeof(float))))
 		return E_FAIL;
 
 	auto diffuse = CSky_Controller::GetInstance()->Get_Diffuse();
 	//
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_SkyColor", &diffuse, sizeof(_float3))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_SkyColor", &diffuse, sizeof(_float3))))
 		return E_FAIL;
 
 		 auto SkyColor = CSky_Controller::GetInstance()->Get_SkyColor();
 	 //
-	 if (FAILED(m_pShaderCom->Bind_RawValue("g_SkyColorOrigin", &SkyColor, sizeof(_float3))))
+	 if (FAILED(m_shaderCom->Bind_RawValue("g_SkyColorOrigin", &SkyColor, sizeof(_float3))))
 		 return E_FAIL;
 	//if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT", &NightT, sizeof(_float2))))
 	//	return E_FAIL;
@@ -130,7 +130,7 @@ HRESULT CSky::Bind_ShaderResources()
 	//	return E_FAIL;
 	//if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT2", &NightT2, sizeof(_float2))))
 	//	return E_FAIL;
-	//// 3. ½Ã°£´ëº° »ö»ó (float3) ¹ÙÀÎµù
+	//// 3. ì‹œê°„ëŒ€ë³„ ìƒ‰ìƒ (float3) ë°”ì¸ë”©
 	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vNightColor", &Night, sizeof(_float3))))
 	//	return E_FAIL;
 	//if (FAILED(m_pShaderCom->Bind_RawValue("g_vMidNightColor", &MidNight, sizeof(_float3))))

@@ -1,4 +1,4 @@
-#include "MainApp.h"
+ï»¿#include "MainApp.h"
 
 #include <UIImage.h>
 #include <VIBuffer_Cube.h>
@@ -43,7 +43,7 @@
 #include "VIBuffer_Terrain.h"
 #include "Fish.h"
 CMainApp::CMainApp()
-	: m_pGameInstance{ CGameInstance::GetInstance() },
+	: m_gameInstance{ CGameInstance::GetInstance() },
 	m_pEditorInstance{ CEditorInstance::GetInstance() }
 {
 }
@@ -57,29 +57,29 @@ HRESULT CMainApp::Initialize()
 {
 
 
-	/* °ÔÀÓÀ» ±¸µ¿ÇÏ±â À§ÇÑ ±âÃÊ ÃÊ±âÈ­ ÀÛ¾÷À» ¼öÇàÇÑ´Ù */
+	/* ê²Œìž„ì„ êµ¬ë™í•˜ê¸° ìœ„í•œ ê¸°ì´ˆ ì´ˆê¸°í™” ìž‘ì—…ì„ ìˆ˜í–‰í•œë‹¤ */
 
 
 
-	/* ¿£ÁøÀ» ÀÌ¿ëÇÏ±â À§ÇÑ ¿£Áø Ã÷·ÎÁ§Æ®¸¦ ÁØºñ½ÃÅ²´Ù */
-	ENGINE_DESC EngineDesc{};
-	EngineDesc.hWnd = g_hWnd;
-	EngineDesc.hInst = g_hInst;
-	EngineDesc.eWinMode = WINMODE::WIN;
-	EngineDesc.iMaxLevelNum = ETOI(LEVEL::END);
-	EngineDesc.iEditorLevel = ETOI(LEVEL::EDITOR);
-	EngineDesc.iViewportHeight = g_iWinSizeY;
-	EngineDesc.iViewportWidth = g_iWinSizeX;
+	/* ì—”ì§„ì„ ì´ìš©í•˜ê¸° ìœ„í•œ ì—”ì§„ ì¸ ë¡œì íŠ¸ë¥¼ ì¤€ë¹„ì‹œí‚¨ë‹¤ */
+	EngineDesc engineDesc{};
+	engineDesc.hWnd = g_hWnd;
+	engineDesc.hInst = g_hInst;
+	engineDesc.winMode = EWinMode::WIN;
+	engineDesc.maxLevelNum = ETOI(LEVEL::END);
+	engineDesc.editorLevel = ETOI(LEVEL::EDITOR);
+	engineDesc.viewportHeight = g_iWinSizeY;
+	engineDesc.viewportWidth = g_iWinSizeX;
 
-	if (FAILED(m_pGameInstance.lock()->Initialize_Engine(EngineDesc, m_pDevice, m_pContext)))
+	if (FAILED(m_gameInstance.lock()->Initialize_Engine(engineDesc, m_device, m_context)))
 		return E_FAIL;
 
-	if (FAILED(m_pEditorInstance.lock()->Initialize_Editor(EngineDesc, m_pDevice, m_pContext)))
+	if (FAILED(m_pEditorInstance.lock()->Initialize_Editor(engineDesc, m_device, m_context)))
 		return E_FAIL;
 
 	ImGuiContext* imgContext = m_pEditorInstance.lock()->GetContext();
 	ImGui::SetCurrentContext(imgContext);
-	m_pGameInstance.lock()->SetImguiContext(imgContext);
+	m_gameInstance.lock()->SetImguiContext(imgContext);
 
 	if (FAILED(Ready_Prototype_For_Static_Level()))
 		return E_FAIL;
@@ -93,26 +93,26 @@ HRESULT CMainApp::Initialize()
 
 
 
-	// UI Pool Ã¤¿ì±â / ready_UI ¿ªÇÒ
-	CUI_Controller::GetInstance()->Initialize(m_pDevice, m_pContext);
+	// UI Pool ì±„ìš°ê¸° / ready_UI ì—­í• 
+	CUI_Controller::GetInstance()->Initialize(m_device, m_context);
 	auto SeaManager = CSea_Manager::GetInstance();
 	if (SeaManager != nullptr)
 	{
 		SeaManager->Initialize();
-		m_pGameInstance.lock()->Push_ManagerClass(L"Sea_Manager", SeaManager.get());
+		m_gameInstance.lock()->Push_ManagerClass(L"Sea_Manager", SeaManager.get());
 	}
 
 	if (FAILED((Ready_Fonts())))
 		return E_FAIL;
 
-	/* °ÔÀÓÀÇ ½ÃÀÛÀ» À§ÇØ ½ÃÀÛÀÌ µÇ´Â ·¹º§ ÇÒ´ç°ú µ¿ÀÛÀ» ½ÃÅ²´Ù */
+	/* ê²Œìž„ì˜ ì‹œìž‘ì„ ìœ„í•´ ì‹œìž‘ì´ ë˜ëŠ” ë ˆë²¨ í• ë‹¹ê³¼ ë™ìž‘ì„ ì‹œí‚¨ë‹¤ */
 	if (FAILED(Ready_StartLevel(LEVEL::LOGO)))
 		return E_FAIL;
 
 
 
 
-	//¾ÆÀÌÅÛÀº ¾ÆÀÌÅÛ UI ´Ù ÇÁ·ÎÅä Å¸ÀÔ ¸¸µçÈÄ »ç¿ë
+	//ì•„ì´í…œì€ ì•„ì´í…œ UI ë‹¤ í”„ë¡œí†  íƒ€ìž… ë§Œë“ í›„ ì‚¬ìš©
 	CItemDB::GetInstance()->Initialize();
 	CDialogueDB::GetInstance()->Ready_DialogueDB();
 
@@ -123,7 +123,7 @@ HRESULT CMainApp::Initialize()
 int CMainApp::Update(_float fTimeDelta)
 {
 
-	m_pGameInstance.lock()->Update_Engine(fTimeDelta);
+	m_gameInstance.lock()->Update_Engine(fTimeDelta);
 	CSea_Manager::GetInstance()->Update(fTimeDelta);
 	m_pEditorInstance.lock()->Update_Editor(fTimeDelta);
 
@@ -135,41 +135,41 @@ int CMainApp::Update(_float fTimeDelta)
 HRESULT CMainApp::Render()
 {
 
-	if (FAILED(m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd))) // ÀÌ°Å Clear_Buffers() ³»ºÎ·Î ³ÖÀ»¼ö ÀÖÁö¸¸ ÀÏ´Ü ÀÌ·¸°Ô
+	if (FAILED(m_gameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd))) // ì´ê±° Clear_Buffers() ë‚´ë¶€ë¡œ ë„£ì„ìˆ˜ ìžˆì§€ë§Œ ì¼ë‹¨ ì´ë ‡ê²Œ
 		return E_FAIL;
 
 	_float4 vClearColor = { 0.f,0.f, 1.f,1.f };
-	if (FAILED(m_pGameInstance.lock()->Clear_Buffers(&vClearColor)))
+	if (FAILED(m_gameInstance.lock()->Clear_Buffers(&vClearColor)))
 		return E_FAIL;
 
-	m_pGameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
+	m_gameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
 
-	m_pGameInstance.lock()->Draw();
+	m_gameInstance.lock()->Draw();
 
 
 
 	m_pEditorInstance.lock()->Render_Editor();
 
 
-	m_pGameInstance.lock()->Present();
+	m_gameInstance.lock()->Present();
 
 	return S_OK;
 }
 HRESULT CMainApp::Ready_Fonts()
 {
-	/*MakeSpriteFont "³Ø½¼lv1°íµñ Bold" /FontSize:16 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 158ex.spritefont */
+	/*MakeSpriteFont "ë„¥ìŠ¨lv1ê³ ë”• Bold" /FontSize:16 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD800 /DefaultCharacter:0xAC00 158ex.spritefont */
 
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Hahmlet_SemiBold"), TEXT("../Bin/Resources/Fonts/Hahmlet SemiBold.spritefont"))))
+	if (FAILED(m_gameInstance.lock()->Add_Font(TEXT("Hahmlet_SemiBold"), TEXT("../Bin/Resources/Fonts/Hahmlet SemiBold.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Front_Page_Neue"), TEXT("../Bin/Resources/Fonts/Front Page Neue.spritefont"))))
+	if (FAILED(m_gameInstance.lock()->Add_Font(TEXT("Front_Page_Neue"), TEXT("../Bin/Resources/Fonts/Front Page Neue.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Hahmlet_ExtraBold"), TEXT("../Bin/Resources/Fonts/Hahmlet_ExtraBold.spritefont"))))
+	if (FAILED(m_gameInstance.lock()->Add_Font(TEXT("Hahmlet_ExtraBold"), TEXT("../Bin/Resources/Fonts/Hahmlet_ExtraBold.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC"), TEXT("../Bin/Resources/Fonts/Noto Sans CJK SC.spritefont"))))
+	if (FAILED(m_gameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC"), TEXT("../Bin/Resources/Fonts/Noto Sans CJK SC.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC_32"), TEXT("../Bin/Resources/Fonts/Noto_Sans_CJK_SC_32.spritefont"))))
+	if (FAILED(m_gameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC_32"), TEXT("../Bin/Resources/Fonts/Noto_Sans_CJK_SC_32.spritefont"))))
 		return E_FAIL;
-	if (FAILED(m_pGameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC_24"), TEXT("../Bin/Resources/Fonts/Noto_Sans_CJK_SC_24.spritefont"))))
+	if (FAILED(m_gameInstance.lock()->Add_Font(TEXT("Noto_Sans_CJK_SC_24"), TEXT("../Bin/Resources/Fonts/Noto_Sans_CJK_SC_24.spritefont"))))
 		return E_FAIL;
 
 	/*C:\Users\aes01>C:\MakeSpriteFont.exe "Noto Sans CJK SC" "Noto_Sans_CJK_SC_24.spritefont" /FontSize:24 /FastPack /CharacterRegion:0x0020-0x00FF /CharacterRegion:0x3131-0x3163 /CharacterRegion:0xAC00-0xD7A3 /DefaultCharacter:0xAC00
@@ -194,7 +194,7 @@ HRESULT CMainApp::Ready_StartLevel(LEVEL eStartLevelID)
 {
 	if (eStartLevelID == LEVEL::LOADING)
 		return E_FAIL;
-	if (FAILED((m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eStartLevelID)))))
+	if (FAILED((m_gameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_device, m_context, eStartLevelID)))))
 		return E_FAIL;
 
 	return S_OK;
@@ -205,16 +205,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	////////////////////////CAMERA////////////////////////
 
 	/* Prototype_GameObject_Camera_Play */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Play"),
-		CCamera_Play::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Play"),
+		CCamera_Play::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Camera_Play");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_Camera_Free */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
-		CCamera_Free::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
+		CCamera_Free::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Camera_Free");
 		return E_FAIL;
@@ -225,58 +225,58 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	////////////////////////SHADER////////////////////////
 	///
 	/* Prototype_Component_Shader_VtxNorTex */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/ShaderFiles/Shader_VtxNorTex.hlsl"), VTXNORTEX::Elements, VTXNORTEX::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Shader_VtxMesh */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/ShaderFiles/Shader_VtxMesh.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Shader_VtxAnimMesh */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/ShaderFiles/Shader_VtxAnimMesh.hlsl"), VTXANIMMESH::Elements, VTXANIMMESH::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Shader_VtxTex */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxTex"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_VtxTex.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxTex"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/Shaderfiles/Shader_VtxTex.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
 		return E_FAIL;
 
 	/* Prototype_Component_Shader_VtxDonut */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxDonut"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_VtxDonut.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxDonut"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/Shaderfiles/Shader_VtxDonut.hlsl"), VTXTEX::Elements, VTXTEX::iNumElements))))
 		return E_FAIL;
 
 	/* Prototype_Component_Shader_VtxCube */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxCube"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxCube"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/ShaderFiles/Shader_VtxCube.hlsl"), VTXCUBE::Elements, VTXCUBE::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxCube");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Shader_Sea */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_Sea"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/Shaderfiles/Shader_Sea.hlsl"), VTXPOS::Elements, VTXPOS::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_Sea"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/Shaderfiles/Shader_Sea.hlsl"), VTXPOS::Elements, VTXPOS::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_sea");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Shader_VtxMesh_CustomTexture */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh_CustomTexture"),
-		CShader::Create(m_pDevice, m_pContext, TEXT("../Bin/ShaderFiles/Shader_VtxMeshCustomTexture.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh_CustomTexture"),
+		CShader::Create(m_device, m_context, TEXT("../Bin/ShaderFiles/Shader_VtxMeshCustomTexture.hlsl"), VTXMESH::Elements, VTXMESH::iNumElements))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Shader_VtxNorTex");
 		return E_FAIL;
@@ -285,8 +285,8 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	////////////////////////COMPONENT////////////////////////
 
 	/* Prototype_Component_Inven */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"),
-		CInventory::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"),
+		CInventory::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Component_Inven ");
 		return E_FAIL;
@@ -295,16 +295,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	///////////////////////////////////////////////////////
 
 	/* Prototype_Component_VIBuffer_Rect */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
-		CVIBuffer_Rect::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"),
+		CVIBuffer_Rect::Create(m_device, m_context))))
 		return E_FAIL;
 
 
 
 	/////////////////////////////////////////////
  /* Prototype_GameObject_CEmptyUObject */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_CEmptyUObject"),
-		CEmptyUObject::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_CEmptyUObject"),
+		CEmptyUObject::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CEmptyUObject");
 		return E_FAIL;
@@ -313,97 +313,97 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	///////////////////UItexture/////////////////////
 
-	// ¸ÞÀÎ¸Þ´º //
+	// ë©”ì¸ë©”ë‰´ //
 	/* Prototype_Component_Texture_Button */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Button"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/Button_Default.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Button"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MainMenu/Button_Default.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Texture_Dredge */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Dredge"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/Dredge_Title.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Dredge"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MainMenu/Dredge_Title.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Texture_Select */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Select"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MainMenu/Selector.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Select"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MainMenu/Selector.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 
-	// ÀÎ¹ê //
+	// ì¸ë°´ //
 	/* Prototype_Component_Texture_Button_RED */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Button_RED"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/Tab_Selected.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Button_RED"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/Tab_Selected.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Texture_Slot_Damage */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slot_Damage"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/DamageBox_%d.png"), 2))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slot_Damage"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/DamageBox_%d.png"), 2))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Texture_Slot_Inven */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slot_Inven"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/CargoGrid_%d.png"), 2))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Slot_Inven"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/CargoGrid_%d.png"), 2))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Texture_HealthBarPanel */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_HealthBarPanel"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/HealthBarPanel.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_HealthBarPanel"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/HealthBarPanel.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Texture_PanelBackground */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PanelBackground"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PanelBackground.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PanelBackground"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/PanelBackground.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Texture_EngineEquipmentIcon */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_EngineEquipmentIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/EngineEquipmentIcon_%d.png"), 2))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_EngineEquipmentIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/EngineEquipmentIcon_%d.png"), 2))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Texture_FishingEquipmentIcon*/
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingEquipmentIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/FishingEquipmentIcon_%d.png"), 2))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingEquipmentIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/FishingEquipmentIcon_%d.png"), 2))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Texture_LightEquipmentIcon*/
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LightEquipmentIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/LightEquipmentIcon_%d.png"), 2))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LightEquipmentIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/LightEquipmentIcon_%d.png"), 2))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Texture_PlayerInventoryBackground */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PlayerInventoryBackground"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PlayerInventoryBackground.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PlayerInventoryBackground"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/PlayerInventoryBackground.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
@@ -412,25 +412,25 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	////////tooltip////////
 
 	/* Prototype_Component_Texture_PopupBackground */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PopupBackground"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Inven/PopupBackground.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_PopupBackground"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Inven/PopupBackground.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 
 
-	// Ã¢°í //
+	// ì°½ê³  //
 	/* Prototype_Component_Texture_StorageInventoryBackground */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StorageInventoryBackground"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/StorageInventoryBackground.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StorageInventoryBackground"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Panel/StorageInventoryBackground.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Texture_TabDivider */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TabDivider"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/TabDivider.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TabDivider"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Panel/TabDivider.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CTexture");
 		return E_FAIL;
@@ -438,8 +438,8 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	// tab_Container //
 	/* Prototype_Component_Texture_TabContainer */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TabContainer"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Panel/SidePanel.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TabContainer"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Panel/SidePanel.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_TabContainer");
 		return E_FAIL;
@@ -449,79 +449,79 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	/////////////////////ITEM_TEX///////////////////////
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-1.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-1.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-1.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-1.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-2.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-2.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-2.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-2.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-3.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-3.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
-		return E_FAIL;
-	}
-
-
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/cod.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-1.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-1.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-2.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-2.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-3.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-3.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-3.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/mackerel-ab-3.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
 
 
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/cod.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-1.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-1.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-2.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-2.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-3.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/cod-ab-3.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
+		return E_FAIL;
+	}
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/stargazer-ab-1.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/stargazer-ab-1.png"), 1))))
+
+
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/stargazer-ab-1.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/stargazer-ab-1.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/stargazer.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/stargazer.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/stargazer.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/stargazer.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler-ab-1.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler-ab-1.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler-ab-1.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler-ab-1.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Fish/bronze-whaler.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
@@ -530,91 +530,91 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 
 	//
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light1.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/light1.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light1.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/light1.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/engine1.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/engine1.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/engine1.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/engine1.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/rod1.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/rod1.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-
-	//
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/lumber.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Mat/lumber.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/cloth.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Mat/cloth.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/research_item.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Mat/research_item.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/rod1.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/rod1.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//
-
-
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/engine3.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/engine3.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/engine5.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/engine5.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light2.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/light2.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light3.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/light3.png"), 1))))
-	{
-		MSG_BOX("Faild to Add_Prototype : Texture");
-		return E_FAIL;
-	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light4.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/light4.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/lumber.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Mat/lumber.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/rod2.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/rod2.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/cloth.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Mat/cloth.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/rod4.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Item/Equip/rod4.png"), 1))))
+
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Mat/research_item.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Mat/research_item.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	//
+
+
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/engine3.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/engine3.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/engine5.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/engine5.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light2.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/light2.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light3.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/light3.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/light4.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/light4.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/rod2.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/rod2.png"), 1))))
+	{
+		MSG_BOX("Faild to Add_Prototype : Texture");
+		return E_FAIL;
+	}
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/Item/Equip/rod4.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Item/Equip/rod4.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -623,16 +623,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	///////////////////////LOADING//////////////////////////////
 
 	//Prototype_Component_Texture_Black
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Black"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Black.jpg"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Black"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Black.jpg"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Black");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_LoadingIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LoadingIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/EngineIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LoadingIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/EngineIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : LoadingIcon");
 		return E_FAIL;
@@ -642,16 +642,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	///////////////////////HUD//////////////////////////////
 
 	//Prototype_Component_Texture_Compass
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Compass"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/Compass.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Compass"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/Compass.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_CompassRing
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_CompassRing"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/CompassRing.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_CompassRing"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/CompassRing.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -659,8 +659,8 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 
 	//Prototype_Component_Texture_TimeOfDayPointer
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TimeOfDayPointer"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/TimeOfDayPointer.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TimeOfDayPointer"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/TimeOfDayPointer.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -668,8 +668,8 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 
 	//Prototype_Component_Texture_TimeOfDayWheel
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TimeOfDayWheel"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/TimeOfDayWheel.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TimeOfDayWheel"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/TimeOfDayWheel.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -677,24 +677,24 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 
 	//Prototype_Component_Texture_HorizontalUITray
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_HorizontalUITray"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/HorizontalUITray.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_HorizontalUITray"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/HorizontalUITray.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_Speaker_Button_Default
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Speaker_Button_Default"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/Speaker_Button_Default.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Speaker_Button_Default"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/Speaker_Button_Default.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_ActionButtonMain
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_ActionButtonMain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/ActionButtonMain_%d.png"), 3))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_ActionButtonMain"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/ActionButtonMain_%d.png"), 3))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -703,16 +703,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	///////////////////////NPC UI//////////////////////////////
 
 	//Prototype_Component_Texture_TitleBackground
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TitleBackground"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/TitleBackground.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TitleBackground"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/NPC/TitleBackground.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_DialogBox
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DialogBox"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/DialogBox_%d.png"), 2))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DialogBox"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/NPC/DialogBox_%d.png"), 2))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -751,16 +751,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	//}
 
 	//Prototype_Component_Texture_Shipwright
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Shipwright.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Shipwright.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Shipwright.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/NPC/Shipwright.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Shipwright_Background
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Shipwright_Background.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Shipwright_Background.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Shipwright_Background.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/NPC/Shipwright_Background.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -768,16 +768,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	/////////////////////NPC_TEX///////////////////////
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/NPC/Fishmonger_Background.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/NPC/Fishmonger.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture_mackerel");
 		return E_FAIL;
@@ -785,16 +785,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	//
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/NPC/Mayor_Background.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Mayor.png"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/NPC/Mayor.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("../Bin/Resources/Textures/NPC/Mayor.png"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/NPC/Mayor.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -806,37 +806,37 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	////////////////////////ICON///////////////////////////
 
 	//Prototype_Component_Texture_ShipIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_ShipIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/ShipIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_ShipIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/ShipIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_LightsIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LightsIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/LightsActionIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_LightsIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/LightsActionIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_RadialMenuIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_RadialMenuIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/RadialMenuIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_RadialMenuIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/RadialMenuIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_FogHornActionIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_FogHornActionIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/HUD/FogHornActionIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_FogHornActionIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/HUD/FogHornActionIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	////////////////////////KEY///////////////////////////
 	//Prototype_Component_Texture_HorizontalUITray
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_KEY"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Key/keyboard_Icon_%d.png"), 216))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_KEY"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Key/keyboard_Icon_%d.png"), 216))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -844,43 +844,43 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	////////////////////////MINIGAME///////////////////////////
 	//Prototype_Component_Texture_MinigamePanel
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MinigamePanel"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/MinigamePanel.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MinigamePanel"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/MinigamePanel.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_FishingUIBorders
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUIBorders"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/FishingUIBorders.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUIBorders"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/FishingUIBorders.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_FishingUICircle
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUICircle"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/FishingUICircle.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUICircle"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/FishingUICircle.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_FishingUISpinner
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUISpinner"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/FishingUISpinner.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingUISpinner"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/FishingUISpinner.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_FishingFishIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingFishIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/FishingFishIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishingFishIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/FishingFishIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_CrabPotDepthBar
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_CrabPotDepthBar"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/CrabPotDepthBar.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_CrabPotDepthBar"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/CrabPotDepthBar.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -890,44 +890,44 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	//
 	//Prototype_Component_Texture_InnerTargetUI
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_InnerTargetUI"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigame_InnerTargetUI.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_InnerTargetUI"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigame_InnerTargetUI.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_OuterTargetUI
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_OuterTargetUI"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigame_OuterTargetUI.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_OuterTargetUI"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigame_OuterTargetUI.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_DiamondMinigame
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DiamondMinigame"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigameDiamond.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DiamondMinigame"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/DiamondMinigameDiamond.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//
 		//Prototype_Component_Texture_BallCatcherBall
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherBall"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherBall_%d.png"), 2))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherBall"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherBall_%d.png"), 2))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_BallCatcherArrows
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherArrows"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherArrows.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherArrows"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherArrows.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	//Prototype_Component_Texture_BallCatcherBG
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherBG"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherBG.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BallCatcherBG"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/MiniGame/BallCatcherBG.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -936,7 +936,7 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	/////////////////////////TEST//////////////////////////
 
 	//{
-	  // lstrcpy(m_szLoadingText, TEXT("ÅØ½ºÃÄ¸¦ ·Îµù Áß ÀÔ´Ï´Ù."));
+	  // lstrcpy(m_szLoadingText, TEXT("í…ìŠ¤ì³ë¥¼ ë¡œë”© ì¤‘ ìž…ë‹ˆë‹¤."));
 	   /* Prototype_Component_Texture_BackGround */
 	//if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"),
 	//	CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Default%d.jpg"), 2))))
@@ -946,8 +946,8 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 	//}
 	/////////////////////////VILLAGE//////////////////////////
 	//Prototype_Component_Texture_VillageUnderBar
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_VillageUnderBar"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/DestinationPointer.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_VillageUnderBar"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/DestinationPointer.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -955,56 +955,56 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 
 	//Prototype_Component_Texture_DebtBarDectorator
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DebtBarDectorator"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/DebtBarDectorator.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_DebtBarDectorator"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/DebtBarDectorator.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_SleepIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_SleepIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/SleepIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_SleepIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/SleepIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_UndockIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UndockIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/UndockIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_UndockIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/UndockIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_cog_icon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_cog_icon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/cog_icon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_cog_icon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/cog_icon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_MerchantIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MerchantIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/MerchantIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_MerchantIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/MerchantIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_FishIconVill
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishIconVill"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/FishIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_FishIconVill"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/FishIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_StorageIcon
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StorageIcon"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/StorageIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_StorageIcon"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/StorageIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -1012,32 +1012,32 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	//shop
 	//Prototype_Component_Texture_Shop_Engine
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Engine"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/EngineIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Engine"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/EngineIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_Shop_Rod
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Rod"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/RodIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Rod"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/RodIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_Shop_Net
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Net"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/TrawlIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Net"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/TrawlIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 
 	//Prototype_Component_Texture_Shop_Light
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Light"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Village/LightIcon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Shop_Light"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Village/LightIcon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -1045,8 +1045,8 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 
 	//
 	//Prototype_Component_Texture_Timer
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Timer"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Time/hourglass_icon.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Timer"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Time/hourglass_icon.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
@@ -1057,16 +1057,16 @@ HRESULT CMainApp::Ready_Prototype_For_Static_Level()
 HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 {
 	/* Prototype_Component_VIBuffer_Cube */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"),
-		CVIBuffer_Cube::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"),
+		CVIBuffer_Cube::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Cube");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Texture_Snow*/
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Snow"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Snow"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Snow/Snow.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Snow Texture");
 		return E_FAIL;
@@ -1074,8 +1074,8 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 	/* Prototype_Component_Texture_Rain*/
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Rain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Rainy.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Rain"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Rainy.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Snow Texture");
 		return E_FAIL;
@@ -1083,44 +1083,44 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 	/* Prototype_Component_Texture_WaterEff*/
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_WaterEff"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/WaterBubble_Texture.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_WaterEff"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/WaterBubble_Texture.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Snow Texture");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Texture_Sky */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/Sky_RGB.png"), 4))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/SkyBox/Sky_RGB.png"), 4))))
 	{
 		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Texture_Sky_Noise */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Noise"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/ComplexNoise1_Texture.png"), 4))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Noise"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/SkyBox/ComplexNoise1_Texture.png"), 4))))
 	{
 		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Texture_Sky_Distortion */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Distortion"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/SkyBox/CloudDistortion_Normal.png"), 4))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Distortion"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/SkyBox/CloudDistortion_Normal.png"), 4))))
 	{
 		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
 		return E_FAIL;
 	}
 	/* Prototype_Component_VIBuffer_Sea */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"),
-		CVIBuffer_Sea::Create(m_pDevice, m_pContext, 128, 4))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"),
+		CVIBuffer_Sea::Create(m_device, m_context, 128, 4))))
 	{
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Sea");
 		return E_FAIL;
 	}
 	/* Prototype_Component_VIBuffer_Terrain */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
-		CVIBuffer_Terrain::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_1500.raw")))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"),
+		CVIBuffer_Terrain::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Terrain/Terrain_1500.raw")))))
 	{
 		MSG_BOX("Faild to Add_Prototype : VIBuffer_Terrain");
 		return E_FAIL;
@@ -1129,15 +1129,15 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 
 	//Prototype_Component_Texture_TerrainHeight
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_Heightmap_1500.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Terrain/Terrain_Heightmap_1500.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : Texture");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Texture_Terrain */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"),
-		CTexture::Create(m_pDevice, m_pContext, TEXT("../Bin/Resources/Textures/Terrain/Terrain_RGB.png"), 1))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"),
+		CTexture::Create(m_device, m_context, TEXT("../Bin/Resources/Textures/Terrain/Terrain_RGB.png"), 1))))
 	{
 		MSG_BOX("Faild to Add_Prototype : BackGround Texture");
 		return E_FAIL;
@@ -1147,8 +1147,8 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
 	/* Prototype_Component_Model_Island */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/island.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/island.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1156,8 +1156,8 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 	/* Prototype_Component_Model_Island_Side */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island_Side"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/island_Side.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island_Side"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/island_Side.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1172,24 +1172,24 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 	//}
 	/* Prototype_Component_Model_Rock0 */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock0"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock0.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock0"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock0.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_Rock1 */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock1"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock1.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock1"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock1.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_Rock2 */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock2"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Rock/GM_Rock2.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Rock2"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock2.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1197,16 +1197,16 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 	/*Prototype_Component_Model_PineTree*/
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_PineTree"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tree/Tree_Pine.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_PineTree"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Tree_Pine.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 	/*Prototype_Component_Model_BirchTree*/
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_BirchTree"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tree/Tree_Birch.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_BirchTree"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Tree_Birch.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1214,8 +1214,8 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 	/*Prototype_Component_Model_Bush*/
 
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Bush"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Tree/Bush.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Bush"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Bush.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1223,16 +1223,16 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 	/* Prototype_Component_Model_Island_Collector */
 	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) /** XMMatrixRotationY(XMConvertToRadians(180.f))*/;
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island_Collector"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/Island/Island_collector.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island_Collector"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/Island_collector.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 
 
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_LightHouse"),
-		CModel::Create(m_pDevice, m_pContext, "../Bin/Resources/BinaryModels/LightHouse/LightHouse_tex.dat", MODEL::NONANIM, PreLocalTransformMatrix))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_LightHouse"),
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/LightHouse/LightHouse_tex.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1241,8 +1241,8 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 
 	/* Prototype_GameObject_CEmptyGObject */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_CEmptyGObject"),
-		CEmptyGObject::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_CEmptyGObject"),
+		CEmptyGObject::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : CEmptyGObject");
 		return E_FAIL;
@@ -1251,24 +1251,24 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 
 	/* Prototype_GameObject_Island */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Island"),
-		CIsland::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Island"),
+		CIsland::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GameObject_Island");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_Sky */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sky"),
-		CSky::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sky"),
+		CSky::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GameObject_Sky");
 		return E_FAIL;
 	}
 
 	/* Prototype_GameObject_Sea */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sea"),
-		CSea::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sea"),
+		CSea::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype :GameObject_Sea");
 		return E_FAIL;
@@ -1277,8 +1277,8 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 
 	/* Prototype_GameObject_Terrain */
-	if (FAILED(m_pGameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Terrain"),
-		CTerrain::Create(m_pDevice, m_pContext))))
+	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Terrain"),
+		CTerrain::Create(m_device, m_context))))
 	{
 		MSG_BOX("Faild to Add_Prototype :GameObject_Terrain");
 		return E_FAIL;
@@ -1290,22 +1290,22 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 HRESULT CMainApp::Ready_Sound()
 {
-	vector<SOUND_ASSET_DESC> sounds;
+	vector<SoundAssetDesc> sounds;
 
-	//¸ÅÀÎ¸Å´º
+	//ë§¤ì¸ë§¤ë‰´
 	sounds.push_back({
 		L"MainMenu_BGM",
 		L"../Bin/Resources/Sound/Dredge_Theme_1.wav",
-		SOUND_CATEGORY::BGM,
-		SOUND_LOAD_MODE::STREAM,
+		ESoundCategory::BGM,
+		ESoundLoadMode::STREAM,
 		1.f
 		});
 
 	sounds.push_back({
 		L"Hover",
 		L"../Bin/Resources/Sound/UI/select.wav",
-		SOUND_CATEGORY::UI,
-		SOUND_LOAD_MODE::STATIC,
+		ESoundCategory::UI,
+		ESoundLoadMode::STATIC,
 		1.f
 		});
 
@@ -1313,32 +1313,32 @@ HRESULT CMainApp::Ready_Sound()
 	sounds.push_back({
 		L"Click",
 		L"../Bin/Resources/Sound/UI/click_back.wav",
-		SOUND_CATEGORY::UI,
-		SOUND_LOAD_MODE::STATIC,
+		ESoundCategory::UI,
+		ESoundLoadMode::STATIC,
 		1.f
 		});
-	// ½ÃÀÛ
+	// ì‹œìž‘
 	sounds.push_back({
 	L"GM_BGM_Theme",
 	L"../Bin/Resources/Sound/Village/Greater_Marrow_Dock_Theme.wav",
-	SOUND_CATEGORY::BGM,
-	SOUND_LOAD_MODE::STREAM,
+	ESoundCategory::BGM,
+	ESoundLoadMode::STREAM,
 	1.f
 		});
 
 	sounds.push_back({
 	L"GM_BGM_Day",
 	L"../Bin/Resources/Sound/Village/Greater_Marrow_Dock_Day.wav",
-	SOUND_CATEGORY::AMBIENT,
-	SOUND_LOAD_MODE::STREAM,
+	ESoundCategory::AMBIENT,
+	ESoundLoadMode::STREAM,
 	1.f
 		});
 
 	sounds.push_back({
 L"GM_BGM_Night",
 L"../Bin/Resources/Sound/Village/Greater_Marrow_Dock_Night.wav",
-SOUND_CATEGORY::AMBIENT,
-SOUND_LOAD_MODE::STREAM,
+ESoundCategory::AMBIENT,
+ESoundLoadMode::STREAM,
 1.f
 		});
 
@@ -1349,8 +1349,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"Docked",
 	L"../Bin/Resources/Sound/Docking_Docked.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1358,8 +1358,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"Dock_Progress",
 	L"../Bin/Resources/Sound/Docking_Progress.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1367,120 +1367,120 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"Undocked",
 	L"../Bin/Resources/Sound/Docking_Undocked.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"Fishmonger_Visit",
 	L"../Bin/Resources/Sound/Village/FishMonger/Fishmonger_Visit.wav",
-	SOUND_CATEGORY::VOICE,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::VOICE,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"Repair_Visit",
 	L"../Bin/Resources/Sound/Village/Repair/TheEngineer_Aah.wav",
-	SOUND_CATEGORY::VOICE,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::VOICE,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"Storage_Visit",
 	L"../Bin/Resources/Sound/Village/Storage/Storage_Visit.wav",
-	SOUND_CATEGORY::VOICE,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::VOICE,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	//
 	sounds.push_back({
 	L"Rotate",
 	L"../Bin/Resources/Sound/UI/rotate.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STREAM,
+	ESoundCategory::UI,
+	ESoundLoadMode::STREAM,
 	1.f
 		});
 	
 	sounds.push_back({
 	L"Hold_Active",
 	L"../Bin/Resources/Sound/Sleep/Hold_Active.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	
 	sounds.push_back({
 	L"Hold_Complete",
 	L"../Bin/Resources/Sound/Sleep/Hold_Complete.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	
 	sounds.push_back({
 	L"InorganicItem_PickUp",
 	L"../Bin/Resources/Sound/UI/InorganicItem_PickUp.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"OrganicItem_PickUp",
 	L"../Bin/Resources/Sound/UI/OrganicItem_PickUp.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"Upgrade_Complete",
 	L"../Bin/Resources/Sound/UI/Upgrade_Complete.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"Repair_Kit",
 	L"../Bin/Resources/Sound/UI/Repair_Kit.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"Money_Spent",
 	L"../Bin/Resources/Sound/UI/Money_Spent.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"Money_Gained",
 	L"../Bin/Resources/Sound/UI/Money_Gained.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"InorganicItem_Place",
 	L"../Bin/Resources/Sound/UI/InorganicItem_Place.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"OrganicItem_Place",
 	L"../Bin/Resources/Sound/UI/OrganicItem_Place.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1488,8 +1488,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"Pursuits_OpenIndividual",
 	L"../Bin/Resources/Sound/Pursuits_OpenIndividual.wav",
-	SOUND_CATEGORY::UI,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::UI,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1497,8 +1497,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"Fishing_Success",
 	L"../Bin/Resources/Sound/Fish/Fishing_Success.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1506,8 +1506,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"fishing_loop",
 	L"../Bin/Resources/Sound/Fish/fishing_loop.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1515,8 +1515,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"Fishing_Failure",
 	L"../Bin/Resources/Sound/Fish/Fishing_Failure.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1524,8 +1524,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"fishing_end",
 	L"../Bin/Resources/Sound/Fish/fishing_end.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1533,8 +1533,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"Fish_New",
 	L"../Bin/Resources/Sound/Fish/Fish_New.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	
@@ -1542,8 +1542,8 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"light_off",
 	L"../Bin/Resources/Sound/Sea/light_off.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	
@@ -1551,47 +1551,47 @@ SOUND_LOAD_MODE::STREAM,
 	sounds.push_back({
 	L"light_on",
 	L"../Bin/Resources/Sound/Sea/light_on.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	
 	sounds.push_back({
 L"impact_5",
 L"../Bin/Resources/Sound/Sea/impact_5.wav",
-SOUND_CATEGORY::SFX,
-SOUND_LOAD_MODE::STATIC,
+ESoundCategory::SFX,
+ESoundLoadMode::STATIC,
 1.f
 		});
 
 	sounds.push_back({
 L"impact_4",
 L"../Bin/Resources/Sound/Sea/impact_4.wav",
-SOUND_CATEGORY::SFX,
-SOUND_LOAD_MODE::STATIC,
+ESoundCategory::SFX,
+ESoundLoadMode::STATIC,
 1.f
 		});
 	sounds.push_back({
 L"impact_3",
 L"../Bin/Resources/Sound/Sea/impact_3.wav",
-SOUND_CATEGORY::SFX,
-SOUND_LOAD_MODE::STATIC,
+ESoundCategory::SFX,
+ESoundLoadMode::STATIC,
 1.f
 		});
 
 	sounds.push_back({
 L"impact_2",
 L"../Bin/Resources/Sound/Sea/impact_2.wav",
-SOUND_CATEGORY::SFX,
-SOUND_LOAD_MODE::STATIC,
+ESoundCategory::SFX,
+ESoundLoadMode::STATIC,
 1.f
 		});
 
 	sounds.push_back({
 L"impact_1",
 L"../Bin/Resources/Sound/Sea/impact_1.wav",
-SOUND_CATEGORY::SFX,
-SOUND_LOAD_MODE::STATIC,
+ESoundCategory::SFX,
+ESoundLoadMode::STATIC,
 1.f
 		});
 
@@ -1600,125 +1600,125 @@ SOUND_LOAD_MODE::STATIC,
 	sounds.push_back({
 	L"WreckMonsterAttack1",
 	L"../Bin/Resources/Sound/Mon/Crab/WreckMonsterAttack1.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"WreckMonsterEmerge",
 	L"../Bin/Resources/Sound/Mon/Crab/WreckMonsterEmerge.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"WreckMonsterRetreat",
 	L"../Bin/Resources/Sound/Mon/Crab/WreckMonsterRetreat.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"WreckMonsterSwipeAttack",
 	L"../Bin/Resources/Sound/Mon/Crab/WreckMonsterSwipeAttack.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"OozeTentacleAttack",
 	L"../Bin/Resources/Sound/Mon/Tentacle/OozeTentacleAttack.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"MarrowMonster_AggroLoop",
 	L"../Bin/Resources/Sound/Mon/MarrowMon/MarrowMonster_AggroLoop.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"MarrowMonster_AggroCall",
 	L"../Bin/Resources/Sound/Mon/MarrowMon/MarrowMonster_AggroCall1.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"MarrowMonster_Attack",
 	L"../Bin/Resources/Sound/Mon/MarrowMon/MarrowMonster_Attack.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"MarrowMonster_Call",
 	L"../Bin/Resources/Sound/Mon/MarrowMon/MarrowMonster_Call1.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"MarrowMonster_IdleLoop",
 	L"../Bin/Resources/Sound/Mon/MarrowMon/MarrowMonster_IdleLoop.wav",
-	SOUND_CATEGORY::AMBIENT,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::AMBIENT,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"MarrowMonster_Retreat",
 	L"../Bin/Resources/Sound/Mon/MarrowMon/MarrowMonster_Retreat.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
 	sounds.push_back({
 	L"Leviathan_Attack",
 	L"../Bin/Resources/Sound/Mon/Lev/Leviathan_Attack.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"Leviathan_FinaleAttack",
 	L"../Bin/Resources/Sound/Mon/Lev/Leviathan_FinaleAttack.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"Leviathan_Call",
 	L"../Bin/Resources/Sound/Mon/Lev/Leviathan_Call.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 	L"Leviathan_Distant_Call",
 	L"../Bin/Resources/Sound/Mon/Lev/Leviathan_Distant_Call.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	sounds.push_back({
 L"Leviathan_Rumble_Loop",
 L"../Bin/Resources/Sound/Mon/Lev/Leviathan_Rumble_Loop.wav",
-SOUND_CATEGORY::SFX,
-SOUND_LOAD_MODE::STATIC,
+ESoundCategory::SFX,
+ESoundLoadMode::STATIC,
 1.f
 		});
 
 	sounds.push_back({
 	L"Leviathan_Wake_Loop",
 	L"../Bin/Resources/Sound/Mon/Lev/Leviathan_Wake_Loop.wav",
-	SOUND_CATEGORY::SFX,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::SFX,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 
@@ -1727,8 +1727,8 @@ SOUND_LOAD_MODE::STATIC,
 	sounds.push_back({
 	L"Waves_Ambience_1",
 	L"../Bin/Resources/Sound/Sea/Waves_Ambience_1.wav",
-	SOUND_CATEGORY::AMBIENT,
-	SOUND_LOAD_MODE::STATIC,
+	ESoundCategory::AMBIENT,
+	ESoundLoadMode::STATIC,
 	1.f
 		});
 	//sounds.push_back({
@@ -1809,7 +1809,7 @@ SOUND_LOAD_MODE::STATIC,
 	//1.f
 	//	});
 
-	return m_pGameInstance.lock()->Register_Sounds(sounds);
+	return m_gameInstance.lock()->Register_Sounds(sounds);
 }
 
 
@@ -1832,10 +1832,10 @@ void CMainApp::Free()
 	CUI_Controller::DestroyInstance();
 	CItemDB::DestroyInstance();
 
-	m_pContext->ClearState();
+	m_context->ClearState();
 
 	m_pEditorInstance.lock()->DestroyInstance();
-	m_pGameInstance.lock()->DestroyInstance();
+	m_gameInstance.lock()->DestroyInstance();
 
 	// CData_Manager::GetInstance()->DestroyInstance();
 

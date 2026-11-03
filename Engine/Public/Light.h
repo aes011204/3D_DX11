@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 
@@ -11,30 +11,30 @@ public:
     virtual ~CLight();
 
 public:
-    HRESULT Initialize(const LIGHT_DESC& LightDesc);
+    HRESULT Initialize(const LightDesc& lightDesc);
 
-    const LIGHT_DESC* Get_LightDesc() const { return &m_LightDesc; }
+    const LightDesc* Get_LightDesc() const { return &m_lightDesc; }
     HRESULT Render(shared_ptr<class CShader> pShader, shared_ptr<class CVIBuffer_Rect> pVIBuffer);
-    void Set_LightDesc(LIGHT_DESC Desc){m_LightDesc = Desc;}
+    void Set_LightDesc(LightDesc Desc){m_lightDesc = Desc;}
 
-    _bool Get_Active() const{return m_Active;}
+    _bool Get_Active() const{return m_active;}
 
-    void Set_Active(_bool value){m_Active = value;}
+    void Set_Active(_bool value){m_active = value;}
     void Set_Position(const XMFLOAT4& vPos)
     {
-        m_LightDesc.vPosition = vPos;
+        m_lightDesc.position = vPos;
     }
 	void Set_Position(float x, float y, float z, float w = 1.f)
     {
-        m_LightDesc.vPosition = XMFLOAT4(x, y, z, w);
+        m_lightDesc.position = XMFLOAT4(x, y, z, w);
     }
 private:
-    LIGHT_DESC m_LightDesc = {};
-    _bool m_Active = { true };
+    LightDesc m_lightDesc = {};
+    _bool m_active = { true };
 public:
 
 
-    static shared_ptr<CLight> Create(const LIGHT_DESC& LightDesc);
+    static shared_ptr<CLight> Create(const LightDesc& lightDesc);
     virtual void Free() override;
 
 };

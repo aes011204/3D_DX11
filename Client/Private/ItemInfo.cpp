@@ -124,37 +124,37 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 	}
 	}
 	m_NameText->Set_Text(NameInfo); //위치조정 필요 없음
-	if (m_NameText->Get_UIState() != UI_STATE::ACTIVE)
+	if (m_NameText->Get_UIState() != EUIState::ACTIVE)
 		m_NameText->UI_Active();
 	m_NameText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
 	fCurrentY -= (m_NameText->Get_TextSize().y + m_NamePadding);
 
-	if (m_LineImg->Get_UIState() != UI_STATE::ACTIVE)
+	if (m_LineImg->Get_UIState() != EUIState::ACTIVE)
 		m_LineImg->UI_Active();
 	m_LineImg->GetUITransform()->SetAnchoredPos({ 0, fCurrentY });
 	fCurrentY -= (m_LineImg->GetUITransform()->Get_SizeDelta().y + m_PaddingY);
 
 	m_LeftText->Set_Text(LeftInfo);
 	m_LeftText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
-	if (m_LeftText->Get_UIState() != UI_STATE::ACTIVE)
+	if (m_LeftText->Get_UIState() != EUIState::ACTIVE)
 		m_LeftText->UI_Active();
 
 	m_RightText->Set_Text(RightInfo);
 	m_RightText->GetUITransform()->SetAnchoredPos({ -m_PaddingX, fCurrentY });
-	if (m_RightText->Get_UIState() != UI_STATE::ACTIVE)
+	if (m_RightText->Get_UIState() != EUIState::ACTIVE)
 		m_RightText->UI_Active();
 	fCurrentY -= (m_LeftText->Get_TextSize().y + m_PaddingY);
 
 
 	m_DetailText->Set_Text(DescInfo);
 	m_DetailText->GetUITransform()->SetAnchoredPos({ -m_PaddingX, fCurrentY });
-	if (m_DetailText->Get_UIState() != UI_STATE::ACTIVE)
+	if (m_DetailText->Get_UIState() != EUIState::ACTIVE)
 		m_DetailText->UI_Active();
 	fCurrentY -= (m_DetailText->Get_TextSize().y + m_PaddingY);
 
 	for (auto& infoBtn : m_vecIcon)
 	{
-		if (infoBtn->Get_UIState() == UI_STATE::ACTIVE)
+		if (infoBtn->Get_UIState() == EUIState::ACTIVE)
 			infoBtn->UI_InActive();
 	}
 
@@ -306,13 +306,13 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 	//m_Targetsize.y = rc.Bottom() - GetUITransform()->Get_WorldRect().Top() ;
 
 
-	const bool wasActive = Get_UIState() == UI_STATE::ACTIVE;
+	const bool wasActive = Get_UIState() == EUIState::ACTIVE;
 	Set_ActiveForCustom();
 	if (!wasActive)
-		m_bRenderReady = false;
+		m_isRenderReady = false;
 
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 
 	//m_bInteractable = true;
 	OnActive();
@@ -331,73 +331,73 @@ HRESULT CItemInfo::OnInit(void* pArg)
 
 	HRESULT hr = E_FAIL;
 	ITEMINFO_DESC* INFODesc = static_cast<ITEMINFO_DESC*>(pArg);
-	INFODesc->bUseNineSlice = true;
-	INFODesc->TextureComLevel = ETOI(LEVEL::STATIC);
-	INFODesc->TextureProtoName = L"Prototype_Component_Texture_PopupBackground";
-	INFODesc->vPivot = (_float2{ 0.f,0.f });
+	INFODesc->useNineSlice = true;
+	INFODesc->textureComLevel = ETOI(LEVEL::STATIC);
+	INFODesc->textureProtoName = L"Prototype_Component_Texture_PopupBackground";
+	INFODesc->pivot = (_float2{ 0.f,0.f });
 	hr = CUIPanel::OnInit(INFODesc);
 
 
 	//이름 - 고정
-	CUIText::TEXT_DESC ItemNameDesc = {};
-	ItemNameDesc.fontaline = CUIText::FONTALINE::LEFT;
-	ItemNameDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
-	ItemNameDesc.strText = L"이름";
-	ItemNameDesc.vPivot = (_float2{ 0.f,1.f });
-	ItemNameDesc.vAnchorPoint = (_float2{ 0.f,1.f });
+	CUIText::TextDesc ItemNameDesc = {};
+	ItemNameDesc.fontAlign = CUIText::EFontAlign::LEFT;
+	ItemNameDesc.fontTag = L"Noto_Sans_CJK_SC_32";
+	ItemNameDesc.text = L"이름";
+	ItemNameDesc.pivot = (_float2{ 0.f,1.f });
+	ItemNameDesc.anchorPoint = (_float2{ 0.f,1.f });
 
-	shared_ptr<CUIText> ItemNameText = CUIText::Create(m_pDevice, m_pContext);
+	shared_ptr<CUIText> ItemNameText = CUIText::Create(m_device, m_context);
 	ItemNameText->Initialize(&ItemNameDesc);
 	Add_Child(ItemNameText, L"ItemNameText", false);
 	m_NameText = ItemNameText;
 
 	// 선 - 고정
-	CUIImage::UIIMAGE_DESC LineDesc = {};
-	LineDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	LineDesc.TextureProtoName = L"Prototype_Component_Texture_TabDivider";
-	LineDesc.vPivot = (_float2{ 0.5f,0.5f });
-	LineDesc.vAnchorPoint = (_float2{ 0.5f,1.f });
+	CUIImage::UIImageDesc LineDesc = {};
+	LineDesc.textureComLevel = ETOI(LEVEL::STATIC);
+	LineDesc.textureProtoName = L"Prototype_Component_Texture_TabDivider";
+	LineDesc.pivot = (_float2{ 0.5f,0.5f });
+	LineDesc.anchorPoint = (_float2{ 0.5f,1.f });
 
-	shared_ptr<CUIImage> Line = CUIImage::Create(m_pDevice, m_pContext);
+	shared_ptr<CUIImage> Line = CUIImage::Create(m_device, m_context);
 	Line->Initialize(&LineDesc);
 	Add_Child(Line, L"Line", false);
 	m_LineImg = Line;
 
 
 	//오른쪽 왼쪽 - 변동
-	CUIText::TEXT_DESC ItemLeftDesc = {};
-	ItemLeftDesc.fontaline = CUIText::FONTALINE::LEFT;
-	ItemLeftDesc.strFontTag = L"Noto_Sans_CJK_SC";
-	ItemLeftDesc.strText = L"왼쪽";
-	ItemLeftDesc.vPivot = (_float2{ 0.f,1.f });
-	ItemLeftDesc.vAnchorPoint = _float2{ 0.f,1.f };
-	shared_ptr<CUIText> ItemLeftText = CUIText::Create(m_pDevice, m_pContext);
+	CUIText::TextDesc ItemLeftDesc = {};
+	ItemLeftDesc.fontAlign = CUIText::EFontAlign::LEFT;
+	ItemLeftDesc.fontTag = L"Noto_Sans_CJK_SC";
+	ItemLeftDesc.text = L"왼쪽";
+	ItemLeftDesc.pivot = (_float2{ 0.f,1.f });
+	ItemLeftDesc.anchorPoint = _float2{ 0.f,1.f };
+	shared_ptr<CUIText> ItemLeftText = CUIText::Create(m_device, m_context);
 	ItemLeftText->Initialize(&ItemLeftDesc);
 	Add_Child(ItemLeftText, L"ItemLeftText", false);
 	m_LeftText = ItemLeftText;
 
-	CUIText::TEXT_DESC ItemRightDesc = {};
-	ItemRightDesc.fontaline = CUIText::FONTALINE::RIGHT;
-	ItemRightDesc.strFontTag = L"Noto_Sans_CJK_SC";
-	ItemRightDesc.strText = L"오른쪽";
-	ItemRightDesc.vPivot = (_float2{ 1.f,1.f });
-	ItemRightDesc.vAnchorPoint = _float2{ 1.f,1.f };
-	shared_ptr<CUIText> ItemRightText = CUIText::Create(m_pDevice, m_pContext);
+	CUIText::TextDesc ItemRightDesc = {};
+	ItemRightDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+	ItemRightDesc.fontTag = L"Noto_Sans_CJK_SC";
+	ItemRightDesc.text = L"오른쪽";
+	ItemRightDesc.pivot = (_float2{ 1.f,1.f });
+	ItemRightDesc.anchorPoint = _float2{ 1.f,1.f };
+	shared_ptr<CUIText> ItemRightText = CUIText::Create(m_device, m_context);
 	ItemRightText->Initialize(&ItemRightDesc);
 	Add_Child(ItemRightText, L"ItemRightText", false);
 	m_RightText = ItemRightText;
 
 	// 상세 설명 - 변동 
 
-	CUIText::TEXT_DESC ItemDetailDesc = {};
-	ItemDetailDesc.fontaline = CUIText::FONTALINE::CENTER;
-	ItemDetailDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-	ItemDetailDesc.strText = L"상세 설명";
-	ItemDetailDesc.TextColor = _float4{ 0.6f,0.6f,0.6f,1.f };
-	ItemDetailDesc.vPivot = (_float2{ 0.5f,1.f });
-	ItemDetailDesc.vAnchorPoint = (_float2{ 0.5f,1.f });
+	CUIText::TextDesc ItemDetailDesc = {};
+	ItemDetailDesc.fontAlign = CUIText::EFontAlign::CENTER;
+	ItemDetailDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+	ItemDetailDesc.text = L"상세 설명";
+	ItemDetailDesc.textColor = _float4{ 0.6f,0.6f,0.6f,1.f };
+	ItemDetailDesc.pivot = (_float2{ 0.5f,1.f });
+	ItemDetailDesc.anchorPoint = (_float2{ 0.5f,1.f });
 
-	shared_ptr<CUIText> ItemDetailText = CUIText::Create(m_pDevice, m_pContext);
+	shared_ptr<CUIText> ItemDetailText = CUIText::Create(m_device, m_context);
 	ItemDetailText->Initialize(&ItemDetailDesc);
 	Add_Child(ItemDetailText, L"ItemDetailText", false);
 	m_DetailText = ItemDetailText;
@@ -416,30 +416,30 @@ HRESULT CItemInfo::OnInit(void* pArg)
 			wstring wName = S2W(viewName);
 
 			//버튼인포 아이콘 - 변동
-			CUIImage::UIIMAGE_DESC ButtonIconDesc = {};
-			ButtonIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-			ButtonIconDesc.TextureProtoName = L"Prototype_Component_Texture_KEY";
-			ButtonIconDesc.TextureIndex = 119;
-			ButtonIconDesc.vPivot = (_float2{ 0.5f,1.f });
-			ButtonIconDesc.vAnchorPoint = (_float2{ 0.5f,1.f });
-			ButtonIconDesc.vScale = (_float2{ 0.6f,0.6f });
-			ButtonIconDesc.vAnchoredPos = _float2{ 10.f,0.f };
+			CUIImage::UIImageDesc ButtonIconDesc = {};
+			ButtonIconDesc.textureComLevel = ETOI(LEVEL::STATIC);
+			ButtonIconDesc.textureProtoName = L"Prototype_Component_Texture_KEY";
+			ButtonIconDesc.textureIndex = 119;
+			ButtonIconDesc.pivot = (_float2{ 0.5f,1.f });
+			ButtonIconDesc.anchorPoint = (_float2{ 0.5f,1.f });
+			ButtonIconDesc.scale = (_float2{ 0.6f,0.6f });
+			ButtonIconDesc.anchoredPos = _float2{ 10.f,0.f };
 
-			shared_ptr<CUIImage> icon = CUIImage::Create(m_pDevice, m_pContext);
+			shared_ptr<CUIImage> icon = CUIImage::Create(m_device, m_context);
 			icon->Initialize(&ButtonIconDesc);
 			Add_Child(icon, L"icon" + wName, false);
 			icon->UI_InActive();
 
 			// 버튼 인포
-			CUIText::TEXT_DESC ButtonInfoDesc = {};
-			ButtonInfoDesc.fontaline = CUIText::FONTALINE::RIGHT;
-			ButtonInfoDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			ButtonInfoDesc.strText = L"버튼인포";
-			ButtonInfoDesc.vPivot = _float2{ 1.f,0.5f };
-			ButtonInfoDesc.vAnchorPoint = _float2{ 1.f,0.5f };
-			ButtonInfoDesc.vAnchoredPos = _float2{ -(icon->GetUITransform()->Get_FinalSize().x + 5.f),0.f };
+			CUIText::TextDesc ButtonInfoDesc = {};
+			ButtonInfoDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+			ButtonInfoDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+			ButtonInfoDesc.text = L"버튼인포";
+			ButtonInfoDesc.pivot = _float2{ 1.f,0.5f };
+			ButtonInfoDesc.anchorPoint = _float2{ 1.f,0.5f };
+			ButtonInfoDesc.anchoredPos = _float2{ -(icon->GetUITransform()->Get_FinalSize().x + 5.f),0.f };
 
-			shared_ptr<CUIText> ButtonInfoText = CUIText::Create(m_pDevice, m_pContext);
+			shared_ptr<CUIText> ButtonInfoText = CUIText::Create(m_device, m_context);
 			ButtonInfoText->Initialize(&ButtonInfoDesc);
 
 
@@ -525,7 +525,7 @@ void CItemInfo::OnPrepareRender()
 
 void CItemInfo::OnLateUpdate()
 {
-	GetUITransform()->SetAnchoredPos({ 0.f,m_pGameInstance.lock()->Get_MousePos().y - (m_pGameInstance.lock()->Get_WinSize().Bottom() / 2) });
+	GetUITransform()->SetAnchoredPos({ 0.f,m_gameInstance.lock()->Get_MousePos().y - (m_gameInstance.lock()->Get_WinSize().Bottom() / 2) });
 
 	CUIPanel::OnLateUpdate();
 }

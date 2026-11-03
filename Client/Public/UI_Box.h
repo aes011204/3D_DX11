@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <UIPanel.h>
 
 
@@ -23,7 +23,7 @@ class CUI_Box :
 {
 public:
 
-	struct BOX_DESC : public CUIPanel::UIPANEL_DESC
+	struct BOX_DESC : public CUIPanel::UIPanelDesc
 	{
 
 	};
@@ -35,7 +35,7 @@ public:
 
 public:
 	void UI_PanelActive(_bool IsStorage, _bool IsBox = false, _uint BoxNum = 0);
-	virtual void UI_Active() override; //  UI È°¼ºÈ°½Ã È£ÃâµÇ´Â ÇÔ¼ö// ÀÌ ÆĞ³ÎÀº ´Ù ÄÑÁö¸é ¾ÈµÇ±â‹š¹®¿¡ ¿À¹ö¶óÀÌµùÀ¸·Î È£Ãâ–P°í ¿©±â¼­ Ã³¸®
+	virtual void UI_Active() override; //  UI í™œì„±í™œì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜// ì´ íŒ¨ë„ì€ ë‹¤ ì¼œì§€ë©´ ì•ˆë˜ê¸°ë–„ë¬¸ì— ì˜¤ë²„ë¼ì´ë”©ìœ¼ë¡œ í˜¸ì¶œë»‡ê³  ì—¬ê¸°ì„œ ì²˜ë¦¬
 	HRESULT OnInit(void* pArg) override;
 	void OnActive()override;
 	void OnInActive()override;
@@ -66,7 +66,7 @@ private:
 	Vector2 m_vecAni = {};
 	_bool m_bStart = false;
 	float m_TimeAcc = {};
-	float m_fDuration = {};
+	float m_duration = {};
 
 
 	//weak_ptr<CPlayerBoat> m_PlayerBoat = {  };

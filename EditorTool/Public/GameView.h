@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Editor_Win.h"
 
 NS_BEGIN(Editor)
@@ -17,33 +17,33 @@ public:
     bool Resize(UINT width, UINT height);
     void CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV);
 
-    ID3D11ShaderResourceView* GetSRV() const { return m_pSRV.Get(); }
+    ID3D11ShaderResourceView* GetSRV() const { return m_SRV.Get(); }
 
 private:
     bool CreateRT(UINT width, UINT height);
 
-    HRESULT Initialize(const ENGINE_DESC& EngineDesc, ComPtr<ID3D11Device> pDevice,
+    HRESULT Initialize(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice,
         ComPtr<ID3D11DeviceContext> pContext);
 
 private:
-    UINT m_Width = { 0 }, m_Height = {0};
+    UINT m_width = { 0 }, m_height = {0};
 
-    ComPtr<ID3D11Device>        m_pDevice;
-    ComPtr<ID3D11DeviceContext> m_pContext;
+    ComPtr<ID3D11Device>        m_device;
+    ComPtr<ID3D11DeviceContext> m_context;
 
-    ComPtr<ID3D11Texture2D>          m_pTexture; // Ä¸Ã³ ´ë»ó ÅØ½ºÃ³
-    ComPtr<ID3D11ShaderResourceView> m_pSRV;     // ImGui Image¿ë
+    ComPtr<ID3D11Texture2D>          m_texture; // ìº¡ì²˜ ëŒ€ìƒ í…ìŠ¤ì²˜
+    ComPtr<ID3D11ShaderResourceView> m_SRV;     // ImGui Imageìš©
 
     void Render_CameraToolbar();
 
-    // ¸¶¿ì½º °è»ê¿ë
+    // ë§ˆìš°ìŠ¤ ê³„ì‚°ìš©
 private:
-    ImVec2 m_vRenderSize;   // º¸Á¤µÈ ±×¸² Å©±â
-    ImVec2 m_vContentPos;   // ±×¸² ½ÃÀÛÁ¡ (Àı´ë ÁÂÇ¥)
-    bool   m_bMouseInScene; // ¸¶¿ì½º°¡ Àå¸é ¾È¿¡ ÀÖ´ÂÁö ¿©ºÎ
+    ImVec2 m_renderSize;   // ë³´ì •ëœ ê·¸ë¦¼ í¬ê¸°
+    ImVec2 m_contentPos;   // ê·¸ë¦¼ ì‹œì‘ì  (ì ˆëŒ€ ì¢Œí‘œ)
+    bool   m_isMouseInScene; // ë§ˆìš°ìŠ¤ê°€ ì¥ë©´ ì•ˆì— ìˆëŠ”ì§€ ì—¬ë¶€
 
 public:
-    unique_ptr<CGameView> static Create(const ENGINE_DESC& EngineDesc, ComPtr<ID3D11Device> pDevice,
+    unique_ptr<CGameView> static Create(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice,
         ComPtr<ID3D11DeviceContext> pContext);
     void Free();
 };

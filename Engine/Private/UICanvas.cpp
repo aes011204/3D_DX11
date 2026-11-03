@@ -1,4 +1,4 @@
-#include "UICanvas.h"
+Ôªø#include "UICanvas.h"
 #include "GameInstance.h"
 
 CUICanvas::CUICanvas(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -13,37 +13,37 @@ CUICanvas::~CUICanvas()
 
 HRESULT CUICanvas::Initialize(void* pArg)
 {
-    m_CanvasSize = m_pGameInstance.lock()->Get_WinSize();
+    m_canvasSize = m_gameInstance.lock()->Get_WinSize();
 
-    UICANVAS_DESC* pDesc = {};
+    UICanvasDesc* pDesc = {};
     if (pArg != nullptr)
     {
-         pDesc = static_cast<UICANVAS_DESC*>(pArg);
+         pDesc = static_cast<UICanvasDesc*>(pArg);
 
-         pDesc->vAnchorPoint = { 0.5f, 0.5f }; // ¡ﬂæ” ±‚¡ÿ
-         pDesc->vPivot = { 0.5f, 0.5f }; // ¡ﬂæ” ±‚¡ÿ
-         pDesc->vSizeDelta = { m_CanvasSize.w, m_CanvasSize.h };
-         pDesc->vAnchoredPos = { 0.f, 0.f };
-         pDesc->vScale = { 1.f, 1.f };
+         pDesc->anchorPoint = { 0.5f, 0.5f }; // Ï§ëÏïô Í∏∞Ï§Ä
+         pDesc->pivot = { 0.5f, 0.5f }; // Ï§ëÏïô Í∏∞Ï§Ä
+         pDesc->sizeDelta = { m_canvasSize.w, m_canvasSize.h };
+         pDesc->anchoredPos = { 0.f, 0.f };
+         pDesc->scale = { 1.f, 1.f };
 
          __super::Initialize(pArg);
     }
     else
     {
-    UICANVAS_DESC pDesc;
-    // ¿Ã∞≈ π´¡∂∞« ∞Ì¡§
-    pDesc.vAnchorPoint = { 0.5f, 0.5f }; // ¡ﬂæ” ±‚¡ÿ
-    pDesc.vPivot = { 0.5f, 0.5f }; // ¡ﬂæ” ±‚¡ÿ
-    pDesc.vSizeDelta = { m_CanvasSize.w, m_CanvasSize.h };
-    pDesc.vAnchoredPos = { 0.f, 0.f };
-    pDesc.vScale = { 1.f, 1.f };
+    UICanvasDesc pDesc;
+    // Ïù¥Í±∞ Î¨¥Ï°∞Í±¥ Í≥†Ï†ï
+    pDesc.anchorPoint = { 0.5f, 0.5f }; // Ï§ëÏïô Í∏∞Ï§Ä
+    pDesc.pivot = { 0.5f, 0.5f }; // Ï§ëÏïô Í∏∞Ï§Ä
+    pDesc.sizeDelta = { m_canvasSize.w, m_canvasSize.h };
+    pDesc.anchoredPos = { 0.f, 0.f };
+    pDesc.scale = { 1.f, 1.f };
 
      __super::Initialize(&pDesc);
 
 
     }
 
-    m_bInteractable = false;
+    m_isInteractable = false;
 
     return S_OK;
 }

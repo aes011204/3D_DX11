@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "IModifier.h"
 #include "Client_Define.h"
@@ -17,7 +17,7 @@ public:
 
 	void SetEvent(function<void()> event) { EndEvent = event; };
 
-	// IModifierÀ»(¸¦) ÅëÇØ »ó¼ÓµÊ
+	// IModifierì„(ë¥¼) í†µí•´ ìƒì†ë¨
 	void Tick(float fDeltaTime, CUI* pOwner) override;
 
 	void OnAppear(float fDeltaTime, CUI* pOwner) override;
@@ -37,7 +37,7 @@ private:
 
 	_float  m_AccTime = {0};
 	_bool   m_Finished = false;
-	_float  m_Alpha = {};
+	_float  m_alpha = {};
 
 	bool m_Inactive = {};
 };

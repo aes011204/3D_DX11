@@ -1,4 +1,4 @@
-#include "Prototype_Manager.h"
+ï»¿#include "Prototype_Manager.h"
 
 #include "Component.h"
 #include "GameInstance.h"
@@ -10,7 +10,7 @@
 
 
 CPrototype_Manager::CPrototype_Manager() :
-	m_pGameInstance{ CGameInstance::GetInstance() }
+	m_gameInstance{ CGameInstance::GetInstance() }
 {
 }
 
@@ -22,19 +22,19 @@ CPrototype_Manager::~CPrototype_Manager()
 
 HRESULT CPrototype_Manager::Initialize(_uint iNumLevels)
 {
-	m_iNumLevel = iNumLevels;
+	m_numLevel = iNumLevels;
 
-	m_pPrototypes = new PROTOTYPES[iNumLevels];
+	m_prototypes = new PROTOTYPES[iNumLevels];
 
 	return S_OK;
 }
 
 HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype)
 {
-	if (iLevelIndex >= m_iNumLevel) // ¹è¿­ ÀÎ´ì½º¶ó¼­ 
+	if (iLevelIndex >= m_numLevel) // ë°°ì—´ ì¸ëŒìŠ¤ë¼ì„œ 
 		return E_FAIL;
 
-	//// °°Àº Å°¸¦ °¡Áø °´Ã¼°¡ ÀÖ´ÂÁö È®ÀÎ
+	//// ê°™ì€ í‚¤ë¥¼ ê°€ì§„ ê°ì²´ê°€ ìˆëŠ”ì§€ í™•ì¸
 	//if (nullptr != Find_Prototype(iLevelIndex, strPrototypeTag))
 	//{
 	//    MSG_BOX("An object with the same key already exists.");
@@ -42,14 +42,14 @@ HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& str
 	//}
 
 	//m_pPrototypes[iLevelIndex].emplace(strPrototypeTag, pPrototype);
-	auto result = m_pPrototypes[iLevelIndex].insert(make_pair(strPrototypeTag, pPrototype));
+	auto result = m_prototypes[iLevelIndex].insert(make_pair(strPrototypeTag, pPrototype));
 
 	pPrototype->Set_ProtoLevel(iLevelIndex);
 	pPrototype->Set_ProtoTag(strPrototypeTag);
 
 
 	if (result.second == false) {
-		// ÀÌ¹Ì Å°°¡ ÀÖ°Å³ª »ğÀÔ¿¡ ½ÇÆĞÇÑ °æ¿ì
+		// ì´ë¯¸ í‚¤ê°€ ìˆê±°ë‚˜ ì‚½ì…ì— ì‹¤íŒ¨í•œ ê²½ìš°
 		MSG_BOX("Insert Failed!");
 	}
 
@@ -57,16 +57,16 @@ HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& str
 	return S_OK;
 }
 
-shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg)
+shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(EPrototype ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg)
 {
-	/* Á¶°Ç¿¡ ¸Â´Â ¿øÇü°´Ã¼¸¦ °Ë»öÇÑ´Ù. */
+	/* ì¡°ê±´ì— ë§ëŠ” ì›í˜•ê°ì²´ë¥¼ ê²€ìƒ‰í•œë‹¤. */
 	shared_ptr<CBase> pPrototype = Find_Prototype(iLevelIndex, strPrototypeTag);
 	if (nullptr == pPrototype)
 		return nullptr;
 
 
 
-	if (ePrototy == PROTOTYPE::GAMEOBJECT)
+	if (ePrototy == EPrototype::GAMEOBJECT)
 	{
 		shared_ptr<CGameObject> pInstance = { nullptr };
 		shared_ptr<CGameObject> origin = dynamic_pointer_cast<CGameObject>(pPrototype);
@@ -117,7 +117,7 @@ shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(PROTOTYPE ePrototy, _uint 
 
 //shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg)
 //{
-//    /* Á¶°Ç¿¡ ¸Â´Â ¿øÇü°´Ã¼¸¦ °Ë»öÇÑ´Ù. */
+//    /* ì¡°ê±´ì— ë§ëŠ” ì›í˜•ê°ì²´ë¥¼ ê²€ìƒ‰í•œë‹¤. */
 //    //shared_ptr<CBase> pPrototype = Find_Prototype(iLevelIndex, strPrototypeTag);
 //    if (nullptr == pPrototype)
 //        return nullptr;
@@ -139,7 +139,7 @@ shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(PROTOTYPE ePrototy, _uint 
 //        }
 //    }
 //
-//    // 3. µÑ ´Ù ¾Æ´Ï°Å³ª Å¬·Ğ¿¡ ½ÇÆĞÇÑ °æ¿ì
+//    // 3. ë‘˜ ë‹¤ ì•„ë‹ˆê±°ë‚˜ í´ë¡ ì— ì‹¤íŒ¨í•œ ê²½ìš°
 //    if (pInstance == nullptr)
 //    {
 //        MSG_BOX("Failed to Cloned");
@@ -154,11 +154,11 @@ shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(PROTOTYPE ePrototy, _uint 
 
 HRESULT CPrototype_Manager::Clear_Prototype(_uint iLevelIndex)
 {
-	if (iLevelIndex >= m_iNumLevel)
+	if (iLevelIndex >= m_numLevel)
 		return E_FAIL;
 
 
-	m_pPrototypes[iLevelIndex].clear();
+	m_prototypes[iLevelIndex].clear();
 
 	return S_OK;
 
@@ -167,14 +167,14 @@ HRESULT CPrototype_Manager::Clear_Prototype(_uint iLevelIndex)
 void CPrototype_Manager::OnGui()
 {
 	shared_ptr<CEntity> choseEntt = { nullptr };
-	for (_uint i = 0; i < m_iNumLevel; ++i)
+	for (_uint i = 0; i < m_numLevel; ++i)
 	{
 		string levelName = "Level_" + to_string(i);
 
 
 		if (ImGui::TreeNode(levelName.c_str()))
 		{
-			auto CopyProtoType = m_pPrototypes;
+			auto CopyProtoType = m_prototypes;
 			for (auto& pair : CopyProtoType[i])
 			{
 				string tagStr = Engine::W2S(pair.first);
@@ -184,30 +184,30 @@ void CPrototype_Manager::OnGui()
 
 				if (pos != string::npos)
 				{
-					// "Prototype_" ÀÌÈÄ
+					// "Prototype_" ì´í›„
 					tagStr = tagStr.substr(pos + searchStr.length());
 				}
 
-				// ¸®½ºÆ® ¾ÆÀÌÅÛ Ãâ·Â
-				bool isSelected = (m_strSelectedTag == pair.first && m_iSelectedLevel == i);
+				// ë¦¬ìŠ¤íŠ¸ ì•„ì´í…œ ì¶œë ¥
+				bool isSelected = (m_selectedTag == pair.first && m_selectedLevel == i);
 
 
 
 				if (ImGui::Selectable(tagStr.c_str(), isSelected))
 				{
-					m_strSelectedTag = pair.first;
-					m_iSelectedLevel = i;
+					m_selectedTag = pair.first;
+					m_selectedLevel = i;
 				}
-				// µå·¡±×
+				// ë“œë˜ê·¸
 				if (ImGui::BeginDragDropSource()) {
 
 					DragDropProto protoClone_Desc = {};
 					//wcscpy_s(payload.szTag, pair.first.c_str());
-					wcscpy_s(protoClone_Desc.szTag, pair.first.c_str());
-					protoClone_Desc.iLevel = i;
+					wcscpy_s(protoClone_Desc.tag, pair.first.c_str());
+					protoClone_Desc.level = i;
 					ImGui::SetDragDropPayload("COMP_DRAG_DATA", &protoClone_Desc, sizeof(DragDropProto));
 
-					ImGui::Text("Swap to %s", Engine::W2S(protoClone_Desc.szTag).c_str());
+					ImGui::Text("Swap to %s", Engine::W2S(protoClone_Desc.tag).c_str());
 					ImGui::EndDragDropSource();
 				}
 			}
@@ -220,19 +220,19 @@ void CPrototype_Manager::OnGui()
 
 	ImGui::Separator();
 
-	// Ãß°¡ ¹öÆ° ·ÎÁ÷ 
-	if (m_strSelectedTag != L"")
+	// ì¶”ê°€ ë²„íŠ¼ ë¡œì§ 
+	if (m_selectedTag != L"")
 	{
-		string btnLabel = "Add [" + Engine::W2S(m_strSelectedTag) + "]";
+		string btnLabel = "Add [" + Engine::W2S(m_selectedTag) + "]";
 
-		// ¹öÆ° Å¬¸¯ ½Ã Áï½Ã ½ÇÇà
+		// ë²„íŠ¼ í´ë¦­ ì‹œ ì¦‰ì‹œ ì‹¤í–‰
 		if (ImGui::Button(btnLabel.c_str(), ImVec2(-1, 30)))
 		{
 			EvtTerrainPicking tmp = {};
 			tmp.isOnPicking = true;
-			tmp.iLevel =  m_iSelectedLevel;
-			tmp.Tag = m_strSelectedTag;
-			m_pGameInstance.lock()->Get_EventBus()->Publish(tmp);
+			tmp.level =  m_selectedLevel;
+			tmp.tag = m_selectedTag;
+			m_gameInstance.lock()->Get_EventBus()->Publish(tmp);
 
 		
 		}
@@ -249,11 +249,11 @@ void CPrototype_Manager::OnGui()
 
 shared_ptr<CBase> CPrototype_Manager::Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag)
 {
-	if (iLevelIndex >= m_iNumLevel)
+	if (iLevelIndex >= m_numLevel)
 		return nullptr;
 
-	auto iter = m_pPrototypes[iLevelIndex].find(strPrototypeTag);
-	if (iter == m_pPrototypes[iLevelIndex].end())
+	auto iter = m_prototypes[iLevelIndex].find(strPrototypeTag);
+	if (iter == m_prototypes[iLevelIndex].end())
 		return nullptr;
 
 	return iter->second;
@@ -274,13 +274,13 @@ void CPrototype_Manager::Free()
 {
 	__super::Free();
 
-	for (_uint i = 0; i < m_iNumLevel;i++)
+	for (_uint i = 0; i < m_numLevel;i++)
 	{
 		//for(auto& pair : m_pPrototypes[i])
 		//{
 	 //       Safe_Release(pair.second);
 		//}
-		m_pPrototypes[i].clear();
+		m_prototypes[i].clear();
 	}
-	Safe_Delete_Array(m_pPrototypes); // ¹è¿­Áö¿ì´Â ¸ÅÅ©·Î 
+	Safe_Delete_Array(m_prototypes); // ë°°ì—´ì§€ìš°ëŠ” ë§¤í¬ë¡œ 
 }

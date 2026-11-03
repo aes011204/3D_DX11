@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Texture.h"
 #include "Shader.h"
 #include "VIBuffer_Rect.h"
@@ -6,12 +6,12 @@
 #include "Collider.h"
 
 
-// »ı¼ºÇÑ ¿øÇü °´Ã¼¸¦ º¸°üÇÑ´Ù
-// ¿äÃ»¿¡ µû¶ó º¸°üÇÏ°í ÀÖ´ø ¿øÇü °´Ã¼¸¦ º¹Á¦ÇÏ¿© ¸®ÅÏÇÑ´Ù
+// ìƒì„±í•œ ì›í˜• ê°ì²´ë¥¼ ë³´ê´€í•œë‹¤
+// ìš”ì²­ì— ë”°ë¼ ë³´ê´€í•˜ê³  ìˆë˜ ì›í˜• ê°ì²´ë¥¼ ë³µì œí•˜ì—¬ ë¦¬í„´í•œë‹¤
 
-// »ç¿ëÇÏ´Â ÀÌÀ¯
-// °´Ã¼, ¸®¼Ò½º ´Ù ÇÁ·ÎÅä Å¸ÀÔ - ºñ¿ëÀÌ ½Î´Ù ¼Óµµ ¸é¿¡¼­/Á¤º¸ ÀúÀå / µ¥ÀÌÅÍ Ã¤¿ì´Â°Å ÆÄÀÏ ÀÔÃâ·Â, ¼­¹ö ¿Ã·Á ³õ°í ¼ÂÆÃ -> ÀÌ·¯ÇÑ ÇàÀ§°¡ ´À¸®´Ù  
-//·Îµù°£¿¡¸¸ ÆÄÀÏ ÀÔÃâ·Â , ¼­¹ö Åë½Å ÇÏÀÚ ÇÁ·ÎÅä Å¸ÀÔÀ» ¾²´Â ÀÌÀ¯
+// ì‚¬ìš©í•˜ëŠ” ì´ìœ 
+// ê°ì²´, ë¦¬ì†ŒìŠ¤ ë‹¤ í”„ë¡œí†  íƒ€ì… - ë¹„ìš©ì´ ì‹¸ë‹¤ ì†ë„ ë©´ì—ì„œ/ì •ë³´ ì €ì¥ / ë°ì´í„° ì±„ìš°ëŠ”ê±° íŒŒì¼ ì…ì¶œë ¥, ì„œë²„ ì˜¬ë ¤ ë†“ê³  ì…‹íŒ… -> ì´ëŸ¬í•œ í–‰ìœ„ê°€ ëŠë¦¬ë‹¤  
+//ë¡œë”©ê°„ì—ë§Œ íŒŒì¼ ì…ì¶œë ¥ , ì„œë²„ í†µì‹  í•˜ì í”„ë¡œí†  íƒ€ì…ì„ ì“°ëŠ” ì´ìœ 
 
 NS_BEGIN(Engine)
 
@@ -25,7 +25,7 @@ public:
 public:
     HRESULT Initialize(_uint iNumLevels);
     HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
-    shared_ptr<CBase> Clone_Prototype(PROTOTYPE ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+    shared_ptr<CBase> Clone_Prototype(EPrototype ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
     //shared_ptr<CBase> Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg);
     HRESULT Clear_Prototype(_uint iLevelIndex);
 
@@ -33,14 +33,14 @@ public:
     shared_ptr<CBase> Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);
     void OnGui()override;
 private:
-    map<const _wstring, shared_ptr<CBase>>* m_pPrototypes = { nullptr }; //
+    map<const _wstring, shared_ptr<CBase>>* m_prototypes = { nullptr }; //
     typedef map<const _wstring, shared_ptr<CBase>> PROTOTYPES;
 
-    _uint m_iNumLevel = {}; // ·¹º§ÀÇ ÃÑ °¹¼ö
+    _uint m_numLevel = {}; // ë ˆë²¨ì˜ ì´ ê°¯ìˆ˜
 private:
-    _wstring m_strSelectedTag = {};
-    _uint m_iSelectedLevel = {};
-    weak_ptr<CGameInstance> m_pGameInstance = {};
+    _wstring m_selectedTag = {};
+    _uint m_selectedLevel = {};
+    weak_ptr<CGameInstance> m_gameInstance = {};
 public:
     static unique_ptr<CPrototype_Manager> Create(_uint iNumLevel);
     virtual void Free() override;

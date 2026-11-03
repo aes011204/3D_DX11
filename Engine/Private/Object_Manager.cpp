@@ -1,11 +1,11 @@
-#include "Object_Manager.h"
+ï»¿#include "Object_Manager.h"
 
 #include "GameInstance.h"
 #include "GameObject.h"
 #include "Layer.h"
 
 CObject_Manager::CObject_Manager()
-	: m_pGameInstance(CGameInstance::GetInstance())
+	: m_gameInstance(CGameInstance::GetInstance())
 {
 
 
@@ -18,8 +18,8 @@ CObject_Manager::~CObject_Manager()
 
 HRESULT CObject_Manager::Initialize(_uint iNumLevels)
 {
-	m_iNumLevel = iNumLevels;
-	m_pLayers = new LAYERS[iNumLevels];
+	m_numLevel = iNumLevels;
+	m_layers = new LAYERS[iNumLevels];
 	return S_OK;
 }
 
@@ -29,11 +29,11 @@ shared_ptr<CGameObject> CObject_Manager::Add_GameObject(_uint iPrototypeLevelInd
 	shared_ptr<CGameObject> pGameObject = { nullptr };
 	shared_ptr<CLayer> pLayer = { nullptr };
 
-	if (nullptr == m_pLayers ||
-		iLayerLevelIndex >= m_iNumLevel)
+	if (nullptr == m_layers ||
+		iLayerLevelIndex >= m_numLevel)
 		goto except;
 
- 	pGameObject = dynamic_pointer_cast<CGameObject>(m_pGameInstance.lock()->Clone_Prototype(PROTOTYPE::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
+ 	pGameObject = dynamic_pointer_cast<CGameObject>(m_gameInstance.lock()->Clone_Prototype(EPrototype::GAMEOBJECT, iPrototypeLevelIndex, strPrototypeTag, pArg));
 	if (nullptr == pGameObject)
 		goto except;
 
@@ -43,7 +43,7 @@ shared_ptr<CGameObject> CObject_Manager::Add_GameObject(_uint iPrototypeLevelInd
 	{
 		pLayer = CLayer::Create();
 		pLayer->Add_GameObject(pGameObject);
-		m_pLayers[iLayerLevelIndex].emplace(strLayerTag, pLayer);
+		m_layers[iLayerLevelIndex].emplace(strLayerTag, pLayer);
 	}
 	else
 		pLayer->Add_GameObject(pGameObject);
@@ -71,10 +71,10 @@ shared_ptr<CGameObject> CObject_Manager::Get_GameObject(_uint iLevelIndex,const 
 
 void CObject_Manager::Priority_Update(_float fTimeDelta)
 {
-	// µ¿Àû¹è¿­·Î ¼±¾ðÇÑ°Ç ¹üÀ§±â¹Ý for ºÒ°¡´É
-	for(_uint i=0; i<m_iNumLevel;i++)
+	// ë™ì ë°°ì—´ë¡œ ì„ ì–¸í•œê±´ ë²”ìœ„ê¸°ë°˜ for ë¶ˆê°€ëŠ¥
+	for(_uint i=0; i<m_numLevel;i++)
 	{
-		for(auto& pair : m_pLayers[i])
+		for(auto& pair : m_layers[i])
 		{
 			if(pair.second != nullptr)
 				pair.second->Priority_Update(fTimeDelta);
@@ -84,10 +84,10 @@ void CObject_Manager::Priority_Update(_float fTimeDelta)
 
 void CObject_Manager::Update(_float fTimeDelta)
 {
-	// µ¿Àû¹è¿­·Î ¼±¾ðÇÑ°Ç ¹üÀ§±â¹Ý for ºÒ°¡´É
-	for (_uint i = 0; i < m_iNumLevel;i++)
+	// ë™ì ë°°ì—´ë¡œ ì„ ì–¸í•œê±´ ë²”ìœ„ê¸°ë°˜ for ë¶ˆê°€ëŠ¥
+	for (_uint i = 0; i < m_numLevel;i++)
 	{
-		for (auto& pair : m_pLayers[i])
+		for (auto& pair : m_layers[i])
 		{
 			if (pair.second != nullptr)
 				pair.second->Update(fTimeDelta);
@@ -98,10 +98,10 @@ void CObject_Manager::Update(_float fTimeDelta)
 
 void CObject_Manager::Late_Update(_float fTimeDelta)
 {
-	// µ¿Àû¹è¿­·Î ¼±¾ðÇÑ°Ç ¹üÀ§±â¹Ý for ºÒ°¡´É
-	for (_uint i = 0; i < m_iNumLevel;i++)
+	// ë™ì ë°°ì—´ë¡œ ì„ ì–¸í•œê±´ ë²”ìœ„ê¸°ë°˜ for ë¶ˆê°€ëŠ¥
+	for (_uint i = 0; i < m_numLevel;i++)
 	{
-		for (auto& pair : m_pLayers[i])
+		for (auto& pair : m_layers[i])
 		{
 			if (pair.second != nullptr)
 				pair.second->Late_Update(fTimeDelta);
@@ -114,19 +114,19 @@ HRESULT CObject_Manager::Clear_Layers(_uint iLevelIndex)
 {
 	
 	
-	if (m_iNumLevel <= iLevelIndex)
+	if (m_numLevel <= iLevelIndex)
 		return E_FAIL;
 
-	m_pLayers[iLevelIndex].clear();
+	m_layers[iLevelIndex].clear();
 
 	return S_OK;
 }
 
 void CObject_Manager::Update_Gui()
 {
-	for (_uint i = 0; i < m_iNumLevel;i++)
+	for (_uint i = 0; i < m_numLevel;i++)
 	{
-		for (auto& pair : m_pLayers[i])
+		for (auto& pair : m_layers[i])
 		{
 			if (pair.second != nullptr)
 				pair.second->Update_Gui();
@@ -136,18 +136,18 @@ void CObject_Manager::Update_Gui()
 
 const map<const _wstring, shared_ptr<CLayer>>& CObject_Manager::Get_GameObjects(_uint levelIndex) const
 {
-	return m_pLayers[levelIndex];
+	return m_layers[levelIndex];
 
 }
 
 shared_ptr<CLayer> CObject_Manager::Find_Layer(_uint iLevelIndex, const _wstring& strLayerTag)
 {
-	if (m_iNumLevel <= iLevelIndex)
+	if (m_numLevel <= iLevelIndex)
 		return nullptr;
 
-	auto it = m_pLayers[iLevelIndex].find(strLayerTag);
-	// find() : °´Ã¼ ¹ÝÈ¯
-	if (it == m_pLayers[iLevelIndex].end())
+	auto it = m_layers[iLevelIndex].find(strLayerTag);
+	// find() : ê°ì²´ ë°˜í™˜
+	if (it == m_layers[iLevelIndex].end())
 		return nullptr;
 
 	return it->second;
@@ -169,11 +169,11 @@ void CObject_Manager::Free()
 {
 	__super::Free();
 
-	for (_uint i = 0; i < m_iNumLevel;i++)
+	for (_uint i = 0; i < m_numLevel;i++)
 	{
-		m_pLayers[i].clear();
+		m_layers[i].clear();
 	}
-	Safe_Delete_Array(m_pLayers); // ¹è¿­Áö¿ì´Â ¸ÅÅ©·Î 
+	Safe_Delete_Array(m_layers); // ë°°ì—´ì§€ìš°ëŠ” ë§¤í¬ë¡œ 
 
 
 }

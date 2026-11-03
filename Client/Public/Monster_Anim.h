@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
 NS_BEGIN(Engine)
@@ -38,9 +38,9 @@ private:
 
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
     shared_ptr<CModel> m_pModelCom = { nullptr }; 
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
     shared_ptr<CCollider> m_pColliderCom = { nullptr };
 public:
     static shared_ptr<CMonster_Anim> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

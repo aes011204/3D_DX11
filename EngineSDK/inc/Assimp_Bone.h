@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 class CAssimp_Bone :
@@ -15,14 +15,14 @@ public:
     void Update_CombinedTransformMatrix(const vector<shared_ptr<CAssimp_Bone>> Bones, _fmatrix PreTransformMatrix);
     void Update_TransformationMatrix(_fmatrix TransformMatrix);
 public:
-    _bool isCompare(const _char* pBoneName) {return !strcmp(pBoneName, m_szName);}
-    const _float4x4* Get_m_CombinedTransformationMatrixPtr() const { return &m_CombinedTransformationMatrix; }
+    _bool isCompare(const _char* pBoneName) {return !strcmp(pBoneName, m_name);}
+    const _float4x4* Get_m_CombinedTransformationMatrixPtr() const { return &m_combinedTransformationMatrix; }
 private:
 
-    _char m_szName[MAX_PATH] = {};
-    _float4x4 m_TransformationMatrix = {};
-    _float4x4 m_CombinedTransformationMatrix = {};
-    _int m_iParentBoneIndex = { -1 }; // -1 ¿Ã∏È  root bone ¿”
+    _char m_name[MAX_PATH] = {};
+    _float4x4 m_transformationMatrix = {};
+    _float4x4 m_combinedTransformationMatrix = {};
+    _int m_parentBoneIndex = { -1 }; // -1 Ïù¥Î©¥  root bone ÏûÑ
 
 public:
     static shared_ptr<CAssimp_Bone> Create(const aiNode* pAINode, _int iParentBoneIndex);

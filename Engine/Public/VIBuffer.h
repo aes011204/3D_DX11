@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 
 NS_BEGIN(Engine)
@@ -20,19 +20,19 @@ public:
 	virtual HRESULT Render();
 
 protected:
-	ComPtr<ID3D11Buffer> m_pVB = { nullptr };
-	ComPtr<ID3D11Buffer> m_pIB = { nullptr };
+	ComPtr<ID3D11Buffer> m_VB = { nullptr };
+	ComPtr<ID3D11Buffer> m_IB = { nullptr };
 
 protected:
-	_uint						m_iNumVertexBuffers = {};
+	_uint						m_numVertexBuffers = {};
 
-	_uint						m_iVertexStride = {};
-	_uint						m_iNumVertices = {};
+	_uint						m_vertexStride = {};
+	_uint						m_numVertices = {};
 
-	_uint						m_iIndexStride = {};
-	_uint						m_iNumIndices = {};
+	_uint						m_indexStride = {};
+	_uint						m_numIndices = {};
 
-	D3D11_PRIMITIVE_TOPOLOGY	m_ePrimitiveType = {}; // ÀÌ°Ç ´Ü¼ø ¿­°ÅÇü ÀÚ·áÇüÀÌ¶ó comptr ¾ÈÇØµµ µÊ ¾ÈµÇ±âµµ ÇÏ°í 
+	D3D11_PRIMITIVE_TOPOLOGY	m_primitiveType = {}; // ì´ê±´ ë‹¨ìˆœ ì—´ê±°í˜• ìë£Œí˜•ì´ë¼ comptr ì•ˆí•´ë„ ë¨ ì•ˆë˜ê¸°ë„ í•˜ê³  
 
 
 public:

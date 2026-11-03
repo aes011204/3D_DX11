@@ -1,9 +1,9 @@
-#include "Target_Manager.h"
+﻿#include "Target_Manager.h"
 #include "RenderTarget.h"
 
 CTarget_Manager::CTarget_Manager(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 
-	:m_pDevice(pDevice), m_pContext(pContext)
+	:m_device(pDevice), m_context(pContext)
 {
 }
 
@@ -23,12 +23,12 @@ HRESULT CTarget_Manager::Add_RenderTarget(const _wstring& strTargetTag, _uint iS
 	if (nullptr != Find_RenderTarget(strTargetTag))
 		return E_FAIL;
 
-	shared_ptr<CRenderTarget> pRenderTarget = CRenderTarget::Create(m_pDevice, m_pContext, iSizeX, iSizeY, ePixelFormat, vClearColor);
+	shared_ptr<CRenderTarget> pRenderTarget = CRenderTarget::Create(m_device, m_context, iSizeX, iSizeY, ePixelFormat, vClearColor);
 
 	if(nullptr== pRenderTarget)
 		return E_FAIL;
 
-	m_RenderTargets.emplace(strTargetTag, pRenderTarget);
+	m_renderTargets.emplace(strTargetTag, pRenderTarget);
 
 	return S_OK;
 }
@@ -71,7 +71,7 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 	list <shared_ptr<CRenderTarget>>* pMRTList = Find_MRT(strMRTTag);
 	if (nullptr == pMRTList)
 		return E_FAIL;
-	m_pContext->OMGetRenderTargets(1, m_pBackBuffer.GetAddressOf(), m_pOriginalDSV.GetAddressOf());
+	m_context->OMGetRenderTargets(1, m_backBuffer.GetAddressOf(), m_originalDSV.GetAddressOf());
 
 	//ComPtr<ID3D11RenderTargetView> pRenderTargets[8] = { nullptr };
 	//
@@ -88,9 +88,9 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 	//m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets->GetAddressOf(), m_pOriginalDSV.Get());
 
 	ID3D11ShaderResourceView* nullSRV[D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT] = {};
-	m_pContext->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
-	m_pContext->VSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
-	m_pContext->GSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
+	m_context->PSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
+	m_context->VSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
+	m_context->GSSetShaderResources(0, D3D11_COMMONSHADER_INPUT_RESOURCE_SLOT_COUNT, nullSRV);
 
 	ID3D11RenderTargetView* pRenderTargets[8] = { nullptr };
 
@@ -103,7 +103,7 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 	}
 
 	//if (useDepth)
-		m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets, m_pOriginalDSV.Get());
+		m_context->OMSetRenderTargets(iNumRenderTargets, pRenderTargets, m_originalDSV.Get());
 	//else
 	//	m_pContext->OMSetRenderTargets(iNumRenderTargets, pRenderTargets, nullptr);
 	return S_OK;
@@ -111,10 +111,10 @@ HRESULT CTarget_Manager::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
 
 HRESULT CTarget_Manager::End_MRT()
 {
-	m_pContext->OMSetRenderTargets(1, m_pBackBuffer.GetAddressOf(), m_pOriginalDSV.Get());
+	m_context->OMSetRenderTargets(1, m_backBuffer.GetAddressOf(), m_originalDSV.Get());
 
-	m_pBackBuffer.Reset();
-	m_pOriginalDSV.Reset();
+	m_backBuffer.Reset();
+	m_originalDSV.Reset();
 
 	return S_OK;
 
@@ -159,8 +159,8 @@ list<shared_ptr<CRenderTarget>>* CTarget_Manager::Find_MRT(const _wstring& strMR
 
 shared_ptr<CRenderTarget> CTarget_Manager::Find_RenderTarget(const _wstring& strTargetTag)
 {
-	auto        iter = m_RenderTargets.find(strTargetTag);
-	if (iter == m_RenderTargets.end())
+	auto        iter = m_renderTargets.find(strTargetTag);
+	if (iter == m_renderTargets.end())
 		return nullptr;
 
 	return iter->second;
@@ -185,8 +185,8 @@ void CTarget_Manager::Free()
 		mrts.second.clear();
 	}
 	m_MRTs.clear();
-	m_RenderTargets.clear();
+	m_renderTargets.clear();
 
-	m_pDevice.Reset();
-	m_pContext.Reset();
+	m_device.Reset();
+	m_context.Reset();
 }

@@ -1,50 +1,38 @@
-#ifndef Engine_Enum_h__
+ï»¿#ifndef Engine_Enum_h__
 #define Engine_Enum_h__
 
 namespace Engine
 {
-	enum class WINMODE { FULL, WIN };
+	enum class EWinMode { FULL, WIN };
 
-	enum class PROTOTYPE { GAMEOBJECT, COMPONENT};
+	enum class EPrototype { GAMEOBJECT, COMPONENT};
 
-	enum class RENDERGROUP { PRIORITY, NONBLEND, BLEND, NONLIGHT, SEA, UI, END };
+	enum class ERenderGroup { PRIORITY, NONBLEND, BLEND, NONLIGHT, SEA, UI, END };
 
-	enum class UI_LAYER { OVERRIDE, WINDOW, STACK, HUD, END };
+	enum class EUILayer { OVERRIDE, WINDOW, STACK, HUD, END };
 
-	enum class STATE { RIGHT, UP, LOOK, POSITION, END };
+	enum class ETransformState { RIGHT, UP, LOOK, POSITION, END };
 
-	enum class D3DTS {VIEW,PROJ, END };
+	enum class ED3DTS {VIEW,PROJ, END };
 
-	enum class SAVETYPE { GAMEOBJECT, UI, END }; 
+	enum class ESaveType { GAMEOBJECT, UI, END }; 
 
-	enum class DIMB { LBUTTON, RBUTTON, WHEEL, END };
+	enum class EMouseButton { LBUTTON, RBUTTON, WHEEL, END };
 
-	enum class DIMM { X, Y, WHEEL, END };
+	enum class EMouseMove { X, Y, WHEEL, END };
 
-	enum class LIGHT { DIRECTIONAL, POINT, END };
+	enum class ELightType { DIRECTIONAL, POINT, END };
 
-	enum class LOG_LEVEL { INFO, WARNING, ERR };
+	enum class ELogLevel { INFO, WARNING, ERR };
 
-	enum class MODEL { NONANIM, ANIM, END };
+	enum class EModelType { NONANIM, ANIM, END };
 
-	enum class COLLIDER { AABB, OBB, SPHERE, END };
+	enum class EColliderType { AABB, OBB, SPHERE, END };
 
-	enum class DEFERRED { DEBUG, DIRECTIONAL, POINT, COMBINED,  BLUR_H, BLUR_V,END };
-	//// Dynamic ÄÄÆ÷³ÍÆ® °æ¿ì ¸Å ÇÁ·¹ÀÓ¸¶´Ù °»½ÅÇØ¾ßÇÏ´Â ÄÄÆ÷³ÍÆ® Áý´Ü
-	//enum COMPONENTID { ID_DYNAMIC, ID_STATIC, ID_END };
-
-	//enum INFO {	INFO_RIGHT, INFO_UP, INFO_LOOK, INFO_POS, INFO_END };
-
-	//enum ROTATION { ROT_X, ROT_Y, ROT_Z, ROT_END };
-
-	//enum TEXTUREID { TEX_NORMAL, TEX_CUBE, TEX_END };
-
-	//enum MOUSEKEYSTATE { DIM_LB, DIM_RB, DIM_MB, DIM_END };
-
-	//enum MOUSEMOVESTATE {	DIMS_X, DIMS_Y, DIMS_Z, DIMS_END };
+	enum class EDeferred { DEBUG, DIRECTIONAL, POINT, COMBINED,  BLUR_H, BLUR_V,END };
 
 
-	enum COLLISION_LAYER
+	enum ECollisionLayer
 	{
 		NONE = 0,
 		PLAYER = 1 << 0, 
@@ -58,19 +46,19 @@ namespace Engine
 		ALL= 0xffffffff,
 		END 
 	};
-	using COLLISION_MASK = unsigned __int32;
+	using CollisionMask = unsigned __int32;
 
-	enum class BUTTON_STATE
+	enum class EButtonState
 	{
-		NORMAL,// ¾Æ¹«°Íµµ ¾ÈÇÒ‹š
+		NORMAL,// ì•„ë¬´ê²ƒë„ ì•ˆí• ë–„
 		SELECT,
-		HOVER,// È£¹ö
-		CLICK,// Å¬¸¯
-		DISABLE,// »ç¶óÁú¶§
-		INABLE,// ³ªÅ¸³¯¶§
+		HOVER,// í˜¸ë²„
+		CLICK,// í´ë¦­
+		DISABLE,// ì‚¬ë¼ì§ˆë•Œ
+		INABLE,// ë‚˜íƒ€ë‚ ë•Œ
 
 	};
-	enum class UI_STATE
+	enum class EUIState
 	{
 		ACTIVE,
 		INACTIVE,

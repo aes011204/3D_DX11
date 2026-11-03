@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Editor_Define.h"
 #include "EventBus.h"
 
@@ -33,7 +33,7 @@ public:
 	virtual ~CEditorInstance() =default;
 
 public:
-	HRESULT Initialize_Editor(const ENGINE_DESC& EngineDesc, ComPtr<ID3D11Device> pDevice,
+	HRESULT Initialize_Editor(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice,
 		ComPtr<ID3D11DeviceContext> pContext);
 	void Update_Editor(float fTimeDelta);
 	void Render_Editor();
@@ -45,7 +45,7 @@ public:
 	shared_ptr<CEntity> GetEntity() const;
 
 	ImGuiContext* GetContext();
-	class CGameView* GetGameView() const { return m_pGameView.get(); }
+	class CGameView* GetGameView() const { return m_gameView.get(); }
 
 	shared_ptr<CEntity> GetCurSelect() const;
 
@@ -55,12 +55,12 @@ private:
     EditorCpuTimings m_editorCpuTimings;
     double m_editorUpdateMs = 0.0;
 
-	unique_ptr<class CImguiManager> m_pImgui_Manager = { nullptr };
+	unique_ptr<class CImguiManager> m_imguiManager = { nullptr };
 
-	unique_ptr < class CWin_Mananger> m_pWin_Manager = {};
-	unique_ptr<class CGameView> m_pGameView = {};
+	unique_ptr < class CWin_Mananger> m_winManager = {};
+	unique_ptr<class CGameView> m_gameView = {};
 
-	shared_ptr<class CSelection> m_pSelection;
+	shared_ptr<class CSelection> m_selection;
 
 	//Engine::CEventBus m_EditorBus;
 public:

@@ -1,4 +1,4 @@
-//#include "pch.h"
+ï»¿//#include "pch.h"
 #include "Editor_Win.h"
 #include "Win_Mananger.h"
 #include "GameView.h"
@@ -13,7 +13,7 @@ CWin_Mananger::CWin_Mananger()
 }
 
 HRESULT CWin_Mananger::Initialize() {
-    // ¿©±â¼­ ¸ðµç Ã¢À» µî·ÏÇÕ´Ï´Ù.
+    // ì—¬ê¸°ì„œ ëª¨ë“  ì°½ì„ ë“±ë¡í•©ë‹ˆë‹¤.
     Add_Window(CHierarchyWin::Create());
     Add_Window(CInspectorWin::Create()); 
     Add_Window(CManagerWin::Create());
@@ -29,24 +29,24 @@ HRESULT CWin_Mananger::Initialize() {
 }
 
 void CWin_Mananger::Update(float fTimeDelta) {
-    for (auto& pair : m_Windows)
+    for (auto& pair : m_windows)
         pair.second->Update(fTimeDelta);
 }
 
 void CWin_Mananger::Render() {
-    for (auto& pair : m_Windows) {
+    for (auto& pair : m_windows) {
         if (*pair.second->Get_OpenPtr())
             pair.second->Render();
     }
 }
 
 void CWin_Mananger::Add_Window(shared_ptr<CEditor_Win> pWindow) {
-    m_Windows[pWindow->Get_Name()] = pWindow;
+    m_windows[pWindow->Get_Name()] = pWindow;
 }
 
 shared_ptr<CEditor_Win> CWin_Mananger::Get_Window(string name) {
-    auto it = m_Windows.find(name);
-    return (it != m_Windows.end()) ? it->second : nullptr;
+    auto it = m_windows.find(name);
+    return (it != m_windows.end()) ? it->second : nullptr;
 }
 
 unique_ptr<CWin_Mananger> CWin_Mananger::Create()

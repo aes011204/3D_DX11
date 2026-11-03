@@ -1,10 +1,10 @@
-#include "RenderTarget.h"
+﻿#include "RenderTarget.h"
 #include "GameInstance.h"
 #include "Shader.h"
 #include "VIBuffer_Rect.h"
 
 CRenderTarget::CRenderTarget(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice(pDevice), m_pContext(pContext)
+	: m_device(pDevice), m_context(pContext)
 {
 }
 
@@ -28,15 +28,15 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixel
 	TextureDesc.CPUAccessFlags = 0;
 	TextureDesc.MiscFlags = 0;
 
-	if (FAILED(m_pDevice->CreateTexture2D(&TextureDesc, nullptr, m_Texture2D.GetAddressOf())))
+	if (FAILED(m_device->CreateTexture2D(&TextureDesc, nullptr, m_texture2D.GetAddressOf())))
 		return E_FAIL;
 
 
-	if (FAILED(m_pDevice->CreateRenderTargetView(m_Texture2D.Get(), nullptr, m_pRTV.GetAddressOf())))
+	if (FAILED(m_device->CreateRenderTargetView(m_texture2D.Get(), nullptr, m_RTV.GetAddressOf())))
 		return E_FAIL;
 
 
-	if (FAILED(m_pDevice->CreateShaderResourceView(m_Texture2D.Get(), nullptr, m_pSRV.GetAddressOf())))
+	if (FAILED(m_device->CreateShaderResourceView(m_texture2D.Get(), nullptr, m_SRV.GetAddressOf())))
 		return E_FAIL;
 
 	return S_OK;
@@ -45,35 +45,35 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixel
 HRESULT CRenderTarget::Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName)
 {
 
-	return pShader->Bind_SRV(pConstantName, m_pSRV);
+	return pShader->Bind_SRV(pConstantName, m_SRV);
 }
 
 void CRenderTarget::Clear()
 {
-	m_pContext->ClearRenderTargetView(m_pRTV.Get(), reinterpret_cast<_float*>(&m_vClearColor));
+	m_context->ClearRenderTargetView(m_RTV.Get(), reinterpret_cast<_float*>(&m_clearColor));
 }
 #ifdef _DEBUG
 HRESULT CRenderTarget::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
 {
 	_uint iNumViewPorts = { 1 };
 	D3D11_VIEWPORT ViewportDesc{};
-	m_pContext->RSGetViewports(&iNumViewPorts, &ViewportDesc);
+	m_context->RSGetViewports(&iNumViewPorts, &ViewportDesc);
 
-	XMStoreFloat4x4(&m_WorldMatrix, XMMatrixIdentity());
-	m_WorldMatrix._11 = fSizeX;
-	m_WorldMatrix._22 = fSizeY;
+	XMStoreFloat4x4(&m_worldMatrix, XMMatrixIdentity());
+	m_worldMatrix._11 = fSizeX;
+	m_worldMatrix._22 = fSizeY;
 
-	m_WorldMatrix._41 = fX - ViewportDesc.Width * 0.5f;
-	m_WorldMatrix._42 = -fY + ViewportDesc.Height * 0.5f;
+	m_worldMatrix._41 = fX - ViewportDesc.Width * 0.5f;
+	m_worldMatrix._42 = -fY + ViewportDesc.Height * 0.5f;
 
 	return S_OK;
 }
 
 HRESULT CRenderTarget::Render(shared_ptr<CVIBuffer_Rect> pVIBuffer, shared_ptr < CShader> pShader)
 {
-	pShader->Bind_Matrix("g_WorldMatrix", &m_WorldMatrix);
+	pShader->Bind_Matrix("g_WorldMatrix", &m_worldMatrix);
 
-	pShader->Bind_SRV("g_Texture", m_pSRV);
+	pShader->Bind_SRV("g_Texture", m_SRV);
 
 	pShader->Begin(0);
 
@@ -101,10 +101,10 @@ void CRenderTarget::Free()
 {
 	CBase::Free();
 
-	m_pRTV.Reset();
-	m_pSRV.Reset();
-	m_Texture2D.Reset();
+	m_RTV.Reset();
+	m_SRV.Reset();
+	m_texture2D.Reset();
 
-	m_pDevice.Reset();
-	m_pContext.Reset();
+	m_device.Reset();
+	m_context.Reset();
 }

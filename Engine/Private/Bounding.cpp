@@ -1,13 +1,13 @@
-#include "Bounding.h"
+﻿#include "Bounding.h"
 
 CBounding::CBounding(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice(pDevice), m_pContext(pContext)
+	: m_device(pDevice), m_context(pContext)
 {
 }
 
-HRESULT CBounding::Initialize(BOUNDING_DESC* pDesc)
+HRESULT CBounding::Initialize(BoundingDesc* pDesc)
 {
-	auto pBoundingDesc = static_cast<BOUNDING_DESC*>(pDesc);
+	auto pBoundingDesc = static_cast<BoundingDesc*>(pDesc);
 
 	return S_OK;
 }

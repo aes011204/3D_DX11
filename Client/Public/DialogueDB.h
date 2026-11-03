@@ -28,7 +28,7 @@ public:
     list<string>& Get_PendingDialogue() { return m_NextIds; }
 
 private:
-     weak_ptr<CGameInstance> m_pGameInstance = {};
+     weak_ptr<CGameInstance> m_gameInstance = {};
     vector< shared_ptr<Dialogue>> m_Dialogues;
     unordered_map<string, _int> m_DialogueIndex;
 

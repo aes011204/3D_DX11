@@ -1,4 +1,4 @@
-#include "Assimp_Animation.h"
+ï»¿#include "Assimp_Animation.h"
 #include "Assimp_Channel.h"
 #include "Assimp_Bone.h"
 #include "Assimp_Model.h"
@@ -9,37 +9,37 @@ CAssimp_Animation::CAssimp_Animation()
 
 HRESULT CAssimp_Animation::Initialize(const aiAnimation* pAIAnimation, shared_ptr<class CAssimp_Model> pModel)
 {
-    m_fDuration = pAIAnimation->mDuration;
-    m_fTickPerSecond = pAIAnimation->mTicksPerSecond;
+    m_duration = pAIAnimation->mDuration;
+    m_tickPerSecond = pAIAnimation->mTicksPerSecond;
 
-    m_iNumChannels = pAIAnimation->mNumChannels; // ¾Ö´Ï¸ŞÀÌ¼ÇÀ» Àç»ıÇÏ´Âµ¥ ÇÊ¿äÇÑ »ÀÀÇ °¹¼ö
+    m_numChannels = pAIAnimation->mNumChannels; // ì• ë‹ˆë©”ì´ì…˜ì„ ì¬ìƒí•˜ëŠ”ë° í•„ìš”í•œ ë¼ˆì˜ ê°¯ìˆ˜
 
-    for(size_t i =0;i< m_iNumChannels;i++)
+    for(size_t i =0;i< m_numChannels;i++)
     {
         auto pChannel = CAssimp_Channel::Create(pAIAnimation->mChannels[i], pModel);
         if (nullptr == pChannel)
             return E_FAIL;
 
-        m_Channels.push_back(pChannel);
+        m_channels.push_back(pChannel);
     }
     return S_OK;
 }
 
 _bool CAssimp_Animation::Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<CAssimp_Bone>>& Bones, _bool isLoop)
 {
-    m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
+    m_currentTrackPosition += m_tickPerSecond * fTimeDelta;
 
-    if(m_fCurrentTrackPosition >= m_fDuration)
+    if(m_currentTrackPosition >= m_duration)
     {
         if (false == isLoop)
             return true;
 
-        m_fCurrentTrackPosition = 0.f;
+        m_currentTrackPosition = 0.f;
     }
 
-    for(auto& pChannel:m_Channels)
+    for(auto& pChannel:m_channels)
     {
-        pChannel->Update_TransformationMatrix(m_fCurrentTrackPosition, Bones);
+        pChannel->Update_TransformationMatrix(m_currentTrackPosition, Bones);
     }
     return false;
 }
@@ -59,5 +59,5 @@ void CAssimp_Animation::Free()
 {
 	__super::Free();
 
-    m_Channels.clear();
+    m_channels.clear();
 }

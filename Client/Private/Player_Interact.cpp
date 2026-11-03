@@ -65,7 +65,7 @@ void CPlayer_Interact::Exit()
 
 
 	Evt_CloseInventory close;
-	m_pGameInstance.lock()->Get_EventBus()->Publish(close);
+	m_gameInstance.lock()->Get_EventBus()->Publish(close);
 
 
 

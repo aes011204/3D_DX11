@@ -1,4 +1,4 @@
-#include "Camera.h"
+ï»¿#include "Camera.h"
 #include "Camera.h"
 
 #include "GameObject.h"
@@ -26,7 +26,7 @@ HRESULT CCamera::Initialize_Prototype()
 HRESULT CCamera::Initialize(void* pArg)
 {
 	if (pArg == nullptr)
-		return E_FAIL; // ÀÌ°Ç ¾÷À¸¸é Àß¸øµÈ°ÅÀÓ
+		return E_FAIL; // ì´ê±´ ì—…ìœ¼ë©´ ìž˜ëª»ëœê±°ìž„
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -35,17 +35,17 @@ HRESULT CCamera::Initialize(void* pArg)
 
 	_uint iNumViewports = { 1 };
 	D3D11_VIEWPORT  ViewportDesc = {};
-	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+	m_context->RSGetViewports(&iNumViewports, &ViewportDesc);
 
-	CAMERA_DESC* pDesc = static_cast<CAMERA_DESC*>(pArg);
+	CameraDesc* pDesc = static_cast<CameraDesc*>(pArg);
 
-	m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&pDesc->vEyes));
-	m_pTransformCom->LookAt(XMLoadFloat4(&pDesc->vAt));
+	m_transformCom->Set_State(ETransformState::POSITION, XMLoadFloat4(&pDesc->eyes));
+	m_transformCom->LookAt(XMLoadFloat4(&pDesc->at));
 
-	m_fFovy = pDesc->fFovY;
-	m_fNear = pDesc->fNear;
-	m_fFar = pDesc->fFar;
-	m_fAspect = ViewportDesc.Width / ViewportDesc.Height;
+	m_fovy = pDesc->fovY;
+	m_near = pDesc->nearZ;
+	m_far = pDesc->farZ;
+	m_aspect = ViewportDesc.Width / ViewportDesc.Height;
 
 
 	Update_TransformMatrices();
@@ -75,9 +75,9 @@ HRESULT CCamera::Render()
 void CCamera::Update_TransformMatrices()
 {
 
-	XMStoreFloat4x4(&m_CamTSMatrices[ETOI(D3DTS::VIEW)], XMMatrixInverse(nullptr, XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix())));
+	XMStoreFloat4x4(&m_camTSMatrices[ETOI(ED3DTS::VIEW)], XMMatrixInverse(nullptr, XMLoadFloat4x4(m_transformCom->Get_WorldMatrix())));
 
-	XMStoreFloat4x4(&m_CamTSMatrices[ETOI(D3DTS::PROJ)], XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
+	XMStoreFloat4x4(&m_camTSMatrices[ETOI(ED3DTS::PROJ)], XMMatrixPerspectiveFovLH(m_fovy, m_aspect, m_near, m_far));
 }
 
 shared_ptr<CCamera> CCamera::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

@@ -1,9 +1,9 @@
-#include "UI_Manager.h"
+ï»¿#include "UI_Manager.h"
 #include "UI.h"
 #include "GameInstance.h"
 #include "Engine_Helper.h"
 
-CUI_Manager::CUI_Manager() : m_pGameInstance(CGameInstance::GetInstance())
+CUI_Manager::CUI_Manager() : m_gameInstance(CGameInstance::GetInstance())
 {
 }
 CUI_Manager::~CUI_Manager()
@@ -13,7 +13,7 @@ CUI_Manager::~CUI_Manager()
 
 HRESULT CUI_Manager::Initialize(_uint width, _uint height)
 {
-	m_Winsize = { 0, 0, static_cast<_float>(width) , static_cast<_float>(height) };
+	m_winsize = { 0, 0, static_cast<_float>(width) , static_cast<_float>(height) };
 
 	
 	return S_OK;
@@ -30,17 +30,17 @@ shared_ptr<CUI> CUI_Manager::FindUIOnPool(wstring type)
 		return nullptr;
 	}
 
-	return it->second; // UIpool¿¡¼­ ÇØ´ç ·¹ÀÌ¾î Ã£À½
+	return it->second; // UIpoolì—ì„œ í•´ë‹¹ ë ˆì´ì–´ ì°¾ìŒ
 }
 
-void CUI_Manager::Update(float m_fDeltaTime)
+void CUI_Manager::Update(float m_deltaTime)
 {
 	//ProcessUIQ();
 
 	bool bMouseHold = {false};
 
-	//¼ø¼­(OVERRIDE -> WINDOW -> STACK -> HUD)
-	for (int i = 0; i < ETOI(UI_LAYER::END); i++)
+	//ìˆœì„œ(OVERRIDE -> WINDOW -> STACK -> HUD)
+	for (int i = 0; i < ETOI(EUILayer::END); i++)
 	{
 		vector<shared_ptr<CUI>> vecCopy = m_UI[i];
 		//for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
@@ -49,43 +49,43 @@ void CUI_Manager::Update(float m_fDeltaTime)
 		//}
 		for (auto it = vecCopy.rbegin(); it != vecCopy.rend(); ++it)
 		{
-			(*it)->Update(m_fDeltaTime, bMouseHold);
+			(*it)->Update(m_deltaTime, bMouseHold);
 		}
 	}
 
 }
 
-void CUI_Manager::Late_Update(float m_fDeltaTime)
+void CUI_Manager::Late_Update(float m_deltaTime)
 {
-	//¼ø¼­(OVERRIDE -> WINDOW -> STACK -> HUD)
-	for (int i = 0; i < ETOI(UI_LAYER::END); i++)
+	//ìˆœì„œ(OVERRIDE -> WINDOW -> STACK -> HUD)
+	for (int i = 0; i < ETOI(EUILayer::END); i++)
 	{
 		for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
 		{
-			(*it)->Late_Update(m_fDeltaTime);
+			(*it)->Late_Update(m_deltaTime);
 		}
 
 	}
 
-	for (auto& pUI : m_UI[ETOI(UI_LAYER::HUD)])
+	for (auto& pUI : m_UI[ETOI(EUILayer::HUD)])
 	{
-		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
+		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, pUI);
 	}
 
 	
-	for (auto& pUI : m_UI[ETOI(UI_LAYER::WINDOW)])
+	for (auto& pUI : m_UI[ETOI(EUILayer::WINDOW)])
 	{
-		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
+		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, pUI);
 	}
 
 	
-	for (auto& pUI : m_UI[ETOI(UI_LAYER::OVERRIDE)])
+	for (auto& pUI : m_UI[ETOI(EUILayer::OVERRIDE)])
 	{
-		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
+		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, pUI);
 	}
-	for (auto& pUI : m_UI[ETOI(UI_LAYER::STACK)])
+	for (auto& pUI : m_UI[ETOI(EUILayer::STACK)])
 	{
-		m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI, pUI);
+		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, pUI);
 	}
 }
 
@@ -103,7 +103,7 @@ void CUI_Manager::Prepare_Render()
 
 void CUI_Manager::Render()
 {
-	//¼ø¼­(OVERRIDE -> WINDOW -> STACK -> HUD)
+	//ìˆœì„œ(OVERRIDE -> WINDOW -> STACK -> HUD)
 	//for (int i = 0; i < ETOI(UI_LAYER::END); i++)
 	//{
 	//	for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
@@ -116,10 +116,10 @@ void CUI_Manager::Render()
 
 void CUI_Manager::OnFail()
 {
-	m_ActiveUI = nullptr;
+	m_activeUI = nullptr;
 }
 
-void CUI_Manager::Push(UI_LAYER layer, wstring name,_bool isOnActive, void* pArg)
+void CUI_Manager::Push(EUILayer layer, wstring name,_bool isOnActive, void* pArg)
 {
 	//RequestUI tmp{ name, layer, pArg };
 
@@ -133,7 +133,7 @@ void CUI_Manager::Push(UI_LAYER layer, wstring name,_bool isOnActive, void* pArg
 		/*OnComplete(UIQ.Layer, UIQ.UIKey, UIQ.pArg);*/
 
 
-		// ÀÌ¹Ì ÀÖÀ¸¸é Á©À§·Î 
+		// ì´ë¯¸ ìˆìœ¼ë©´ ì ¤ìœ„ë¡œ 
 		auto it = find(m_UI[ETOI(layer)].begin(), m_UI[ETOI(layer)].end(), addUI);
 
 	if (it != m_UI[ETOI(layer)].end())
@@ -145,22 +145,22 @@ void CUI_Manager::Push(UI_LAYER layer, wstring name,_bool isOnActive, void* pArg
 			addUI->UI_InActive();
 		}
 
-		//addUI->Initialize(UIQ.pArg); // ³Ö¾ú´Ù »¯´Ù ÇÒ‹š °è¼Ó ºÒ¸± À§ÇèÀÖÀ½ CBase ¾È¿¡¼­ bool·Î Ã³¸®
+		//addUI->Initialize(UIQ.pArg); // ë„£ì—ˆë‹¤ ëºë‹¤ í• ë–„ ê³„ì† ë¶ˆë¦´ ìœ„í—˜ìˆìŒ CBase ì•ˆì—ì„œ boolë¡œ ì²˜ë¦¬
 		//addUI->UI_Active();
 
-		//// ÀÌ°Ç ui ¸Å´ÏÁ®¿¡ ÀÖ´Â È°¼ºÈ­µÈ ui ¸ğ¾ÆµÎ´Â °÷¿¡ ÀÖÀ½
+		//// ì´ê±´ ui ë§¤ë‹ˆì ¸ì— ìˆëŠ” í™œì„±í™”ëœ ui ëª¨ì•„ë‘ëŠ” ê³³ì— ìˆìŒ
 		m_UI[ETOI(layer)].push_back(addUI);
-		m_ActiveUI = addUI;
+		m_activeUI = addUI;
 }
 
-void CUI_Manager::Pop(UI_LAYER layer, wstring type)
+void CUI_Manager::Pop(EUILayer layer, wstring type)
 {
-	//ÀÏ´Ü ½ºÅÃ,¿À¹ö·¹ÀÌ ÀÌ¸é pop_back¸¸
-	// ´Ù¸¥°Å´Â ±×³É Á¦°Å
+	//ì¼ë‹¨ ìŠ¤íƒ,ì˜¤ë²„ë ˆì´ ì´ë©´ pop_backë§Œ
+	// ë‹¤ë¥¸ê±°ëŠ” ê·¸ëƒ¥ ì œê±°
 
 	auto pUIPair = FindUIOnPool(type);
 
-	if(layer==UI_LAYER::HUD|| layer == UI_LAYER::WINDOW)
+	if(layer==EUILayer::HUD|| layer == EUILayer::WINDOW)
 	{
 		for(auto it = m_UI[ETOI(layer)].begin();it != m_UI[ETOI(layer)].end();)
 		{
@@ -188,12 +188,12 @@ void CUI_Manager::Pop(UI_LAYER layer, wstring type)
 
 }
 
-shared_ptr<CUI> CUI_Manager::Find_UI_InCurLevel(UI_LAYER layer, wstring type)
+shared_ptr<CUI> CUI_Manager::Find_UI_InCurLevel(EUILayer layer, wstring type)
 {
 	
 	auto pUIPair = FindUIOnPool(type);
 
-	if (layer == UI_LAYER::HUD || layer == UI_LAYER::WINDOW|| layer == UI_LAYER::OVERRIDE )
+	if (layer == EUILayer::HUD || layer == EUILayer::WINDOW|| layer == EUILayer::OVERRIDE )
 	{
 		for (auto& it : m_UI[ETOI(layer)])
 		{
@@ -210,24 +210,24 @@ shared_ptr<CUI> CUI_Manager::Find_UI_InCurLevel(UI_LAYER layer, wstring type)
 
 void CUI_Manager::Detach_All()
 {
-	//¶ç¾îÁ® ÀÖ´Â ·¹ÀÌ¾î¿¡¼­Á¦°Å
-	for (int i = 0; i < ETOI(UI_LAYER::END); i++)
+	//ë„ì–´ì ¸ ìˆëŠ” ë ˆì´ì–´ì—ì„œì œê±°
+	for (int i = 0; i < ETOI(EUILayer::END); i++)
 	{
-		// ¹İº¹ÀÚ¸¦ ÀÌ¿ëÇØ Ã³À½ºÎÅÍ ³¡±îÁö ¼øÈ¸ÇÕ´Ï´Ù.
+		// ë°˜ë³µìë¥¼ ì´ìš©í•´ ì²˜ìŒë¶€í„° ëê¹Œì§€ ìˆœíšŒí•©ë‹ˆë‹¤.
 		for (auto it = m_UI[i].begin(); it != m_UI[i].end(); )
 		{
-			// (°¡Á¤) ÇØ´ç UIÀÇ ÅÂ±×¸¦ °¡Á®¿Í¼­ ºñ±³ÇÕ´Ï´Ù.
+			// (ê°€ì •) í•´ë‹¹ UIì˜ íƒœê·¸ë¥¼ ê°€ì ¸ì™€ì„œ ë¹„êµí•©ë‹ˆë‹¤.
 			if ((*it)->Get_NO_DETACH() == false)
 			{
-				// 1. ¿©±â¼­ ·¹ÀÌ¾î¿¡¼­ »èÁ¦ÇÏ±â Àü ÇÊ¿äÇÑ Ã³¸® (Release, InActive µî)
+				// 1. ì—¬ê¸°ì„œ ë ˆì´ì–´ì—ì„œ ì‚­ì œí•˜ê¸° ì „ í•„ìš”í•œ ì²˜ë¦¬ (Release, InActive ë“±)
 				// (*it)->UI_InActive(); 
 
-				// 2. ÄÁÅ×ÀÌ³Ê¿¡¼­ »èÁ¦ÇÏ°í, ´ÙÀ½ ¿ä¼Ò¸¦ °¡¸®Å°´Â ¹İº¹ÀÚ¸¦ ¹Ş¾Æ¿É´Ï´Ù.
+				// 2. ì»¨í…Œì´ë„ˆì—ì„œ ì‚­ì œí•˜ê³ , ë‹¤ìŒ ìš”ì†Œë¥¼ ê°€ë¦¬í‚¤ëŠ” ë°˜ë³µìë¥¼ ë°›ì•„ì˜µë‹ˆë‹¤.
 				it = m_UI[i].erase(it);
 			}
 			else
 			{
-				// »ì·ÁµÑ ÅÂ±×¶ó¸é Áö¿ìÁö ¾Ê°í ´ÙÀ½ ³à¼®À¸·Î ³Ñ¾î°©´Ï´Ù.
+				// ì‚´ë ¤ë‘˜ íƒœê·¸ë¼ë©´ ì§€ìš°ì§€ ì•Šê³  ë‹¤ìŒ ë…€ì„ìœ¼ë¡œ ë„˜ì–´ê°‘ë‹ˆë‹¤.
 				++it;
 			}
 		}
@@ -236,7 +236,7 @@ void CUI_Manager::Detach_All()
 
 void CUI_Manager::InsertToPool(wstring UIType, shared_ptr<CUI> UI)
 {
-	// ÀÌ¹Ì ÀÖ´ÂÁö È®ÀÎ
+	// ì´ë¯¸ ìˆëŠ”ì§€ í™•ì¸
 	auto it = m_UIPool.find(UIType);
 
 	m_UIKey = UIType;
@@ -253,7 +253,7 @@ void CUI_Manager::InsertToPool(wstring UIType, shared_ptr<CUI> UI)
 
 Rect CUI_Manager::Get_WinSize()
 {
-	return m_Winsize; 
+	return m_winsize; 
 }
 
 //void CUI_Manager::ProcessUIQ()
@@ -273,17 +273,17 @@ Rect CUI_Manager::Get_WinSize()
 //		if (addUI == nullptr)
 //			return;
 //
-//		// ÀÌ¹Ì ÀÖÀ¸¸é Á©À§·Î 
+//		// ì´ë¯¸ ìˆìœ¼ë©´ ì ¤ìœ„ë¡œ 
 //		auto it = find(m_UI[ETOI(UIQ.Layer)].begin(), m_UI[ETOI(UIQ.Layer)].end(), addUI);
 //		if (it != m_UI[ETOI(UIQ.Layer)].end())
 //		{
 //			m_UI[ETOI(UIQ.Layer)].erase(it);
 //		}
 //
-//		//addUI->Initialize(UIQ.pArg); // ³Ö¾ú´Ù »¯´Ù ÇÒ‹š °è¼Ó ºÒ¸± À§ÇèÀÖÀ½ CBase ¾È¿¡¼­ bool·Î Ã³¸®
+//		//addUI->Initialize(UIQ.pArg); // ë„£ì—ˆë‹¤ ëºë‹¤ í• ë–„ ê³„ì† ë¶ˆë¦´ ìœ„í—˜ìˆìŒ CBase ì•ˆì—ì„œ boolë¡œ ì²˜ë¦¬
 //		//addUI->UI_Active();
 //
-//		//// ÀÌ°Ç ui ¸Å´ÏÁ®¿¡ ÀÖ´Â È°¼ºÈ­µÈ ui ¸ğ¾ÆµÎ´Â °÷¿¡ ÀÖÀ½
+//		//// ì´ê±´ ui ë§¤ë‹ˆì ¸ì— ìˆëŠ” í™œì„±í™”ëœ ui ëª¨ì•„ë‘ëŠ” ê³³ì— ìˆìŒ
 //		m_UI[ETOI(UIQ.Layer)].push_back(addUI);
 //		m_ActiveUI = addUI;
 //		
@@ -306,10 +306,10 @@ void CUI_Manager::Free()
 {
 	__super::Free();
 
-	// ¶ç¿öÁ® ÀÖ´Â ui ³»¸®±â
+	// ë„ì›Œì ¸ ìˆëŠ” ui ë‚´ë¦¬ê¸°
 	Detach_All();
 
-	//pool ¿øº» »èÁ¦ 
+	//pool ì›ë³¸ ì‚­ì œ 
 	//for (auto& pair : m_UIPool)
 	//{
 	//	Safe_Release(pair.second);
@@ -346,9 +346,9 @@ void CUI_Manager::OnGui()
 
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-				if (m_pSelectedObject == root) flags |= ImGuiTreeNodeFlags_Selected;
+				if (m_selectedObject == root) flags |= ImGuiTreeNodeFlags_Selected;
 
-				//  Leaf¸é push ¾È ÇÏ°Ô
+				//  Leafë©´ push ì•ˆ í•˜ê²Œ
 				if (children.empty())
 					flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
@@ -356,7 +356,7 @@ void CUI_Manager::OnGui()
 
 				if (ImGui::IsItemClicked())
 				{
-					m_pSelectedObject = root;
+					m_selectedObject = root;
 
 					//Editor::EvtSelectEntity ev{};
 					//ev.Entity = std::static_pointer_cast<Engine::CEntity>(root);
@@ -365,7 +365,7 @@ void CUI_Manager::OnGui()
 
 				}
 
-				//  ÀÚ½ÄÀÌ ÀÖÀ» ¶§¸¸, opened¸é TreePop ÇÊ¼ö
+				//  ìì‹ì´ ìˆì„ ë•Œë§Œ, openedë©´ TreePop í•„ìˆ˜
 				if (!children.empty() && opened)
 				{
 					for (auto& child : children)
@@ -393,9 +393,9 @@ void CUI_Manager::DrawUITree(const shared_ptr<Engine::CUI>& ui)
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	if (m_pSelectedObject == ui) flags |= ImGuiTreeNodeFlags_Selected;
+	if (m_selectedObject == ui) flags |= ImGuiTreeNodeFlags_Selected;
 
-	//  Leaf¸é push ¾È ÇÏ°Ô
+	//  Leafë©´ push ì•ˆ í•˜ê²Œ
 	if (children.empty())
 		flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
@@ -403,7 +403,7 @@ void CUI_Manager::DrawUITree(const shared_ptr<Engine::CUI>& ui)
 
 	if (ImGui::IsItemClicked())
 	{
-		m_pSelectedObject = ui;
+		m_selectedObject = ui;
 
 		//Editor::EvtSelectEntity ev{};
 		//ev.Entity = std::static_pointer_cast<Engine::CEntity>(ui);
@@ -412,7 +412,7 @@ void CUI_Manager::DrawUITree(const shared_ptr<Engine::CUI>& ui)
 
 	}
 
-	//  ÀÚ½ÄÀÌ ÀÖÀ» ¶§¸¸ TreePop
+	//  ìì‹ì´ ìˆì„ ë•Œë§Œ TreePop
 	if (!children.empty() && opened)
 	{
 		for (auto& child : children)

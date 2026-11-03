@@ -42,7 +42,7 @@ public:
 	//_uint GetInitFishCount() const{return m_FishCount;}
 	//float GetProgress01() const { return m_prograssBar01; }
 
-	virtual float GetAngle() const override { return m_Angle; }
+	virtual float GetAngle() const override { return m_angle; }
 
 
 	virtual const Zone* GetZones() const  override { return m_zones; }
@@ -64,7 +64,7 @@ public:
 	Zone m_zones[8];
 	int m_zoneCount;
 	float m_AccTime = { 0 };
-	float m_Angle = { 0 };
+	float m_angle = { 0 };
 	float m_Speed = {};
 	_bool m_bStart = { false };
 

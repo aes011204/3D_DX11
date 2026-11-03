@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "StateMachine.h"
 #include "Client_Enum.h"
 #include "Client_Define.h"
@@ -42,14 +42,14 @@ public:
     }
 	_int GetCurStateNum();
 
-    weak_ptr<CState> Get_CurState() { return m_CurState; }
-    _uint Get_PrevStateKey() { return  m_PrevStateKey; }
+    weak_ptr<CState> Get_CurState() { return m_curState; }
+    _uint Get_PrevStateKey() { return  m_prevStateKey; }
 
     shared_ptr<class CPlayerState> Get_State(_uint stateKey);
 
 private:
    weak_ptr<class CPlayerBoat> m_pOwner;
-   virtual void Change_State(_uint changeStateKey); // ³»ºÎ¿ë ¹Û¿¡¼­ ºÒ·¯µµ ¾È¹Ù²ñ
+   virtual void Change_State(_uint changeStateKey); // ë‚´ë¶€ìš© ë°–ì—ì„œ ë¶ˆëŸ¬ë„ ì•ˆë°”ë€œ
 
    weak_ptr< CGameObject> m_pTarget = {};
 

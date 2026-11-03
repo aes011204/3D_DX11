@@ -1,4 +1,4 @@
-#include "Animation.h"
+Ôªø#include "Animation.h"
 #include "Channel.h"
 #include "Bone.h"
 
@@ -7,12 +7,12 @@ CAnimation::CAnimation()
 }
 
 CAnimation::CAnimation(const CAnimation& Prototype) :
-	m_fDuration{ Prototype.m_fDuration },
-	m_fTickPerSecond{ Prototype.m_fTickPerSecond },
-	m_fCurrentTrackPosition{ Prototype.m_fCurrentTrackPosition },
-	m_iNumChannels{ Prototype.m_iNumChannels },
-	m_Channels{ Prototype.m_Channels },
-	m_CurrentKeyFrameIndices{ Prototype.m_CurrentKeyFrameIndices }
+	m_duration{ Prototype.m_duration },
+	m_tickPerSecond{ Prototype.m_tickPerSecond },
+	m_currentTrackPosition{ Prototype.m_currentTrackPosition },
+	m_numChannels{ Prototype.m_numChannels },
+	m_channels{ Prototype.m_channels },
+	m_currentKeyFrameIndices{ Prototype.m_currentKeyFrameIndices }
 {
 }
 
@@ -22,47 +22,47 @@ HRESULT CAnimation::Initialize(ifstream& InFile)
 	InFile.read((char*)&animationDesc, sizeof(Cvt_Animation));
 
 
-	m_fDuration = animationDesc.dDuration;
-	m_fTickPerSecond = animationDesc.dTickPerSecond;
+	m_duration = animationDesc.duration;
+	m_tickPerSecond = animationDesc.tickPerSecond;
 
-	m_iNumChannels = animationDesc.iNumChannels; // æ÷¥œ∏ﬁ¿Ãº«¿ª ¿Áª˝«œ¥¬µ• « ø‰«— ª¿¿« ∞πºˆ
+	m_numChannels = animationDesc.numChannels; // Ïï†ÎãàÎ©îÏù¥ÏÖòÏùÑ Ïû¨ÏÉùÌïòÎäîÎç∞ ÌïÑÏöîÌïú ÎºàÏùò Í∞ØÏàò
 
-	m_CurrentKeyFrameIndices.resize(m_iNumChannels);
+	m_currentKeyFrameIndices.resize(m_numChannels);
 
-	for (size_t i = 0; i < m_iNumChannels; i++)
+	for (size_t i = 0; i < m_numChannels; i++)
 	{
 		auto pChannel = CChannel::Create(InFile);
 		if (nullptr == pChannel)
 			return E_FAIL;
 
-		m_Channels.push_back(pChannel);
+		m_channels.push_back(pChannel);
 	}
 	return S_OK;
 }
 
 _bool CAnimation::Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<CBone>>& Bones, _bool isLoop)
 {
-	m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
+	m_currentTrackPosition += m_tickPerSecond * fTimeDelta;
 
-	if (m_fCurrentTrackPosition >= m_fDuration)
+	if (m_currentTrackPosition >= m_duration)
 	{
 		if (false == isLoop)
 		{
-			for (size_t i = 0; i < m_iNumChannels; i++)
+			for (size_t i = 0; i < m_numChannels; i++)
 			{
-				m_Channels[i]->Update_TransformationMatrix(&m_CurrentKeyFrameIndices[i], m_fCurrentTrackPosition, Bones);
+				m_channels[i]->Update_TransformationMatrix(&m_currentKeyFrameIndices[i], m_currentTrackPosition, Bones);
 			}
 			return true;
 		}
 
-		m_fCurrentTrackPosition = 0.f;
+		m_currentTrackPosition = 0.f;
 	}
 
 	//for(auto& pChannel:m_Channels)
 
-	for (size_t i = 0; i < m_iNumChannels; i++)
+	for (size_t i = 0; i < m_numChannels; i++)
 	{
-		m_Channels[i]->Update_TransformationMatrix(&m_CurrentKeyFrameIndices[i], m_fCurrentTrackPosition, Bones);
+		m_channels[i]->Update_TransformationMatrix(&m_currentKeyFrameIndices[i], m_currentTrackPosition, Bones);
 	}
 	return false;
 }
@@ -73,22 +73,22 @@ _bool CAnimation::Blend_TransformationMatrices(_float timeDelta, const shared_pt
 	vector<_matrix> poseA;
 	vector<_matrix> poseB;
 	// A
-	auto backupA = m_CurrentKeyFrameIndices;
-	float backupTimeA = m_fCurrentTrackPosition;
+	auto backupA = m_currentKeyFrameIndices;
+	float backupTimeA = m_currentTrackPosition;
 
 	Update_ToBuffer(timeDelta, poseA, isCurLoop, bones.size());
 
-	m_CurrentKeyFrameIndices = backupA;
-	m_fCurrentTrackPosition = backupTimeA;
+	m_currentKeyFrameIndices = backupA;
+	m_currentTrackPosition = backupTimeA;
 
 	// B 
-	auto backupB = nextAnim->m_CurrentKeyFrameIndices;
-	float backupTimeB = nextAnim->m_fCurrentTrackPosition;
+	auto backupB = nextAnim->m_currentKeyFrameIndices;
+	float backupTimeB = nextAnim->m_currentTrackPosition;
 
 	nextAnim->Update_ToBuffer(timeDelta, poseB, isNextLoop, bones.size());
 
-	nextAnim->m_CurrentKeyFrameIndices = backupB;
-	nextAnim->m_fCurrentTrackPosition = backupTimeB;
+	nextAnim->m_currentKeyFrameIndices = backupB;
+	nextAnim->m_currentTrackPosition = backupTimeB;
 	for (int boneIndex = 0; boneIndex < bones.size(); ++boneIndex)
 	{
 		_vector sA, rA, tA;
@@ -133,31 +133,31 @@ void CAnimation::Update_ToBuffer(
 	for (auto& mat : OutMatrices)
 		mat = XMMatrixIdentity();
 
-	// Ω√∞£ æ˜µ•¿Ã∆Æ
-	m_fCurrentTrackPosition += m_fTickPerSecond * fTimeDelta;
+	// ÏãúÍ∞Ñ ÏóÖÎç∞Ïù¥Ìä∏
+	m_currentTrackPosition += m_tickPerSecond * fTimeDelta;
 
-	if (m_fCurrentTrackPosition >= m_fDuration)
+	if (m_currentTrackPosition >= m_duration)
 	{
 		if (!isLoop)
 		{
-			for (size_t i = 0; i < m_iNumChannels; i++)
+			for (size_t i = 0; i < m_numChannels; i++)
 			{
-				m_Channels[i]->Update_ToMatrix(
-					&m_CurrentKeyFrameIndices[i],
-					m_fCurrentTrackPosition,
+				m_channels[i]->Update_ToMatrix(
+					&m_currentKeyFrameIndices[i],
+					m_currentTrackPosition,
 					OutMatrices);
 			}
 			return;
 		}
 
-		m_fCurrentTrackPosition = 0.f;
+		m_currentTrackPosition = 0.f;
 	}
 
-	for (size_t i = 0; i < m_iNumChannels; i++)
+	for (size_t i = 0; i < m_numChannels; i++)
 	{
-		m_Channels[i]->Update_ToMatrix(
-			&m_CurrentKeyFrameIndices[i],
-			m_fCurrentTrackPosition,
+		m_channels[i]->Update_ToMatrix(
+			&m_currentKeyFrameIndices[i],
+			m_currentTrackPosition,
 			OutMatrices);
 	}
 }
@@ -182,5 +182,5 @@ void CAnimation::Free()
 {
 	__super::Free();
 
-	m_Channels.clear();
+	m_channels.clear();
 }

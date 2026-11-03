@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Assimp_Bone.h"
 #include "VIBuffer.h"
 
@@ -16,27 +16,27 @@ public:
 
 
 public:
-	virtual HRESULT Initialize_Prototype(MODEL eType, const aiMesh* pAIMesh, shared_ptr <class CAssimp_Model > pModel, _fmatrix PreTransformMatrix);
+	virtual HRESULT Initialize_Prototype(EModelType eType, const aiMesh* pAIMesh, shared_ptr <class CAssimp_Model > pModel, _fmatrix PreTransformMatrix);
 	virtual HRESULT Initialize(void* pArg);
 
 
-	_uint Get_MaterialIndex() const {return m_iMaterialIndex;}
+	_uint Get_MaterialIndex() const {return m_materialIndex;}
 
 	HRESULT Bind_BoneMatrices(shared_ptr<class CShader> shader, const _char* pConstantName, const vector<shared_ptr<CAssimp_Bone>>& bones);
 
 private:
-	_uint m_iMaterialIndex = {};
+	_uint m_materialIndex = {};
 
-	_uint m_iNumBones = {};
-	vector<_uint> m_BoneIndices = {};
-	_float4x4 m_BoneMatrices[512] = {};
-	vector<_float4x4 > m_OffsetMatrices = {}; // vectorÀÎ ÀÌÀ¯´Â »À°¹¼ö ¸¸Å­ ¿ÀÇÁ¼Â °¡Áö°í ÀÖÀ½
+	_uint m_numBones = {};
+	vector<_uint> m_boneIndices = {};
+	_float4x4 m_boneMatrices[512] = {};
+	vector<_float4x4 > m_offsetMatrices = {}; // vectorì¸ ì´ìœ ëŠ” ë¼ˆê°¯ìˆ˜ ë§Œí¼ ì˜¤í”„ì…‹ ê°€ì§€ê³  ìˆìŒ
 
 private:
 	HRESULT Ready_VertexBuffer_For_NonAnim(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix);
 	HRESULT Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_ptr<class CAssimp_Model>);
 public:
-	static shared_ptr<CAssimp_Mesh> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, MODEL eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix);
+	static shared_ptr<CAssimp_Mesh> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, EModelType eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix);
 	virtual shared_ptr<CComponent> Clone(void* pArg);
 	virtual void Free() override;
 };

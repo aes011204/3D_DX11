@@ -1,4 +1,4 @@
-#include "Mon_R.h"
+ï»¿#include "Mon_R.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "Collider.h"
@@ -30,7 +30,7 @@ HRESULT CMon_R::Initialize(void* pArg)
 
 
 
-	m_pPlayer = m_pGameInstance.lock()->Get_GameObject(
+	m_pPlayer = m_gameInstance.lock()->Get_GameObject(
 		ETOI(LEVEL::GAMEPLAY),
 		L"Layer_Player", 0
 	);
@@ -39,13 +39,13 @@ HRESULT CMon_R::Initialize(void* pArg)
 	if (m_pPlayer.lock())
 	{
 	_float3 newPos = {};
-	_vector TargetPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(STATE::LOOK) * 100.f;
+	_vector TargetPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(ETransformState::LOOK) * 100.f;
 
 		//XMVectorSet(targetPos.x, targetPos.y, targetPos.z + 20.f, 1.f)
-	m_pTransformCom->Set_Position(m_pPlayer.lock()->Get_TransformCom()->Get_Position() + TargetPos);
+	m_transformCom->Set_Position(m_pPlayer.lock()->Get_TransformCom()->Get_Position() + TargetPos);
 
 
-	m_pTransformCom->SetUp_Scale(2.f, 2.f, 2.f);
+	m_transformCom->SetUp_Scale(2.f, 2.f, 2.f);
 	}
 
 
@@ -59,9 +59,9 @@ HRESULT CMon_R::Initialize(void* pArg)
 	
 	
 
-	m_pGameInstance.lock()->Play_Loop(L"Leviathan_Rumble_Loop");
+	m_gameInstance.lock()->Play_Loop(L"Leviathan_Rumble_Loop");
 
-	m_pGameInstance.lock()->Play_Loop(L"Leviathan_Distant_Call");
+	m_gameInstance.lock()->Play_Loop(L"Leviathan_Distant_Call");
 
 	return S_OK;
 }
@@ -85,7 +85,7 @@ void CMon_R::Update(_float fTimeDelta)
 		if(m_Count == 1)
 		{
 
-			if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
+			if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
 				ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 				return;
 		}
@@ -120,7 +120,7 @@ void CMon_R::Update(_float fTimeDelta)
 
 void CMon_R::Late_Update(_float fTimeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CMon_R::Render()
@@ -133,12 +133,12 @@ HRESULT CMon_R::Render()
 
 		for (size_t i = 0; i < iNumMesh; i++)
 		{
-			m_pModelCom_One->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+			m_pModelCom_One->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
-			m_pModelCom_One->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-			m_pModelCom_One->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+			m_pModelCom_One->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			m_pModelCom_One->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
-			if (FAILED(m_pShaderCom->Begin(0)))
+			if (FAILED(m_shaderCom->Begin(0)))
 				return E_FAIL;
 
 			if (FAILED(m_pModelCom_One->Render(i)))
@@ -183,7 +183,7 @@ HRESULT CMon_R::Render()
 	}
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
 	//m_pColliderCom->Render();
 
@@ -240,7 +240,7 @@ void CMon_R::OnGui()
 {
 	//ImGui::SliderInt("ETC Anim Index", (_int*)&m_IndexETC, 0, 10);
 
-	//// ¹öÆ°À¸·Îµµ Å×½ºÆ®
+	//// ë²„íŠ¼ìœ¼ë¡œë„ í…ŒìŠ¤íŠ¸
 	//if (ImGui::Button("Prev"))
 	//{
 	//	if (m_IndexETC > 0)
@@ -257,7 +257,7 @@ void CMon_R::OnGui()
 	//	m_pModelCom_Etc->Set_Animation(m_IndexETC, true);
 	//}
 
-	//// ÇöÀç °ª Ãâ·Â
+	//// í˜„ì¬ ê°’ ì¶œë ¥
 	//ImGui::Text("Current Index: %d", m_IndexETC);
 
 	
@@ -275,18 +275,18 @@ void CMon_R::RebindCom()
 
 HRESULT CMon_R::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -303,8 +303,8 @@ HRESULT CMon_R::Bind_ShaderResources()
 		return E_FAIL;*/
 
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float fFar = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
 		return E_FAIL;
 	return S_OK;
 }
@@ -312,14 +312,14 @@ HRESULT CMon_R::Bind_ShaderResources()
 HRESULT CMon_R::Ready_Components()
 {
 
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	// ì‰ì´ë”ëŠ” í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ì„
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨ 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_One"), TEXT("Com_Model_One"), &m_pModelCom_One, nullptr)))
 		return E_FAIL;
 
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨
 	
 
 		if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"), TEXT("Com_Model_Etc"), &m_pModelCom_Etc, nullptr)))

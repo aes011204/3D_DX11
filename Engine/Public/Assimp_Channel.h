@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
@@ -15,10 +15,10 @@ public:
 	void Update_TransformationMatrix(_float fCurrentTrackPosition, const vector<shared_ptr<class CAssimp_Bone>>& Bones);
 
 private:
-	vector<KEYFRAME> m_KeyFrames;
-	_uint m_iNumKeyFrames = {};
-	_uint m_iCurrentKeyFrameIndex = { 0 };
-	_int m_iBoneIndex = { -1 };
+	vector<KeyFrame> m_keyFrames;
+	_uint m_numKeyFrames = {};
+	_uint m_currentKeyFrameIndex = { 0 };
+	_int m_boneIndex = { -1 };
 
 public:
 	static shared_ptr<CAssimp_Channel> Create(const aiNodeAnim* pAIChannel, shared_ptr<class CAssimp_Model> pModel);

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 
 
@@ -10,15 +10,15 @@ class ENGINE_DLL CUITransform final:
     public CComponent
 {
 public:
-    struct UITRANSFORM_DESC
+    struct UITransformDesc
     {
-        Vector2 vAnchorPoint = { 0.5f, 0.5f }; // Áß¾Ó ±âÁØ
-        Vector2 vPivot = { 0.5f, 0.5f }; // Áß¾Ó ±âÁØ
-        Vector2 vSizeDelta = { 100.f, 100.f };
-        Vector2 vAnchoredPos = { 0.f, 0.f };
-        Vector2 vScale = { 1.f, 1.f };
+        Vector2 anchorPoint = { 0.5f, 0.5f }; // ì¤‘ì•™ ê¸°ì¤€
+        Vector2 pivot = { 0.5f, 0.5f }; // ì¤‘ì•™ ê¸°ì¤€
+        Vector2 sizeDelta = { 100.f, 100.f };
+        Vector2 anchoredPos = { 0.f, 0.f };
+        Vector2 scale = { 1.f, 1.f };
 
-        _bool bSetParentSize = { false };
+        _bool isSetParentSize = { false };
     };
         
 
@@ -31,34 +31,34 @@ public:
     virtual HRESULT Initialize_Prototype() override;
     virtual HRESULT Initialize(void* Arg) override;
             
-    // ºÎ¸ğ ÀÚ½Ä  get set
+    // ë¶€ëª¨ ìì‹  get set
     void SetParent(weak_ptr<CUITransform> newParent, bool keepWorldRect);
-    weak_ptr<CUITransform> GetParent() { return m_Parent; }
-    vector<shared_ptr<CUITransform>>& GetChildren() { return m_Children; }
+    weak_ptr<CUITransform> GetParent() { return m_parent; }
+    vector<shared_ptr<CUITransform>>& GetChildren() { return m_children; }
 
-    // Äµ¹ö½º ¼³Á¤
-    void SetCanvas(class UICanvas* canvas) { m_Canvas = canvas; MarkDirtyRecursive(); }
+    // ìº”ë²„ìŠ¤ ì„¤ì •
+    void SetCanvas(class UICanvas* canvas) { m_canvas = canvas; MarkDirtyRecursive(); }
 
-    //·¹ÀÌ¾Æ¿ô Set
-    void SetAnchorPoint(Vector2 _AnchorPoint) { m_AnchorPoint = _AnchorPoint; MarkDirtyRecursive(); }
-    void SetPivot(Vector2 _Pivot) { m_Pivot = _Pivot; MarkDirtyRecursive(); }
-    void SetSizeDelta(Vector2 _SizeDelta) { m_SizeDelta = _SizeDelta; MarkDirtyRecursive(); }
-    void SetAnchoredPos(Vector2 _AnchoredPos) { m_AnchoredPos = _AnchoredPos; MarkDirtyRecursive(); }
-    void SetLocalScale(Vector2 _localScale) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
-    void SetRotation(_float _fDegree) { m_RotationDegreeView = _fDegree; m_RotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
+    //ë ˆì´ì•„ì›ƒ Set
+    void SetAnchorPoint(Vector2 _AnchorPoint) { m_anchorPoint = _AnchorPoint; MarkDirtyRecursive(); }
+    void SetPivot(Vector2 _Pivot) { m_pivot = _Pivot; MarkDirtyRecursive(); }
+    void SetSizeDelta(Vector2 _SizeDelta) { m_sizeDelta = _SizeDelta; MarkDirtyRecursive(); }
+    void SetAnchoredPos(Vector2 _AnchoredPos) { m_anchoredPos = _AnchoredPos; MarkDirtyRecursive(); }
+    void SetLocalScale(Vector2 _localScale) { m_localScale = _localScale; MarkDirtyRecursive(); }
+    void SetRotation(_float _fDegree) { m_rotationDegreeView = _fDegree; m_rotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
    // void SetTurn(_float fTimeDelta) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
 
     _bool SetRotationTo(_float _fTargetDegree, _float fTimeDelta);
 
 
-    Rect Get_WorldRect() { UpdateLayoutIfDirty(); return m_WorldRect; }
-    XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_WorldMatrix); }
-    _float2 Get_FinalSize() { return _float2(m_SizeDelta * m_LocalScale); }
-    _float2 Get_SizeDelta() { return m_SizeDelta; }
-    _float2 Get_LocalScale() { return m_LocalScale; }
-    _float2 Get_AnchorPoint() { return m_AnchorPoint; }
-    _float Get_Rotation() { return m_RotationDegreeView; }
-    _float2 Get_AnchoredPos() { return m_AnchoredPos; }
+    Rect Get_WorldRect() { UpdateLayoutIfDirty(); return m_worldRect; }
+    XMMATRIX Get_Mat() { return XMLoadFloat4x4(&m_worldMatrix); }
+    _float2 Get_FinalSize() { return _float2(m_sizeDelta * m_localScale); }
+    _float2 Get_SizeDelta() { return m_sizeDelta; }
+    _float2 Get_LocalScale() { return m_localScale; }
+    _float2 Get_AnchorPoint() { return m_anchorPoint; }
+    _float Get_Rotation() { return m_rotationDegreeView; }
+    _float2 Get_AnchoredPos() { return m_anchoredPos; }
  
     void UpdateLayoutIfDirty();
 
@@ -67,48 +67,48 @@ public:
     HRESULT Bind_ShaderResource(shared_ptr<class CShader> pShaderCom, const _char* pConstantName);
 private:
 
-    void MarkDirtyRecursive(); // dirty Ã³¸®
+    void MarkDirtyRecursive(); // dirty ì²˜ë¦¬
     Rect GetParent_WorldRect();
     XMMATRIX GetParent_Mat();
-    void Computing_WorldRect(); // ÇÙ½É °è»ê ÇÔ¼ö
+    void Computing_WorldRect(); // í•µì‹¬ ê³„ì‚° í•¨ìˆ˜
 
-    Vector2 Hadamard(const Vector2& a, const Vector2& b); // _vec2 ¿ä¼Òº° °ö
+    Vector2 Hadamard(const Vector2& a, const Vector2& b); // _vec2 ìš”ì†Œë³„ ê³±
 
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 private:
-    // »ó¼Ó ±¸Á¶¿ë
-    weak_ptr<CUITransform> m_Parent = {};
-    vector<shared_ptr<CUITransform>> m_Children;
+    // ìƒì† êµ¬ì¡°ìš©
+    weak_ptr<CUITransform> m_parent = {};
+    vector<shared_ptr<CUITransform>> m_children;
 
-    // Çà·Ä È¸Àü¿ë
-    _float4x4				m_WorldMatrix = {};
+    // í–‰ë ¬ íšŒì „ìš©
+    _float4x4				m_worldMatrix = {};
 
-    //·çÆ® ¿ë Äµ¹ö½º
-    class UICanvas* m_Canvas = {};
+    //ë£¨íŠ¸ ìš© ìº”ë²„ìŠ¤
+    class UICanvas* m_canvas = {};
 
-    //·¹ÀÌ¾Æ¿ô
+    //ë ˆì´ì•„ì›ƒ
     //_vec2 m_AnchorMin;
     //_vec2 m_AnchorMax;
 
-    Vector2 m_AnchorPoint = {};
-    Vector2 m_Pivot = {};
+    Vector2 m_anchorPoint = {};
+    Vector2 m_pivot = {};
 
-    Vector2 m_SizeDelta = {}; // ½ÇÁ¦ »çÀÌÁî ÇÈ¼¿ ±âÁØ
-    Vector2 m_AnchoredPos = {}; // ·¹ÀÌ¾Æ¿ô¿ë ¿ÀÇÁ¼Â (Anchor(ºÎ¸ğ ±âÁØÁ¡)¿¡¼­ ¾ó¸¶³ª ¶³¾îÁúÁö)
+    Vector2 m_sizeDelta = {}; // ì‹¤ì œ ì‚¬ì´ì¦ˆ í”½ì…€ ê¸°ì¤€
+    Vector2 m_anchoredPos = {}; // ë ˆì´ì•„ì›ƒìš© ì˜¤í”„ì…‹ (Anchor(ë¶€ëª¨ ê¸°ì¤€ì )ì—ì„œ ì–¼ë§ˆë‚˜ ë–¨ì–´ì§ˆì§€)
 
-    Vector2 m_LocalScale = {}; // pivot ±âÁØÀ¸·Î UI¸¦ ¹èÀ²·Î Å°¿ì°Å³ª ÁÙÀÌ´Â ¿¬Ãâ¿ë ¹èÀ² // ÀÏ´Ü ¾È¾µµí
+    Vector2 m_localScale = {}; // pivot ê¸°ì¤€ìœ¼ë¡œ UIë¥¼ ë°°ìœ¨ë¡œ í‚¤ìš°ê±°ë‚˜ ì¤„ì´ëŠ” ì—°ì¶œìš© ë°°ìœ¨ // ì¼ë‹¨ ì•ˆì“¸ë“¯
 
-    float m_RotationRadian = { 0.f };// ³»ºÎ °è»ê¿ë
-    float m_RotationDegreeView = {0.f}; // ¼öÄ¡ Á¶Àı¿ç
+    float m_rotationRadian = { 0.f };// ë‚´ë¶€ ê³„ì‚°ìš©
+    float m_rotationDegreeView = {0.f}; // ìˆ˜ì¹˜ ì¡°ì ˆìšœ
 
-    _bool m_bSetParentSize = { false };
+    _bool m_isSetParentSize = { false };
 
-    bool m_bKeepSizeRatio = false;
-    bool m_bFreePivot = false;
-    // °á°ú
-    Rect m_WorldRect = {};
-    bool m_Dirty = true;
+    bool m_isKeepSizeRatio = false;
+    bool m_isFreePivot = false;
+    // ê²°ê³¼
+    Rect m_worldRect = {};
+    bool m_isDirty = true;
 public:
     static shared_ptr<CUITransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     virtual shared_ptr<CComponent> Clone(void* pArg) override;

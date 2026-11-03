@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "UIRenderable.h"
 
 NS_BEGIN(Engine)
@@ -7,7 +7,7 @@ class ENGINE_DLL CUIImage :
     public CUIRenderable
 {
 public:
-    struct UIIMAGE_DESC : public CUIRenderable::RENDERABLE_DESC
+    struct UIImageDesc : public CUIRenderable::RenderableDesc
     {
   /*      _uint TextureComLevel = {};
         _wstring TextureProtoName =L"";*/
@@ -24,7 +24,7 @@ public:
     virtual ~CUIImage() = default;
 
 protected:
-    // uiÀÇ »ı¸íÁÖ±â Á¤Ã¥¿¡ µû¶ó ¾ØÁø »ı¸íÁÖ±â ¾È¿¡¼­ È£Ãâ ÇÔ
+    // uiì˜ ìƒëª…ì£¼ê¸° ì •ì±…ì— ë”°ë¼ ì•¤ì§„ ìƒëª…ì£¼ê¸° ì•ˆì—ì„œ í˜¸ì¶œ í•¨
     HRESULT OnInit(void* pArg)override;
     void OnActive()override;
     void OnInActive()override;

@@ -1,4 +1,4 @@
-#include "Camera_Free.h"
+﻿#include "Camera_Free.h"
 #include "DInput_Manager.h"
 #include "GameInstance.h"
 
@@ -19,8 +19,8 @@ HRESULT CCamera_Free::Initialize_Prototype()
 
 HRESULT CCamera_Free::Initialize(void* pArg)
 {
-	CAMERAFREE_DESC* pDesc = static_cast<CAMERAFREE_DESC*>(pArg);
-	m_fMouseSensor = pDesc->fMouseSensor;
+	CameraFreeDesc* pDesc = static_cast<CameraFreeDesc*>(pArg);
+	m_mouseSensor = pDesc->mouseSensor;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -33,50 +33,50 @@ void CCamera_Free::Priority_Update(_float fTimeDelta)
 
 	if(m_stop != true)
 	{
-		CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
+		CDInput_Manager* dinput = m_gameInstance.lock()->Get_DInput_Manger();
 
 		if (dinput->KeyPress(DIK_UP))
 		{
-			m_pTransformCom->Go_Forward(fTimeDelta);
+			m_transformCom->Go_Forward(fTimeDelta);
 		}
 
 		if (dinput->KeyPress(DIK_DOWN))
 		{
-			m_pTransformCom->Go_Backward(fTimeDelta);
+			m_transformCom->Go_Backward(fTimeDelta);
 		}
 
 		if (dinput->KeyPress(DIK_LEFT))
 		{
-			m_pTransformCom->Go_Left(fTimeDelta);
+			m_transformCom->Go_Left(fTimeDelta);
 		}
 
 		if (dinput->KeyPress(DIK_RIGHT))
 		{
-			m_pTransformCom->Go_Right(fTimeDelta);
+			m_transformCom->Go_Right(fTimeDelta);
 		}
 
 
 		if (dinput->KeyPress(DIK_E))
 		{
-			m_pTransformCom->Go_Up(fTimeDelta);
+			m_transformCom->Go_Up(fTimeDelta);
 		}
 
 
 		if (dinput->KeyPress(DIK_Q))
 		{
-			m_pTransformCom->Go_Down(fTimeDelta);
+			m_transformCom->Go_Down(fTimeDelta);
 		}
 
 		_long		MouseMove = {};
 
-		if (MouseMove = dinput->Get_DIMouseMove(DIMM::X))
+		if (MouseMove = dinput->Get_DIMouseMove(EMouseMove::X))
 		{
-			m_pTransformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * MouseMove * m_fMouseSensor);
+			m_transformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * MouseMove * m_mouseSensor);
 		}
 
-		if (MouseMove = dinput->Get_DIMouseMove(DIMM::Y))
+		if (MouseMove = dinput->Get_DIMouseMove(EMouseMove::Y))
 		{
-			m_pTransformCom->Turn(m_pTransformCom->Get_State(STATE::RIGHT), fTimeDelta * MouseMove * m_fMouseSensor);
+			m_transformCom->Turn(m_transformCom->Get_State(ETransformState::RIGHT), fTimeDelta * MouseMove * m_mouseSensor);
 		}
 		//long dx = dinput->Get_DIMouseMove(DIMM::X);
 		//long dy = dinput->Get_DIMouseMove(DIMM::Y);
@@ -104,7 +104,7 @@ void CCamera_Free::OnGui()
 {
 	CCamera::OnGui();
 
-	const _float4x4& mat = *(m_pTransformCom->Get_WorldMatrix());
+	const _float4x4& mat = *(m_transformCom->Get_WorldMatrix());
 
 	_float3 euler;
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Component.h"
 
 NS_BEGIN(Engine)
@@ -20,11 +20,11 @@ public:
 	HRESULT Bind_ShaderResourceView(shared_ptr<class CShader> pShaderCom, const char* pConstantName, _uint iIndex);
 
 	_float2 Get_SizeFromSRV(_uint index);
-	_uint Get_NumSRVs() {return m_iNumSRVs;};
+	_uint Get_NumSRVs() {return m_numSRVs;};
 private:
 
 private:
-	_uint m_iNumSRVs = {};
+	_uint m_numSRVs = {};
 	vector<ComPtr<ID3D11ShaderResourceView>> m_SRVs = {};
 
 

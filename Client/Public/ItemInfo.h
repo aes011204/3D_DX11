@@ -17,7 +17,7 @@ class CItemInfo :
 {
 public:
 	enum BUTTONINFO{ROTATION, THROWUP, RELEASE, SELL, PICK, STORAGE, BUY, END};
-	struct ITEMINFO_DESC : public CUIPanel::UIPANEL_DESC
+	struct ITEMINFO_DESC : public CUIPanel::UIPanelDesc
 	{
 
 	};

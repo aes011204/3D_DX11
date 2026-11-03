@@ -40,29 +40,29 @@ void CColliderObject::Priority_Update(_float fTimeDelta)
 
 void CColliderObject::Update(_float fTimeDelta)
 {
-    if (m_bIsDirtyCom)
+    if (m_isDirtyCom)
     {
         RebindCom();
-        m_bIsDirtyCom = false;
+        m_isDirtyCom = false;
     }
 
     if (m_pColliderCom != nullptr)
-        m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+        m_pColliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
 void CColliderObject::Late_Update(_float fTimeDelta)
 {
-    m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+    m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CColliderObject::Render()
 {
 #ifdef _DEBUG
-    if (m_pGameInstance.lock()->Get_IsDebug() == false)
+    if (m_gameInstance.lock()->Get_IsDebug() == false)
         return S_OK;
 
     if (m_pColliderCom != nullptr && m_pColliderCom->Get_CollisionActive())
-        m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+        m_gameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
 #endif
 
     return S_OK;
@@ -73,7 +73,7 @@ void CColliderObject::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCol
     if (other == nullptr)
         return;
 
-    if (other->Get_MyLayer() == COLLISION_LAYER::PLAYER)
+    if (other->Get_MyLayer() == ECollisionLayer::PLAYER)
     {
         auto player = dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner());
         if (player != nullptr)
@@ -86,7 +86,7 @@ void CColliderObject::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CColl
     if (self == nullptr || other == nullptr)
         return;
 
-    if (other->Get_MyLayer() != COLLISION_LAYER::PLAYER)
+    if (other->Get_MyLayer() != ECollisionLayer::PLAYER)
         return;
 
     auto player = dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner());
@@ -113,7 +113,7 @@ void CColliderObject::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CColl
     float dirLength = XMVectorGetX(XMVector3Length(flatDir));
     if (dirLength < minDirLength)
     {
-        XMVECTOR fallbackDir = -player->Get_TransformCom()->Get_State(STATE::LOOK);
+        XMVECTOR fallbackDir = -player->Get_TransformCom()->Get_State(ETransformState::LOOK);
         flatDir = XMVectorSet(
             XMVectorGetX(fallbackDir),
             0.f,
@@ -160,12 +160,12 @@ void CColliderObject::RebindCom()
 
 HRESULT CColliderObject::Ready_Components()
 {
-    CBounding_OBB::BOUNDING_OBB_DESC OBBDesc{};
-    OBBDesc.vExtents = _float3(2.0f, 2.f, 1.7f);
-    OBBDesc.vRadians = _float3(0.f, 52.5f, 0.f);
-    OBBDesc.vCenter = _float3(55.7f, 0.f, -22.2f);
-    OBBDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
-    OBBDesc.OtherMask = COLLISION_LAYER::PLAYER;
+    CBounding_OBB::BoundingOBBDesc OBBDesc{};
+    OBBDesc.extents = _float3(2.0f, 2.f, 1.7f);
+    OBBDesc.radians = _float3(0.f, 52.5f, 0.f);
+    OBBDesc.center = _float3(55.7f, 0.f, -22.2f);
+    OBBDesc.myLayer = ECollisionLayer::MONSTERATT;
+    OBBDesc.otherMask = ECollisionLayer::PLAYER;
 
     if (FAILED(Add_Component(
         ETOI(LEVEL::GAMEPLAY),
@@ -175,7 +175,7 @@ HRESULT CColliderObject::Ready_Components()
         &OBBDesc)))
         return E_FAIL;
 
-    m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+    m_gameInstance.lock()->Add_Collider(m_pColliderCom);
 
     return S_OK;
 }

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 
@@ -19,13 +19,13 @@ public:
 
 public:
  
-    _float m_fDuration = {};
-    _float m_fTickPerSecond = {};
+    _float m_duration = {};
+    _float m_tickPerSecond = {};
 
-    _float m_fCurrentTrackPosition = {};
+    _float m_currentTrackPosition = {};
 
-    _uint m_iNumChannels = {};
-    vector<shared_ptr<class CAssimp_Channel>> m_Channels;
+    _uint m_numChannels = {};
+    vector<shared_ptr<class CAssimp_Channel>> m_channels;
 
 public:
     static shared_ptr<CAssimp_Animation> Create(const aiAnimation* pAIAnimation, shared_ptr<class CAssimp_Model> pModel);

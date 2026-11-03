@@ -18,7 +18,7 @@ public:
     HRESULT Add_Timer(const _wstring& timerTag);
 
 private:
-    map<_wstring, shared_ptr<CTimer>> m_Timers;
+    map<_wstring, shared_ptr<CTimer>> m_timers;
 private:
     shared_ptr<CTimer> Find_Timer(const _wstring& timerTag);
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
 
@@ -55,7 +55,7 @@ protected:
 
     XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
     {
-        return ChildrenMatrix * XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix());
+        return ChildrenMatrix * XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
     }
 
 private:
@@ -73,11 +73,11 @@ private:
     _bool IsColl = {false};
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
      shared_ptr<CShader> m_pShaderCom_Mesh = { nullptr };
      shared_ptr<CModel> m_pModelCom_Boat = { nullptr };
     shared_ptr<CModel> m_pModelCom_Mon = { nullptr };
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
     shared_ptr<CCollider> m_pColliderCom = { nullptr };
     weak_ptr<CGameObject>  m_pPlayer = {  };
 

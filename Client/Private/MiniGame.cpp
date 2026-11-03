@@ -1,7 +1,7 @@
 ﻿#include "MiniGame.h"
 #include "GameInstance.h"
 
-CMiniGame::CMiniGame() : m_pGameInstance(CGameInstance::GetInstance())
+CMiniGame::CMiniGame() : m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -41,7 +41,7 @@ _uint CMiniGame::SelectMutationRandom(const FishDef& fishDef)
     for (const Mutation& mut : fishDef.vecMutation)
         candidates.push_back(mut.mutationId);
 
-    int index = m_pGameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
+    int index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
     return candidates[index];
 }
 _uint CMiniGame::SelectMutationNoRepeat(const FishDef& fishDef)
@@ -58,12 +58,12 @@ _uint CMiniGame::SelectMutationNoRepeat(const FishDef& fishDef)
     if (candidates.size() == 1)
         return candidates[0];
 
-    int index = m_pGameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
+    int index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
     ID_uint pickedID = candidates[index];
 
     while (pickedID == m_PrevFishID)
     {
-        index = m_pGameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
+        index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
         pickedID = candidates[index];
     }
 

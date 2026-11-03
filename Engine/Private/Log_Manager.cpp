@@ -1,4 +1,4 @@
-#include "Log_Manager.h"
+ï»¿#include "Log_Manager.h"
 
 IMPLEMENT_SINGLETON(CLog_Manager)
 
@@ -10,7 +10,7 @@ CLog_Manager::~CLog_Manager()
 {
 
 }
-void CLog_Manager::Add_Log_F(LOG_LEVEL eLevel, const char* pFormat, ...) {
+void CLog_Manager::Add_Log_F(ELogLevel eLevel, const char* pFormat, ...) {
     if (nullptr == pFormat) return;
 
     char szBuf[1024] = { 0 };
@@ -25,8 +25,8 @@ void CLog_Manager::Add_Log_F(LOG_LEVEL eLevel, const char* pFormat, ...) {
     if (m_vecLogs.size() > 500) m_vecLogs.erase(m_vecLogs.begin());
 }
 
-// 2. ´Ü¼ø ¹®ÀÚ¿­ ¹öÀü (¿À¹ö·Îµù)
-void CLog_Manager::Add_Log(LOG_LEVEL eLevel, const char* pMessage) {
+// 2. ë‹¨ìˆœ ë¬¸ìì—´ ë²„ì „ (ì˜¤ë²„ë¡œë”©)
+void CLog_Manager::Add_Log(ELogLevel eLevel, const char* pMessage) {
     if (nullptr == pMessage) return;
 
     std::lock_guard<std::mutex> lock(m_mutex);

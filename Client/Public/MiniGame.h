@@ -80,7 +80,7 @@ protected:
 
 	EMiniGameType m_MiniGameType = {};
 	weak_ptr<class CInventory_Controller> m_InvenCtrl = {};
-	weak_ptr<CGameInstance> m_pGameInstance = {};
+	weak_ptr<CGameInstance> m_gameInstance = {};
 	_uint m_PrevFishID = { ID_Absence };
 public:
 //	static shared_ptr<CMiniGame> Create(void* pArg);

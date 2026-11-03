@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
@@ -11,13 +11,13 @@ class CRenderer :
     public CBase
 {
 private:
-    CRenderer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_pContext);
+    CRenderer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_context);
 public:
 	virtual ~CRenderer();
 
 public:
     HRESULT Initialize();
-    void Add_RenderGroup(RENDERGROUP eRenderGroup, shared_ptr<class CEntity> p_GameObject);
+    void Add_RenderGroup(ERenderGroup eRenderGroup, shared_ptr<class CEntity> p_GameObject);
     void Draw();
     double Get_GpuRenderMs() const { return m_gpuRenderMs; }
     bool Has_GpuTiming() const { return m_gpuTimingReady; }
@@ -30,27 +30,27 @@ private:
     bool m_showColliders = false;
 #endif
 private:
-    ComPtr<ID3D11Device> m_pDevice = { nullptr };
-    ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-    weak_ptr<CGameInstance> m_pGameInstance = { };
+    ComPtr<ID3D11Device> m_device = { nullptr };
+    ComPtr<ID3D11DeviceContext> m_context = { nullptr };
+    weak_ptr<CGameInstance> m_gameInstance = { };
 
    // ComPtr <ID3D11DepthStencilState> m_pDepthDisableState = { nullptr };
 
-    vector<shared_ptr<CEntity>> m_RenderObject[ETOI(RENDERGROUP::END)];
+    vector<shared_ptr<CEntity>> m_renderObject[ETOI(ERenderGroup::END)];
 
 private:
-    _float4x4 m_WorldMatrix, m_ViewMatrix, m_ProjMatrix;
-    shared_ptr<class CVIBuffer_Rect> m_pVIBuffer = { nullptr };
-    shared_ptr<class CShader> m_pShader = { nullptr };
+    _float4x4 m_worldMatrix, m_viewMatrix, m_projMatrix;
+    shared_ptr<class CVIBuffer_Rect> m_VIBuffer = { nullptr };
+    shared_ptr<class CShader> m_shader = { nullptr };
 #ifdef _DEBUG
-    list<shared_ptr<class CComponent>>				m_DebugComponents;
+    list<shared_ptr<class CComponent>>				m_debugComponents;
 #endif
 
 private:
     void Initialize_GpuTiming();
     int Begin_GpuTiming();
     void End_GpuTiming(int slot);
-    struct GPU_TIMING_SLOT
+    struct GPUTimingSlot
     {
         ComPtr<ID3D11Query> disjoint;
         ComPtr<ID3D11Query> start;
@@ -59,7 +59,7 @@ private:
         ComPtr<ID3D11Query> seaEnd;
         bool pending = false;
     };
-    GPU_TIMING_SLOT m_gpuTimings[4];
+    GPUTimingSlot m_gpuTimings[4];
     unsigned int m_gpuTimingIndex = 0;
     double m_gpuRenderMs = 0.0;
     bool m_gpuTimingEnabled = false;
@@ -88,9 +88,9 @@ private:
 #endif
 
 
-    _float2 m_WinSize = {};
+    _float2 m_winSize = {};
 public:
-    static unique_ptr<CRenderer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_pContext);
+    static unique_ptr<CRenderer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_context);
     void Free()override;
 
 };

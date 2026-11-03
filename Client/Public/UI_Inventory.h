@@ -18,7 +18,7 @@ class CUI_Inventory :
     public CUIPanel
 {
 public:
-    struct INVENTORY_DESC : public CUIPanel::UIPANEL_DESC
+    struct INVENTORY_DESC : public CUIPanel::UIPanelDesc
     {
        
     };

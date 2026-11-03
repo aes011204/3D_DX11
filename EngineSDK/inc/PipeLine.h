@@ -1,8 +1,8 @@
-#pragma once
+ï»¿#pragma once
 
-// ºä Åõ¿µÇà·ÄÀ» º¸°üÇÔ
-// ¹İº¹ÀûÀÎ °»½ÅÀ» ÅëÇØ¼­ ¿ªÇà·Äµµ º¸°üÇÑ´Ù
-// Ä«¸Ş¶ó À§Ä¡±îÁö ÀúÀåÇÑ´Ù
+// ë·° íˆ¬ì˜í–‰ë ¬ì„ ë³´ê´€í•¨
+// ë°˜ë³µì ì¸ ê°±ì‹ ì„ í†µí•´ì„œ ì—­í–‰ë ¬ë„ ë³´ê´€í•œë‹¤
+// ì¹´ë©”ë¼ ìœ„ì¹˜ê¹Œì§€ ì €ì¥í•œë‹¤
 
 #include "Base.h"
 
@@ -16,32 +16,32 @@ public:
     virtual ~CPipeLine();
 
 public:
-    const _float4x4* Get_Transfrom(D3DTS eTransformState) const {
-        return &m_TransformStateMatrices[ETOI(eTransformState)];
+    const _float4x4* Get_Transfrom(ED3DTS eTransformState) const {
+        return &m_transformStateMatrices[ETOI(eTransformState)];
     }
 
     const _float4* Get_CamPosition() const {
-        return reinterpret_cast<const _float4*>(m_TransformInverseStateMatrices[ETOI(D3DTS::VIEW)].m[3]);
+        return reinterpret_cast<const _float4*>(m_transformInverseStateMatrices[ETOI(ED3DTS::VIEW)].m[3]);
     }
 
-    const _float4x4* Get_InverseTransfrom(D3DTS eTransformState) const {
-        return &m_TransformInverseStateMatrices[ETOI(eTransformState)];
+    const _float4x4* Get_InverseTransfrom(ED3DTS eTransformState) const {
+        return &m_transformInverseStateMatrices[ETOI(eTransformState)];
     }
 public:
-    void Set_Transform(D3DTS eTransformState, _fmatrix TransformStateMatrix) {
-        XMStoreFloat4x4(&m_TransformStateMatrices[ETOI(eTransformState)], TransformStateMatrix);
+    void Set_Transform(ED3DTS eTransformState, _fmatrix TransformStateMatrix) {
+        XMStoreFloat4x4(&m_transformStateMatrices[ETOI(eTransformState)], TransformStateMatrix);
     }
 public:
     HRESULT Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName);
-    HRESULT Bind_TransformMatrix(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
-    HRESULT Bind_TransformMatrix_Inverse(D3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
+    HRESULT Bind_TransformMatrix(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
+    HRESULT Bind_TransformMatrix_Inverse(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
 
     void Update();
 
     void OnGui() override;
 private:
-    _float4x4 m_TransformStateMatrices[ETOI(D3DTS::END)];
-    _float4x4 m_TransformInverseStateMatrices[ETOI(D3DTS::END)];
+    _float4x4 m_transformStateMatrices[ETOI(ED3DTS::END)];
+    _float4x4 m_transformInverseStateMatrices[ETOI(ED3DTS::END)];
 public:
     static unique_ptr<CPipeLine> Create();
     virtual void Free() override;

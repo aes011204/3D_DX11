@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
 
-/* ¸ğµ¨ Á¤Á¡µéÀ» °´Ã¼ ±âÁØÀ¸·Î ¿ùµå·Î º¯È¯½ÃÄÑÁÖ±âÀ§ÇÑ ¿ùµåº¯È¯Çà·ÄÀ» º¸°üÇÏ³®.  */
-/* ÀÌ Çà·ÄÀÇ »óÅÂº¯È¯(¿ùµå¿¡¼­ÀÇ »óÅÂº¯È¯)¿¡ ÇØ´çÇÏ´Â ÀÎÅÍÆäÀÌ½º(±â´É)À» ´ã´çÇÑ´Ù. */
+/* ëª¨ë¸ ì •ì ë“¤ì„ ê°ì²´ ê¸°ì¤€ìœ¼ë¡œ ì›”ë“œë¡œ ë³€í™˜ì‹œì¼œì£¼ê¸°ìœ„í•œ ì›”ë“œë³€í™˜í–‰ë ¬ì„ ë³´ê´€í•˜ë‚Ÿ.  */
+/* ì´ í–‰ë ¬ì˜ ìƒíƒœë³€í™˜(ì›”ë“œì—ì„œì˜ ìƒíƒœë³€í™˜)ì— í•´ë‹¹í•˜ëŠ” ì¸í„°í˜ì´ìŠ¤(ê¸°ëŠ¥)ì„ ë‹´ë‹¹í•œë‹¤. */
 
-// ÄÄÆ÷³ÍÆ®Áß¿¡ Æ®·»½º Æû¸¸ Æ¯ÀÌÇÏ°Ô Å¬·ĞÀ» ¾È¾µ°ÅÀÓ , ±×¸®°í ¸ğµç ¿ÀµåÁ§Æ®°¡ ¹«Á¶°Ç ÀûÀ¸·Î °¡Áö°í ÀÖ°Ô ÇÒ°ÍÀÓ
+// ì»´í¬ë„ŒíŠ¸ì¤‘ì— íŠ¸ë ŒìŠ¤ í¼ë§Œ íŠ¹ì´í•˜ê²Œ í´ë¡ ì„ ì•ˆì“¸ê±°ì„ , ê·¸ë¦¬ê³  ëª¨ë“  ì˜¤ë“œì íŠ¸ê°€ ë¬´ì¡°ê±´ ì ìœ¼ë¡œ ê°€ì§€ê³  ìˆê²Œ í• ê²ƒì„
 
 NS_BEGIN(Engine)
 
@@ -12,16 +12,16 @@ class ENGINE_DLL CTransform final:
     public CComponent
 {
 public:
-    struct TRANSFOM_DESC
+    struct TransformDesc
     {
         //_float4x4				WorldMatrix = {};
 
-        _float3 vPosition = { 0.f, 0.f, 0.f };
-        _float3 vRotationDegree = { 0.f, 0.f, 0.f };
-        _float3 vScale = { 1.f, 1.f, 1.f };
+        _float3 position = { 0.f, 0.f, 0.f };
+        _float3 rotationDegree = { 0.f, 0.f, 0.f };
+        _float3 scale = { 1.f, 1.f, 1.f };
 
-        _float					fSpeedPerSec = {};
-        _float					fDegreePerSec = {};
+        _float					speedPerSec = {};
+        _float					degreePerSec = {};
     };
 private:
     CTransform(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -30,21 +30,21 @@ public:
     virtual ~CTransform() = default;
 
 public:
-    _vector Get_State(STATE eState)
+    _vector Get_State(ETransformState eState)
     {
         //return XMLoadFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]));
         switch(ETOI(eState))
         {
-        case ETOI(STATE::POSITION):
-            return XMLoadFloat3(&m_vPosition);
-        case ETOI(STATE::LOOK):
-            return XMVector3Rotate(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMLoadFloat4(&m_vRotationQuat));
-        case ETOI(STATE::RIGHT):
-            return XMVector3Rotate(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMLoadFloat4(&m_vRotationQuat));
-        case ETOI(STATE::UP):
-            return XMVector3Rotate(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMLoadFloat4(&m_vRotationQuat));
+        case ETOI(ETransformState::POSITION):
+            return XMLoadFloat3(&m_position);
+        case ETOI(ETransformState::LOOK):
+            return XMVector3Rotate(XMVectorSet(0.f, 0.f, 1.f, 0.f), XMLoadFloat4(&m_rotationQuat));
+        case ETOI(ETransformState::RIGHT):
+            return XMVector3Rotate(XMVectorSet(1.f, 0.f, 0.f, 0.f), XMLoadFloat4(&m_rotationQuat));
+        case ETOI(ETransformState::UP):
+            return XMVector3Rotate(XMVectorSet(0.f, 1.f, 0.f, 0.f), XMLoadFloat4(&m_rotationQuat));
 
-            //// ÇÙ½É µ¥ÀÌÅÍ Á¢±Ù (Get/Set)
+            //// í•µì‹¬ ë°ì´í„° ì ‘ê·¼ (Get/Set)
             //_vector Get_Position() { return XMLoadFloat3(&m_vPosition); }
             //void Set_Position(_fvector vPos) { XMStoreFloat3(&m_vPosition, vPos); m_bIsDirty = true; }
 
@@ -64,14 +64,14 @@ public:
             XMVectorGetX(XMVector3Length(Get_State(STATE::LOOK)))
         );*/
 
-        return m_vScale;
+        return m_scale;
     }
 
     const _float4x4* Get_WorldMatrix()  {
-        if (m_bIsDirty)
+        if (m_isDirty)
             Update_WorldMatrix();
 
-        return &m_WorldMatrix;
+        return &m_worldMatrix;
     }
 
     //void Set_State(STATE eState, _fvector vState)//
@@ -85,39 +85,39 @@ public:
 
     //    m_bIsDirty = true;
     //}
-    _vector Get_Position() { return XMLoadFloat3(&m_vPosition); }
-    void Set_Position(_fvector vPos) { XMStoreFloat3(&m_vPosition, vPos); m_bIsDirty = true; }
+    _vector Get_Position() { return XMLoadFloat3(&m_position); }
+    void Set_Position(_fvector vPos) { XMStoreFloat3(&m_position, vPos); m_isDirty = true; }
 
-    _vector Get_Quaternion() { return XMLoadFloat4(&m_vRotationQuat);}
+    _vector Get_Quaternion() { return XMLoadFloat4(&m_rotationQuat);}
     void Set_Quaternion(_fvector vQuat)
 	{
-    	XMStoreFloat4(&m_vRotationQuat, vQuat);
+    	XMStoreFloat4(&m_rotationQuat, vQuat);
 
         _float4 q = {};
         XMStoreFloat4(&q, vQuat);
         //m_vRotationDegree = QuaternionToEuler(q);
-    	m_bIsDirty = true;
+    	m_isDirty = true;
 	}
-    _float3 Get_RotationDegree() { return QuaternionToEuler(m_vRotationQuat); };
+    _float3 Get_RotationDegree() { return QuaternionToEuler(m_rotationQuat); };
     void Set_RotationDegree(_float3 vRotation)
     {
-        m_vRotationDegree = vRotation;
+        m_rotationDegree = vRotation;
 
         _vector vRadian = XMVectorSet(
-            XMConvertToRadians(m_vRotationDegree.x),
-            XMConvertToRadians(m_vRotationDegree.y),
-            XMConvertToRadians(m_vRotationDegree.z), 0.f);
+            XMConvertToRadians(m_rotationDegree.x),
+            XMConvertToRadians(m_rotationDegree.y),
+            XMConvertToRadians(m_rotationDegree.z), 0.f);
 
-        XMStoreFloat4(&m_vRotationQuat, XMQuaternionRotationRollPitchYawFromVector(vRadian));
-        m_bIsDirty = true;
+        XMStoreFloat4(&m_rotationQuat, XMQuaternionRotationRollPitchYawFromVector(vRadian));
+        m_isDirty = true;
     }
     
-    _float3 Get_Scale() { return m_vScale; }
-    void Set_Scale(_float3 vScale) { m_vScale = vScale; m_bIsDirty = true; }
+    _float3 Get_Scale() { return m_scale; }
+    void Set_Scale(_float3 vScale) { m_scale = vScale; m_isDirty = true; }
 
-    void Set_ParentMatrix(const _float4x4* pParentMatrix) { m_pParentMatrix = pParentMatrix; m_bIsDirty = true; }
+    void Set_ParentMatrix(const _float4x4* pParentMatrix) { m_parentMatrix = pParentMatrix; m_isDirty = true; }
 
-	const _float4x4* Get_WorldMatrixPtr() const { return &m_WorldMatrix;}
+	const _float4x4* Get_WorldMatrixPtr() const { return &m_worldMatrix;}
 
 public:
     virtual HRESULT Initialize_Prototype() override;
@@ -126,8 +126,8 @@ public:
 
     void Update_WorldMatrix();
 public:
-    void SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ);//±âÁ¸ÀÇ ÀÖ´Â Å©±â¿¡ ¹è¼ö°¡ ¾Æ´Ï¶ó ½ºÄÉÀÏÁ¤º¸ ¹Ù²ãÁÜ
-    void Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);//ÀúÀåµÈ Å©±âÀÇ ¹è¼ö·Î Å°¿ì±â
+    void SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ);//ê¸°ì¡´ì˜ ìˆëŠ” í¬ê¸°ì— ë°°ìˆ˜ê°€ ì•„ë‹ˆë¼ ìŠ¤ì¼€ì¼ì •ë³´ ë°”ê¿”ì¤Œ
+    void Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);//ì €ì¥ëœ í¬ê¸°ì˜ ë°°ìˆ˜ë¡œ í‚¤ìš°ê¸°
     void Go_Forward_Distanace(_float fDistance);
     void Go_Backward_Distanace(_float fDistance);
 
@@ -144,8 +144,8 @@ public:
 
     void Lerp_To(_float fTimeDelta);
 
-   // void Rotation(_fvector vAxis, _float fDegree);//¼ÓµµX Á¤ÇØ³í °¢µµ·Î µû¶ó Ç×µî»óÅÂ¿¡¼­ È¸Àü ÇÏ´Â°ÅÀÓ
-    void Turn(_fvector vAxis, _float fTimeDelta);//³ªÇÑÅ× ÀúÀåµÈ È¸Àü ¼Óµµ ¸¸Å­ ¼­¼­È÷ È¸Àü
+   // void Rotation(_fvector vAxis, _float fDegree);//ì†ë„X ì •í•´ë…¼ ê°ë„ë¡œ ë”°ë¼ í•­ë“±ìƒíƒœì—ì„œ íšŒì „ í•˜ëŠ”ê±°ì„
+    void Turn(_fvector vAxis, _float fTimeDelta);//ë‚˜í•œí…Œ ì €ì¥ëœ íšŒì „ ì†ë„ ë§Œí¼ ì„œì„œíˆ íšŒì „
 
     void LookAt(_fvector vAt);
 
@@ -155,40 +155,40 @@ public:
     virtual void Save_ToJson(nlohmann::json& j) override;
     virtual void Load_FromJson(nlohmann::json& j) override;
 
-    _float Get_Speed() const { return m_fSpeedPerSec; }
-    void Set_Speed(_float fSpeed) { m_fSpeedPerSec = fSpeed; }
+    _float Get_Speed() const { return m_speedPerSec; }
+    void Set_Speed(_float fSpeed) { m_speedPerSec = fSpeed; }
 
-    _float Get_RadianSpeed() const { return m_fRadianPerSec; }
-    void Set_RadianSpeed(_float fRadian) { m_fRadianPerSec = fRadian; }
+    _float Get_RadianSpeed() const { return m_radianPerSec; }
+    void Set_RadianSpeed(_float fRadian) { m_radianPerSec = fRadian; }
 
 
     _float3 QuaternionToEuler(_float4 q);
 private:
-    _float4x4 m_WorldMatrix = {}; //ÀúÀå¼Ò
-    _bool m_bIsDirty = true;
-    _float					m_fSpeedPerSec = {};
-    _float					m_fRadianPerSec = {};
+    _float4x4 m_worldMatrix = {}; //ì €ì¥ì†Œ
+    _bool m_isDirty = true;
+    _float					m_speedPerSec = {};
+    _float					m_radianPerSec = {};
 
-    _float3 m_vPosition = { 0.f, 0.f, 0.f };
-    _float3 m_vRotationDegree = { 0.f, 0.f, 0.f };
-    _float4 m_vRotationQuat = { 0.f, 0.f, 0.f , 1.f};
-    _float3 m_vScale = { 1.f, 1.f, 1.f };
+    _float3 m_position = { 0.f, 0.f, 0.f };
+    _float3 m_rotationDegree = { 0.f, 0.f, 0.f };
+    _float4 m_rotationQuat = { 0.f, 0.f, 0.f , 1.f};
+    _float3 m_scale = { 1.f, 1.f, 1.f };
 
-    const _float4x4* m_pParentMatrix = {};
+    const _float4x4* m_parentMatrix = {};
 
     //_float3 m_vScale = {};
 
 public:
-    _bool GetIsLerp() { return m_IsLerping; }
+    _bool GetIsLerp() { return m_isLerping; }
 private:
-    _float m_LerpAcc = 0.f;
-    _float m_LerpTime = 0.f;
-    _vector m_vStartPos = {};
-    _vector m_vStartQuat = {};
-    _vector m_vTargetPos = {};
-    _vector m_vTargetQuat = {};
-    _bool m_IsLerping = false;
-    _bool m_IsTarget = false;
+    _float m_lerpAcc = 0.f;
+    _float m_lerpTime = 0.f;
+    _vector m_startPos = {};
+    _vector m_startQuat = {};
+    _vector m_targetPos = {};
+    _vector m_targetQuat = {};
+    _bool m_isLerping = false;
+    _bool m_isTarget = false;
 
 public:
     static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

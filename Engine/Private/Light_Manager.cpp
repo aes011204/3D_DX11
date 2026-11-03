@@ -1,4 +1,4 @@
-#include "Light_Manager.h"
+ï»¿#include "Light_Manager.h"
 #include "Light.h"
 
 CLight_Manager::CLight_Manager()
@@ -10,9 +10,9 @@ CLight_Manager::~CLight_Manager()
     Free();
 }
 
-const LIGHT_DESC* CLight_Manager::Get_LightDesc(_uint iIndex)
+const LightDesc* CLight_Manager::Get_LightDesc(_uint iIndex)
 {
-    auto iter = m_Lights.begin();
+    auto iter = m_lights.begin();
 
     for (_uint i = 0; i < iIndex; i++)
     {
@@ -22,9 +22,9 @@ const LIGHT_DESC* CLight_Manager::Get_LightDesc(_uint iIndex)
     return  (*iter)->Get_LightDesc();
 }
 
- void CLight_Manager::Set_LightDesc(_uint iIndex, LIGHT_DESC Desc)
+ void CLight_Manager::Set_LightDesc(_uint iIndex, LightDesc Desc)
 {
-    auto iter = m_Lights.begin();
+    auto iter = m_lights.begin();
 
     for (_uint i = 0; i < iIndex; i++)
     {
@@ -34,19 +34,19 @@ const LIGHT_DESC* CLight_Manager::Get_LightDesc(_uint iIndex)
     return  (*iter)->Set_LightDesc(Desc);
 }
 
-shared_ptr<CLight> CLight_Manager::Add_Light(const LIGHT_DESC& LightDesc)
+shared_ptr<CLight> CLight_Manager::Add_Light(const LightDesc& lightDesc)
 {
-   shared_ptr<CLight>  pInstance = CLight::Create(LightDesc);
+   shared_ptr<CLight>  pInstance = CLight::Create(lightDesc);
    if (pInstance == nullptr)
        return nullptr;
 
-   m_Lights.push_back(pInstance);
+   m_lights.push_back(pInstance);
     return pInstance;
 }
 
 HRESULT CLight_Manager::Render_Light(shared_ptr<CShader> pShared, shared_ptr<CVIBuffer_Rect> pVIBuffer)
 {
-    for(auto& pLight :m_Lights)
+    for(auto& pLight :m_lights)
     {
 	    if(nullptr != pLight&& pLight->Get_Active() == true)
 	    {
@@ -63,7 +63,7 @@ void CLight_Manager::OnGui()
     CBase::OnGui();
 
 
-    int count = m_Lights.size();
+    int count = m_lights.size();
 
     for (int i = 0; i < count; ++i)
     {
@@ -73,24 +73,24 @@ void CLight_Manager::OnGui()
 
         ImGui::Text("Light %d", i);
 
-        int type = (int)desc.eType;
+        int type = (int)desc.type;
         ImGui::Combo("Type", &type, "Directional\0Point\0");
-        desc.eType = (LIGHT)type;
+        desc.type = (ELightType)type;
 
-        if (desc.eType == LIGHT::POINT)
+        if (desc.type == ELightType::POINT)
         {
-            ImGui::DragFloat3("Position", (float*)&desc.vPosition, 0.1f);
-            ImGui::DragFloat("Range", &desc.fRange, 0.1f);
+            ImGui::DragFloat3("Position", (float*)&desc.position, 0.1f);
+            ImGui::DragFloat("Range", &desc.range, 0.1f);
         }
         else
         {
-            ImGui::DragFloat3("Direction", (float*)&desc.vDirection, 0.1f);
+            ImGui::DragFloat3("Direction", (float*)&desc.direction, 0.1f);
         }
 
 
 
-        ImGui::ColorEdit3("Diffuse", (float*)&desc.vDiffuse);
-        ImGui::ColorEdit3("Ambient", (float*)&desc.vAmbient);
+        ImGui::ColorEdit3("Diffuse", (float*)&desc.diffuse);
+        ImGui::ColorEdit3("Ambient", (float*)&desc.ambient);
 
         Set_LightDesc(i, desc);
 
@@ -102,15 +102,15 @@ void CLight_Manager::OnGui()
 
 void CLight_Manager::clear_light()
 {
-    if(!m_Lights.empty())
-    m_Lights.clear();
+    if(!m_lights.empty())
+    m_lights.clear();
 
 }
 
 unique_ptr<CLight_Manager> CLight_Manager::Create()
 {
     unique_ptr<CLight_Manager> pInstance(new CLight_Manager());
-    return pInstance; // ÀÌ´Ï¼È¶óÀÌÁî ÇÊ¿ä ¾øÀ½
+    return pInstance; // ì´ë‹ˆì…œë¼ì´ì¦ˆ í•„ìš” ì—†ìŒ
 }
 
 void CLight_Manager::Free()

@@ -1,4 +1,4 @@
-#include "FadeModifier.h"
+Ôªø#include "FadeModifier.h"
 #include "UIRenderable.h"
 
 
@@ -7,9 +7,9 @@ CFadeModifier::CFadeModifier(FADE fadeType, _float duration, _bool useColor, _fl
 	: m_fadeType(fadeType),m_Duration(duration), m_useColor(useColor), m_color(color), m_Inactive(Inactive), m_AccTime(0.f)
 {
 	if (m_fadeType == FADE_IN)
-		m_Alpha = 0.f;
+		m_alpha = 0.f;
 	else if (m_fadeType == FADE_OUT)
-		m_Alpha = 1.f;
+		m_alpha = 1.f;
 
 }
 
@@ -48,7 +48,7 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		if (fRatio > 1) fRatio = 1.f;
 
-		m_Alpha = 1 - fRatio;
+		m_alpha = 1 - fRatio;
 
 		if (m_useColor == true)
 		{
@@ -56,12 +56,12 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		}
 
-		m_This->Set_Alpha(m_Alpha);
+		m_This->Set_Alpha(m_alpha);
 
-		if (m_Alpha <= 0.01f)
+		if (m_alpha <= 0.01f)
 		{
 			if(m_Inactive ==true)
-				pOwner->UI_InActive(); // UI ≤Ù±‚
+				pOwner->UI_InActive(); // UI ÎÅÑÍ∏∞
 
 			m_Finished = true;
 		}
@@ -76,17 +76,17 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		if (fRatio > 1) fRatio = 1.f;
 
-		m_Alpha = fRatio;
+		m_alpha = fRatio;
 
 		if (m_useColor == true)
 		{
-			float lerpRadio = 1 - m_Alpha;
+			float lerpRadio = 1 - m_alpha;
 			_float4 colorWAlpha = { m_color.x, m_color.y, m_color.z, lerpRadio };
 			m_This->Set_ColorMix(m_color);
 
 		}
 
-		m_This->Set_Alpha(m_Alpha);
+		m_This->Set_Alpha(m_alpha);
 
 		if (fRatio >= 1.f)
 		{
@@ -95,7 +95,7 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 			{
 				EndEvent();
 			}
-			//pOwner->UI_InActive(); // UI ≤Ù±‚
+			//pOwner->UI_InActive(); // UI ÎÅÑÍ∏∞
 
 			m_Finished = true;
 		}

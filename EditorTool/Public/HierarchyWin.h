@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Editor_Win.h"
 
 NS_BEGIN(Engine)
@@ -27,14 +27,14 @@ public:
 
 private:
     // ===== UI state =====
-    shared_ptr<Engine::CEntity> m_pSelectedObject = nullptr;
+    shared_ptr<Engine::CEntity> m_selectedObject = nullptr;
 
     // Rename state
-    uint64_t m_RenameTargetPtr = 0;     // ÀÓ½Ã: Æ÷ÀÎÅÍ ±â¹İ (³ªÁß¿¡ UUID·Î ±³Ã¼ ÃßÃµ)
-    char     m_RenameBuf[256] = {};
+    uint64_t m_renameTargetPtr = 0;     // ì„ì‹œ: í¬ì¸í„° ê¸°ë°˜ (ë‚˜ì¤‘ì— UUIDë¡œ êµì²´ ì¶”ì²œ)
+    char     m_renameBuf[256] = {};
 
     // Filter
-    char     m_FilterBuf[128] = {};
+    char     m_filterBuf[128] = {};
 
 private:
     // ===== draw helpers =====
@@ -43,10 +43,10 @@ private:
 
     void Engine_DeleteObject(const shared_ptr<Engine::CGameObject>& pObj) {};
 
-    // Rename commit helper (Áßº¹ Ã³¸®ÇÏ°í ½ÍÀ¸¸é ¿©±â¼­ Ã³¸®)
+    // Rename commit helper (ì¤‘ë³µ ì²˜ë¦¬í•˜ê³  ì‹¶ìœ¼ë©´ ì—¬ê¸°ì„œ ì²˜ë¦¬)
     void CommitRename(const shared_ptr<Engine::CGameObject>& pObj, const char* newNameUtf8);
 
-    // util: ImGui ³»ºÎ ID(Ãæµ¹ ¹æÁö)
+    // util: ImGui ë‚´ë¶€ ID(ì¶©ëŒ ë°©ì§€)
     uint64_t PtrID(const shared_ptr<Engine::CGameObject>& pObj) const;
 
 public:

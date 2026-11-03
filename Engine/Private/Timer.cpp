@@ -1,41 +1,41 @@
 ﻿#include "Timer.h"
 
 CTimer::CTimer()
-    : m_fTimeDelta(0.f)
+    : m_timeDelta(0.f)
 {
-    ZeroMemory(&m_FixTime, sizeof(LARGE_INTEGER));
-    ZeroMemory(&m_LastTime, sizeof(LARGE_INTEGER));
-    ZeroMemory(&m_FrameTime, sizeof(LARGE_INTEGER));
-    ZeroMemory(&m_CpuTick, sizeof(LARGE_INTEGER));
+    ZeroMemory(&m_fixTime, sizeof(LARGE_INTEGER));
+    ZeroMemory(&m_lastTime, sizeof(LARGE_INTEGER));
+    ZeroMemory(&m_frameTime, sizeof(LARGE_INTEGER));
+    ZeroMemory(&m_cpuTick, sizeof(LARGE_INTEGER));
 }
 
 HRESULT CTimer::Ready_Timer()
 {
-    QueryPerformanceCounter(&m_FrameTime);  // ex) 1077
-    QueryPerformanceCounter(&m_LastTime);   // ex) 1085
-    QueryPerformanceCounter(&m_FixTime);	// ex) 1090
+    QueryPerformanceCounter(&m_frameTime);  // ex) 1077
+    QueryPerformanceCounter(&m_lastTime);   // ex) 1085
+    QueryPerformanceCounter(&m_fixTime);	// ex) 1090
 
-    QueryPerformanceFrequency(&m_CpuTick);	// CPU Tick 값을 얻어오는 함수
+    QueryPerformanceFrequency(&m_cpuTick);	// CPU Tick 값을 얻어오는 함수
 
     return S_OK;
 }
 
 _float CTimer::Update_Timer()
 {
-    QueryPerformanceCounter(&m_FrameTime);  // ex) 1500
+    QueryPerformanceCounter(&m_frameTime);  // ex) 1500
 
-    if (m_FrameTime.QuadPart - m_FixTime.QuadPart >= m_CpuTick.QuadPart)
+    if (m_frameTime.QuadPart - m_fixTime.QuadPart >= m_cpuTick.QuadPart)
     {
-        QueryPerformanceFrequency(&m_CpuTick);
-        m_FixTime = m_FrameTime;
+        QueryPerformanceFrequency(&m_cpuTick);
+        m_fixTime = m_frameTime;
     }
 
-    m_fTimeDelta = static_cast<_float>(m_FrameTime.QuadPart - m_LastTime.QuadPart)
-        / static_cast<_float>(m_CpuTick.QuadPart);
+    m_timeDelta = static_cast<_float>(m_frameTime.QuadPart - m_lastTime.QuadPart)
+        / static_cast<_float>(m_cpuTick.QuadPart);
 
-    m_LastTime = m_FrameTime;
+    m_lastTime = m_frameTime;
 
-    return m_fTimeDelta;
+    return m_timeDelta;
 }
 
 shared_ptr<CTimer> CTimer::Create()

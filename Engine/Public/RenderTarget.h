@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 
@@ -20,7 +20,7 @@ public:
 	virtual HRESULT Bind_ShaderResource(shared_ptr<class CShader> pShader, const _char* pConstantName) ;
 	virtual void Clear();
 
-	ComPtr<ID3D11RenderTargetView>	Get_RTV() { return m_pRTV; }
+	ComPtr<ID3D11RenderTargetView>	Get_RTV() { return m_RTV; }
 #ifdef _DEBUG
 public:
 	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
@@ -29,20 +29,20 @@ public:
 protected:
 
 private:
-	ComPtr<ID3D11Device> m_pDevice = { nullptr };
-	ComPtr < ID3D11DeviceContext> m_pContext = { nullptr };
+	ComPtr<ID3D11Device> m_device = { nullptr };
+	ComPtr < ID3D11DeviceContext> m_context = { nullptr };
 
 private:
 
-	ComPtr<ID3D11Texture2D> m_Texture2D = { nullptr };
-	ComPtr<ID3D11RenderTargetView> m_pRTV = { nullptr };
-	ComPtr<ID3D11ShaderResourceView> m_pSRV = { nullptr };
+	ComPtr<ID3D11Texture2D> m_texture2D = { nullptr };
+	ComPtr<ID3D11RenderTargetView> m_RTV = { nullptr };
+	ComPtr<ID3D11ShaderResourceView> m_SRV = { nullptr };
 
 private:
-	_float4			m_vClearColor = {};
+	_float4			m_clearColor = {};
 #ifdef _DEBUG
 private:
-	_float4x4		m_WorldMatrix = {};
+	_float4x4		m_worldMatrix = {};
 #endif
 public:
 	static shared_ptr<CRenderTarget> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, 

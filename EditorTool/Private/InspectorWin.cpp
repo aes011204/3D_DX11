@@ -1,4 +1,4 @@
-#include "InspectorWin.h"
+ï»¿#include "InspectorWin.h"
 #include "EditorInstance.h"
 
 
@@ -13,7 +13,7 @@
 CInspectorWin::CInspectorWin()
     : CEditor_Win("Inspector")
 {
-    m_NameBuf[0] = '\0';
+    m_nameBuf[0] = '\0';
 }
 
 _string CInspectorWin::ConvertW2A(const wstring& wstr)
@@ -26,7 +26,7 @@ _string CInspectorWin::ConvertW2A(const wstring& wstr)
     _string str(size, 0);
     WideCharToMultiByte(CP_UTF8, 0, wstr.c_str(), -1, &str[0], size, nullptr, nullptr);
 
-    // WideCharToMultiByte´Â ³Î Æ÷ÇÔ ±æÀÌ¸¦ ÁÖ´Ï±î ¸¶Áö¸· ³Î Á¦°Å
+    // WideCharToMultiByteëŠ” ë„ í¬í•¨ ê¸¸ì´ë¥¼ ì£¼ë‹ˆê¹Œ ë§ˆì§€ë§‰ ë„ ì œê±°
     if (!str.empty() && str.back() == '\0')
         str.pop_back();
 
@@ -69,16 +69,16 @@ void CInspectorWin::RenderEntity(const std::shared_ptr<Engine::CEntity>& obj)
 {
     ImGui::TextDisabled("Entity");
 
-    // ¼±ÅÃ ´ë»ó ¹Ù²î¸é ¹öÆÛ/»óÅÂ ¸®¼Â
+    // ì„ íƒ ëŒ€ìƒ ë°”ë€Œë©´ ë²„í¼/ìƒíƒœ ë¦¬ì…‹
     const uint64_t curId = (uint64_t)obj.get();
-    if (m_LastSelectedId != curId)
+    if (m_lastSelectedId != curId)
     {
-        m_LastSelectedId = curId;
-        m_EditingName = false;
+        m_lastSelectedId = curId;
+        m_isEditingName = false;
 
         _string curName = ConvertW2A(obj->Get_Name());
-        strncpy_s(m_NameBuf, sizeof(m_NameBuf), curName.c_str(), _TRUNCATE);
-        m_NameBuf[sizeof(m_NameBuf) - 1] = 0;
+        strncpy_s(m_nameBuf, sizeof(m_nameBuf), curName.c_str(), _TRUNCATE);
+        m_nameBuf[sizeof(m_nameBuf) - 1] = 0;
     }
 
     // ---- Name ----
@@ -87,14 +87,14 @@ void CInspectorWin::RenderEntity(const std::shared_ptr<Engine::CEntity>& obj)
 
     ImGui::Text("Name"); ImGui::SameLine();
 
-    if (!m_EditingName)
+    if (!m_isEditingName)
     {
         ImGui::Selectable(shownName.c_str(), false);
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
         {
-            m_EditingName = true;
-            // ´ÙÀ½ ÇÁ·¹ÀÓÀÇ InputText¿¡ Æ÷Ä¿½º ÁÖ±â À§ÇØ ¿¹¾à
+            m_isEditingName = true;
+            // ë‹¤ìŒ í”„ë ˆì„ì˜ InputTextì— í¬ì»¤ìŠ¤ ì£¼ê¸° ìœ„í•´ ì˜ˆì•½
             ImGui::SetKeyboardFocusHere();
         }
     }
@@ -102,37 +102,37 @@ void CInspectorWin::RenderEntity(const std::shared_ptr<Engine::CEntity>& obj)
     {
         ImGui::SetNextItemWidth(-1);
 
-        bool enter = ImGui::InputText("##obj_name", m_NameBuf, sizeof(m_NameBuf),
+        bool enter = ImGui::InputText("##obj_name", m_nameBuf, sizeof(m_nameBuf),
             ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
 
         bool deactivated = ImGui::IsItemDeactivatedAfterEdit();
 
-        // ESC: Ãë¼Ò(¿ø·¡ ÀÌ¸§À¸·Î º¹±¸)
+        // ESC: ì·¨ì†Œ(ì›ë˜ ì´ë¦„ìœ¼ë¡œ ë³µêµ¬)
         if (ImGui::IsItemActive() && ImGui::IsKeyPressed(ImGuiKey_Escape))
         {
             _string reset = ConvertW2A(obj->Get_Name());
-            strncpy_s(m_NameBuf, sizeof(m_NameBuf), reset.c_str(), _TRUNCATE);
-            m_NameBuf[sizeof(m_NameBuf) - 1] = 0;
-            m_EditingName = false;
+            strncpy_s(m_nameBuf, sizeof(m_nameBuf), reset.c_str(), _TRUNCATE);
+            m_nameBuf[sizeof(m_nameBuf) - 1] = 0;
+            m_isEditingName = false;
         }
         else if (enter || deactivated)
         {
-            // UTF-8 -> UTF-16 (ÇÑ±Û Æ÷ÇÔ)
+            // UTF-8 -> UTF-16 (í•œê¸€ í¬í•¨)
             std::wstring w;
-            if (m_NameBuf[0] != '\0')
+            if (m_nameBuf[0] != '\0')
             {
-                int wlen = MultiByteToWideChar(CP_UTF8, 0, m_NameBuf, -1, nullptr, 0);
+                int wlen = MultiByteToWideChar(CP_UTF8, 0, m_nameBuf, -1, nullptr, 0);
                 if (wlen > 1)
                 {
                     w.resize(wlen - 1);
-                    MultiByteToWideChar(CP_UTF8, 0, m_NameBuf, -1, &w[0], wlen);
+                    MultiByteToWideChar(CP_UTF8, 0, m_nameBuf, -1, &w[0], wlen);
                 }
             }
 
             if (!w.empty())
                 obj->Set_Name(w);
 
-            m_EditingName = false;
+            m_isEditingName = false;
         }
     }
 
@@ -160,30 +160,30 @@ void CInspectorWin::RenderEntity(const std::shared_ptr<Engine::CEntity>& obj)
 
             ImGui::PushID((void*)comp.get());
 
-            // 1. ÅÂ±× Ãâ·Â (ºñ¾îÀÖÀ» °æ¿ì ´ëºñ)
+            // 1. íƒœê·¸ ì¶œë ¥ (ë¹„ì–´ìˆì„ ê²½ìš° ëŒ€ë¹„)
             string strTag = W2S(kv.first);
             if (strTag.empty()) strTag = "Unknown_Tag";
             ImGui::Text(W2S(kv.first).c_str());
             //string strCompName = W2S(kv.second->Get_ProtoTag());
 
-            //ImGui::Button(strCompName.c_str(), ImVec2(-1, 30)); // ÀÌ ¹öÆ°ÀÌ '¹Ú½º' ¿ªÇÒ
+            //ImGui::Button(strCompName.c_str(), ImVec2(-1, 30)); // ì´ ë²„íŠ¼ì´ 'ë°•ìŠ¤' ì—­í• 
             string strProtoTag = W2S(comp->Get_ProtoTag());
             char btnIdBuf[256];
             sprintf_s(btnIdBuf, "%s##Btn_%p", strProtoTag.c_str(), comp.get());
 
-            if (ImGui::Button(btnIdBuf, ImVec2(-1, 30))) { /* Å¬¸¯ ·ÎÁ÷ */ }
+            if (ImGui::Button(btnIdBuf, ImVec2(-1, 30))) { /* í´ë¦­ ë¡œì§ */ }
             if (ImGui::BeginDragDropTarget())
             {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("COMP_DRAG_DATA"))
                 {
                     shared_ptr <CComponent> nothing = {};
-                    // ÅÃ¹è ¹Ú½º ¿­±â (»õ·Î¿î ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±× ÀÌ¸§ ²¨³»±â)
+                    // íƒë°° ë°•ìŠ¤ ì—´ê¸° (ìƒˆë¡œìš´ í”„ë¡œí† íƒ€ì… íƒœê·¸ ì´ë¦„ êº¼ë‚´ê¸°)
                     DragDropProto* pData = (DragDropProto*)payload->Data;
-                    obj->Add_Component<CComponent>(pData->iLevel, pData->szTag, kv.first, nullptr, nullptr);
+                    obj->Add_Component<CComponent>(pData->level, pData->tag, kv.first, nullptr, nullptr);
              
                     ImGui::EndDragDropTarget();
                     ImGui::PopID();
-                    break; // ¿©±â¼­
+                    break; // ì—¬ê¸°ì„œ
                 }
 
                 
@@ -193,14 +193,14 @@ void CInspectorWin::RenderEntity(const std::shared_ptr<Engine::CEntity>& obj)
               
                 //if (ImGui::BeginDragDropTarget())
                 //{
-                //    // 1. ImGui°¡ Á¦°øÇÏ´Â µå·Ó Ã¼Å© (ÆäÀÌ·Îµå Å¸ÀÔÀº ÀÓÀÇ·Î ÁöÁ¤)
+                //    // 1. ImGuiê°€ ì œê³µí•˜ëŠ” ë“œë¡­ ì²´í¬ (í˜ì´ë¡œë“œ íƒ€ì…ì€ ì„ì˜ë¡œ ì§€ì •)
                 //    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("PROTOTYPE_COMPONENT"))
                 //    {
-                //        // 2. ÆäÀÌ·Îµå¿¡¼­ µ¥ÀÌÅÍ ÃßÃâ (¿¹: ÇÁ·ÎÅäÅ¸ÀÔ ÅÂ±× ¹®ÀÚ¿­)
+                //        // 2. í˜ì´ë¡œë“œì—ì„œ ë°ì´í„° ì¶”ì¶œ (ì˜ˆ: í”„ë¡œí† íƒ€ì… íƒœê·¸ ë¬¸ìì—´)
                 //        const char* pPrototypeTag = (const char*)payload->Data;
 
-                //        // 3. [ÇÙ½É] ÀÌº¥Æ® ¹ö½º·Î ¾Ë¸² ¹ß¼Û
-                //        // "ÇöÀç ¼±ÅÃµÈ °´Ã¼ÀÇ ÄÄÆ÷³ÍÆ®¸¦ pPrototypeTag ±â¹İÀ¸·Î ¹Ù²ãÁà!"
+                //        // 3. [í•µì‹¬] ì´ë²¤íŠ¸ ë²„ìŠ¤ë¡œ ì•Œë¦¼ ë°œì†¡
+                //        // "í˜„ì¬ ì„ íƒëœ ê°ì²´ì˜ ì»´í¬ë„ŒíŠ¸ë¥¼ pPrototypeTag ê¸°ë°˜ìœ¼ë¡œ ë°”ê¿”ì¤˜!"
                 //        m_pEventBus->Publish(new ComponentSwapEvent(m_pSelectedObject, pPrototypeTag));
                 //    }
                 //    ImGui::EndDragDropTarget();
@@ -234,5 +234,5 @@ std::shared_ptr<CInspectorWin> CInspectorWin::Create()
 
 void CInspectorWin::Free()
 {
-    // Áö±İÀº ¸®¼Ò½º ¾øÀ½. ÇÊ¿äÇÏ¸é ¿©±â¼­ Á¤¸®.
+    // ì§€ê¸ˆì€ ë¦¬ì†ŒìŠ¤ ì—†ìŒ. í•„ìš”í•˜ë©´ ì—¬ê¸°ì„œ ì •ë¦¬.
 }

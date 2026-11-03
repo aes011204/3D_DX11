@@ -64,9 +64,9 @@ private:
 
     Client::EPlayerState m_PendingUIState;
 private:
-    ComPtr<ID3D11Device> m_pDevice = { nullptr };
-    ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-    weak_ptr<class CGameInstance> m_pGameInstance = { };
+    ComPtr<ID3D11Device> m_device = { nullptr };
+    ComPtr<ID3D11DeviceContext> m_context = { nullptr };
+    weak_ptr<class CGameInstance> m_gameInstance = { };
 public:
     static shared_ptr<CUI_Controller> Create();
     virtual void Free() override;

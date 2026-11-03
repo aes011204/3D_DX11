@@ -1,4 +1,4 @@
-#include"ConsoleWin.h"
+ï»¿#include"ConsoleWin.h"
 #include"Log_Manager.h"
 
 CConsoleWin::CConsoleWin()
@@ -30,17 +30,17 @@ void CConsoleWin::Render()
         {
             ImVec4 vColor = { 1.f, 1.f, 1.f, 1.f }; // INFO
 
-            if (log.eLevel ==LOG_LEVEL::WARNING)
-                vColor = { 1.f, 1.f, 0.f, 1.f }; // WARNING (³ë¶õ»ö)
-            else if (log.eLevel == LOG_LEVEL::ERR)
-                vColor = { 1.f, 0.f, 0.f, 1.f }; // ERR (»¡°£»ö)
+            if (log.level ==ELogLevel::WARNING)
+                vColor = { 1.f, 1.f, 0.f, 1.f }; // WARNING (ë…¸ëž€ìƒ‰)
+            else if (log.level == ELogLevel::ERR)
+                vColor = { 1.f, 0.f, 0.f, 1.f }; // ERR (ë¹¨ê°„ìƒ‰)
 
             ImGui::PushStyleColor(ImGuiCol_Text, vColor);
-            ImGui::TextUnformatted(log.strMessage.c_str());
+            ImGui::TextUnformatted(log.message.c_str());
             ImGui::PopStyleColor();
         }
 
-        // ÃÖÇÏ´Ü ÀÚµ¿ ½ºÅ©·Ñ
+        // ìµœí•˜ë‹¨ ìžë™ ìŠ¤í¬ë¡¤
         if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
             ImGui::SetScrollHereY(1.0f);
 

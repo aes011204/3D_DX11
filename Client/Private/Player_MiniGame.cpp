@@ -25,8 +25,8 @@ void CPlayer_MiniGame::Enter()
 	auto pLerp = make_shared<CamLerpDesc>();
 	pLerp->eMode = ECamMode::LERP;
 
-	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
-	XMStoreFloat3(&pLerp->vTargetPos, m_pOwnerTransformCom.lock()->Get_Position()
+	_vector forward = m_ownerTransformCom.lock()->Get_State(ETransformState::LOOK);
+	XMStoreFloat3(&pLerp->vTargetPos, m_ownerTransformCom.lock()->Get_Position()
 		- XMVector3Normalize(forward) * 3.f   // 살짝 뒤로
 		+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // 위);
 	pLerp->m_Target = m_Owner;
@@ -44,7 +44,7 @@ void CPlayer_MiniGame::Enter()
 	pStop->eMode = ECamMode::STOP;
 	event.commands.push_back(pStop);
 
-	m_pGameInstance.lock()->Get_EventBus()->Publish(event);
+	m_gameInstance.lock()->Get_EventBus()->Publish(event);
 
 
 

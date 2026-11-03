@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Camera.h"
 
 
@@ -8,9 +8,9 @@ class ENGINE_DLL CCamera_Free final:
 {
 
 public:
-    struct CAMERAFREE_DESC : public CCamera::CAMERA_DESC
+    struct CameraFreeDesc : public CCamera::CameraDesc
     {
-        _float	fMouseSensor = {};
+        _float	mouseSensor = {};
 
     };
 protected:
@@ -31,10 +31,10 @@ public:
 
     void OnGui() override;
 private:
-    _float	m_fMouseSensor = {};
+    _float	m_mouseSensor = {};
     _bool m_stop = {false};
 public:
-    //void* pArg : »çº»°´Ã¼ÀÇ Ãß°¡ÀûÀÎ ÃÊ±âÈ­°¡ ÇÊ¿ä ÇÒ¼ö ÀÖÀ½ ·±Å¸ÀÓ ÇÒ´ç µÇ´Â ÁÖ¼Ò °°Àº°Å
+    //void* pArg : ì‚¬ë³¸ê°ì²´ì˜ ì¶”ê°€ì ì¸ ì´ˆê¸°í™”ê°€ í•„ìš” í• ìˆ˜ ìˆìŒ ëŸ°íƒ€ì„ í• ë‹¹ ë˜ëŠ” ì£¼ì†Œ ê°™ì€ê±°
     static shared_ptr<CCamera_Free> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     virtual shared_ptr<CGameObject> Clone(void* pArg) override;
     void Free() override;

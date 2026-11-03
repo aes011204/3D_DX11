@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "State.h"
 #include "Client_Define.h"
 
@@ -43,10 +43,10 @@ protected:
 	_bool       DoneAnim = false;
 
 	weak_ptr<CPlayerBoat> m_Owner = {};
-	weak_ptr<CGameInstance> m_pGameInstance;
+	weak_ptr<CGameInstance> m_gameInstance;
 	weak_ptr < CPlayerStateMachine> m_pStateMachine = { };
 
-	weak_ptr<CTransform> m_pOwnerTransformCom = { };
+	weak_ptr<CTransform> m_ownerTransformCom = { };
 	
 	CDInput_Manager* m_Input_Manager = { nullptr };
 
@@ -55,7 +55,7 @@ protected:
 
 	list<string> m_VecDialogue;
 private:
-	// CBaseÀ»(¸¦) ÅëÇØ »ó¼ÓµÊ
+	// CBaseì„(ë¥¼) í†µí•´ ìƒì†ë¨
 	//void Free() override;
 
 };

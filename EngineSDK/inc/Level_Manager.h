@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
@@ -24,15 +24,15 @@ public:
 
 
 /// <imgui>
-    _uint Get_CurLevelIdx() { return m_iCurLevelIdx; }
+    _uint Get_CurLevelIdx() { return m_curLevelIdx; }
 /// </summary>
 private:
-    shared_ptr<CLevel> m_pCurLevel = { nullptr };
-    weak_ptr<class CGameInstance> m_pGameInstance = { };
-    _uint m_iCurLevelIdx = {};
-    _uint m_iEditorIndex = {};
+    shared_ptr<CLevel> m_curLevel = { nullptr };
+    weak_ptr<class CGameInstance> m_gameInstance = { };
+    _uint m_curLevelIdx = {};
+    _uint m_editorIndex = {};
 
-    _uint m_iNumLevel = {};
+    _uint m_numLevel = {};
 
 public:
 

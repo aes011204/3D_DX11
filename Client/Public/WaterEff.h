@@ -13,9 +13,9 @@ class CWaterEff :
 {
     public
         :
-    struct EffDESC : public CGameObject::GAMEOBJECT_DESC
+    struct EffDESC : public CGameObject::GameObjectDesc
     {
-        EEffType eType = {};
+        EEffType type = {};
         weak_ptr<class CGameObject>Target = {};
 
     };
@@ -52,10 +52,10 @@ private:
     weak_ptr<class CGameObject> m_pPlayer = {};
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CVIBuffer_Particle_Point> m_pVIBufferCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
+    shared_ptr<CVIBuffer_Particle_Point> m_VIBufferCom = { nullptr };
    
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
   
 
 public:

@@ -1,4 +1,4 @@
-#include "MapTool.h"
+ï»¿#include "MapTool.h"
 #include "Data_Manager.h"
 #include "GameInstance.h"
 
@@ -24,24 +24,24 @@ void CMapTool::Render()
 {
 	ImGui::Begin("MapTool");
 
-	// »ó´Ü ÅÇ ¹Ù »ı¼º
+	// ìƒë‹¨ íƒ­ ë°” ìƒì„±
 	if (ImGui::BeginTabBar("MapToolTabs"))
 	{
-		// 1. °ÔÀÓ ¿ÀºêÁ§Æ® ÅÇ
+		// 1. ê²Œì„ ì˜¤ë¸Œì íŠ¸ íƒ­
 		if (ImGui::BeginTabItem("Game Objects"))
 		{
-			// ±âÁ¸ Æú´õ °æ·Î »ç¿ë
+			// ê¸°ì¡´ í´ë” ê²½ë¡œ ì‚¬ìš©
 			static const string kObjFolder = "../../Client/Bin/Resources/Data/MapData/";
-			Render_SaveLoadPanel(SAVETYPE::GAMEOBJECT, kObjFolder);
+			Render_SaveLoadPanel(ESaveType::GAMEOBJECT, kObjFolder);
 			ImGui::EndTabItem();
 		}
 
-		// 2. UI µ¥ÀÌÅÍ ÅÇ
+		// 2. UI ë°ì´í„° íƒ­
 		if (ImGui::BeginTabItem("UI Editor Data"))
 		{
-			// UI Àü¿ë Æú´õ °æ·Î (±¸ºĞÀ» À§ÇØ °æ·Î º¯°æ)
+			// UI ì „ìš© í´ë” ê²½ë¡œ (êµ¬ë¶„ì„ ìœ„í•´ ê²½ë¡œ ë³€ê²½)
 			static const string kUIFolder = "../../Client/Bin/Resources/Data/UIData/";
-			Render_SaveLoadPanel(SAVETYPE::UI, kUIFolder);
+			Render_SaveLoadPanel(ESaveType::UI, kUIFolder);
 			ImGui::EndTabItem();
 		}
 
@@ -66,7 +66,7 @@ static vector<string> ListJsonFiles(const string& folderPath)
 		const auto ext = entry.path().extension().string(); // ".json"
 		if (ext == ".json" || ext == ".JSON")
 		{
-			// ÆÄÀÏ¸í¸¸(¿¹: Stage1.json)
+			// íŒŒì¼ëª…ë§Œ(ì˜ˆ: Stage1.json)
 			out.push_back(entry.path().filename().string());
 		}
 	}
@@ -75,19 +75,19 @@ static vector<string> ListJsonFiles(const string& folderPath)
 	return out;
 }
 
-void  CMapTool::Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath)
+void  CMapTool::Render_SaveLoadPanel(ESaveType eType, const string& folderPath)
 {
 	_uint iIdx = ETOI(eType);
 
 
-	// ÃÖÃÊ 1È¸ ·Îµù
+	// ìµœì´ˆ 1íšŒ ë¡œë”©
 	if (s_files[iIdx].empty())
 		s_files[iIdx] = ListJsonFiles(folderPath);
 
 	ImGui::Text("MapData Folder:");
 	ImGui::TextDisabled("%s", folderPath.c_str());
 
-	// »ó´Ü ¹öÆ°µé
+	// ìƒë‹¨ ë²„íŠ¼ë“¤
 	if (ImGui::Button("Refresh"))
 	{
 		s_files[iIdx] = ListJsonFiles(folderPath);
@@ -97,7 +97,7 @@ void  CMapTool::Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath)
 
 	ImGui::Separator();
 
-	// ÆÄÀÏ ¸®½ºÆ®
+	// íŒŒì¼ ë¦¬ìŠ¤íŠ¸
 	ImGui::Text("Files (*.json)");
 	ImVec2 listSize(0, 220);
 
@@ -115,7 +115,7 @@ void  CMapTool::Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath)
 		ImGui::EndListBox();
 	}
 
-	// ¼±ÅÃµÈ ÆÄÀÏ Ç¥½Ã
+	// ì„ íƒëœ íŒŒì¼ í‘œì‹œ
 	string selectedFile = (s_selected[iIdx] >= 0 && s_selected[iIdx] < (int)s_files[iIdx].size())
 		? s_files[iIdx][s_selected[iIdx]] : "";
 	string selectedFullPath = selectedFile.empty() ? "" : (folderPath + selectedFile);
@@ -131,10 +131,10 @@ void  CMapTool::Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath)
 		{
 			if (canLoad)
 			{
-				// 2. ±âÁ¸ ¸Ê/UI µ¥ÀÌÅÍ Ã»¼Ò
+				// 2. ê¸°ì¡´ ë§µ/UI ë°ì´í„° ì²­ì†Œ
 				CGameInstance::GetInstance()->ClearMap(eType);
 
-				// 3. µ¥ÀÌÅÍ ·Îµå (ÀÌÁ¦ Load ÇÔ¼ö·Î ÁøÀÔÇÕ´Ï´Ù!)
+				// 3. ë°ì´í„° ë¡œë“œ (ì´ì œ Load í•¨ìˆ˜ë¡œ ì§„ì…í•©ë‹ˆë‹¤!)
 				CGameInstance::GetInstance()->Load(eType, selectedFile);
 			}
 			else
@@ -152,7 +152,7 @@ void  CMapTool::Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath)
 	ImGui::Text("Save As / Overwrite");
 	ImGui::InputText("File name", s_newFileName, sizeof(s_newFileName));
 
-	// È®ÀåÀÚ ÀÚµ¿ º¸Á¤(¿øÇÏ¸é)
+	// í™•ì¥ì ìë™ ë³´ì •(ì›í•˜ë©´)
 	auto EnsureJsonExt = [](string name) -> string
 		{
 			if (name.size() < 5) return name + ".json";
@@ -167,13 +167,13 @@ void  CMapTool::Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath)
 	{
 		string fn = EnsureJsonExt(s_newFileName);
 
-		// Save_ObjData´Â ³»ºÎ¿¡¼­ folderPath + fileName ºÙÀÌ´Ï±î "ÆÄÀÏ¸í¸¸" ³Ñ±è
+		// Save_ObjDataëŠ” ë‚´ë¶€ì—ì„œ folderPath + fileName ë¶™ì´ë‹ˆê¹Œ "íŒŒì¼ëª…ë§Œ" ë„˜ê¹€
 		if (true == (CGameInstance::GetInstance()->Save(eType, fn)))
 		{
-			// ÀúÀå ÈÄ ¸®½ºÆ® °»½Å
+			// ì €ì¥ í›„ ë¦¬ìŠ¤íŠ¸ ê°±ì‹ 
 			s_files[iIdx] = ListJsonFiles(folderPath);
 
-			// ÀúÀåÇÑ ÆÄÀÏ ¼±ÅÃÇØÁÖ±â(ÆíÀÇ)
+			// ì €ì¥í•œ íŒŒì¼ ì„ íƒí•´ì£¼ê¸°(í¸ì˜)
 			auto it = find(s_files[iIdx].begin(), s_files[iIdx].end(), fn);
 			if (it != s_files[iIdx].end())
 				s_selected[iIdx] = (int)distance(s_files[iIdx].begin(), it);
@@ -183,14 +183,14 @@ void  CMapTool::Render_SaveLoadPanel(SAVETYPE eType, const string& folderPath)
 
 	ImGui::SameLine();
 
-	// ¼±ÅÃ ÆÄÀÏ µ¤¾î¾²±â ¹öÆ°
+	// ì„ íƒ íŒŒì¼ ë®ì–´ì“°ê¸° ë²„íŠ¼
 	{
 		bool canOverwrite = !selectedFile.empty();
 		if (!canOverwrite) ImGui::BeginDisabled();
 
 		if (ImGui::Button("Overwrite Selected"))
 		{
-			// ¼±ÅÃµÈ ÆÄÀÏ¸íÀ¸·Î ÀúÀå(µ¤¾î¾²±â)
+			// ì„ íƒëœ íŒŒì¼ëª…ìœ¼ë¡œ ì €ì¥(ë®ì–´ì“°ê¸°)
 			CGameInstance::GetInstance()->Save(eType, selectedFile);
 			
 			s_files[iIdx] = ListJsonFiles(folderPath);

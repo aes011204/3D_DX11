@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 
@@ -6,12 +6,12 @@ class CBounding abstract:
     public CBase
 {
 public:
-    struct BOUNDING_DESC
+    struct BoundingDesc
     {
-        _float3 vCenter;
+        _float3 center;
 
-		COLLISION_MASK MyLayer = {0};
-		COLLISION_MASK OtherMask = {0};
+		CollisionMask myLayer = {0};
+		CollisionMask otherMask = {0};
     };
 
 
@@ -22,7 +22,7 @@ public:
 
 public:
 	
-	virtual HRESULT Initialize(BOUNDING_DESC* pDesc);
+	virtual HRESULT Initialize(BoundingDesc* pDesc);
 	virtual void Update(_fmatrix WorldMatrix)=0;
 	virtual _bool Intersect(shared_ptr<CBounding> pTarget)=0;
 
@@ -37,8 +37,8 @@ public:
 
 #endif
 protected:
-	ComPtr<ID3D11Device> m_pDevice = { nullptr };
-	ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
+	ComPtr<ID3D11Device> m_device = { nullptr };
+	ComPtr<ID3D11DeviceContext> m_context = { nullptr };
 
 public:
 	virtual void Free() override;

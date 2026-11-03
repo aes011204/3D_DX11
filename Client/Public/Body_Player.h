@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "PartObject.h"
 #include "Client_Define.h"
 
@@ -7,7 +7,7 @@ class CBody_Player :
     public CPartObject
 {
 public:
-    struct BodyPlayer_DESC : public CPartObject::PARTOBJ_DESC
+    struct BodyPlayer_DESC : public CPartObject::PartObjDesc
     {
 
     };
@@ -34,9 +34,9 @@ protected:
     HRESULT Ready_Components();
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
     shared_ptr<CModel> m_pModelCom = { nullptr };
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
 
     float  emissivePower = 0.f;
 protected:

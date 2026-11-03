@@ -21,12 +21,12 @@ public:
 private:
     _ubyte Get_DIKeyState(_ubyte keyState)
     {
-        return m_KeyState[keyState];
+        return m_keyState[keyState];
     }
 
-    _ubyte Get_DIMouseState(DIMB mouseInputState)
+    _ubyte Get_DIMouseState(EMouseButton mouseInputState)
     {
-        return m_MouseState.rgbButtons[ETOI(mouseInputState)];
+        return m_mouseState.rgbButtons[ETOI(mouseInputState)];
     }
 
 public:
@@ -41,44 +41,44 @@ public:
     }
 
     // 현재 마우스의 특정 축 좌표를 반환
-    _long	Get_DIMouseMove(DIMM eMouseState)
+    _long	Get_DIMouseMove(EMouseMove eMouseState)
     {
-        return *((reinterpret_cast<_long*>(&m_MouseState))
+        return *((reinterpret_cast<_long*>(&m_mouseState))
             + static_cast<_uint>(eMouseState));
     }
 
     // ---------- 키보드 ----------
     bool KeyDown(_ubyte key)
     {
-        return  (m_KeyState[key] & 0x80) && !(m_PrevKeyState[key] & 0x80);
+        return  (m_keyState[key] & 0x80) && !(m_prevKeyState[key] & 0x80);
     }
 
     bool KeyPress(_ubyte key)
     {
-        return (m_KeyState[key] & 0x80) != 0;
+        return (m_keyState[key] & 0x80) != 0;
     }
 
     bool KeyUp(_ubyte key)
     {
-        return !(m_KeyState[key] & 0x80) && (m_PrevKeyState[key] & 0x80);
+        return !(m_keyState[key] & 0x80) && (m_prevKeyState[key] & 0x80);
     }
 
     // ---------- 마우스 ----------
-    bool MouseDown(DIMB btn)
+    bool MouseDown(EMouseButton btn)
     {
-        return  (m_MouseState.rgbButtons[ETOI(btn)] & 0x80)
-            && !(m_PrevMouseState.rgbButtons[ETOI(btn)] & 0x80);
+        return  (m_mouseState.rgbButtons[ETOI(btn)] & 0x80)
+            && !(m_prevMouseState.rgbButtons[ETOI(btn)] & 0x80);
     }
 
-    bool MousePress(DIMB btn)
+    bool MousePress(EMouseButton btn)
     {
-        return (m_MouseState.rgbButtons[ETOI(btn)] & 0x80) != 0;
+        return (m_mouseState.rgbButtons[ETOI(btn)] & 0x80) != 0;
     }
 
-    bool MouseUp(DIMB btn)
+    bool MouseUp(EMouseButton btn)
     {
-        return !(m_MouseState.rgbButtons[ETOI(btn)] & 0x80)
-            && (m_PrevMouseState.rgbButtons[ETOI(btn)] & 0x80);
+        return !(m_mouseState.rgbButtons[ETOI(btn)] & 0x80)
+            && (m_prevMouseState.rgbButtons[ETOI(btn)] & 0x80);
     }
     
     HWND Get_HWND() { return m_hWnd; }
@@ -87,24 +87,24 @@ public:
     HRESULT Initialize(HINSTANCE hInst, HWND hWnd);
     void    Update_InputDev();
 
-    void Set_MousePos(float x, float y) { m_fMousePos = { x,y }; }
-    _float2 Get_MousePos() { return m_fMousePos; }
+    void Set_MousePos(float x, float y) { m_mousePos = { x,y }; }
+    _float2 Get_MousePos() { return m_mousePos; }
 
     void OnGui()override;
 private:
-    ComPtr<IDirectInput8>       m_InputSDK;
-    ComPtr<IDirectInputDevice8> m_KeyBoardDev;
-    ComPtr<IDirectInputDevice8> m_MouseDev;
+    ComPtr<IDirectInput8>       m_inputSDK;
+    ComPtr<IDirectInputDevice8> m_keyBoardDev;
+    ComPtr<IDirectInputDevice8> m_mouseDev;
 
-    _ubyte m_KeyState[256];
-    _ubyte m_PrevKeyState[256];
+    _ubyte m_keyState[256];
+    _ubyte m_prevKeyState[256];
 
-    DIMOUSESTATE m_MouseState;
-    DIMOUSESTATE m_PrevMouseState;
+    DIMOUSESTATE m_mouseState;
+    DIMOUSESTATE m_prevMouseState;
 
     HWND m_hWnd;
 
-    _float2 m_fMousePos = {};
+    _float2 m_mousePos = {};
 public:
     static unique_ptr<CDInput_Manager> Create(HINSTANCE hInst, HWND hWnd);
     void Free() override;

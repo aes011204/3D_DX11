@@ -1,4 +1,4 @@
-#include "Bone.h"
+ï»¿#include "Bone.h"
 
 CBone::CBone()
 {
@@ -6,36 +6,36 @@ CBone::CBone()
 
 HRESULT CBone::Initialize(const Cvt_Bone& BoneDesc)
 {
-    strcpy_s(m_szName, BoneDesc.szName);
+    strcpy_s(m_name, BoneDesc.name);
 
-    m_iParentBoneIndex = BoneDesc.iParentBoneIndex;
+    m_parentBoneIndex = BoneDesc.parentBoneIndex;
 
-    memcpy(&m_TransformationMatrix, &BoneDesc.TransformationMatrix, sizeof(_float4x4));
+    memcpy(&m_transformationMatrix, &BoneDesc.transformationMatrix, sizeof(_float4x4));
    // XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
-    // ÀüÄ¡ ÇÊ¼ö -> ³»ºÎ¿¡¼­ ÇŞÀ½ 
+    // ì „ì¹˜ í•„ìˆ˜ -> ë‚´ë¶€ì—ì„œ í–‡ìŒ 
 
-    XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&m_combinedTransformationMatrix, XMMatrixIdentity());
 
     return S_OK;
 }
 
 void CBone::Update_CombinedTransformMatrix(const vector<shared_ptr<CBone>> Bones, _fmatrix PreTransformMatrix)
 {
-    if(-1 == m_iParentBoneIndex)
+    if(-1 == m_parentBoneIndex)
     {
-        XMStoreFloat4x4(&m_CombinedTransformationMatrix,
-            XMLoadFloat4x4(&m_TransformationMatrix) * PreTransformMatrix);
+        XMStoreFloat4x4(&m_combinedTransformationMatrix,
+            XMLoadFloat4x4(&m_transformationMatrix) * PreTransformMatrix);
     }
     else
     {
-        XMStoreFloat4x4(&m_CombinedTransformationMatrix,
-            XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&Bones[m_iParentBoneIndex]->m_CombinedTransformationMatrix));
+        XMStoreFloat4x4(&m_combinedTransformationMatrix,
+            XMLoadFloat4x4(&m_transformationMatrix) * XMLoadFloat4x4(&Bones[m_parentBoneIndex]->m_combinedTransformationMatrix));
     }
 }
 
 void CBone::Update_TransformationMatrix(_fmatrix TransformMatrix)
 {
-    XMStoreFloat4x4(&m_TransformationMatrix, TransformMatrix);
+    XMStoreFloat4x4(&m_transformationMatrix, TransformMatrix);
 }
 
 

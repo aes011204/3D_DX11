@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
@@ -23,7 +23,7 @@ public:
 	list <shared_ptr<class CGameObject>> Get_GameObject();
 /// </summary>
 private:
-	list <shared_ptr<class CGameObject>> m_pGameObject = {};
+	list <shared_ptr<class CGameObject>> m_gameObject = {};
 
 public:
 	static shared_ptr<CLayer> Create();

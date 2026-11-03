@@ -20,55 +20,55 @@ HRESULT CUI_HUD::OnInit(void* pArg)
 {
 	{
 		CUI_Skill::SKILL_DESC SkillPanelDesc = {};
-		SkillPanelDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		SkillPanelDesc.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-		SkillPanelDesc.IsTransparent = true;
-		SkillPanelDesc.bUseDark = false;
-		shared_ptr<CUI_Skill> SkillPanel = CUI_Skill::Create(m_pDevice, m_pContext);
+		SkillPanelDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		SkillPanelDesc.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
+		SkillPanelDesc.isTransparent = true;
+		SkillPanelDesc.useDark = false;
+		shared_ptr<CUI_Skill> SkillPanel = CUI_Skill::Create(m_device, m_context);
 		SkillPanel->Initialize(&SkillPanelDesc);
 
 		wstring NameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(EHud::SKILL)));
 		Add_Child(SkillPanel, NameTag, false);
 	}
 	{
-		CUI_Top::UIPANEL_DESC TopPanelDesc = {};
-		TopPanelDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		TopPanelDesc.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-		TopPanelDesc.IsTransparent = true;
-		TopPanelDesc.bUseDark = false;
+		CUI_Top::UIPanelDesc TopPanelDesc = {};
+		TopPanelDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		TopPanelDesc.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
+		TopPanelDesc.isTransparent = true;
+		TopPanelDesc.useDark = false;
 
-		shared_ptr<CUI_Top> TopPanel = CUI_Top::Create(m_pDevice, m_pContext);
+		shared_ptr<CUI_Top> TopPanel = CUI_Top::Create(m_device, m_context);
 		TopPanel->Initialize(&TopPanelDesc);
 
 		wstring NameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(EHud::TOP)));
 		Add_Child(TopPanel, NameTag, false);
 	}
 	{
-		CUIButton::UIBUTTON_DESC BoatButtonDesc = {};
-		BoatButtonDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		BoatButtonDesc.TextureProtoName = L"Prototype_Component_Texture_Speaker_Button_Default";
+		CUIButton::UIButtonDesc BoatButtonDesc = {};
+		BoatButtonDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		BoatButtonDesc.textureProtoName = L"Prototype_Component_Texture_Speaker_Button_Default";
 		//BoatButtonDesc.bUseDark = false;
 
-		shared_ptr<CUIPanel> BoatButton = CUIPanel::Create(m_pDevice, m_pContext);
+		shared_ptr<CUIPanel> BoatButton = CUIPanel::Create(m_device, m_context);
 		BoatButton->Initialize(&BoatButtonDesc);
 
 		{
 			
 
-			CUIImage::UIIMAGE_DESC img_k = {};
-			img_k.TextureComLevel = ETOI(LEVEL::STATIC);
-			img_k.TextureProtoName = L"Prototype_Component_Texture_KEY";
-			img_k.TextureIndex = 196;
-			shared_ptr<CUIPanel> Image_K = CUIPanel::Create(m_pDevice, m_pContext);
+			CUIImage::UIImageDesc img_k = {};
+			img_k.textureComLevel = ETOI(LEVEL::STATIC);
+			img_k.textureProtoName = L"Prototype_Component_Texture_KEY";
+			img_k.textureIndex = 196;
+			shared_ptr<CUIPanel> Image_K = CUIPanel::Create(m_device, m_context);
 			Image_K->Initialize(&img_k);
 
 			BoatButton->Add_Child(Image_K, L"Img_tab", false);
 
 
-			CUIImage::UIIMAGE_DESC img_B = {};
-			img_B.TextureComLevel = ETOI(LEVEL::STATIC);
-			img_B.TextureProtoName = L"Prototype_Component_Texture_ShipIcon";
-			shared_ptr<CUIPanel> Image_B = CUIPanel::Create(m_pDevice, m_pContext);
+			CUIImage::UIImageDesc img_B = {};
+			img_B.textureComLevel = ETOI(LEVEL::STATIC);
+			img_B.textureProtoName = L"Prototype_Component_Texture_ShipIcon";
+			shared_ptr<CUIPanel> Image_B = CUIPanel::Create(m_device, m_context);
 			Image_B->Initialize(&img_B);
 
 			BoatButton->Add_Child(Image_B, L"Img_boat", false);

@@ -32,14 +32,14 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 	// 이건 그냥  PreInitialize 대용으로 사용
 	//
 	///발행이 나중에 되야함 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenPlayerInitData>([this](const Evt_InvenPlayerInitData& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenPlayerInitData>([this](const Evt_InvenPlayerInitData& e)
 		{
 			m_Inven = e.invenPtr;
 			if (m_Inven.lock() != nullptr)
 				Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
 		});
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ShipStat>([this](const Evt_ShipStat& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_ShipStat>([this](const Evt_ShipStat& e)
 		{
 			wstring strInfo = format(L"어선 속도 : {}kn\n낚시 속도 : {}%\n등불 : {}lm",
 				e.engineSpeed, e.fishingSpeed, e.lightIntensity);
@@ -117,14 +117,14 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 	{
 		for (_uint j = 0; j < w; j++)
 		{
-			Engine::CUISlot::SLOT_DESC slot_Inven = {};
+			Engine::CUISlot::SlotDesc slot_Inven = {};
 			//slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-			slot_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
-			slot_Inven.vScale = Vector2{ 1.6f,1.6f };
-			slot_Inven.Index = i * w + j;
+			slot_Inven.textureComLevel = ETOI(LEVEL::STATIC);
+			slot_Inven.scale = Vector2{ 1.6f,1.6f };
+			slot_Inven.index = i * w + j;
 			if (inven_slot[i * w + j].isLock == true)
 			{
-				slot_Inven.IsTransparent = true;
+				slot_Inven.isTransparent = true;
 			}
 			slot_Inven.slotType = ETOI(inven_slot[i * w + j].slotType);
 
@@ -132,24 +132,24 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 			switch (slot_Inven.slotType)
 			{
 			case ETOI(ESlotType::ENGINE):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
+				slot_Inven.textureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
 				break;
 			case ETOI(ESlotType::LIGHT):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
+				slot_Inven.textureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
 				break;
 			case ETOI(ESlotType::NET):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // 앤 없는듯
+				slot_Inven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // 앤 없는듯
 				break;
 			case ETOI(ESlotType::ROT):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
+				slot_Inven.textureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
 				break;
 			case ETOI(ESlotType::ANY):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
+				slot_Inven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
 				break;
 			}
 
 
-			shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_pDevice, m_pContext);
+			shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_device, m_context);
 			m_pInstanceINVEN->Initialize(&slot_Inven);
 
 			wstring NameTag = L"SLOT_INVEN_" + S2W(to_string(i * w + j));
@@ -169,14 +169,14 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 	{
 		for (_uint i = 0; i < 30; i++)
 		{
-			CUIImage::UIIMAGE_DESC ImgItemPool = {};
-			ImgItemPool.TextureComLevel = ETOI(LEVEL::STATIC);
-			ImgItemPool.TextureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
+			CUIImage::UIImageDesc ImgItemPool = {};
+			ImgItemPool.textureComLevel = ETOI(LEVEL::STATIC);
+			ImgItemPool.textureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
 			ImgItemPool.ZOrder = 5;
-			ImgItemPool.IsTransparent = true;
+			ImgItemPool.isTransparent = true;
 			//ImgDesc. = true;
 
-			shared_ptr<CUIImage> pChild = CUIImage::Create(m_pDevice, m_pContext);
+			shared_ptr<CUIImage> pChild = CUIImage::Create(m_device, m_context);
 			pChild->Initialize(&ImgItemPool);
 			//pChild->UI_InActive();
 
@@ -202,33 +202,33 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 	///// 정보 이미지 /////
 
-	CUIImage::UIIMAGE_DESC ImgDesc = {};
-	ImgDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	ImgDesc.TextureProtoName = L"Prototype_Component_Texture_PanelBackground";
+	CUIImage::UIImageDesc ImgDesc = {};
+	ImgDesc.textureComLevel = ETOI(LEVEL::STATIC);
+	ImgDesc.textureProtoName = L"Prototype_Component_Texture_PanelBackground";
 	ImgDesc.ZOrder = 3;
 
-	shared_ptr<CUIImage> pChild = CUIImage::Create(m_pDevice, m_pContext);
+	shared_ptr<CUIImage> pChild = CUIImage::Create(m_device, m_context);
 	pChild->Initialize(&ImgDesc);
 
 	wstring NameTag = L"INVEN_BACK";
 
 	{
-		CUIText::TEXT_DESC InfoTexDesc = {};
-		InfoTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
-		InfoTexDesc.strText = format(L"어선 속도 : {}kn\n낚시 속도 : {}%\n등불 : {}lm",
+		CUIText::TextDesc InfoTexDesc = {};
+		InfoTexDesc.fontTag = L"Noto_Sans_CJK_SC";
+		InfoTexDesc.text = format(L"어선 속도 : {}kn\n낚시 속도 : {}%\n등불 : {}lm",
 			0, 0, 0);
-		InfoTexDesc.fontaline = CUIText::FONTALINE::LEFT;
-		shared_ptr<CUIText>InfoTex = CUIText::Create(m_pDevice, m_pContext);
+		InfoTexDesc.fontAlign = CUIText::EFontAlign::LEFT;
+		shared_ptr<CUIText>InfoTex = CUIText::Create(m_device, m_context);
 		InfoTex->Initialize(&InfoTexDesc);
 		pChild->Add_Child(InfoTex, L"InfoTex", false);
 		m_TextInfo = InfoTex;
 
 
-		CUIText::TEXT_DESC InfoTexDesc_1 = {};
-		InfoTexDesc_1.strFontTag = L"Noto_Sans_CJK_SC";
-		InfoTexDesc_1.strText = format(L"잡을수 있는 어종 :\n {}kn",0);
-		InfoTexDesc_1.fontaline = CUIText::FONTALINE::LEFT;
-		shared_ptr<CUIText> InfoTex_1 = CUIText::Create(m_pDevice, m_pContext);
+		CUIText::TextDesc InfoTexDesc_1 = {};
+		InfoTexDesc_1.fontTag = L"Noto_Sans_CJK_SC";
+		InfoTexDesc_1.text = format(L"잡을수 있는 어종 :\n {}kn",0);
+		InfoTexDesc_1.fontAlign = CUIText::EFontAlign::LEFT;
+		shared_ptr<CUIText> InfoTex_1 = CUIText::Create(m_device, m_context);
 		InfoTex_1->Initialize(&InfoTexDesc_1);
 		pChild->Add_Child(InfoTex_1, L"InfoTex_1", false);
 		m_TextInfo_1 = InfoTex_1;
@@ -239,21 +239,21 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 
 	///// 인밴 슬롯 패널 /////
-	CUIPanel::UIPANEL_DESC Panel_Inven = {};
-	Panel_Inven.TextureProtoName = L"Prototype_Component_Texture_PlayerInventoryBackground";
-	Panel_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
-	Panel_Inven.IsFullScreen = false;
-	Panel_Inven.IsTransparent = false;
-	Panel_Inven.IsUseLayout = true;
-	Panel_Inven.bUseNineSlice = false;
+	CUIPanel::UIPanelDesc Panel_Inven = {};
+	Panel_Inven.textureProtoName = L"Prototype_Component_Texture_PlayerInventoryBackground";
+	Panel_Inven.textureComLevel = ETOI(LEVEL::STATIC);
+	Panel_Inven.isFullScreen = false;
+	Panel_Inven.isTransparent = false;
+	Panel_Inven.isUseLayout = true;
+	Panel_Inven.useNineSlice = false;
 
-	Panel_Inven.LayoutDesc.m_Spacing = { 4.f ,4.f };
-	Panel_Inven.LayoutDesc.m_Col = 6;
-	Panel_Inven.LayoutDesc.m_Row = 8;
+	Panel_Inven.layoutDesc.spacing = { 4.f ,4.f };
+	Panel_Inven.layoutDesc.col = 6;
+	Panel_Inven.layoutDesc.row = 8;
 	//Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
 
 
-	shared_ptr<CUIPanel> InvenPanel = CUIPanel::Create(m_pDevice, m_pContext);
+	shared_ptr<CUIPanel> InvenPanel = CUIPanel::Create(m_device, m_context);
 	InvenPanel->Initialize(&Panel_Inven);
 	m_InvenPanel = InvenPanel;
 
@@ -262,32 +262,32 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 
 	///// 데미지 슬로 패널 /////
-	CUIPanel::UIPANEL_DESC Panel_damage = {};
-	Panel_damage.TextureProtoName = L"Prototype_Component_Texture_HealthBarPanel";
-	Panel_damage.TextureComLevel = ETOI(LEVEL::STATIC);
-	Panel_damage.IsFullScreen = false;
-	Panel_damage.IsTransparent = false;
-	Panel_damage.IsUseLayout = true;
+	CUIPanel::UIPanelDesc Panel_damage = {};
+	Panel_damage.textureProtoName = L"Prototype_Component_Texture_HealthBarPanel";
+	Panel_damage.textureComLevel = ETOI(LEVEL::STATIC);
+	Panel_damage.isFullScreen = false;
+	Panel_damage.isTransparent = false;
+	Panel_damage.isUseLayout = true;
 
-	Panel_damage.LayoutDesc.m_Spacing = { 2.f ,2.f };
-	Panel_damage.LayoutDesc.m_Col = 0;
-	Panel_damage.LayoutDesc.m_Row = 3;
+	Panel_damage.layoutDesc.spacing = { 2.f ,2.f };
+	Panel_damage.layoutDesc.col = 0;
+	Panel_damage.layoutDesc.row = 3;
 	//Panel_damage.LayoutDesc.m_Offset = { 0.f, 0.f};
 
-	Panel_damage.bUseNineSlice = true;
+	Panel_damage.useNineSlice = true;
 
-	shared_ptr<CUIPanel> DamgePanel = CUIPanel::Create(m_pDevice, m_pContext);
+	shared_ptr<CUIPanel> DamgePanel = CUIPanel::Create(m_device, m_context);
 	DamgePanel->Initialize(&Panel_damage);
 
 	for (_uint i = 0; i < 3; i++)
 	{
 
-		CUISlot::SLOT_DESC slot_Damage = {};
-		slot_Damage.TextureProtoName = L"Prototype_Component_Texture_Slot_Damage";
-		slot_Damage.TextureComLevel = ETOI(LEVEL::STATIC);
-		slot_Damage.bUseDark = false;
+		CUISlot::SlotDesc slot_Damage = {};
+		slot_Damage.textureProtoName = L"Prototype_Component_Texture_Slot_Damage";
+		slot_Damage.textureComLevel = ETOI(LEVEL::STATIC);
+		slot_Damage.useDark = false;
 		/*	slot_Damage.Interaction = false;*/
-		shared_ptr<CUISlot> m_pInstance = CUISlot::Create(m_pDevice, m_pContext);
+		shared_ptr<CUISlot> m_pInstance = CUISlot::Create(m_device, m_context);
 		m_pInstance->Initialize(&slot_Damage);
 
 		wstring NameTag = L"SLOT_" + S2W(to_string(i));
@@ -345,7 +345,7 @@ void CUI_Inventory::OnInActive()
 
 
 
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
 	
 
 	__super::OnInActive();
@@ -487,9 +487,9 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 		e.IsPlayer = false;
 	}
 
-	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
+	LayoutDesc layout = m_InvenPanel->Get_LayoutDesc();
 
-	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
 
 
 	
@@ -504,8 +504,8 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 			//SlotY = index % layout.m_Col;
 
 
-			e.x = index % layout.m_Col;;
-			e.y = index / layout.m_Col;;
+			e.x = index % layout.col;;
+			e.y = index / layout.col;;
 			e.IsOnSlot = true;
 
 			break;
@@ -526,7 +526,7 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 	if (m_InvenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 	{
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
 	}
 	
 	return true;
@@ -563,8 +563,8 @@ _float2 CUI_Inventory::Calculate_RenderPos(const ItemInst& item)
 	_float minX = FLT_MAX, minY = FLT_MAX;
 	_float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
-	_uint col = m_InvenPanel->Get_LayoutDesc().m_Col;
-	_uint row = m_InvenPanel->Get_LayoutDesc().m_Row;
+	_uint col = m_InvenPanel->Get_LayoutDesc().col;
+	_uint row = m_InvenPanel->Get_LayoutDesc().row;
 	// 아이템이 점유한 모든 칸을 돌면서 실제 슬롯들의 위치를 수집
 	for (auto& OccCell : item.curBase)
 	{
@@ -663,7 +663,7 @@ void CUI_Inventory::Render_Item()
 	{
 		
 
-		LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
+		LayoutDesc layout = m_InvenPanel->Get_LayoutDesc();
 
 		for (auto& UI : m_ItemUI)
 		{
@@ -676,8 +676,8 @@ void CUI_Inventory::Render_Item()
 
 				UI->GetUITransform()->SetAnchoredPos(vAnchoredPos);
 				UI->GetUITransform()->SetSizeDelta(
-					{ slotSize.x * def.itemShape.width + layout.m_Spacing.x * (def.itemShape.width - 1),
-					slotSize.y * def.itemShape.height + layout.m_Spacing.y * (def.itemShape.height - 1)
+					{ slotSize.x * def.itemShape.width + layout.spacing.x * (def.itemShape.width - 1),
+					slotSize.y * def.itemShape.height + layout.spacing.y * (def.itemShape.height - 1)
 					});
 				// 회전
 				UI->GetUITransform()->SetRotation(items[i].rotation * -90.f);

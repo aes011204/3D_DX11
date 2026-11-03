@@ -1,4 +1,4 @@
-#include "Bounding_Sphere.h"
+﻿#include "Bounding_Sphere.h"
 
 #include "Bounding_AABB.h"
 #include "Bounding_OBB.h"
@@ -8,11 +8,11 @@ CBounding_Sphere::CBounding_Sphere(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 {
 }
 
-HRESULT CBounding_Sphere::Initialize(BOUNDING_DESC* pDesc)
+HRESULT CBounding_Sphere::Initialize(BoundingDesc* pDesc)
 {
-	auto pBoundingDesc = static_cast<BOUNDING_SPHERE_DESC*>(pDesc);
-	m_pOriginalDesc = make_shared< BoundingSphere>(pBoundingDesc->vCenter, pBoundingDesc->fRadius);
-	m_pDesc = make_shared< BoundingSphere>(*m_pOriginalDesc);
+	auto pBoundingDesc = static_cast<BoundingSphereDesc*>(pDesc);
+	m_originalDesc = make_shared< BoundingSphere>(pBoundingDesc->center, pBoundingDesc->radius);
+	m_desc = make_shared< BoundingSphere>(*m_originalDesc);
 
 	return S_OK;
 }
@@ -20,7 +20,7 @@ HRESULT CBounding_Sphere::Initialize(BOUNDING_DESC* pDesc)
 void CBounding_Sphere::Update(_fmatrix WorldMatrix)
 {
 
-	m_pOriginalDesc->Transform(*m_pDesc, WorldMatrix);
+	m_originalDesc->Transform(*m_desc, WorldMatrix);
 
 }
 
@@ -32,20 +32,20 @@ _bool CBounding_Sphere::Intersect(shared_ptr<CBounding>  pTarget)
 	if(false ==strcmp("class Engine::CBounding_AABB", pName))
 	{
 		auto pAABB = dynamic_pointer_cast<CBounding_AABB>(pTarget);
-		isCollision = m_pDesc->Intersects(*pAABB->Get_Desc());
+		isCollision = m_desc->Intersects(*pAABB->Get_Desc());
 	
 	}
 	else if(false == strcmp("class Engine::CBounding_OBB", pName))
 	{
 		auto pOBB = dynamic_pointer_cast<CBounding_OBB>(pTarget);
-		isCollision = m_pDesc->Intersects(*pOBB->Get_Desc());
+		isCollision = m_desc->Intersects(*pOBB->Get_Desc());
 
 
 	}
 	else
 	{
 		auto pSphere = dynamic_pointer_cast<CBounding_Sphere>(pTarget);
-		isCollision = m_pDesc->Intersects(*pSphere->Get_Desc());
+		isCollision = m_desc->Intersects(*pSphere->Get_Desc());
 	}
 	return isCollision;
 }
@@ -54,14 +54,14 @@ _bool CBounding_Sphere::Intersect(shared_ptr<CBounding>  pTarget)
 HRESULT CBounding_Sphere::Render(PrimitiveBatch<VertexPositionColor>* pBatch, _fvector vColor)
 {
 
-	DX::Draw(pBatch, *m_pDesc, vColor);
+	DX::Draw(pBatch, *m_desc, vColor);
 	return S_OK;
 
 }
 #endif
 
 shared_ptr<CBounding_Sphere> CBounding_Sphere::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext,
-	BOUNDING_DESC* pDesc)
+	BoundingDesc* pDesc)
 {
 	shared_ptr<CBounding_Sphere> pInstance(new CBounding_Sphere(pDevice, pContext), [](CBounding_Sphere* p) {p->Free(); delete p; });
 

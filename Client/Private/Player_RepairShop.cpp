@@ -111,7 +111,7 @@ int CPlayer_RepairShop::Update_State(const _float& timeDelta)
 		}
 
 	}
-	else if (m_Input_Manager->MouseDown(DIMB::WHEEL))
+	else if (m_Input_Manager->MouseDown(EMouseButton::WHEEL))
 	{
 		Evt_MoveToStorage e = {};
 

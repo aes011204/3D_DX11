@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "UI.h"
 
 
@@ -15,18 +15,18 @@ public:
         Prograss,
     };
 
-    struct RENDERABLE_DESC : public CUI::UI_DESC
+    struct RenderableDesc : public CUI::UIDesc
     {
-        _uint TextureComLevel = {};
-        _wstring TextureProtoName = L"";
-        _uint TextureIndex = 0;
+        _uint textureComLevel = {};
+        _wstring textureProtoName = L"";
+        _uint textureIndex = 0;
 
         UIShaderType shaderType = UIShaderType::Default;
 
-        _float4 PxSliceLRTB = {};
-        bool bUseNineSlice = false;
-        bool IsTransparent = false;
-        bool bUseDark = true;
+        _float4 pxSliceLRTB = {};
+        bool useNineSlice = false;
+        bool isTransparent = false;
+        bool useDark = true;
     };
 protected:
     CUIRenderable(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -36,29 +36,29 @@ public:
 
 
 public:
-    _bool Get_IsDark() { return m_bUseDark; }
-    void Set_UseDark(_bool useDark) { m_bUseDark = useDark; }
-    void Set_Dark01(_float dark01) { m_Dark = dark01; }
+    _bool Get_IsDark() { return m_useDark; }
+    void Set_UseDark(_bool useDark) { m_useDark = useDark; }
+    void Set_Dark01(_float dark01) { m_dark = dark01; }
 
-    void Set_UseColorMix(_bool useColorMix) { m_bUseColorMix = useColorMix; }
-    void Set_ColorMix(_float4 color) { m_Color = color; }
+    void Set_UseColorMix(_bool useColorMix) { m_useColorMix = useColorMix; }
+    void Set_ColorMix(_float4 color) { m_color = color; }
 
-    void Set_Alpha(_float alpha) { m_Alpha = alpha; }
+    void Set_Alpha(_float alpha) { m_alpha = alpha; }
 
-    void Set_UseColorFlat(_bool useColorFlat) { m_bUseColorFlat = useColorFlat; }
-    void Set_ColorFlat(_float4 colorFlat) { m_ColorFlat = colorFlat; }
+    void Set_UseColorFlat(_bool useColorFlat) { m_useColorFlat = useColorFlat; }
+    void Set_ColorFlat(_float4 colorFlat) { m_colorFlat = colorFlat; }
 
-    void Set_Transparent(_bool isTransparent) { m_IsTransparent = isTransparent; }
-    _bool Get_Transparent() { return m_IsTransparent; }
+    void Set_Transparent(_bool isTransparent) { m_isTransparent = isTransparent; }
+    _bool Get_Transparent() { return m_isTransparent; }
 
     ////////////////////////
-    const _float4& Get_BaseColor() const { return m_BaseColor; }
-    void Set_BaseColor(const _float4& vBaseColor) { m_BaseColor = vBaseColor; }
-    const _float4& Get_ZoneColor() const { return m_ZoneColor; }
-    void Set_ZoneColor(const _float4& vZoneColor) { m_ZoneColor = vZoneColor; }
+    const _float4& Get_BaseColor() const { return m_baseColor; }
+    void Set_BaseColor(const _float4& vBaseColor) { m_baseColor = vBaseColor; }
+    const _float4& Get_ZoneColor() const { return m_zoneColor; }
+    void Set_ZoneColor(const _float4& vZoneColor) { m_zoneColor = vZoneColor; }
 
 
-    //¿Ã∞«
+    //Ïù¥Í±¥
     HRESULT Change_Texture(shared_ptr<CTexture> texture, _uint TexIndex = 0);
    
     HRESULT Set_TextureIndex(_uint index);
@@ -66,7 +66,7 @@ public:
 
 
 protected:
-    // ui¿« ª˝∏Ì¡÷±‚ ¡§√•ø° µ˚∂Û æÿ¡¯ ª˝∏Ì¡÷±‚ æ»ø°º≠ »£√‚ «‘
+    // uiÏùò ÏÉùÎ™ÖÏ£ºÍ∏∞ Ï†ïÏ±ÖÏóê Îî∞Îùº Ïï§ÏßÑ ÏÉùÎ™ÖÏ£ºÍ∏∞ ÏïàÏóêÏÑú Ìò∏Ï∂ú Ìï®
     HRESULT OnInit(void* pArg)override;
     void OnActive()override;
     void OnInActive()override;
@@ -90,44 +90,44 @@ protected:
 
 protected:
 
-    _uint m_PassIndex = { 0 };
+    _uint m_passIndex = { 0 };
 
 private:
 
-    UIShaderType m_ShaderType = UIShaderType::Default;
+    UIShaderType m_shaderType = UIShaderType::Default;
 
     // Default 
-    bool m_bUseDark = true;
-    float m_Dark = {}; //0~1
+    bool m_useDark = true;
+    float m_dark = {}; //0~1
 
-    bool m_bUseColorMix = true;
-    bool m_bUseColorFlat = true;
-    _float4 m_Color = {}; //0~11
-    _float4 m_ColorFlat = {};
+    bool m_useColorMix = true;
+    bool m_useColorFlat = true;
+    _float4 m_color = {}; //0~11
+    _float4 m_colorFlat = {};
 
     //Radial
-    bool m_bUseRadial = false;
-    _float4 m_BaseColor = {};
-    _float4 m_ZoneColor = {};
+    bool m_useRadial = false;
+    _float4 m_baseColor = {};
+    _float4 m_zoneColor = {};
 
 	//
 
-    bool m_IsTransparent = { false }; // ∑ª¥ı ¿Øπ´
+    bool m_isTransparent = { false }; // Î†åÎçî Ïú†Î¨¥
 
-    bool m_bUseNineSlice = false;
-    NINESLICE_DESC m_SliceDesc = {};
+    bool m_useNineSlice = false;
+    NineSliceDesc m_sliceDesc = {};
 
-    // ∞¯≈Î
-    _float m_Alpha = 1.f;
+    // Í≥µÌÜµ
+    _float m_alpha = 1.f;
 
-    _uint m_TexProtoLevel = {};
-    _wstring m_TexProtoName = L"";
-    _uint m_TexIndex = 0;
+    _uint m_texProtoLevel = {};
+    _wstring m_texProtoName = L"";
+    _uint m_texIndex = 0;
 
 
-    shared_ptr<class CShader> m_pShaderCom = { nullptr };
-    shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
-    shared_ptr<class CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<class CShader> m_shaderCom = { nullptr };
+    shared_ptr<class CVIBuffer> m_VIBufferCom = { nullptr };
+    shared_ptr<class CTexture> m_textureCom = { nullptr };
 
 public:
     static shared_ptr<CUIRenderable> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

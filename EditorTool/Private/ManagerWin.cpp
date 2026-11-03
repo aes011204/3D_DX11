@@ -1,4 +1,4 @@
-#include "ManagerWin.h"
+ï»¿#include "ManagerWin.h"
 #include "EditorInstance.h"
 #include "GameInstance.h"
 #include "Engine_Helper.h"
@@ -20,9 +20,9 @@ HRESULT CManagerWin::Initialize()
 {
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtTerrainPicking>([this](const EvtTerrainPicking& p)
-		{   this-> m_PickMode = true;
-			m_iSelectedLevel = p.iLevel;
-			m_strSelectedTag = p.Tag;
+		{   this-> m_isPickMode = true;
+			m_selectedLevel = p.level;
+			m_selectedTag = p.tag;
 		
 		});
 
@@ -144,7 +144,7 @@ void CManagerWin::Render()
 
 	//		}
 
-	//		// ¸¸ÀÏ ¸¶¿ì½º Å¬¸¯À»ÇÏ¸é ³¡
+	//		// ë§Œì¼ ë§ˆìš°ìŠ¤ í´ë¦­ì„í•˜ë©´ ë
 	//		if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON))
 	//		{
 
@@ -159,34 +159,34 @@ void CManagerWin::Render()
 	//		m_pPreview = nullptr;
 	//	}
 	//}
-	if (m_PickMode == true)
+	if (m_isPickMode == true)
 	{
 		_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
 
-		if (m_pPreview == nullptr)
+		if (m_preview == nullptr)
 		{
-			m_pPreview = CGameInstance::GetInstance()->Add_GameObject(
-				m_iSelectedLevel,
-				m_strSelectedTag,
+			m_preview = CGameInstance::GetInstance()->Add_GameObject(
+				m_selectedLevel,
+				m_selectedTag,
 				iCurrentLevel,
 				L"Static"
 			);
 
-			if (m_PickMode == true)
+			if (m_isPickMode == true)
 			{
 				_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
 
 				CGameInstance::GetInstance()->Add_GameObject(
-					m_iSelectedLevel,
-					m_strSelectedTag,
+					m_selectedLevel,
+					m_selectedTag,
 					iCurrentLevel,
 					L"Static"
 				);
 
-				m_PickMode = false;
+				m_isPickMode = false;
 			}
 
-			m_pPreview = nullptr;
+			m_preview = nullptr;
 		}
 	}
 	ImGui::End();

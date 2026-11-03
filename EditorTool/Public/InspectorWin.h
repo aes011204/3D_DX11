@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Editor_Win.h"
 
 NS_BEGIN(Engine)
@@ -29,9 +29,9 @@ private:
     void RenderEntity(const shared_ptr<Engine::CEntity>& obj);
 
 private:
-    bool     m_EditingName = false;
-    char     m_NameBuf[256] = {};
-    uint64_t m_LastSelectedId = 0;
+    bool     m_isEditingName = false;
+    char     m_nameBuf[256] = {};
+    uint64_t m_lastSelectedId = 0;
 public:
     static shared_ptr<CInspectorWin> Create();
     void Free() override;

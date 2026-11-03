@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "Entity.h"
 #include "UITransform.h"
-// ui ±× ÀÚÃ¼·Îµµ »ı¼º X
-//Å¬¶ó¿¡¼­ »ı¼ºÇÒ¿ëµµÀÇ ¹öÆ° ÀÌ¹ÌÁö µîÀº ÀÌ Å¬·¡½º¸¦ »ó¼Ó ¹Ş¾Æ ¿£Áø¿¡ ¸¸µé¿¹Á¤
-// Æ¯º°ÇÑ °æ¿ì¸¸ ÇÁ·ÎÅä Å¸ÀÔÀ» ÀÌ¿ë ÇÒ°ÍÀÓ- º¸ÅëÀº ¾È¾²°í Å¬¶óÆĞ³Î¿¡¼­ µ¥ÀÌÅÍ¸¦ ÀÌ¿ëÇØ ¼ÂÆÃ
-// Å¬¶ó¿¡¼­ »ó¼Ó ¹ŞÀ» ÀÏ ¾÷À½ Å¬¶ó´Â Á¶¸³¸¸ / ÆĞ³ÎÀ» ÀÌ¿ëÇÑ »ó¼ÓÀº O
+// ui ê·¸ ìì²´ë¡œë„ ìƒì„± X
+//í´ë¼ì—ì„œ ìƒì„±í• ìš©ë„ì˜ ë²„íŠ¼ ì´ë¯¸ì§€ ë“±ì€ ì´ í´ë˜ìŠ¤ë¥¼ ìƒì† ë°›ì•„ ì—”ì§„ì— ë§Œë“¤ì˜ˆì •
+// íŠ¹ë³„í•œ ê²½ìš°ë§Œ í”„ë¡œí†  íƒ€ì…ì„ ì´ìš© í• ê²ƒì„- ë³´í†µì€ ì•ˆì“°ê³  í´ë¼íŒ¨ë„ì—ì„œ ë°ì´í„°ë¥¼ ì´ìš©í•´ ì…‹íŒ…
+// í´ë¼ì—ì„œ ìƒì† ë°›ì„ ì¼ ì—…ìŒ í´ë¼ëŠ” ì¡°ë¦½ë§Œ / íŒ¨ë„ì„ ì´ìš©í•œ ìƒì†ì€ O
 
 NS_BEGIN(Engine)
 
@@ -14,10 +14,10 @@ class ENGINE_DLL CUI abstract :
     public CEntity
 {
 public:
-        struct UI_DESC : public CUITransform::UITRANSFORM_DESC
+        struct UIDesc : public CUITransform::UITransformDesc
     {
             _uint ZOrder = {1};
-            _bool NoDISTACH = false;
+            _bool isNoDetach = false;
     };
 protected:
     CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -26,7 +26,7 @@ public:
     virtual ~CUI() = default;
 
 public:
-    // ÀÌ°Ç ÀÚ½Ä¿¡¼­ ±¸Çö X
+    // ì´ê±´ ìì‹ì—ì„œ êµ¬í˜„ X
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(void* pArg);
     //virtual void Priority_Update(_float fTimeDelta);
@@ -35,83 +35,83 @@ public:
     virtual HRESULT Render();
     void Prepare_Render();
 
-    virtual void UI_Active(); //  UI È°¼ºÈ°½Ã È£ÃâµÇ´Â ÇÔ¼ö//
-    void UI_InActive(); // UI ºñÈ°¼ºÈ°½Ã È£ÃâµÇ´Â ÇÔ¼ö//
-    void Set_UI_Disabled(bool isChangeEvent); // Å¬¸¯Àº °¡´ÉÇÏ°í ±Ù´ë È°¼ºÈ¯¤¤ ¾ÈµÈ»óÅÂ // UI °¡º¸ÀÌ´Âµ¥ Å¬¸¯Àº ¾ÈµÇ´Â°Å 
+    virtual void UI_Active(); //  UI í™œì„±í™œì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜//
+    void UI_InActive(); // UI ë¹„í™œì„±í™œì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜//
+    void Set_UI_Disabled(bool isChangeEvent); // í´ë¦­ì€ ê°€ëŠ¥í•˜ê³  ê·¼ëŒ€ í™œì„±í™˜ã„´ ì•ˆëœìƒíƒœ // UI ê°€ë³´ì´ëŠ”ë° í´ë¦­ì€ ì•ˆë˜ëŠ”ê±° 
 
     void UI_Clear();
 
     HRESULT Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect);
 
-    HRESULT Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, D3DTS eTransformState);
+    HRESULT Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, ED3DTS eTransformState);
 
     void Set_Zorder(_uint Z);
 
     weak_ptr<CUI> Find_Children(_wstring strTag);
     const map<_wstring, weak_ptr<CUI>>& Get_mapChildren() const { return m_mapChildren; }
 
-    _bool Get_NO_DETACH() { return m_NO_DESTACH; }
+    _bool Get_NO_DETACH() { return m_noDetach; }
 
-    void Set_Interactive(_bool b) { m_bInteractable = b; }
+    void Set_Interactive(_bool b) { m_isInteractable = b; }
 
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 
-    UI_STATE Get_UIState() { return m_UIState; }
-    void Set_ActiveForCustom() { m_UIState = UI_STATE::ACTIVE; m_bEnabled = true; m_bVisible = true; }; // Æ¯ÀÌÇÑ °æ¿ì¸¸ ¾²±â Ä¿½ºÅÒUI_Active();¸¸µé‹š¸¸ 
+    EUIState Get_UIState() { return m_UIState; }
+    void Set_ActiveForCustom() { m_UIState = EUIState::ACTIVE; m_isEnabled = true; m_isVisible = true; }; // íŠ¹ì´í•œ ê²½ìš°ë§Œ ì“°ê¸° ì»¤ìŠ¤í…€UI_Active();ë§Œë“¤ë–„ë§Œ 
 /// <IMGUI>
-    const vector<shared_ptr<CUI>>& GetChildren() const { return m_Children; }
+    const vector<shared_ptr<CUI>>& GetChildren() const { return m_children; }
     void OnGui() override;
 /// </IMGUI>
 
 protected:
-    // uiÀÇ »ı¸íÁÖ±â Á¤Ã¥¿¡ µû¶ó ¾ØÁø »ı¸íÁÖ±â ¾È¿¡¼­ È£Ãâ ÇÔ
-    virtual HRESULT OnInit(void* pArg) { return S_OK; }; // »ı¼º µÉ‹š
-    virtual void OnActive() {}; // ºÒ·¯ ¿Ã‹š¸¶´Ù ÇØ¾ßÇÏ´Â ÀÏ ¿©±â¼­ (Á¤º¸ »õ·Î ¼ÂÆÃ µî) 
-    virtual void OnInActive() {}; // ºñÈ° µÉ‹š 
-    virtual void OnDisabled() {}; //Å¬¸¯Àº °¡´ÉÇÏ°í ±Ù´ë È°¼ºÈ¯¤¤ ¾ÈµÈ»óÅÂ           // º¸ÀÌ´Âµ¥ Å¬¸¯ ¾ÈµÇ´Â°Å //µ· ¾øÀ»‹š //  ÀÌ°Å´Â ½½¶ù¿¡ ³ÖÀÚ
+    // uiì˜ ìƒëª…ì£¼ê¸° ì •ì±…ì— ë”°ë¼ ì•¤ì§„ ìƒëª…ì£¼ê¸° ì•ˆì—ì„œ í˜¸ì¶œ í•¨
+    virtual HRESULT OnInit(void* pArg) { return S_OK; }; // ìƒì„± ë ë–„
+    virtual void OnActive() {}; // ë¶ˆëŸ¬ ì˜¬ë–„ë§ˆë‹¤ í•´ì•¼í•˜ëŠ” ì¼ ì—¬ê¸°ì„œ (ì •ë³´ ìƒˆë¡œ ì…‹íŒ… ë“±) 
+    virtual void OnInActive() {}; // ë¹„í™œ ë ë–„ 
+    virtual void OnDisabled() {}; //í´ë¦­ì€ ê°€ëŠ¥í•˜ê³  ê·¼ëŒ€ í™œì„±í™˜ã„´ ì•ˆëœìƒíƒœ           // ë³´ì´ëŠ”ë° í´ë¦­ ì•ˆë˜ëŠ”ê±° //ëˆ ì—†ì„ë–„ //  ì´ê±°ëŠ” ìŠ¬ëì— ë„£ì
     virtual void OnUpdate(const _float& timeDelta) {};
     virtual void OnLateUpdate() {};
     virtual void OnPrepareRender() {};
     virtual HRESULT OnRender() { return S_OK; };
-    virtual void OnClear() {}; // ÀÌ°Ç Á×À»¶§ ½ÇÇàµÇ´Â°Å
+    virtual void OnClear() {}; // ì´ê±´ ì£½ì„ë•Œ ì‹¤í–‰ë˜ëŠ”ê±°
 
     virtual HRESULT Bind_ShaderResources() { return S_OK; };
 
 
-    _bool m_bRenderReady = true;
+    _bool m_isRenderReady = true;
 public:
-    bool IsLayoutTarget() { return m_bLayoutTarget; }
-    void Set_LayoutTarget(_bool layoutTarget) { m_bLayoutTarget = layoutTarget; }
-    class shared_ptr<CUITransform> GetUITransform() { return m_pUITransformCom; }
+    bool IsLayoutTarget() { return m_isLayoutTarget; }
+    void Set_LayoutTarget(_bool layoutTarget) { m_isLayoutTarget = layoutTarget; }
+    class shared_ptr<CUITransform> GetUITransform() { return m_UITransformCom; }
 
-    vector<shared_ptr<class IModifier>> m_behavior; // ÀÎÅÍÆäÀÌ½º Å¬·¡½º
+    vector<shared_ptr<class IModifier>> m_behavior; // ì¸í„°í˜ì´ìŠ¤ í´ë˜ìŠ¤
 protected:
-    vector<shared_ptr<CUI>> m_Children = {};
-    weak_ptr<CUI> m_Parent = {  };
+    vector<shared_ptr<CUI>> m_children = {};
+    weak_ptr<CUI> m_parent = {  };
 
-    class shared_ptr<CUITransform> m_pUITransformCom = {nullptr};
-    _float4x4					m_TransformationMatrices[ETOI(D3DTS::END)];
-    bool m_bIsDirty_Zorder = { false };
+    class shared_ptr<CUITransform> m_UITransformCom = {nullptr};
+    _float4x4					m_transformationMatrices[ETOI(ED3DTS::END)];
+    bool m_isDirtyZOrder = { false };
 
-    // °Ë»ö¿ë
+    // ê²€ìƒ‰ìš©
     map<_wstring, weak_ptr<CUI>> m_mapChildren = {};
-protected: //ÀÓ½Ã privateÀ¸·Î µé¾î°¥°ÅÀÓ
-    int m_ZOrder = { 1 };
+protected: //ì„ì‹œ privateìœ¼ë¡œ ë“¤ì–´ê°ˆê±°ì„
+    int m_zOrder = { 1 };
 private:
-    UI_STATE m_UIState = { UI_STATE::END };
+    EUIState m_UIState = { EUIState::END };
 
-    bool m_bLayoutTarget = { false };
+    bool m_isLayoutTarget = { false };
 
-    bool m_bInitialized = { false };
-    bool m_bEnabled = { true }; // ¡°À§¿¡ ´Ù¸¥ ÆË¾÷ÀÌ ¶°¼­ ¾Æ·¡ UI°¡ Á¶±İ º¸ÀÌ±ä ÇÏÁö¸¸ update´Â ¾ÈÇÏ´Â »óÅÂ¡±
-    bool m_bVisible = { true }; // ·»´õ ¿©ºÎ
+    bool m_isInitialized = { false };
+    bool m_isEnabled = { true }; // â€œìœ„ì— ë‹¤ë¥¸ íŒì—…ì´ ë– ì„œ ì•„ë˜ UIê°€ ì¡°ê¸ˆ ë³´ì´ê¸´ í•˜ì§€ë§Œ updateëŠ” ì•ˆí•˜ëŠ” ìƒíƒœâ€
+    bool m_isVisible = { true }; // ë Œë” ì—¬ë¶€
 
-    bool m_NO_DESTACH = { false };
+    bool m_noDetach = { false };
 protected:
 
-    bool m_bHovered = { false };
-    bool m_bInteractable = { true };
+    bool m_isHovered = { false };
+    bool m_isInteractable = { true };
 public:
     //static shared_ptr<CUI> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
    // virtual shared_ptr<CUI> Clone(void* pArg);

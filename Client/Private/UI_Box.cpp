@@ -48,14 +48,14 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 	{
 		m_Name_Text->Set_Text(L"내 물품 보관함");
 		m_Storage->UI_Active();
-		m_pUITransformCom->SetLocalScale(_float2(2.56f, 3.21f));
+		m_UITransformCom->SetLocalScale(_float2(2.56f, 3.21f));
 	}
 	else
 	{
 		m_Name_Text->Set_Text(L"발견한 아이템");
 		m_Box->UI_Active();
 		m_Box->Get_InvenPanel()->Set_Transparent(true);
-		m_pUITransformCom->SetLocalScale(_float2(2.56f, 1.7f));
+		m_UITransformCom->SetLocalScale(_float2(2.56f, 1.7f));
 
 	}
 
@@ -72,10 +72,10 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 
 	Set_ActiveForCustom();
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 
 	//m_bInteractable = true;
 
@@ -96,10 +96,10 @@ HRESULT CUI_Box::OnInit(void* pArg)
 	HRESULT hr = E_FAIL;
 	BOX_DESC* BoxDesc = static_cast<BOX_DESC*>(pArg);
 	//TABCONTAINER_DESC pDesc = {};
-	BoxDesc->IsFullScreen = false;
-	BoxDesc->IsTransparent = false;
-	BoxDesc->TextureComLevel = ETOI(LEVEL::STATIC);
-	BoxDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
+	BoxDesc->isFullScreen = false;
+	BoxDesc->isTransparent = false;
+	BoxDesc->textureComLevel = ETOI(LEVEL::STATIC);
+	BoxDesc->textureProtoName = L"Prototype_Component_Texture_TabContainer";
 	//BoxDesc->IsUseLayout = true;
 	//pDesc.vAnchorPoint = 일단 패스
 	//	pDesc.vPivot
@@ -108,18 +108,18 @@ HRESULT CUI_Box::OnInit(void* pArg)
 	hr = CUIPanel::OnInit(BoxDesc);
 
 
-	CUIImage::UIIMAGE_DESC nameBaseDesc = {};
-	nameBaseDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	nameBaseDesc.TextureProtoName = L"Prototype_Component_Texture_TitleBackground";
-	shared_ptr<CUIImage> NameBase = CUIImage::Create(m_pDevice, m_pContext);
+	CUIImage::UIImageDesc nameBaseDesc = {};
+	nameBaseDesc.textureComLevel = ETOI(LEVEL::STATIC);
+	nameBaseDesc.textureProtoName = L"Prototype_Component_Texture_TitleBackground";
+	shared_ptr<CUIImage> NameBase = CUIImage::Create(m_device, m_context);
 	NameBase->Initialize(&nameBaseDesc);
 	Add_Child(NameBase, L"NameBase", false);
 	m_NameBase = NameBase;
 	{
-		CUIText::TEXT_DESC nameDesc = {};
-		nameDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-		nameDesc.strText = L"내 물품 보관함";
-		shared_ptr<CUIText> Name_Text = CUIText::Create(m_pDevice, m_pContext);
+		CUIText::TextDesc nameDesc = {};
+		nameDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+		nameDesc.text = L"내 물품 보관함";
+		shared_ptr<CUIText> Name_Text = CUIText::Create(m_device, m_context);
 		Name_Text->Initialize(&nameDesc);
 
 		NameBase->Add_Child(Name_Text, L"Name_Text", false);
@@ -132,12 +132,12 @@ HRESULT CUI_Box::OnInit(void* pArg)
 
 		// 인벤
 		CUI_Storage::STORAGE_DESC StorageDesc = {};
-		StorageDesc.IsFullScreen = false;
-		StorageDesc.IsTransparent = true;
-		StorageDesc.bSetParentSize = true;
+		StorageDesc.isFullScreen = false;
+		StorageDesc.isTransparent = true;
+		StorageDesc.isSetParentSize = true;
 		StorageDesc.Inventype = EInvenType::STORAGE;
 
-		shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
+		shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_device, m_context);
 		pStorage->Initialize(&StorageDesc);
 
 
@@ -150,12 +150,12 @@ HRESULT CUI_Box::OnInit(void* pArg)
 
 		// 인벤
 		CUI_Storage::STORAGE_DESC boxDesc = {};
-		boxDesc.IsFullScreen = false;
-		boxDesc.IsTransparent = true;
-		boxDesc.bSetParentSize = true;
+		boxDesc.isFullScreen = false;
+		boxDesc.isTransparent = true;
+		boxDesc.isSetParentSize = true;
 		boxDesc.Inventype = EInvenType::CHEST;
 	
-		shared_ptr<CUI_Storage> pBox = CUI_Storage::Create(m_pDevice, m_pContext);
+		shared_ptr<CUI_Storage> pBox = CUI_Storage::Create(m_device, m_context);
 		pBox->Initialize(&boxDesc);
 
 
@@ -175,7 +175,7 @@ void CUI_Box::OnActive()
 	GetUITransform()->SetAnchoredPos(Vector2{- GetUITransform()->Get_FinalSize().x, 0.f });
 	m_vecAni = Vector2{ -1200.f, 0.f };
 	m_bStart = true;
-	m_fDuration = 1.5f;
+	m_duration = 1.5f;
 
 	CUIPanel::OnActive();
 }
@@ -201,7 +201,7 @@ void CUI_Box::OnUpdate(const _float& timeDelta)
 	{
 		m_TimeAcc += timeDelta;
 
-		float t = m_TimeAcc / m_fDuration;
+		float t = m_TimeAcc / m_duration;
 
 		if (t >= 1.f) t = 1.f;
 

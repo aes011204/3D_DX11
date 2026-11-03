@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
 
@@ -18,7 +18,7 @@ public:
     
 
 public:
-    struct SEA_DESC final : public CGameObject::GAMEOBJECT_DESC
+    struct SEA_DESC final : public CGameObject::GameObjectDesc
     {
 
     };
@@ -43,10 +43,10 @@ protected:
     HRESULT Ready_Components();
     HRESULT Bind_ShaderResources();
 private:
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CVIBuffer> m_pVIBufferCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
+    shared_ptr<CVIBuffer> m_VIBufferCom = { nullptr };
     shared_ptr<CVIBuffer_Sea> m_pVIBufferComCashing = { nullptr };
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
 
     shared_ptr<class CSky_Controller> m_SkyContrl = { nullptr };
    weak_ptr<class CSea_Manager> m_SeaManager = {};

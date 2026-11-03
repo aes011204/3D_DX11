@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
@@ -37,10 +37,10 @@ private:
 
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CVIBuffer_Particle_Rect> m_pVIBufferCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
+    shared_ptr<CVIBuffer_Particle_Rect> m_VIBufferCom = { nullptr };
    
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
   
 
 public:

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 #include "UIPanel.h"
@@ -8,7 +8,7 @@ class CUI_Skill final :
     public CUIPanel
 {
 public:
-    struct SKILL_DESC : public CUIPanel::UIPANEL_DESC
+    struct SKILL_DESC : public CUIPanel::UIPanelDesc
     {
     };
 protected:

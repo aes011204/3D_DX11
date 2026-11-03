@@ -1,4 +1,4 @@
-#include "Selection.h"
+ï»¿#include "Selection.h"
 #include "Entity.h"
 #include "EventBus.h"
 #include "EditorInstance.h"
@@ -8,7 +8,7 @@
 
 
 CSelection::CSelection()
-    : m_Type(ESelectType::NONE)
+    : m_type(ESelectType::NONE)
 {
 }
 
@@ -20,10 +20,10 @@ HRESULT CSelection::Initialize()
 {
     if (CGameInstance::GetInstance()->Get_EventBus() == nullptr)
         return E_FAIL;
-    // ¿©±â¼­ º»ÀÎÀÌ Á÷Á¢ ±¸µ¶ÇÕ´Ï´Ù.
+    // ì—¬ê¸°ì„œ ë³¸ì¸ì´ ì§ì ‘ êµ¬ë…í•©ë‹ˆë‹¤.
     CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtSelectEntity>([this](const EvtSelectEntity& e)
         {
-            this->SetEntity(e.Entity);
+            this->SetEntity(e.entity);
         });
 
     CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtClearSelection>([this](const EvtClearSelection& e)
@@ -40,7 +40,7 @@ shared_ptr<CSelection> CSelection::Create()
         MSG_BOX("failed to create :CSelection");
         return nullptr;
     }
-    // ³ªÁß¿¡ ÀÌº¥Æ® ¹ö½º Subscribe °°Àº °Å ºÙÀÌ±â ÁÁÀ½
+    // ë‚˜ì¤‘ì— ì´ë²¤íŠ¸ ë²„ìŠ¤ Subscribe ê°™ì€ ê±° ë¶™ì´ê¸° ì¢‹ìŒ
 
     return pInstance;
 }
@@ -52,8 +52,8 @@ void CSelection::Free()
 
 void CSelection::Clear()
 {
-    m_Type = ESelectType::NONE;
-    m_Entity.reset();
+    m_type = ESelectType::NONE;
+    m_entity.reset();
 }
 
 void CSelection::SetEntity(const std::shared_ptr<Engine::CEntity>& entity)
@@ -64,15 +64,15 @@ void CSelection::SetEntity(const std::shared_ptr<Engine::CEntity>& entity)
         return;
     }
 
-    m_Type = ESelectType::ENTITY;
-    m_Entity = entity;
+    m_type = ESelectType::ENTITY;
+    m_entity = entity;
 }
 
 std::shared_ptr<Engine::CEntity> CSelection::GetEntity() const
 {
-    if (m_Type != ESelectType::ENTITY)
+    if (m_type != ESelectType::ENTITY)
         return nullptr;
 
-    return m_Entity.lock();
+    return m_entity.lock();
 }
 

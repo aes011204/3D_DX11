@@ -1,4 +1,4 @@
-#include "Assimp_Bone.h"
+ï»¿#include "Assimp_Bone.h"
 
 CAssimp_Bone::CAssimp_Bone()
 {
@@ -6,36 +6,36 @@ CAssimp_Bone::CAssimp_Bone()
 
 HRESULT CAssimp_Bone::Initialize(const aiNode* pAINode, _int iParentBoneIndex)
 {
-    strcpy_s(m_szName, pAINode->mName.data);
+    strcpy_s(m_name, pAINode->mName.data);
 
-    m_iParentBoneIndex = iParentBoneIndex;
+    m_parentBoneIndex = iParentBoneIndex;
 
-    memcpy(&m_TransformationMatrix, &pAINode->mTransformation, sizeof(_float4x4));
-    XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
-    // ÀüÄ¡ ÇÊ¼ö
+    memcpy(&m_transformationMatrix, &pAINode->mTransformation, sizeof(_float4x4));
+    XMStoreFloat4x4(&m_transformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_transformationMatrix)));
+    // ì „ì¹˜ í•„ìˆ˜
 
-    XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&m_combinedTransformationMatrix, XMMatrixIdentity());
 
     return S_OK;
 }
 
 void CAssimp_Bone::Update_CombinedTransformMatrix(const vector<shared_ptr<CAssimp_Bone>> Bones, _fmatrix PreTransformMatrix)
 {
-    if(-1 == m_iParentBoneIndex)
+    if(-1 == m_parentBoneIndex)
     {
-        XMStoreFloat4x4(&m_CombinedTransformationMatrix,
-            XMLoadFloat4x4(&m_TransformationMatrix) * PreTransformMatrix);
+        XMStoreFloat4x4(&m_combinedTransformationMatrix,
+            XMLoadFloat4x4(&m_transformationMatrix) * PreTransformMatrix);
     }
     else
     {
-        XMStoreFloat4x4(&m_CombinedTransformationMatrix,
-            XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&Bones[m_iParentBoneIndex]->m_CombinedTransformationMatrix));
+        XMStoreFloat4x4(&m_combinedTransformationMatrix,
+            XMLoadFloat4x4(&m_transformationMatrix) * XMLoadFloat4x4(&Bones[m_parentBoneIndex]->m_combinedTransformationMatrix));
     }
 }
 
 void CAssimp_Bone::Update_TransformationMatrix(_fmatrix TransformMatrix)
 {
-    XMStoreFloat4x4(&m_TransformationMatrix, TransformMatrix);
+    XMStoreFloat4x4(&m_transformationMatrix, TransformMatrix);
 }
 
 

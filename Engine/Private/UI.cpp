@@ -1,4 +1,4 @@
-#include "UI.h"
+ï»¿#include "UI.h"
 
 #include "DInput_Manager.h"
 #include "GameInstance.h"
@@ -13,8 +13,8 @@ CUI::CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 
 CUI::CUI(const CUI& prototype)
 	: CEntity(prototype),
-	m_ZOrder(prototype.m_ZOrder),
-	m_bLayoutTarget(prototype.m_bLayoutTarget)
+	m_zOrder(prototype.m_zOrder),
+	m_isLayoutTarget(prototype.m_isLayoutTarget)
 {
 }
 
@@ -24,33 +24,33 @@ HRESULT CUI::Initialize_Prototype()
 
 }
 
-// UI´Â ÇÁ·ÎÅä Å¸ÀÔÀ¸·Î ¾Æ´Ï¼È¶óÀÌ ÇÁ·ÎÅäÅ¸ÀÔÀ¸·Î È£ÃâÇÏ°í Á÷Á¢Initalize ÇÏ´Ï±î 
+// UIëŠ” í”„ë¡œí†  íƒ€ì…ìœ¼ë¡œ ì•„ë‹ˆì…œë¼ì´ í”„ë¡œí† íƒ€ì…ìœ¼ë¡œ í˜¸ì¶œí•˜ê³  ì§ì ‘Initalize í•˜ë‹ˆê¹Œ 
 HRESULT CUI::Initialize(void* pArg)
 {
 
-	UI_DESC* pDesc = static_cast<UI_DESC*>(pArg);
+	UIDesc* pDesc = static_cast<UIDesc*>(pArg);
 
 	Set_Zorder(pDesc->ZOrder);
-	m_NO_DESTACH = pDesc->NoDISTACH;
+	m_noDetach = pDesc->isNoDetach;
 
-	if (m_bInitialized == true)
+	if (m_isInitialized == true)
 		return S_OK;
 
 	SetDefaultNameFromThisType();
 
 	{
-		m_pUITransformCom = CUITransform::Create(m_pDevice, m_pContext);
-		if (nullptr == m_pUITransformCom)
+		m_UITransformCom = CUITransform::Create(m_device, m_context);
+		if (nullptr == m_UITransformCom)
 			return E_FAIL;
 
-		if (FAILED(m_pUITransformCom->Initialize(pArg)))
+		if (FAILED(m_UITransformCom->Initialize(pArg)))
 			return E_FAIL;
 
-		m_pUITransformCom->SetDefaultNameFromThisType();
+		m_UITransformCom->SetDefaultNameFromThisType();
 
 		if (nullptr == Get_Component(g_strUITransformTag))
 		{
-			m_Components.emplace(g_strUITransformTag, m_pUITransformCom);
+			m_components.emplace(g_strUITransformTag, m_UITransformCom);
 
 		}
 	}
@@ -59,20 +59,20 @@ HRESULT CUI::Initialize(void* pArg)
 	OnInit(pArg);
 
 
-	// ÃÖÇÏÀ§fianl ÀÚ½ÄÀÇ OnInit È£Ãâ -> 
-	// ÀÚ½ÅÀÇ ºÎ¸ğ°¡ UIÀÌ¸é __super::OnInit ¾ÈÇØµµµÊ (ÇØµµ µÊ {}ÀÌ°ÅÀÓ)
-	// ¾Æ´Ñ°æ¿ì´Â ÇØÁà¾ßÇÔ 
+	// ìµœí•˜ìœ„fianl ìì‹ì˜ OnInit í˜¸ì¶œ -> 
+	// ìì‹ ì˜ ë¶€ëª¨ê°€ UIì´ë©´ __super::OnInit ì•ˆí•´ë„ë¨ (í•´ë„ ë¨ {}ì´ê±°ì„)
+	// ì•„ë‹Œê²½ìš°ëŠ” í•´ì¤˜ì•¼í•¨ 
 
 	//for (auto& it : m_Children)
 	//{
-	//	it->Initialize(pArg); // ÀÌ°Å ¤¡¤º?? ÀÌ¹Ì ÀÚ½ÄÀ» ¹Û¿¡¼­ ¸¸µé¾î¼­ ÀÌ´Ï¼È¶óÀÌÁî ´ÙÇÏ°í ¿©±â ºÙÈ÷´Â°Å ¾Æ´Ñ°¡?
-	//}// ¸¶Áò Áö±İ 2¹øµ¼ ±Ùµ¥ ÀÌ´Ï¼È¶óÀÌÁî ¾È¿¡¼­ ¹æ¾î ÇØ‡JÀ½
+	//	it->Initialize(pArg); // ì´ê±° ã„±ã…Š?? ì´ë¯¸ ìì‹ì„ ë°–ì—ì„œ ë§Œë“¤ì–´ì„œ ì´ë‹ˆì…œë¼ì´ì¦ˆ ë‹¤í•˜ê³  ì—¬ê¸° ë¶™íˆëŠ”ê±° ì•„ë‹Œê°€?
+	//}// ë§ˆì¦˜ ì§€ê¸ˆ 2ë²ˆë” ê·¼ë° ì´ë‹ˆì…œë¼ì´ì¦ˆ ì•ˆì—ì„œ ë°©ì–´ í•´ë†§ìŒ
 
 
-	//// ÀÏ´Ü ÃÊ±âÈ­ -> CUi·Î ¿Ã¸² 
+	//// ì¼ë‹¨ ì´ˆê¸°í™” -> CUië¡œ ì˜¬ë¦¼ 
 	//_float2 orignSize = m_pTextureCom->Get_SizeFromSRV(0);
 	//m_SliceDesc.TexSize = orignSize;
-	//m_SliceDesc.UISize = _float2(1.f, 1.f);// ¾îÂ¥ÇÇ Æ®·»½ºÆûÀÌ Á¤ÇÔ ÃÖÁ¾ ui »çÀÌÁî
+	//m_SliceDesc.UISize = _float2(1.f, 1.f);// ì–´ì§œí”¼ íŠ¸ë ŒìŠ¤í¼ì´ ì •í•¨ ìµœì¢… ui ì‚¬ì´ì¦ˆ
 	//m_SliceDesc.PxSliceLRTB = _float4(orignSize.x / 3.f, orignSize.x / 3.f, orignSize.y / 3.f, orignSize.y / 3.f);
 
 
@@ -84,16 +84,16 @@ HRESULT CUI::Initialize(void* pArg)
 
 	//m_bUseNineSlice = pDesc->bUseNineSlice;
 
-	//// Çà·Ä  //////////////////////////////////////
+	//// í–‰ë ¬  //////////////////////////////////////
 	D3D11_VIEWPORT ViewPortDesc{};
 	_uint iNumViewPort = { 1 };
-	m_pContext->RSGetViewports(&iNumViewPort, &ViewPortDesc);
+	m_context->RSGetViewports(&iNumViewPort, &ViewPortDesc);
 
 	float ViewportWidth = ViewPortDesc.Width;
 	float ViewportHeight = ViewPortDesc.Height;
 
-	XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::VIEW)], XMMatrixIdentity());
-	XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::PROJ)], XMMatrixOrthographicOffCenterLH(0.f, ViewportWidth,
+	XMStoreFloat4x4(&m_transformationMatrices[ETOI(ED3DTS::VIEW)], XMMatrixIdentity());
+	XMStoreFloat4x4(&m_transformationMatrices[ETOI(ED3DTS::PROJ)], XMMatrixOrthographicOffCenterLH(0.f, ViewportWidth,
 		0.f, ViewportHeight,
 		0.f, 1.f));
 
@@ -102,26 +102,26 @@ HRESULT CUI::Initialize(void* pArg)
 	//XMMatrixOrthographicOffCenterLH(
 	//	0.f,              // Left
 	//	ViewportWidth,    // Right
-	//	ViewportHeight,   // Bottom (Å« °ª)
+	//	ViewportHeight,   // Bottom (í° ê°’)
 	//	0.f,              // Top (0)
 	//	0.f, 1.f
 	//));
 
-	m_bInitialized = true;
+	m_isInitialized = true;
 
 	return S_OK;
 }
 
-HRESULT CUI::Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, D3DTS eTransformState)
+HRESULT CUI::Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, ED3DTS eTransformState)
 {
-	return pShader->Bind_Matrix(pConstantName, &m_TransformationMatrices[ETOI(eTransformState)]);
+	return pShader->Bind_Matrix(pConstantName, &m_transformationMatrices[ETOI(eTransformState)]);
 }
 
 weak_ptr<CUI> CUI::Find_Children(_wstring strTag)
 {
 	auto it = m_mapChildren.find(strTag);
 	if (it == m_mapChildren.end())
-		return weak_ptr<CUI>(); // ºó weak_ptr -> ³ÎÃ¼Å©´Â lock() ÇÏ¸é ÁÖÀÎ shared ptr ¾øÀ¸¸é ³Î µÊ
+		return weak_ptr<CUI>(); // ë¹ˆ weak_ptr -> ë„ì²´í¬ëŠ” lock() í•˜ë©´ ì£¼ì¸ shared ptr ì—†ìœ¼ë©´ ë„ ë¨
 
 	return it->second;
 
@@ -129,33 +129,33 @@ weak_ptr<CUI> CUI::Find_Children(_wstring strTag)
 
 void CUI::Save_ToJson(nlohmann::json& j)
 {
-	float m_fX = {};
-	float m_fY = {};
-	if (!std::isnan(m_fX) && !std::isinf(m_fX)) j["X"] = m_fX;
-	if (!std::isnan(m_fY) && !std::isinf(m_fY)) j["Y"] = m_fY;
-	//CUI µ¥ÀÌÅÍ
-	if (m_ZOrder != 1)
-		j["ZOrder"] = m_ZOrder;
+	float m_x = {};
+	float m_y = {};
+	if (!std::isnan(m_x) && !std::isinf(m_x)) j["X"] = m_x;
+	if (!std::isnan(m_y) && !std::isinf(m_y)) j["Y"] = m_y;
+	//CUI ë°ì´í„°
+	if (m_zOrder != 1)
+		j["ZOrder"] = m_zOrder;
 
-	j["LayoutTarget"] = m_bLayoutTarget;
+	j["LayoutTarget"] = m_isLayoutTarget;
 
-	// Componetµ¥ÀÌÅÍ ÀúÀå 
+	// Componetë°ì´í„° ì €ì¥ 
 	nlohmann::json jComponentArray = nlohmann::json::array();
 	for (auto& pair : Get_ComponentMap())
 	{
 		nlohmann::json jCom;
-		// ÄÄÆ÷³ÍÆ®¿¡ °øÅëÀûÀ¸·Î µé¾î°¡´Â°Å
+		// ì»´í¬ë„ŒíŠ¸ì— ê³µí†µì ìœ¼ë¡œ ë“¤ì–´ê°€ëŠ”ê±°
 		jCom["ComProtoTag"] = W2S(pair.second->Get_ProtoTag());
 		jCom["ComProtoLevel"] = pair.second->Get_ProtoLevel();
 		jCom["ComponentTag"] = W2S(pair.first);
-		// °¢ ÄÄÆ÷³ÍÆ® ¾ÈÀÇ ¼¼ºÎ³»¿ë
+		// ê° ì»´í¬ë„ŒíŠ¸ ì•ˆì˜ ì„¸ë¶€ë‚´ìš©
 		pair.second->Save_ToJson(jCom);
 		jComponentArray.push_back(jCom);
 	}
 	j["Components"] = jComponentArray;
 
 
-	// ÀÚ½Ä Àç±Í ½ÃÀÛ
+	// ìì‹ ì¬ê·€ ì‹œì‘
 	nlohmann::json jChildrenArray = nlohmann::json::array();
 	for (auto& pair : m_mapChildren)
 	{
@@ -175,7 +175,7 @@ void CUI::Save_ToJson(nlohmann::json& j)
 void CUI::Load_FromJson(nlohmann::json& j)
 {
 	if (j.contains("ZOrder")) {
-		m_ZOrder = j["ZOrder"];
+		m_zOrder = j["ZOrder"];
 	}
 
 	/*if (j.contains("LayoutTarget")) {
@@ -184,7 +184,7 @@ void CUI::Load_FromJson(nlohmann::json& j)
 
 	if (j.contains("Components") && j["Components"].is_array())
 	{
-		//Components¹è¿­ ÄÁÅ×ÀÌ³Ê°¡ ÀÖÀ¸¸é ¿£Æ¼Æ¼¿¡¼­ ´Ù µ¹¸®¸é¼­ Ãß°¡³ª(replace)ÇØÁÜ
+		//Componentsë°°ì—´ ì»¨í…Œì´ë„ˆê°€ ìˆìœ¼ë©´ ì—”í‹°í‹°ì—ì„œ ë‹¤ ëŒë¦¬ë©´ì„œ ì¶”ê°€ë‚˜(replace)í•´ì¤Œ
 		CEntity::Load_FromJson(j);
 	}
 
@@ -197,14 +197,14 @@ void CUI::Load_FromJson(nlohmann::json& j)
 			string childTagStr = jChild["UIChildrenTag"];
 			_wstring childTagW = S2W(childTagStr);
 
-			// ³» ÀÚ½Ä ¸Ê¿¡¼­ ÅÂ±×·Î Ã£À½
+			// ë‚´ ìì‹ ë§µì—ì„œ íƒœê·¸ë¡œ ì°¾ìŒ
 			auto it = m_mapChildren.find(childTagW);
 			if (it != m_mapChildren.end())
 			{
 				auto pChild = it->second.lock();
 				if (pChild)
 				{
-					// ÀÚ½Äµµ ¶È°°ÀÌ ÀÌ ÇÔ¼ö¸¦ Å¸°Ô ÇÔ
+					// ìì‹ë„ ë˜‘ê°™ì´ ì´ í•¨ìˆ˜ë¥¼ íƒ€ê²Œ í•¨
 					pChild->Load_FromJson(jChild);
 				}
 			}
@@ -214,8 +214,8 @@ void CUI::Load_FromJson(nlohmann::json& j)
 
 void CUI::OnGui()
 {
-	ImGui::InputInt("ZOrder Control", &m_ZOrder);
-	ImGui::Text("bLayoutTarget : %s", m_bLayoutTarget ? "true" : "false");
+	ImGui::InputInt("ZOrder Control", &m_zOrder);
+	ImGui::Text("bLayoutTarget : %s", m_isLayoutTarget ? "true" : "false");
 	ImGui::Text("UIState : %s", magic_enum::enum_name(m_UIState).data());
 
 }
@@ -225,38 +225,38 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 
 	
 
-	if (m_bEnabled)
+	if (m_isEnabled)
 	{
-		if (m_pUITransformCom)
-			m_pUITransformCom->UpdateLayoutIfDirty();
+		if (m_UITransformCom)
+			m_UITransformCom->UpdateLayoutIfDirty();
 
-		for (auto& it : m_Children)
+		for (auto& it : m_children)
 		{
 			it->Update(fTimeDelta, bMouseHold);
 		}
 
 
-		if (bMouseHold == false && m_bInteractable == true)
+		if (bMouseHold == false && m_isInteractable == true)
 		{
-			Vector2 mousePos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
-			if (true == m_pUITransformCom->Get_WorldRect().Contains(mousePos.x, mousePos.y))
+			Vector2 mousePos = m_gameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+			if (true == m_UITransformCom->Get_WorldRect().Contains(mousePos.x, mousePos.y))
 			{
-				m_bHovered = true;
+				m_isHovered = true;
 				bMouseHold = true;
 			}
 			else
-				m_bHovered = false;
+				m_isHovered = false;
 		}
 		else
-			m_bHovered = false;
+			m_isHovered = false;
 
 
 		OnUpdate(fTimeDelta);
 
 
 	
-		if (!m_bRenderReady)
-			m_bRenderReady = true;
+		if (!m_isRenderReady)
+			m_isRenderReady = true;
 
 
 		//for (auto& it : m_Children)
@@ -269,7 +269,7 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 
 void CUI::Late_Update(_float fTimeDelta)
 {
-	if (m_bEnabled)
+	if (m_isEnabled)
 	{
 		OnLateUpdate();
 
@@ -279,7 +279,7 @@ void CUI::Late_Update(_float fTimeDelta)
 		//}
 
 		{
-			for (auto it = m_Children.begin(); it != m_Children.end(); )
+			for (auto it = m_children.begin(); it != m_children.end(); )
 			{
 				if (nullptr != *it)
 					(*it)->Late_Update(fTimeDelta);
@@ -287,7 +287,7 @@ void CUI::Late_Update(_float fTimeDelta)
 				if ((*it)->Is_PendingDestroy() == true)
 				{
 				
-					it = m_Children.erase(it);
+					it = m_children.erase(it);
 				}
 				else
 					it++;
@@ -316,44 +316,44 @@ void CUI::Late_Update(_float fTimeDelta)
 
 void CUI::Prepare_Render()
 {
-    if (!m_bEnabled)
+    if (!m_isEnabled)
         return;
 
-    if (m_pUITransformCom)
-        m_pUITransformCom->UpdateLayoutIfDirty();
+    if (m_UITransformCom)
+        m_UITransformCom->UpdateLayoutIfDirty();
     OnPrepareRender();
-    if (!m_bEnabled)
+    if (!m_isEnabled)
         return;
-    if (m_pUITransformCom)
-        m_pUITransformCom->UpdateLayoutIfDirty();
+    if (m_UITransformCom)
+        m_UITransformCom->UpdateLayoutIfDirty();
 
-    for (auto& child : m_Children)
+    for (auto& child : m_children)
     {
         if (child)
             child->Prepare_Render();
     }
-    m_bRenderReady = true;
+    m_isRenderReady = true;
 }
 
 HRESULT CUI::Render()
 {
-	if (m_bVisible && m_bRenderReady == true)
+	if (m_isVisible && m_isRenderReady == true)
 	{
-		if (m_bIsDirty_Zorder)
+		if (m_isDirtyZOrder)
 		{
-			if (m_Children.size() >= 2)
+			if (m_children.size() >= 2)
 			{
-				stable_sort(m_Children.begin(), m_Children.end(), [](const shared_ptr<CUI>& a, const shared_ptr<CUI>& b) {
+				stable_sort(m_children.begin(), m_children.end(), [](const shared_ptr<CUI>& a, const shared_ptr<CUI>& b) {
 					//if(a->m_ZOrder==b->m_ZOrder)
 					//	return 
-					return a->m_ZOrder < b->m_ZOrder;
+					return a->m_zOrder < b->m_zOrder;
 					});
-				m_bIsDirty_Zorder = false;
+				m_isDirtyZOrder = false;
 			}
 		}
 		OnRender();
 
-		for (auto& it : m_Children)
+		for (auto& it : m_children)
 		{
 			it->Render();
 		}
@@ -364,20 +364,20 @@ HRESULT CUI::Render()
 
 void CUI::UI_Active()
 {
-	m_UIState = UI_STATE::ACTIVE;
+	m_UIState = EUIState::ACTIVE;
 
-	m_bEnabled = true;
-	m_bVisible = true;
+	m_isEnabled = true;
+	m_isVisible = true;
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 
 	//m_bInteractable = true;
 	OnActive();
 
-	for (auto& it : m_Children)
+	for (auto& it : m_children)
 	{
 		it->UI_Active();
 	}
@@ -385,15 +385,15 @@ void CUI::UI_Active()
 
 void CUI::UI_InActive()
 {
-	m_UIState = UI_STATE::INACTIVE;
+	m_UIState = EUIState::INACTIVE;
 
-	m_bEnabled = false;
-	m_bVisible = false; //ÀÌ°Ç Á¤Ã¥¿¡ µû¶ó
+	m_isEnabled = false;
+	m_isVisible = false; //ì´ê±´ ì •ì±…ì— ë”°ë¼
 	//m_bInteractable = true;
 
-	OnInActive(); // ÀÚ½ÅÀÇ Çàµ¿ È£Ãâ °¡»óÇÔ¼ö
+	OnInActive(); // ìì‹ ì˜ í–‰ë™ í˜¸ì¶œ ê°€ìƒí•¨ìˆ˜
 
-	for (auto& it : m_Children)
+	for (auto& it : m_children)
 	{
 		it->UI_InActive();
 	}
@@ -401,10 +401,10 @@ void CUI::UI_InActive()
 
 void CUI::Set_UI_Disabled(bool isChangeEvent)
 {
-	m_UIState = UI_STATE::DISABLE;
+	m_UIState = EUIState::DISABLE;
 
-	m_bEnabled = true;
-	m_bVisible = true; //ÀÌ°Ç Á¤Ã¥¿¡ µû¶ó
+	m_isEnabled = true;
+	m_isVisible = true; //ì´ê±´ ì •ì±…ì— ë”°ë¼
 	//m_bInteractable = false;
 
 	if (isChangeEvent == true)
@@ -412,17 +412,17 @@ void CUI::Set_UI_Disabled(bool isChangeEvent)
 		OnDisabled();
 	}
 
-	for (auto& it : m_Children)
+	for (auto& it : m_children)
 	{
 		it->Set_UI_Disabled(isChangeEvent);
 	}
 }
 
-void CUI::UI_Clear() // ÀÌ°Ç »èÁ¦
+void CUI::UI_Clear() // ì´ê±´ ì‚­ì œ
 {
 
 
-	for (auto& it : m_Children)
+	for (auto& it : m_children)
 	{
 		it->UI_Clear();
 		it->Mark_Destroy();
@@ -432,13 +432,13 @@ void CUI::UI_Clear() // ÀÌ°Ç »èÁ¦
 	//m_Children.clear();
 
 
-	// Æ®·£½ºÆû ²÷±â
-	if (m_pUITransformCom)
+	// íŠ¸ëœìŠ¤í¼ ëŠê¸°
+	if (m_UITransformCom)
 	{
-		m_Parent.reset();
+		m_parent.reset();
 		//
-		// m_pUITransformCom->SetParent(shared_ptr<CUITransform>(nullptr), false); //ÀÌ°Å ¿ÖÇÑ°ÅÀÓ??
-	}// ¾Æ È¤½Ã free ¿ëÀÌ ¾Æ´Ñ°¡?? ÀÏ´Ü ÆĞ½º
+		// m_pUITransformCom->SetParent(shared_ptr<CUITransform>(nullptr), false); //ì´ê±° ì™œí•œê±°ì„??
+	}// ì•„ í˜¹ì‹œ free ìš©ì´ ì•„ë‹Œê°€?? ì¼ë‹¨ íŒ¨ìŠ¤
 
 	m_behavior.clear();
 
@@ -450,20 +450,20 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 {
 	if (child == nullptr)
 		return E_FAIL;
-	// ¹éÅÍ¿¡ ³Ö±â (º»Ã¼)
-	m_Children.push_back(child);
-	child->m_Parent = static_pointer_cast<CUI>(shared_from_this());
+	// ë°±í„°ì— ë„£ê¸° (ë³¸ì²´)
+	m_children.push_back(child);
+	child->m_parent = static_pointer_cast<CUI>(shared_from_this());
 
-	// ¸Ê¿¡ ³Ö±â (°Ë»ö¿ë)
+	// ë§µì— ë„£ê¸° (ê²€ìƒ‰ìš©)
 	auto ui = Find_Children(UITag).lock();
 	if (ui != nullptr)
 		return E_FAIL;
 	m_mapChildren.emplace(UITag, child);
 
-	// Æ®·»½ºÆû ¿¬°á (¾È¿¡¼­ ºÎ¸ğ ÀÚ½Ä ¿¬°á ´ÙÇÔ)
-	if (m_pUITransformCom && child->GetUITransform())
+	// íŠ¸ë ŒìŠ¤í¼ ì—°ê²° (ì•ˆì—ì„œ ë¶€ëª¨ ìì‹ ì—°ê²° ë‹¤í•¨)
+	if (m_UITransformCom && child->GetUITransform())
 	{
-		child->GetUITransform()->SetParent(m_pUITransformCom, KeepWorldRect);
+		child->GetUITransform()->SetParent(m_UITransformCom, KeepWorldRect);
 	}
 
 	return S_OK;
@@ -471,12 +471,12 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 
 void CUI::Set_Zorder(_uint Z)
 {
-	m_ZOrder = Z;
-	if (m_Parent.lock() != nullptr)
+	m_zOrder = Z;
+	if (m_parent.lock() != nullptr)
 	{
-		m_Parent.lock()->m_bIsDirty_Zorder = true;
+		m_parent.lock()->m_isDirtyZOrder = true;
 	}
-	for (auto& it : m_Children)
+	for (auto& it : m_children)
 	{
 		it->Set_Zorder(Z);
 	}
@@ -487,18 +487,18 @@ void CUI::Set_Zorder(_uint Z)
 
 void CUI::Free()
 {
-	for (auto& it : m_Children)
+	for (auto& it : m_children)
 		it->UI_Clear();
 
-	m_Children.clear();
+	m_children.clear();
 
-	// Æ®·£½ºÆû ²÷±â
-	if (m_pUITransformCom)
+	// íŠ¸ëœìŠ¤í¼ ëŠê¸°
+	if (m_UITransformCom)
 	{
-		m_Parent.reset();
+		m_parent.reset();
 		//
-		// m_pUITransformCom->SetParent(shared_ptr<CUITransform>(nullptr), false); //ÀÌ°Å ¿ÖÇÑ°ÅÀÓ??
-	}// ¾Æ È¤½Ã free ¿ëÀÌ ¾Æ´Ñ°¡?? ÀÏ´Ü ÆĞ½º
+		// m_pUITransformCom->SetParent(shared_ptr<CUITransform>(nullptr), false); //ì´ê±° ì™œí•œê±°ì„??
+	}// ì•„ í˜¹ì‹œ free ìš©ì´ ì•„ë‹Œê°€?? ì¼ë‹¨ íŒ¨ìŠ¤
 
 	m_behavior.clear();
 

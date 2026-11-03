@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 NS_BEGIN(Client)
@@ -6,7 +6,7 @@ class CUI_MainMenu final:
     public CUIPanel
 {
 public:
-    struct MAINMENU_DESC : public CUIPanel::UIPANEL_DESC
+    struct MAINMENU_DESC : public CUIPanel::UIPanelDesc
     {
        /* _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";*/

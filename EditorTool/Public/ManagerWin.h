@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Editor_Win.h"
 
 NS_BEGIN(Engine)
@@ -27,11 +27,11 @@ public:
     bool Picking();
 
 private:
-    _uint m_iSelectedLevel = {};
-    wstring m_strSelectedTag = {};
+    _uint m_selectedLevel = {};
+    wstring m_selectedTag = {};
 
-    _bool m_PickMode = false;
-    shared_ptr<CGameObject> m_pPreview = {};
+    _bool m_isPickMode = false;
+    shared_ptr<CGameObject> m_preview = {};
 public:
     static shared_ptr<CManagerWin> Create();
 

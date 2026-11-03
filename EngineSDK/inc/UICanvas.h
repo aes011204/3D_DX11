@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "UI.h"
 
 
@@ -8,10 +8,10 @@ class ENGINE_DLL CUICanvas :
     public CUI
 {
 public:
-    struct UICANVAS_DESC : public CUI::UI_DESC
+    struct UICanvasDesc : public CUI::UIDesc
     {
-        // canvas´Â ¹«Á¶°Ç Åõ¸í
-        bool EatClick = {true};
+        // canvasëŠ” ë¬´ì¡°ê±´ íˆ¬ëª…
+        bool isEatClick = {true};
     };
 private:
     CUICanvas(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -25,7 +25,7 @@ public:
     //Rect Get_CanvasSize() { return m_CanvasSize; }
 private:
 
-    Rect m_CanvasSize = {};
+    Rect m_canvasSize = {};
 public:
     static shared_ptr<CUICanvas> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;

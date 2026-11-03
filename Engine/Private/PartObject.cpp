@@ -1,4 +1,4 @@
-#include "PartObject.h"
+﻿#include "PartObject.h"
 
 CPartObject::CPartObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
 	: CGameObject{ pDevice ,pContext }
@@ -17,14 +17,14 @@ HRESULT CPartObject::Initialize_Prototype()
 
 HRESULT CPartObject::Initialize(void* pArg)
 {
-	auto pDesc = static_cast <PARTOBJ_DESC*>(pArg);
+	auto pDesc = static_cast <PartObjDesc*>(pArg);
 
-	m_pParentMatrix = pDesc->pParentMatrix;
+	m_parentMatrix = pDesc->parentMatrix;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
 
-	XMStoreFloat4x4(&m_CombinedWorldMatrix, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_combinedWorldMatrix, XMMatrixIdentity());
 
 
 	return CGameObject::Initialize(pArg);

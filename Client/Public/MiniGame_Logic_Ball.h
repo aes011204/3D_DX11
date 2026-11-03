@@ -41,7 +41,7 @@ public:
 	_uint GetFishCount() const{return m_FishCount;}
 	float GetProgress01() const { return m_prograssBar01; }
 
-	float GetAngle() const { return m_Angle; }
+	float GetAngle() const { return m_angle; }
 
 
 	const Zone* GetZones() const { return m_zones; }
@@ -68,7 +68,7 @@ public:
 	Zone m_zones[8];
 	int m_zoneCount;
 	float m_AccTime = { 0 };
-	float m_Angle = { 0 };
+	float m_angle = { 0 };
 	float m_Speed = {};
 	_bool m_bStart = { false };
 
