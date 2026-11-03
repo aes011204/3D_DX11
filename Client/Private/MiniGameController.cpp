@@ -1,4 +1,4 @@
-#include "MiniGameController.h"
+﻿#include "MiniGameController.h"
 #include "GameInstance.h"
 
 #include "Fish.h"
@@ -44,7 +44,7 @@ void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_pt
 	auto minigame  = m_pFish.lock()->GetMiniGameType();
 	switch (minigame)
 	{
-	case MINIGAME::BASIC_CIRCLE:
+	case EMiniGameType::BASIC_CIRCLE:
 	{
 		CMiniGame_Logic::MINIGAEMELOGIC_DESC pLogicDesc = { };
 		pLogicDesc.pInvenCtrl = InvenCtrl.lock();
@@ -60,7 +60,7 @@ void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_pt
 		pLogicDesc.zoneSize = _float2(
 			baseSegment * minRatio,
 			baseSegment * maxRatio);*/
-		pLogicDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+		pLogicDesc.MiniGameType = EMiniGameType::BASIC_CIRCLE;
 
 
 		pInstance = CMiniGame_Logic::Create(&pLogicDesc);
@@ -69,7 +69,7 @@ void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_pt
 		break;
 	}
 
-	case MINIGAME::DIAMOND:
+	case EMiniGameType::DIAMOND:
 	{
 		CMiniGame_Logic_Diamond::MINIGAEMELOGIC_DIAMOND_DESC pLogicDesc = { };
 		pLogicDesc.pInvenCtrl = InvenCtrl.lock();
@@ -77,14 +77,14 @@ void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_pt
 		pLogicDesc.FishCount = m_pFish.lock()->GetInitFishCount();
 		pLogicDesc.DefID = m_pFish.lock()->Get_fish_DefID();
 		pLogicDesc.RodSpeed = RodSpeeed;
-		pLogicDesc.MiniGameType = MINIGAME::DIAMOND;
+		pLogicDesc.MiniGameType = EMiniGameType::DIAMOND;
 		
 		pInstance = CMiniGame_Logic_Diamond::Create(&pLogicDesc);
 		m_pFish.lock()->SetMiniGameLogic(pInstance);
 
 		break;
 	}
-	case MINIGAME::BALL:
+	case EMiniGameType::BALL:
 	{
 		/*CMiniGame_Logic_Ball::MINIGAEMELOGIC_BALL_DESC pLogicDesc = { };
 		desc.level = 1;

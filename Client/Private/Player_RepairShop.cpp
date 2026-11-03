@@ -26,27 +26,27 @@ void CPlayer_RepairShop::Enter()
 
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CamLerpDesc>();
-	pLerp->eMode = CAM_MODE::LERP;
+	pLerp->eMode = ECamMode::LERP;
 	pLerp->vTargetPos = _float3(3.14f, 3.429f, 5.734f);
 	pLerp->vTargetRot = _float3(5.58f, -145.63f, 0.f);
 	pLerp->fDuration = 2.0f;
 	pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
 		Evt_CamArrived e = {};
-		e.playerstate = E_PLAYERSTATE::REPAIR_SHOP;
+		e.playerstate = EPlayerState::REPAIR_SHOP;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 	};
 	event.commands.push_back(pLerp);
 
 	auto pStop = make_shared<CamDesc>();
-	pStop->eMode = CAM_MODE::STOP;
+	pStop->eMode = ECamMode::STOP;
 	event.commands.push_back(pStop);
 
 
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-	eNextState = E_PLAYERSTATE::REPAIR_SHOP;
+	eNextState = EPlayerState::REPAIR_SHOP;
 
 	CPlayerState::Enter();
 }
@@ -86,12 +86,12 @@ int CPlayer_RepairShop::Update_State(const _float& timeDelta)
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
 
-		return  ETOI(E_PLAYERSTATE::VILLAGE);
+		return  ETOI(EPlayerState::VILLAGE);
 	}
 
 	else if (m_Input_Manager->KeyDown(DIK_F) && !m_ItemIdInst.itemInstId == ID_Absence)
 	{
-		if (m_ItemIdInst.itemType == ITEM_TYPE::EQUIP)
+		if (m_ItemIdInst.itemType == EItemType::EQUIP)
 		{
 			float money = {};
 			if (m_ItemIdInst.isMutation == true)

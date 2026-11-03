@@ -1,4 +1,4 @@
-#include "Fish.h"
+﻿#include "Fish.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "Bounding_AABB.h"
@@ -55,7 +55,7 @@ HRESULT CFish::Initialize(void* pArg)
 
 
 	CWaterEff::EffDESC eff = {};
-	eff.eType = EFFTYPE::FISH;
+	eff.eType = EEffType::FISH;
 	eff.Target = static_pointer_cast<CFish>(shared_from_this());
 
 	auto Eff = ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(LEVEL::GAMEPLAY), L"Layer_Effect", &eff)));

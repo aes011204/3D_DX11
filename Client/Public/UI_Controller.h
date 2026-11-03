@@ -62,7 +62,7 @@ private:
 
     shared_ptr<class CUI_MiniGame> m_miniGame = { nullptr };
 
-    Client::E_PLAYERSTATE m_PendingUIState;
+    Client::EPlayerState m_PendingUIState;
 private:
     ComPtr<ID3D11Device> m_pDevice = { nullptr };
     ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };

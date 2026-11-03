@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Client_Enum.h"
 #include "MiniGame.h"
@@ -57,7 +57,7 @@ public:
 	void OnInput()override;
 
 
-	MINIGAME Get_MiniGameType() { return m_MiniGameType; }
+	EMiniGameType Get_MiniGameType() { return m_MiniGameType; }
 public:
 	
 

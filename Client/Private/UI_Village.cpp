@@ -48,7 +48,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 	wstring name = {};
 	VIllAGE_LOCATION eLevel = {};
-	E_PLAYERSTATE ePlayerState = {};
+	EPlayerState ePlayerState = {};
 	wstring tex = {};
 	wstring sound = {};
 	for (_uint i = 0; i < 3; i++)
@@ -59,14 +59,14 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			eLevel = VIllAGE_LOCATION::REPAIR;
 			name = L"조선공";
 			tex = L"Prototype_Component_Texture_MerchantIcon";
-			ePlayerState = E_PLAYERSTATE::REPAIR_SHOP;
+			ePlayerState = EPlayerState::REPAIR_SHOP;
 			sound = L"Repair_Visit";
 			break;
 		case 1:
 			eLevel = VIllAGE_LOCATION::FISH;
 			name = L"생선장수";
 			tex = L"Prototype_Component_Texture_FishIconVill";
-			ePlayerState = E_PLAYERSTATE::FISH_SHOP;
+			ePlayerState = EPlayerState::FISH_SHOP;
 			sound = L"Fishmonger_Visit";
 
 			break;
@@ -75,7 +75,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			name = L"내창고";
 
 			tex = L"Prototype_Component_Texture_StorageIcon";
-			ePlayerState = E_PLAYERSTATE::STORAGE;
+			ePlayerState = EPlayerState::STORAGE;
 			sound = L"Storage_Visit";
 
 			break;

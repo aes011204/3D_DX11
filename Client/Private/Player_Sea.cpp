@@ -25,7 +25,7 @@ void CPlayer_Sea::Enter()
 	Evt_ChangeCam event = {};
 	
 	auto pLerp = make_shared<CamLerpDesc>();
-	pLerp->eMode = LERP;
+	pLerp->eMode = ECamMode::LERP;
 	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
 	pLerp->IsLerpTarget = true;
 	pLerp->fFov = 60;
@@ -34,7 +34,7 @@ void CPlayer_Sea::Enter()
 	event.commands.push_back(pLerp);
 
 	auto pFow = make_shared<CamFollowDesc>();
-	pFow->eMode = CAM_MODE::FOLLOW;
+	pFow->eMode = ECamMode::FOLLOW;
 	pFow->fPitch = 0.f;
 	pFow->fYaw = 0.f;
 
@@ -57,7 +57,7 @@ void CPlayer_Sea::Enter()
 
 void CPlayer_Sea::Exit()
 {
-	m_NextState = E_PLAYERSTATE::SEA;
+	m_NextState = EPlayerState::SEA;
 
 	m_pGameInstance.lock()->Stop(L"Waves_Ambience_1",2.f);
 	CPlayerState::Exit();
@@ -84,8 +84,8 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 		return ETOI(m_NextState);
 	}
 
-	if (Move(timeDelta) == ETOI(E_PLAYERSTATE::VILLAGE))
-		return ETOI(E_PLAYERSTATE::VILLAGE);
+	if (Move(timeDelta) == ETOI(EPlayerState::VILLAGE))
+		return ETOI(EPlayerState::VILLAGE);
 	Location_Sea(timeDelta);
 
 
@@ -138,7 +138,7 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 
-				return ETOI(E_PLAYERSTATE::FISHING);
+				return ETOI(EPlayerState::FISHING);
 		}
 
 	}
@@ -211,7 +211,7 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 
 		Evt_ChangeCam event = {};
 		auto pLerp = make_shared<CamDesc>();
-		pLerp->eMode = CAM_MODE::STOP;
+		pLerp->eMode = ECamMode::STOP;
 		
 		event.commands.push_back(pLerp);
 
@@ -225,7 +225,7 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 	{
 		Evt_ChangeCam event = {};
 		auto pfollow = make_shared<CamDesc>();
-		pfollow->eMode = CAM_MODE::FOLLOW;
+		pfollow->eMode = ECamMode::FOLLOW;
 
 		event.commands.push_back(pfollow);
 
@@ -236,7 +236,7 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 	{
 		if (m_Input_Manager->KeyDown(DIK_F))
 		{
-			m_NextState = E_PLAYERSTATE::INTERACT;
+			m_NextState = EPlayerState::INTERACT;
 		}
 	}
 
@@ -381,7 +381,7 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 		{
 			/*Evt_ChangeCam event = {};
 					auto pLerp = make_shared<CamLerpDesc>();
-					pLerp->eMode = CAM_MODE::LERP ;
+					pLerp->eMode = ECamMode::LERP ;
 					pLerp->vTargetPos = _float3(8.2f, 3.f, 7.6f);
 					pLerp->vTargetRot = _float3(5.f, -130.f, 0.f);
 					pLerp->fDuration = 2.0f;
@@ -390,7 +390,7 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 
 					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);*/
 
-					//m_pStateMachine.lock()->Change_State(ETOI(E_PLAYERSTATE::VILLAGE));
+					//m_pStateMachine.lock()->Change_State(ETOI(EPlayerState::VILLAGE));
 					m_CurSpeed = 0.f;
 			m_bFinDock = true;
 			m_bIsDocking = false;
@@ -398,10 +398,10 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 			m_pGameInstance.lock()->Stop(L"Dock_Progress");
 			m_pGameInstance.lock()->Play_Once(L"Docked");
 
-			/*m_NextState = E_PLAYERSTATE::VILLAGE;*/
-			return ETOI(E_PLAYERSTATE::VILLAGE);
+			/*m_NextState = EPlayerState::VILLAGE;*/
+			return ETOI(EPlayerState::VILLAGE);
 		}
-		return ETOI(E_PLAYERSTATE::SEA);
+		return ETOI(EPlayerState::SEA);
 	}
 	auto m_pTransformCom = m_pOwnerTransformCom.lock();
 	auto dinput = m_Input_Manager;
@@ -477,7 +477,7 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 		m_pTransformCom->Turn(XMLoadFloat4(&upDir), m_CurTurnSpeed > 0.f ? fTimeDelta : -fTimeDelta);
 	}
 
-return 	ETOI(E_PLAYERSTATE::SEA);
+return 	ETOI(EPlayerState::SEA);
 }
 
 shared_ptr<CPlayer_Sea> CPlayer_Sea::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)

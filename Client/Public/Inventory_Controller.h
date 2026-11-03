@@ -77,7 +77,7 @@ private:
    // class shared_ptr<class CUI_Inventory> m_UIInven = { nullptr }; // UI
    shared_ptr<class CUI_Item> m_UIHoldItem = { nullptr };
    weak_ptr<CGameInstance>m_pGameInstance = { };
-   INVENTYPE m_HoldItemFrom;
+   EInvenType m_HoldItemFrom;
 
 
 public:

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "PlayerState.h"
 
 
@@ -34,7 +34,7 @@ public:
     static shared_ptr<CPlayer_Interact> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
    
 private:
-    E_PLAYERSTATE eNextState = E_PLAYERSTATE::STORAGE;
+    EPlayerState eNextState = EPlayerState::STORAGE;
 
 private:
     virtual void Free();

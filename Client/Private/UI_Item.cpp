@@ -30,7 +30,7 @@ void CUI_Item::HoldItem(ItemInst HoldItemInst)
 		static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(false);
 
 
-		if (HoldItemInst.itemType == ITEM_TYPE::FISH)
+		if (HoldItemInst.itemType == EItemType::FISH)
 			m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 		else
 			m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
@@ -40,7 +40,7 @@ void CUI_Item::HoldItem(ItemInst HoldItemInst)
 void CUI_Item::ReleaseItem()
 {
 
-	if (m_HoldItem.itemType == ITEM_TYPE::FISH)
+	if (m_HoldItem.itemType == EItemType::FISH)
 		m_pGameInstance.lock()->Play_Once(L"OrganicItem_Place");
 	else
 		m_pGameInstance.lock()->Play_Once(L"InorganicItem_Place");

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #pragma once
 #include "GameObject.h"
@@ -23,7 +23,7 @@ public:
         _float2 Radius = {};
 
         _uint fish_DefID = {};
-        MINIGAME MiniGameType = {};
+        EMiniGameType MiniGameType = {};
 
     };
 
@@ -71,7 +71,7 @@ public:
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
-    MINIGAME GetMiniGameType() const{return m_MiniGameType;}
+    EMiniGameType GetMiniGameType() const{return m_MiniGameType;}
 
     void Change_Cam(shared_ptr<CGameObject> m_Player);
 
@@ -91,7 +91,7 @@ private:
 
 private:
 
-    MINIGAME m_MiniGameType = {};
+    EMiniGameType m_MiniGameType = {};
    //_uint m_CurFishCount = {};
 
     _uint m_InitFishCount = {};

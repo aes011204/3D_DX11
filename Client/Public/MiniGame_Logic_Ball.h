@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Enum.h"
 #include "MiniGame.h"
 
@@ -55,15 +55,15 @@ public:
 
 	void OnInput();
 
-	INPUT_RESULT ConsumeInputResult() {
-		INPUT_RESULT result = m_LastInputResult;
-		m_LastInputResult = INPUT_RESULT::NONE;
+	EInputResult ConsumeInputResult() {
+		EInputResult result = m_LastInputResult;
+		m_LastInputResult = EInputResult::NONE;
 		return result;
 	}
-	MINIGAME Get_MiniGameType() { return m_MiniGameType; }
+	EMiniGameType Get_MiniGameType() { return m_MiniGameType; }
 public:
 
-	INPUT_RESULT m_LastInputResult = INPUT_RESULT::NONE;
+	EInputResult m_LastInputResult = EInputResult::NONE;
 
 	Zone m_zones[8];
 	int m_zoneCount;

@@ -1,4 +1,4 @@
-#include "UI_HUD.h"
+﻿#include "UI_HUD.h"
 
 #include "UIButton.h"
 #include "UIImage.h"
@@ -27,7 +27,7 @@ HRESULT CUI_HUD::OnInit(void* pArg)
 		shared_ptr<CUI_Skill> SkillPanel = CUI_Skill::Create(m_pDevice, m_pContext);
 		SkillPanel->Initialize(&SkillPanelDesc);
 
-		wstring NameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(HUD::SKILL)));
+		wstring NameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(EHud::SKILL)));
 		Add_Child(SkillPanel, NameTag, false);
 	}
 	{
@@ -40,7 +40,7 @@ HRESULT CUI_HUD::OnInit(void* pArg)
 		shared_ptr<CUI_Top> TopPanel = CUI_Top::Create(m_pDevice, m_pContext);
 		TopPanel->Initialize(&TopPanelDesc);
 
-		wstring NameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(HUD::TOP)));
+		wstring NameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(EHud::TOP)));
 		Add_Child(TopPanel, NameTag, false);
 	}
 	{
@@ -74,7 +74,7 @@ HRESULT CUI_HUD::OnInit(void* pArg)
 			BoatButton->Add_Child(Image_B, L"Img_boat", false);
 
 		}
-		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(HUD::BOAT)));
+		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(EHud::BOAT)));
 		Add_Child(BoatButton, NameTag, false);
 	}
 

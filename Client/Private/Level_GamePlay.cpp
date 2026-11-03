@@ -1,4 +1,4 @@
-#include "Level_GamePlay.h"
+﻿#include "Level_GamePlay.h"
 
 #include "Box.h"
 #include "GameInstance.h"
@@ -431,7 +431,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc.Radius = _float2(1.f, 2.f);
 	fishDesc.AlphaTime = _float2(1.f, 2.f);
 	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+	fishDesc.MiniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	fishDesc.vPosition = _float3(30.f, -1.f, 5.f);
 
@@ -450,7 +450,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc2.Radius = _float2(1.f, 2.f);
 	fishDesc2.AlphaTime = _float2(1.f, 2.f);
 	fishDesc2.Speed = _float2(1.f, 2.f);
-	fishDesc2.MiniGameType = MINIGAME::DIAMOND;
+	fishDesc2.MiniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc2.vPosition = _float3(40.f, -1.f, 5.f);
 
@@ -470,7 +470,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc.Radius = _float2(1.f, 2.f);
 	fishDesc.AlphaTime = _float2(1.f, 2.f);
 	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+	fishDesc.MiniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	fishDesc.vPosition = _float3(33.126f, -1.f, -2.6f);
 
@@ -490,7 +490,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc.Radius = _float2(1.f, 2.f);
 	fishDesc.AlphaTime = _float2(1.f, 2.f);
 	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = MINIGAME::DIAMOND;
+	fishDesc.MiniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc.vPosition = _float3(54.6, -1.f, -3.9f);
 
@@ -508,7 +508,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc.Radius = _float2(1.f, 2.f);
 	fishDesc.AlphaTime = _float2(1.f, 2.f);
 	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = MINIGAME::DIAMOND;
+	fishDesc.MiniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc.vPosition = _float3(70.6, -1.f, -12.9f);
 
@@ -527,7 +527,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc3.Radius = _float2(1.5f, 2.f);
 	fishDesc3.AlphaTime = _float2(1.f, 2.f);
 	fishDesc3.Speed = _float2(1.f, 2.f);
-	fishDesc3.MiniGameType = MINIGAME::BASIC_CIRCLE;
+	fishDesc3.MiniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	fishDesc3.vPosition = _float3(57.9f, -1.f, 9.5f);
 
@@ -545,7 +545,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc4.Radius = _float2(1.5f, 2.f);
 	fishDesc4.AlphaTime = _float2(1.f, 2.f);
 	fishDesc4.Speed = _float2(1.f, 2.f);
-	fishDesc4.MiniGameType = MINIGAME::DIAMOND;
+	fishDesc4.MiniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc4.vPosition = _float3(79.f, -1.f, -3.f);
 
@@ -566,7 +566,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc.Radius = _float2(1.f, 2.f);
 	fishDesc.AlphaTime = _float2(1.f, 2.f);
 	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = MINIGAME::BASIC_CIRCLE;
+	fishDesc.MiniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	fishDesc.vPosition = _float3(100.f, -1.f, -17.f);
 
@@ -584,7 +584,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 	fishDesc.Radius = _float2(1.f, 2.f);
 	fishDesc.AlphaTime = _float2(1.f, 2.f);
 	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = MINIGAME::DIAMOND;
+	fishDesc.MiniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc.vPosition = _float3(121.5f, -1.f, 12.f);
 
@@ -624,7 +624,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& strLayerTag)
 	//	return E_FAIL;
 
 	CWaterEff::EffDESC eff = {};
-	eff.eType = EFFTYPE::PLAYER;
+	eff.eType = EEffType::PLAYER;
 	eff.Target = dynamic_pointer_cast<CPlayerBoat>(m_pPlayer.lock());
 
 	auto Eff = ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(LEVEL::GAMEPLAY), strLayerTag,& eff)));

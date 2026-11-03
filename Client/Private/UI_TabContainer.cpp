@@ -1,4 +1,4 @@
-#include "UI_TabContainer.h"
+ï»¿#include "UI_TabContainer.h"
 
 #include <UIText.h>
 
@@ -46,8 +46,8 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 {
 	//m_Children.clear();
 	_uint numPanel = {};
-	// ÀÏ´Ü ±âº»ÀûÀ¸·Î ÆĞ³Î Àº ´Ù inactive, ¹öÆ°Àº iTabfig ¿¡ µû¶ó active
-	//::OnActive() ¿¡¼­ Å¬¸¯ÇÑ °Å¸¸ È°¼ºÈ­
+	// ì¼ë‹¨ ê¸°ë³¸ì ìœ¼ë¡œ íŒ¨ë„ ì€ ë‹¤ inactive, ë²„íŠ¼ì€ iTabfig ì— ë”°ë¼ active
+	//::OnActive() ì—ì„œ í´ë¦­í•œ ê±°ë§Œ í™œì„±í™”
 	if (iTabfig & ETOI(TAB::INVEN))
 	{
 		//Add_Child(m_ButtonContents[ETOI(TAB::INVEN)], L"BUTTON_INVEN", false);
@@ -123,7 +123,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	TABpDesc->TextureComLevel = ETOI(LEVEL::STATIC);
 	TABpDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
 	TABpDesc->IsUseLayout = true;
-	//pDesc.vAnchorPoint = ÀÏ´Ü ÆĞ½º
+	//pDesc.vAnchorPoint = ì¼ë‹¨ íŒ¨ìŠ¤
 	//	pDesc.vPivot
 	//	pDesc.vAnchoredPos
 
@@ -145,12 +145,12 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	{
 		TAB eTab = static_cast<TAB>(1 << i);
 
-		/// ¹öÆ°
+		/// ë²„íŠ¼
 		CUIButton::UIBUTTON_DESC ButDesc = {};
 		ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
 		//ButDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f ) };
-		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// ¾È°Çµå·Áµµ µÊ ÅØ½ºÃÄ¿¡¼­ ÃÊ±âÈ­ ¿¹Á¤
+		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// ì•ˆê±´ë“œë ¤ë„ ë¨ í…ìŠ¤ì³ì—ì„œ ì´ˆê¸°í™” ì˜ˆì •
 		//ButDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
 		//ButDesc.vPivot = Vector2{ 0.5f, 0.5f };
 		//ButDesc.vScale = Vector2{ 1.3f, 1.0f };
@@ -175,14 +175,14 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 			switch (eTab)
 			{
 			case TAB::INVEN:
-				name = L"È­¹°";
+				name = L"í™”ë¬¼";
 				break;
 			case TAB::STORAGE:
-				name = L"Ã¢°í";
+				name = L"ì°½ê³ ";
 
 				break;
 			case TAB::ETC:
-				name = L"±âÅ¸";
+				name = L"ê¸°íƒ€";
 				break;
 			}
 
@@ -204,7 +204,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	//for (_uint i = 0; i < 3; i++)
 	{
 		TAB eTab = static_cast<TAB>(1 << 0);
-		// ÀÏ´Ü Å×½ºÆ® ÀÎº¥ 3°³
+		// ì¼ë‹¨ í…ŒìŠ¤íŠ¸ ì¸ë²¤ 3ê°œ
 		CUI_Inventory::INVENTORY_DESC InvenDesc = {};
 		InvenDesc.IsFullScreen = false;
 		InvenDesc.IsTransparent = true;
@@ -220,12 +220,12 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 	}
 		{
 			TAB eTab = static_cast<TAB>(1 << 1);
-			// ÀÏ´Ü Å×½ºÆ® ÀÎº¥ 3°³
+			// ì¼ë‹¨ í…ŒìŠ¤íŠ¸ ì¸ë²¤ 3ê°œ
 			CUI_Storage::STORAGE_DESC StorageDesc = {};
 			StorageDesc.IsFullScreen = false;
 			StorageDesc.IsTransparent = true;
 			StorageDesc.bSetParentSize = true;
-			StorageDesc.Inventype = INVENTYPE::STORAGE;
+			StorageDesc.Inventype = EInvenType::STORAGE;
 
 			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
 			pStorage->Initialize(&StorageDesc);
@@ -239,7 +239,7 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 			pStorage->UI_InActive();
 		}
 
-		///µ·///
+		///ëˆ///
 
 	{
 		CUIImage::UIIMAGE_DESC moneyDesc = {};
@@ -300,7 +300,7 @@ void CUI_TabContainer::OnDisabled()
 
 void CUI_TabContainer::OnUpdate(const _float& timeDelta)
 {
-	// ¿©±â¿¡¼­ ¾Èº¸¿´´Ù°¡ ¿Í¾ßÇÔ
+	// ì—¬ê¸°ì—ì„œ ì•ˆë³´ì˜€ë‹¤ê°€ ì™€ì•¼í•¨
 	if (m_bStart == true)
 	{
 		m_TimeAcc += timeDelta;
@@ -344,17 +344,17 @@ void CUI_TabContainer::SetActiveTab(TAB tab)
 	for (int i = 0; i < 32; i++)
 	{
 		if (m_TabContents[i])
-			m_TabContents[i]->UI_InActive(); // ÅÇÀº ÀÎ¿¢Æ¼ºê¸¦ ÇØ¾ßÇÏ°í 
+			m_TabContents[i]->UI_InActive(); // íƒ­ì€ ì¸ì—‘í‹°ë¸Œë¥¼ í•´ì•¼í•˜ê³  
 
 		if (m_ButtonContents[i])
-			m_ButtonContents[i]->ChangeState(BUTTON_STATE::NORMAL); // ¹öÆ°Àº ¾ğ¼¿·ºÆ® 
+			m_ButtonContents[i]->ChangeState(BUTTON_STATE::NORMAL); // ë²„íŠ¼ì€ ì–¸ì…€ë ‰íŠ¸ 
 	}
 
 	if (m_TabContents[ETOI(tab)])
-		m_TabContents[ETOI(tab)]->UI_Active(); // ÇØ´ç ÆĞ³Î È°¼ºÈ­
+		m_TabContents[ETOI(tab)]->UI_Active(); // í•´ë‹¹ íŒ¨ë„ í™œì„±í™”
 
 	if (m_ButtonContents[ETOI(tab)])
-		m_ButtonContents[ETOI(tab)]->ChangeState(BUTTON_STATE::SELECT); // ¼¿·ºÆ®
+		m_ButtonContents[ETOI(tab)]->ChangeState(BUTTON_STATE::SELECT); // ì…€ë ‰íŠ¸
 }
 
 shared_ptr<CUI_TabContainer> CUI_TabContainer::Create(ComPtr<ID3D11Device> pDevice,

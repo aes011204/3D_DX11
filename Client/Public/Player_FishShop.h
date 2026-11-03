@@ -34,7 +34,7 @@ public:
     static shared_ptr<CPlayer_FishShop> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
    
 private:
-    E_PLAYERSTATE eNextState = E_PLAYERSTATE::FISH_SHOP;
+    EPlayerState eNextState = EPlayerState::FISH_SHOP;
 
     ItemInst m_ItemIdInst = {};
 private:

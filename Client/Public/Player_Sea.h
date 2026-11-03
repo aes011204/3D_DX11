@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "PlayerState.h"
 
 
@@ -48,13 +48,13 @@ private:
     weak_ptr<class CSea_Manager> m_pSea_Manager = {};
    
 private:
-    E_PLAYERSTATE m_NextState = E_PLAYERSTATE::SEA;
+    EPlayerState m_NextState = EPlayerState::SEA;
 
     //float m_TargetSpeed = {};
     float m_CurSpeed = {};
     float m_MaxSpeed = {};
     float m_Acceleration = {};
-    float m_Deceleration = {}; // ¾Æ¹«°Íµµ ¾ÈÇÒ‹š ÁÙ¾îµå´Â ¾ç
+    float m_Deceleration = {}; // ì•„ë¬´ê²ƒë„ ì•ˆí• ë–„ ì¤„ì–´ë“œëŠ” ì–‘
 
     float m_CurTurnSpeed = {};
     float m_MaxTurnSpeed = {};

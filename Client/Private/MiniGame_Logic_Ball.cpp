@@ -36,7 +36,7 @@ HRESULT CMiniGame_Logic_Ball::Render(_uint iMeshIndex)
 
 HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
 {
-	m_MiniGameType = MINIGAME::BASIC_CIRCLE;
+	m_MiniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	MINIGAEMELOGIC_BALL_DESC* pDesc = static_cast<MINIGAEMELOGIC_BALL_DESC*>(pArg);
 
@@ -273,7 +273,7 @@ void CMiniGame_Logic_Ball::OnInput()
 
 				m_prograssBar01 += 0.2;
 			
-				m_LastInputResult = INPUT_RESULT::SUCCESS;
+				m_LastInputResult = EInputResult::SUCCESS;
 			}
 			else
 			{
@@ -281,7 +281,7 @@ void CMiniGame_Logic_Ball::OnInput()
 
 				m_prograssBar01 -= 0.2;
 
-				m_LastInputResult = INPUT_RESULT::FAIL;
+				m_LastInputResult = EInputResult::FAIL;
 				
 				m_changeColor = true;
 				colortime = .5f;

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "PlayerState.h"
 
 
@@ -29,7 +29,7 @@ public:
 
 private:
 
-    E_PLAYERSTATE eNextState = E_PLAYERSTATE::VILLAGE;
+    EPlayerState eNextState = EPlayerState::VILLAGE;
 
     _float m_Acc = {};
     //weak_ptr<class CSea_Manager> m_pSea_Manager = {};

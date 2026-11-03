@@ -14,8 +14,8 @@ public:
     {
         _uint width = {};
         _uint height = {};
-        INVENTYPE invenType = {};
-        EQUIP_TYPE equipType = {};
+        EInvenType invenType = {};
+        EEquipType equipType = {};
         //vector<_char> type = {};
     };
 
@@ -42,7 +42,7 @@ public:
     int Get_W() { return m_w; }
     int Get_H() { return m_h; }
 
-    INVENTYPE  Get_Inventype() { return m_invenType; }
+    EInvenType  Get_Inventype() { return m_invenType; }
 private:
     int m_w, m_h = {0};
     vector<ItemInst> m_inventory = {}; // 순서 상관없이 들어있는데이터
@@ -57,10 +57,10 @@ public:// 아이템 넣고 뺴기
     ItemInst AddItem(ItemInst itemInst, _int baseX, _int baseY);
     _bool Auto_Add(ItemInst& itemInst);
     _bool Auto_Move_To(weak_ptr<CInventory> otherInven, _uint baseX, _uint baseY);
-    _int CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY,PLACE_COLOR& color);
+    _int CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY,EPlaceColor& color);
     ItemInst TryMove_Item(_uint baseX, _uint baseY);
     void Upgrade_Boat(_uint index);
-    void SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, PLACE_COLOR color);
+    void SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceColor color);
     void FixAll();
     void ThrowAwayFrom_Inven(_uint baseX, _uint baseY);// 이거는 칸으로 
     void ClearHighlightArea();
@@ -86,10 +86,10 @@ private:// 인밴칸 설정
 
 private:
     void Apply_BaseMask(vector<Slot>& vecSlot);// 락
-    SLOT_TYPE CharToType(char c);// 슬랏 타입
+    ESlotType CharToType(char c);// 슬랏 타입
     void Init_BoatUpgrade();
 
-    INVENTYPE m_invenType = {};
+    EInvenType m_invenType = {};
     
 
 public:

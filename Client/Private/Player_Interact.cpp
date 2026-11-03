@@ -35,16 +35,16 @@ void CPlayer_Interact::Enter()
 	//event.commands.push_back(pLerp);
 
 	auto pStop = make_shared<CamDesc>();
-	pStop->eMode = CAM_MODE::STOP;
+	pStop->eMode = ECamMode::STOP;
 	event.commands.push_back(pStop);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
 	Evt_CamArrived e = {};
-		e.playerstate = E_PLAYERSTATE::INTERACT;
+		e.playerstate = EPlayerState::INTERACT;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 
-	eNextState = E_PLAYERSTATE::INTERACT;
+	eNextState = EPlayerState::INTERACT;
 
 
 	/*Evt_OpenInventory e;
@@ -92,7 +92,7 @@ int CPlayer_Interact::Update_State(const _float& timeDelta)
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
 
-		return  ETOI(E_PLAYERSTATE::SEA);
+		return  ETOI(EPlayerState::SEA);
 	}
 
 

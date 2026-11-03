@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 #include "UIText.h"
 
 #include "UIPanel.h"
 #include "Client_Define.h"
 #include "PlayerBoat.h"
-//¿À¸¥ÂÊ¿¡¼­ ³ª¿À´Â È¿°úÀÖÀ½
-// ¿£Áø ·çÇÁ¿ë m_Children°ú´Â º°°³·Î, ³»°¡ Á÷Á¢ 'Á¶Á¾'ÇÒ ³à¼®µé¸¸ Æ÷ÀÎÅÍ·Î º¸°ü
-// ¹öÆ°Àº »óÅÂ¸¦ ¹Ù²Ü ÀÏÀÌ °ÅÀÇ ¾øÀ¸´Ï ±»ÀÌ ¾È µé°í ÀÖ¾îµµ µÇÁö¸¸, 
-// ÆĞ³Î(³»¿ë¹°)Àº ²¯´Ù Ä×´Ù ÇØ¾ß ÇÏ´Ï ¸®½ºÆ®·Î °ü¸®ÇÕ´Ï´Ù.
+//ì˜¤ë¥¸ìª½ì—ì„œ ë‚˜ì˜¤ëŠ” íš¨ê³¼ìˆìŒ
+// ì—”ì§„ ë£¨í”„ìš© m_Childrenê³¼ëŠ” ë³„ê°œë¡œ, ë‚´ê°€ ì§ì ‘ 'ì¡°ì¢…'í•  ë…€ì„ë“¤ë§Œ í¬ì¸í„°ë¡œ ë³´ê´€
+// ë²„íŠ¼ì€ ìƒíƒœë¥¼ ë°”ê¿€ ì¼ì´ ê±°ì˜ ì—†ìœ¼ë‹ˆ êµ³ì´ ì•ˆ ë“¤ê³  ìˆì–´ë„ ë˜ì§€ë§Œ, 
+// íŒ¨ë„(ë‚´ìš©ë¬¼)ì€ ê»ë‹¤ ì¼°ë‹¤ í•´ì•¼ í•˜ë‹ˆ ë¦¬ìŠ¤íŠ¸ë¡œ ê´€ë¦¬í•©ë‹ˆë‹¤.
 
 NS_BEGIN(Engine)
 
@@ -33,7 +33,7 @@ public:
 
 public:
 	void UI_PanelActive();
-	virtual void UI_Active() override; //  UI È°¼ºÈ°½Ã È£ÃâµÇ´Â ÇÔ¼ö// ÀÌ ÆĞ³ÎÀº ´Ù ÄÑÁö¸é ¾ÈµÇ±â‹š¹®¿¡ ¿À¹ö¶óÀÌµùÀ¸·Î È£Ãâ–P°í ¿©±â¼­ Ã³¸®
+	virtual void UI_Active() override; //  UI í™œì„±í™œì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜// ì´ íŒ¨ë„ì€ ë‹¤ ì¼œì§€ë©´ ì•ˆë˜ê¸°ë–„ë¬¸ì— ì˜¤ë²„ë¼ì´ë”©ìœ¼ë¡œ í˜¸ì¶œë»‡ê³  ì—¬ê¸°ì„œ ì²˜ë¦¬
 	HRESULT OnInit(void* pArg) override;
 	void OnActive()override;
 	void OnInActive()override;
@@ -57,8 +57,8 @@ private:
 	shared_ptr<CUIText> m_FixButtonTex = { nullptr };
 	float m_repairPrice = {};
 
-	shared_ptr<CUIButton> m_ButtonContents[ETOI(SHOPTAB::END)] = {};
-	shared_ptr<CUIPanel> m_TabContents[ETOI(SHOPTAB::END)] = {};
+	shared_ptr<CUIButton> m_ButtonContents[ETOI(EShopTab::END)] = {};
+	shared_ptr<CUIPanel> m_TabContents[ETOI(EShopTab::END)] = {};
 
 
 	Vector2 m_vecAni = {};

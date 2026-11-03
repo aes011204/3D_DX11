@@ -36,7 +36,7 @@ HRESULT CMiniGame_Logic::Render(_uint iMeshIndex)
 
 HRESULT CMiniGame_Logic::Initialize(void* pArg)
 {
-	m_MiniGameType = MINIGAME::BASIC_CIRCLE;
+	m_MiniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	MINIGAEMELOGIC_DESC* pDesc = static_cast<MINIGAEMELOGIC_DESC*>(pArg);
 
@@ -176,7 +176,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 					m_prograssBar01 += 0.2;
 					m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
 
-					m_LastInputResult = INPUT_RESULT::SUCCESS;
+					m_LastInputResult = EInputResult::SUCCESS;
 				}
 				else
 				{
@@ -185,7 +185,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 					m_prograssBar01 -= 0.2;
 					m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
 
-					m_LastInputResult = INPUT_RESULT::FAIL;
+					m_LastInputResult = EInputResult::FAIL;
 
 					m_changeColor = true;
 					colortime = .5f;

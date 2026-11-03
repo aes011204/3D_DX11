@@ -59,7 +59,7 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 	
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_DialogueFinish>([this](const Evt_DialogueFinish e)
 		{
-		if(m_PendingUIState ==E_PLAYERSTATE::VILLAGE)
+		if(m_PendingUIState ==EPlayerState::VILLAGE)
 		{
 			auto m_Npc = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"NPC_Panel");
 			dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
@@ -94,7 +94,7 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 			CacheToolTip(e);
 
-			if (e.locationState == LOCATIONSTATE::END || e.itemInst.itemInstId == ID_Absence)
+			if (e.locationState == ELocationState::END || e.itemInst.itemInstId == ID_Absence)
 			{
 				ui->UI_InActive();
 				return;
@@ -113,7 +113,7 @@ void CUI_Controller::End_StateUI()
 {
 
 
-	if (m_PendingUIState == E_PLAYERSTATE::VILLAGE)
+	if (m_PendingUIState == EPlayerState::VILLAGE)
 	{
 		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 		m_Village->UI_InActive();
@@ -122,7 +122,7 @@ void CUI_Controller::End_StateUI()
 		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::FISHING)
+	if (m_PendingUIState == EPlayerState::FISHING)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -135,7 +135,7 @@ void CUI_Controller::End_StateUI()
 		ui->UI_InActive();
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::FISH_SHOP)
+	if (m_PendingUIState == EPlayerState::FISH_SHOP)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -147,7 +147,7 @@ void CUI_Controller::End_StateUI()
 		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
+	if (m_PendingUIState == EPlayerState::REPAIR_SHOP)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -163,7 +163,7 @@ void CUI_Controller::End_StateUI()
 		dynamic_pointer_cast<CUI_RepairShop>(m_repair)->UI_InActive();
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::STORAGE)
+	if (m_PendingUIState == EPlayerState::STORAGE)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -177,7 +177,7 @@ void CUI_Controller::End_StateUI()
 		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
 		dynamic_pointer_cast<CUI_Box>(Box)->UI_InActive();
 	}
-	if (m_PendingUIState == E_PLAYERSTATE::INTERACT)
+	if (m_PendingUIState == EPlayerState::INTERACT)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -195,13 +195,13 @@ void CUI_Controller::End_StateUI()
 
 void CUI_Controller::StateUI()
 {
-	if (m_PendingUIState == E_PLAYERSTATE::VILLAGE)
+	if (m_PendingUIState == EPlayerState::VILLAGE)
 	{
 		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 		m_Village->UI_Active();
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::FISHING)
+	if (m_PendingUIState == EPlayerState::FISHING)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
@@ -220,7 +220,7 @@ void CUI_Controller::StateUI()
 
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::FISH_SHOP)
+	if (m_PendingUIState == EPlayerState::FISH_SHOP)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE), TAB::INVEN);
@@ -229,7 +229,7 @@ void CUI_Controller::StateUI()
 		m_HoldItem->UI_Active();
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::REPAIR_SHOP)
+	if (m_PendingUIState == EPlayerState::REPAIR_SHOP)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN) | ETOI(TAB::STORAGE), TAB::INVEN);
@@ -241,7 +241,7 @@ void CUI_Controller::StateUI()
 		dynamic_pointer_cast<CUI_RepairShop>(m_repair)->UI_PanelActive();
 	}
 
-	if (m_PendingUIState == E_PLAYERSTATE::STORAGE)
+	if (m_PendingUIState == EPlayerState::STORAGE)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
@@ -252,7 +252,7 @@ void CUI_Controller::StateUI()
 		auto Box = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Box");
 		dynamic_pointer_cast<CUI_Box>(Box)->UI_PanelActive(true);
 	}
-	if (m_PendingUIState == E_PLAYERSTATE::INTERACT)
+	if (m_PendingUIState == EPlayerState::INTERACT)
 	{
 		auto Tab = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
@@ -442,7 +442,7 @@ void CUI_Controller::InActiveTime()
 }
 void CUI_Controller::CacheToolTip(const Evt_ItemHovered& e)
 {
-	if (e.locationState == LOCATIONSTATE::END || e.itemInst.itemInstId == ID_Absence)
+	if (e.locationState == ELocationState::END || e.itemInst.itemInstId == ID_Absence)
 	{
 		m_ToolTipRestore = {};
 		return;

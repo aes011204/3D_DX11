@@ -89,24 +89,24 @@ void CCamera_Play::Update_AfterTarget(_float fTimeDelta)
 		m_bChange = false;
 	}*/
 	auto pCurrentDesc = m_CamCommands.front();
-	CAM_MODE eMode = pCurrentDesc->eMode;
+	ECamMode eMode = pCurrentDesc->eMode;
 	switch (eMode)
 	{
-	case CAM_MODE::FOLLOW:
+	case ECamMode::FOLLOW:
 		Update_Follow(fTimeDelta, pCurrentDesc);
 
 		break;
-	case CAM_MODE::STOP:
+	case ECamMode::STOP:
 	//	__super::Update_TransformMatrices();
 		break;
-	case CAM_MODE::LERP:
+	case ECamMode::LERP:
 		if (false == Update_Lerp(fTimeDelta, pCurrentDesc))
 			m_bFinish = true;
 
 
 		break;
 
-	case CAM_MODE::END:
+	case ECamMode::END:
 		break;
 	}
 

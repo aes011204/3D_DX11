@@ -43,20 +43,20 @@ void CUI_MiniGame::UI_PanelActive()
 
 
 
-	if (m_MiniGameState == MINIGAME::BASIC_CIRCLE)
+	if (m_MiniGameState == EMiniGameType::BASIC_CIRCLE)
 	{
 		m_Spinner->UI_Active();
 		m_pCircle->UI_Active();
 		m_pCircle->Set_Transparent(false);
 	}
-	else if (m_MiniGameState == MINIGAME::DIAMOND)
+	else if (m_MiniGameState == EMiniGameType::DIAMOND)
 	{
 		m_zoneCount = 0;
 		m_pSizeCircleIn->UI_Active();
 		m_pCircle->UI_Active();
 		m_pCircle->Set_Transparent(true);
 	}
-	else if (m_MiniGameState == MINIGAME::BALL)
+	else if (m_MiniGameState == EMiniGameType::BALL)
 	{
 		m_pBallCircle->UI_Active();
 
@@ -485,7 +485,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 
 	switch(m_MiniGameState)
 	{
-	case MINIGAME::BASIC_CIRCLE:
+	case EMiniGameType::BASIC_CIRCLE:
 		{
 		m_zoneCount = m_Logic->GetZoneCount();
 		memcpy(m_zones, m_Logic->GetZones(), sizeof(Zone) * m_zoneCount);
@@ -493,7 +493,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		
 
 		auto result = m_Logic->ConsumeInputResult();
-		if (result == INPUT_RESULT::SUCCESS)
+		if (result == EInputResult::SUCCESS)
 		{
 			// 초록 효과
 			m_prograssBar01 += 0.2;
@@ -503,7 +503,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
 		
 		}
-		else if (result == INPUT_RESULT::FAIL)
+		else if (result == EInputResult::FAIL)
 		{
 			//m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
 
@@ -533,7 +533,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		}
 
 		break;
-	case MINIGAME::DIAMOND:
+	case EMiniGameType::DIAMOND:
 		{
 	
 
@@ -548,7 +548,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 				m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
 
 			}*/
-			if(result == INPUT_RESULT::START)
+			if(result == EInputResult::START)
 			{
 				m_pSizeCircle->UI_Active();
 ;				//m_pSizeCircle->GetUITransform()->SetLocalScale(_float2{ 0.f,0.f });
@@ -558,7 +558,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 				m_pSizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 			}
 
-		if (result == INPUT_RESULT::SUCCESS)
+		if (result == EInputResult::SUCCESS)
 		{
 			// 초록 효과
 			m_prograssBar01 += 0.2;
@@ -570,7 +570,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT,1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
 			LOG(LOG_LEVEL::INFO, "SUCCES");
 		}
-		else if (result == INPUT_RESULT::FAIL)
+		else if (result == EInputResult::FAIL)
 		{
 			m_pSizeCircle->m_behavior.clear();
 			m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT,.5f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, true));
@@ -597,10 +597,10 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		}
 
 		break;
-	case MINIGAME::BALL:
+	case EMiniGameType::BALL:
 
 		auto result = m_Logic->ConsumeInputResult();
-		if (result == INPUT_RESULT::SUCCESS)
+		if (result == EInputResult::SUCCESS)
 		{
 			// 초록 효과
 			m_prograssBar01 += 0.2;
@@ -609,7 +609,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
 
 		}
-		else if (result == INPUT_RESULT::FAIL)
+		else if (result == EInputResult::FAIL)
 		{
 			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
 			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));

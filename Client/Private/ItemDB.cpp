@@ -78,7 +78,7 @@ HRESULT CItemDB::Load_ItemData(const string& fileName)
 
 		{
 			string str = node.value("ItemType", "END");
-			auto enumResult = magic_enum::enum_cast<ITEM_TYPE>(str, magic_enum::case_insensitive);
+			auto enumResult = magic_enum::enum_cast<EItemType>(str, magic_enum::case_insensitive);
 
 			// 
 			itemDef.itemType = enumResult.value();
@@ -127,31 +127,31 @@ HRESULT CItemDB::Load_ItemData(const string& fileName)
 
 		switch (itemDef.itemType)
 		{
-		case ITEM_TYPE::FISH:
+		case EItemType::FISH:
 		{
 			FishDef fishDef;
 			Parse_Fish_Def(fishDef, node);
 			itemDef.typeDef = fishDef;
 			break;
 		}
-		case ITEM_TYPE::EQUIP:
+		case EItemType::EQUIP:
 		{
 			EquipDef equipDef;
 			Parse_Equip_Def(equipDef, node);
 			itemDef.typeDef = equipDef;
 			break;
 		}
-		case ITEM_TYPE::MATERIAL:
+		case EItemType::MATERIAL:
 		{
 			MaterialDef materialDef;
 			materialDef.cost = node.value("Cost", 0);
 			itemDef.typeDef = materialDef;
 			break;
 		}
-		case ITEM_TYPE::PURSUIT:
+		case EItemType::PURSUIT:
 			// 없음 그냥 monostate로 ㄱ
 			break;
-		case ITEM_TYPE::TRINKET:
+		case EItemType::TRINKET:
 		{
 			TrinketDef trinketDef;
 			trinketDef.cost = node.value("Cost", 0);
@@ -184,7 +184,7 @@ void CItemDB::Parse_Fish_Def(FishDef& fishDef, const nlohmann::json& node)
 	fishDef.cost = node.value("Cost", 0);
 
 	_string str = node.value("FishTime", "END");
-	TIME timeEnum = magic_enum::enum_cast<TIME>(str).value();
+	EDayTime timeEnum = magic_enum::enum_cast<EDayTime>(str).value();
 	fishDef.fishTime = timeEnum;
 
 	fishDef.seaTypeMask = BitFlag_SeaType(node, "SeaType_Mask");
@@ -234,14 +234,14 @@ void CItemDB::Parse_Equip_Def(EquipDef& equipDef, const nlohmann::json& node)
 
 
 	_string str = node.value("EquipType", "END");
-	EQUIP_TYPE typeEnum = magic_enum::enum_cast<EQUIP_TYPE>(str).value();
+	EEquipType typeEnum = magic_enum::enum_cast<EEquipType>(str).value();
 	equipDef.equipType = typeEnum;
 
 	auto& effNode = node["EquipType_Effect"];
 
 	switch (equipDef.equipType)
 	{
-	case EQUIP_TYPE::ENGINE:
+	case EEquipType::ENGINE:
 	{
 		EquipEngine effect;
 		effect.researchLv = effNode.value("Research_Lv", 0);
@@ -250,7 +250,7 @@ void CItemDB::Parse_Equip_Def(EquipDef& equipDef, const nlohmann::json& node)
 
 		break;
 	}
-	case EQUIP_TYPE::LIGHT:
+	case EEquipType::LIGHT:
 	{
 		EquipLight effect;
 		effect.lumen = effNode.value("Lumen", 0);
@@ -259,7 +259,7 @@ void CItemDB::Parse_Equip_Def(EquipDef& equipDef, const nlohmann::json& node)
 
 		break;
 	}
-	case EQUIP_TYPE::ROD:
+	case EEquipType::ROD:
 	{
 		EquipRod effect;
 		effect.researchLv = effNode.value("Research_Lv", 0);
@@ -269,7 +269,7 @@ void CItemDB::Parse_Equip_Def(EquipDef& equipDef, const nlohmann::json& node)
 
 		break;
 	}
-	case EQUIP_TYPE::NET:
+	case EEquipType::NET:
 	{
 		EquipNet effect;
 		effect.researchLv = effNode.value("Research_Lv", 0);
@@ -283,7 +283,7 @@ void CItemDB::Parse_Equip_Def(EquipDef& equipDef, const nlohmann::json& node)
 
 		break;
 	}
-	case EQUIP_TYPE::CRAP:
+	case EEquipType::CRAP:
 	{
 		EquipCrabPot effect;
 		effect.researchLv = effNode.value("Research_Lv", 0);
@@ -309,15 +309,15 @@ SEA_MASK CItemDB::BitFlag_SeaType(const nlohmann::json& node, const string str)
 		string name = v.get<std::string>();
 
 
-		if (name == "COASTAL") { mask |= Set_SeaType_Mask(SEA_TYPE::COASTAL); }
-		else if (name == "SHALLOW") { mask |= Set_SeaType_Mask(SEA_TYPE::SHALLOW); }
-		else if (name == "OCEANIC") { mask |= Set_SeaType_Mask(SEA_TYPE::OCEANIC); }
-		else if (name == "ABYSSAL") { mask |= Set_SeaType_Mask(SEA_TYPE::ABYSSAL); }
-		else if (name == "HADAL") { mask |= Set_SeaType_Mask(SEA_TYPE::HADAL); }
-		else if (name == "MANGROVE") { mask |= Set_SeaType_Mask(SEA_TYPE::MANGROVE); }
-		else if (name == "VOLCANIC") { mask |= Set_SeaType_Mask(SEA_TYPE::VOLCANIC); }
-		else if (name == "ICE") { mask |= Set_SeaType_Mask(SEA_TYPE::ICE); }
-		else if (name == "CRAB") { mask |= Set_SeaType_Mask(SEA_TYPE::CRAB); }
+		if (name == "COASTAL") { mask |= Set_SeaType_Mask(ESeaType::COASTAL); }
+		else if (name == "SHALLOW") { mask |= Set_SeaType_Mask(ESeaType::SHALLOW); }
+		else if (name == "OCEANIC") { mask |= Set_SeaType_Mask(ESeaType::OCEANIC); }
+		else if (name == "ABYSSAL") { mask |= Set_SeaType_Mask(ESeaType::ABYSSAL); }
+		else if (name == "HADAL") { mask |= Set_SeaType_Mask(ESeaType::HADAL); }
+		else if (name == "MANGROVE") { mask |= Set_SeaType_Mask(ESeaType::MANGROVE); }
+		else if (name == "VOLCANIC") { mask |= Set_SeaType_Mask(ESeaType::VOLCANIC); }
+		else if (name == "ICE") { mask |= Set_SeaType_Mask(ESeaType::ICE); }
+		else if (name == "CRAB") { mask |= Set_SeaType_Mask(ESeaType::CRAB); }
 	}
 	return mask;
 }

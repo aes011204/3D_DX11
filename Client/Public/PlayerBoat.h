@@ -106,7 +106,7 @@ private:
 
    shared_ptr<CLight> m_lightObj = { nullptr };
   // _bool On_Light = { false };
-    LOCATIONSTATE m_location = { LOCATIONSTATE:: SEA };
+    ELocationState m_location = { ELocationState:: SEA };
 
     shared_ptr<class CPlayerStateMachine> m_playerStateMachine = {};
 public:

@@ -47,13 +47,13 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 
 			wstring strSeaTypes = L"";
 			_uint iCount = 0;
-			for (_uint i = 0; i < (_uint)SEA_TYPE::END; ++i)
+			for (_uint i = 0; i < (_uint)ESeaType::END; ++i)
 			{
 				// e.mask에 해당 비트가 켜져 있는지 확인 (예: 1 << 0, 1 << 1 ...)
 				if (e.seaMask & (1 << i))
 				{
 					if (iCount > 0) strSeaTypes += L", "; // 두 번째 이름부터는 쉼표 추가
-					strSeaTypes += GetSeaTypeName((SEA_TYPE)(1 << i));
+					strSeaTypes += GetSeaTypeName((ESeaType)(1 << i));
 					iCount++;
 				}
 			}
@@ -131,19 +131,19 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 
 			switch (slot_Inven.slotType)
 			{
-			case ETOI(SLOT_TYPE::ENGINE):
+			case ETOI(ESlotType::ENGINE):
 				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::LIGHT):
+			case ETOI(ESlotType::LIGHT):
 				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::NET):
+			case ETOI(ESlotType::NET):
 				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // 앤 없는듯
 				break;
-			case ETOI(SLOT_TYPE::ROT):
+			case ETOI(ESlotType::ROT):
 				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::ANY):
+			case ETOI(ESlotType::ANY):
 				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
 				break;
 			}
@@ -381,24 +381,24 @@ void CUI_Inventory::OnPrepareRender()
 		m_Slot[index]->Set_ColorFlat(colorReset);
 		switch (InvenSlot[index].slotColor)
 		{
-		case PLACE_COLOR::GREEN:
+		case EPlaceColor::GREEN:
 			Muscolor = { 0.f,1.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
 			m_Slot[index]->Set_ColorFlat(Muscolor);
 		
 			break;
-		case PLACE_COLOR::ORANGE:
+		case EPlaceColor::ORANGE:
 			Muscolor = { 1.0f,0.6f,0.0f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
 			m_Slot[index]->Set_ColorFlat(Muscolor);
 
 			break;
-		case PLACE_COLOR::RED:
+		case EPlaceColor::RED:
 			Muscolor = { 1.f,0.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
 			m_Slot[index]->Set_ColorFlat(Muscolor);
 			break;
-		case PLACE_COLOR::END:
+		case EPlaceColor::END:
 		
 			//m_Slot[index]->Set_ColorFlat(false);
 			break;
@@ -425,11 +425,11 @@ void CUI_Inventory::OnPrepareRender()
 		_float4 color = {};
 		switch (invnelItem.itemType)
 		{
-		case ITEM_TYPE::MATERIAL:
-		case ITEM_TYPE::EQUIP:
+		case EItemType::MATERIAL:
+		case EItemType::EQUIP:
 			color = { 0.23f, 0.23f, 0.21f, 1.f };
 			break;
-		case ITEM_TYPE::FISH:
+		case EItemType::FISH:
 			color = { .7f,0.2f,0.2f,1.f };
 			break;
 
@@ -478,7 +478,7 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 	Evt_MouseToIndexData e = {};
 	e.IsOnSlot = false; // 기본 false
 
-	if(m_Inven.lock()->Get_Inventype() == INVENTYPE::PLAYER)
+	if(m_Inven.lock()->Get_Inventype() == EInvenType::PLAYER)
 	{
 		e.IsPlayer = true;
 	}

@@ -38,7 +38,7 @@ HRESULT CMiniGame_Logic_Diamond::Render(_uint iMeshIndex)
 
 HRESULT CMiniGame_Logic_Diamond::Initialize(void* pArg)
 {
-	m_MiniGameType = MINIGAME::DIAMOND;
+	m_MiniGameType = EMiniGameType::DIAMOND;
 
 	MINIGAEMELOGIC_DIAMOND_DESC* pDesc = static_cast<MINIGAEMELOGIC_DIAMOND_DESC*>(pArg);
 
@@ -92,7 +92,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 					m_prograssBar01 += 0.2;
 					m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
 
-					m_LastInputResult = INPUT_RESULT::SUCCESS;
+					m_LastInputResult = EInputResult::SUCCESS;
 				}
 				else
 				{
@@ -100,7 +100,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 					m_prograssBar01 -= 0.2;
 
-					m_LastInputResult = INPUT_RESULT::FAIL;
+					m_LastInputResult = EInputResult::FAIL;
 					m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
 
 					m_changeColor = true;
@@ -117,7 +117,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 		{
 			m_Size = 0.f;
 			m_AccTime = 0.f;
-			m_LastInputResult = INPUT_RESULT::START;
+			m_LastInputResult = EInputResult::START;
 		}
 
 		if (m_prograssBar01 >= 1.f && !m_bFin)
@@ -179,7 +179,7 @@ void CMiniGame_Logic_Diamond::OnInput()
 	{
 		m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
 
-		m_LastInputResult = INPUT_RESULT::START;
+		m_LastInputResult = EInputResult::START;
 		m_bStart = true;
 		m_AccTime = 0.f;
 		m_Size = 0.f;

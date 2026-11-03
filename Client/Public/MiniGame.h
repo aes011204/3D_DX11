@@ -22,7 +22,7 @@ public:
 		_uint FishCount = {};
 
 		weak_ptr<class CInventory_Controller> pInvenCtrl;
-		MINIGAME MiniGameType = {};
+		EMiniGameType MiniGameType = {};
 	};
 protected:
 	CMiniGame();
@@ -39,9 +39,9 @@ public:
 	_uint SelectMutationRandom(const FishDef& fishDef);
 	_uint SelectMutationNoRepeat(const FishDef& fishDef);
 
-	INPUT_RESULT ConsumeInputResult() {
-		INPUT_RESULT result = m_LastInputResult;
-		m_LastInputResult = INPUT_RESULT::NONE;
+	EInputResult ConsumeInputResult() {
+		EInputResult result = m_LastInputResult;
+		m_LastInputResult = EInputResult::NONE;
 		return result;
 	};
 	virtual void OnInput() = 0;
@@ -51,7 +51,7 @@ public:
 	//bool IsStart() const { return m_bStart; }
 	//bool IsFinish() const { return m_bFin; }
 
-	MINIGAME Get_MiniGameType() { return m_MiniGameType; }
+	EMiniGameType Get_MiniGameType() { return m_MiniGameType; }
 	_uint Get_DefID() { return m_DefID; };
 	_uint GetFishCount() const { return m_FishCount; }
 	float GetProgress01() const { return m_prograssBar01; }
@@ -69,7 +69,7 @@ public:
 	///
 	///
 protected:
-	INPUT_RESULT m_LastInputResult = INPUT_RESULT::NONE;
+	EInputResult m_LastInputResult = EInputResult::NONE;
 
 	_bool m_bInputRequested = false;
 
@@ -78,7 +78,7 @@ protected:
 	_uint m_FishCount = {};
 	float m_prograssBar01 = { 0 };
 
-	MINIGAME m_MiniGameType = {};
+	EMiniGameType m_MiniGameType = {};
 	weak_ptr<class CInventory_Controller> m_InvenCtrl = {};
 	weak_ptr<CGameInstance> m_pGameInstance = {};
 	_uint m_PrevFishID = { ID_Absence };

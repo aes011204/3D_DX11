@@ -15,19 +15,19 @@ namespace Client
 	class CInventory;
 	class CMiniGame_Logic;
 	class CFish;
-	enum class LOCATIONSTATE;
+	enum class ELocationState;
 
 	// 아이템 관련 
-	enum class ITEM_TYPE { FISH, EQUIP, MATERIAL, PURSUIT, TRINKET, END };
-	enum class TIME { DAY, NIGHT, END };
-    enum class FRESHNESS { FRESH, STALE, ROTTING, INFECTED, END };
-    enum class SLOT_TYPE { ANY, ENGINE, LIGHT, ROT, NET, END };
-    enum class EQUIP_TYPE { ROD,  ENGINE, NET , LIGHT, POT, CRAP, END };
+	enum class EItemType { FISH, EQUIP, MATERIAL, PURSUIT, TRINKET, END };
+	enum class EDayTime { DAY, NIGHT, END };
+    enum class EFreshness { FRESH, STALE, ROTTING, INFECTED, END };
+    enum class ESlotType { ANY, ENGINE, LIGHT, ROT, NET, END };
+    enum class EEquipType { ROD,  ENGINE, NET , LIGHT, POT, CRAP, END };
 
-	enum class SEA_TYPE : _ubyte { COASTAL, SHALLOW, OCEANIC, ABYSSAL, HADAL, MANGROVE, VOLCANIC, ICE, CRAB, END };
+	enum class ESeaType : _ubyte { COASTAL, SHALLOW, OCEANIC, ABYSSAL, HADAL, MANGROVE, VOLCANIC, ICE, CRAB, END };
 	// 비트 플레그로쓸거임 //uint8_t : “하나 선택” → 8비트로 충분
     using SEA_MASK = _uint; // uint16_t (_ushort) : 16개 까지 가능 // 여러 개 ON/OFF 집합” → 16비트로 넉넉하게 // _uint 32 비트로 해도됨 
-    constexpr SEA_MASK Set_SeaType_Mask(SEA_TYPE SeaType) { return SEA_MASK{ 1u } << static_cast<uint32_t>(SeaType);
+    constexpr SEA_MASK Set_SeaType_Mask(ESeaType SeaType) { return SEA_MASK{ 1u } << static_cast<uint32_t>(SeaType);
     } // 1u = unsigned 1 // << 비트 연산 왼쪽으로 한칸씩 이동
 
 }
@@ -62,7 +62,7 @@ namespace Client
 
     struct FishDef
     {
-        float cost = { 0 }; TIME fishTime = TIME::END; SEA_MASK seaTypeMask = { 0 };
+        float cost = { 0 }; EDayTime fishTime = EDayTime::END; SEA_MASK seaTypeMask = { 0 };
         _bool isRod = false; _bool isTrawl = false; _bool  isPot = false;
 
         vector<Mutation> vecMutation = {}; // array 는 현제 몇개가 있는지 카운트하는기능이 없어서 struct로 만들어서 / 근데 난 귀찬
@@ -79,7 +79,7 @@ namespace Client
 
     struct EquipDef
     {
-        float cost = { 0 }; _uint installTime = { 0 }; EQUIP_TYPE equipType = EQUIP_TYPE::END;
+        float cost = { 0 }; _uint installTime = { 0 }; EEquipType equipType = EEquipType::END;
         variant<EquipEngine, EquipLight, EquipRod, EquipNet, EquipCrabPot> equipTypeEffect;
     };
 
@@ -88,7 +88,7 @@ namespace Client
     struct TrinketDef { float cost = { 0 }; };
 
 
-    struct FishInst { FRESHNESS freshness = FRESHNESS::FRESH; ID_uint mutationId = { ID_Absence }; _float size = {}; };
+    struct FishInst { EFreshness freshness = EFreshness::FRESH; ID_uint mutationId = { ID_Absence }; _float size = {}; };
     struct EquipInst { bool isBroken = false; };
 
     /// 아이템 인스턴스 
@@ -96,7 +96,7 @@ namespace Client
     {
         ID_uint itemDefId = { ID_Absence }; 
         ID_uint itemInstId = { ID_Absence };
-        ITEM_TYPE itemType = ITEM_TYPE::END; // 이건 그냥 캐싱용으로 두자
+        EItemType itemType = EItemType::END; // 이건 그냥 캐싱용으로 두자
 
         bool isMutation = { false };
         Mutation mutationCaching = {};
@@ -119,7 +119,7 @@ namespace Client
     struct ItemDef
 	{
 		ID_uint itemId = { ID_Absence }; // 이제 id 는 0 을 아무것도 없는 가짜 상태로
-		ITEM_TYPE itemType = ITEM_TYPE::END;
+		EItemType itemType = EItemType::END;
 		_string itemName = {};
 		_string itemDesc = {};
         _string texturePath = {};
@@ -133,39 +133,39 @@ namespace Client
 
 	};
     
-    static wstring freshToWstr(FRESHNESS freshness)
+    static wstring freshToWstr(EFreshness freshness)
     {
 
         switch (freshness) {
-        case FRESHNESS::FRESH: return L"신선한";
-        case FRESHNESS::ROTTING: return L"퀴퀴함";
-        case FRESHNESS::INFECTED: return  L"감염된";
+        case EFreshness::FRESH: return L"신선한";
+        case EFreshness::ROTTING: return L"퀴퀴함";
+        case EFreshness::INFECTED: return  L"감염된";
         default: return L"UNKNOWN";
         }
     }
-    static const wstring GetSeaTypeName(SEA_TYPE Type)
+    static const wstring GetSeaTypeName(ESeaType Type)
     {
         switch (Type)
         {
-        case SEA_TYPE::COASTAL:
+        case ESeaType::COASTAL:
             return L"COASTAL";
-        case SEA_TYPE::SHALLOW:
+        case ESeaType::SHALLOW:
             return L"SHALLOW";
-        case SEA_TYPE::OCEANIC:
+        case ESeaType::OCEANIC:
             return L"OCEANIC";
-        case SEA_TYPE::ABYSSAL:
+        case ESeaType::ABYSSAL:
             return L"ABYSSAL";
-        case SEA_TYPE::HADAL:
+        case ESeaType::HADAL:
             return L"HADAL";
-        case SEA_TYPE::MANGROVE:
+        case ESeaType::MANGROVE:
             return L"MANGROVE";
-        case SEA_TYPE::VOLCANIC:
+        case ESeaType::VOLCANIC:
             return L"VOLCANIC";
-        case SEA_TYPE::ICE:
+        case ESeaType::ICE:
             return L"ICE";
-        case SEA_TYPE::CRAB:
+        case ESeaType::CRAB:
             return L"CRAB";
-        case SEA_TYPE::END:
+        case ESeaType::END:
             return L"END";
         default:
             return L"UNKNOWN";
@@ -176,7 +176,7 @@ namespace Client
     {
         wstring result = L"";
 
-        for (_uint i = 0; i < ETOI(SEA_TYPE::END); ++i)
+        for (_uint i = 0; i < ETOI(ESeaType::END); ++i)
         {
             SEA_MASK typeMask = 1u << i;
 
@@ -185,7 +185,7 @@ namespace Client
                 if (!result.empty())
                     result += L" | ";
 
-                result += GetSeaTypeName(static_cast<SEA_TYPE>(i));
+                result += GetSeaTypeName(static_cast<ESeaType>(i));
             }
         }
         return result;
@@ -206,15 +206,15 @@ namespace Client
 
 namespace Client
 {
-    enum class PLACE_COLOR { RED, ORANGE, GREEN ,END};
+    enum class EPlaceColor { RED, ORANGE, GREEN ,END};
     /// 슬롯
     struct Slot
     {
         ID_uint itemInstId = { ID_Absence };
-        SLOT_TYPE slotType = SLOT_TYPE::ANY;
+        ESlotType slotType = ESlotType::ANY;
         _bool isLock = { false };
         _bool isBroken = { false };
-        PLACE_COLOR slotColor = PLACE_COLOR::END;
+        EPlaceColor slotColor = EPlaceColor::END;
     };
 
 }
@@ -264,13 +264,13 @@ namespace Client
 {
     //ui
 
-    enum class EUI
+    enum class EUiType
     {
         Test,
         Test1,
     };
 
-    enum class INVENTYPE { PLAYER, CHEST, SHOP,STORAGE, END, NONE };
+    enum class EInvenType { PLAYER, CHEST, SHOP,STORAGE, END, NONE };
 
 
     struct Evt_InvenPlayerInitData
@@ -278,11 +278,11 @@ namespace Client
         weak_ptr<class CInventory> invenPtr = {};
     };
 
-    enum class SHOPTAB { ROT, ENGINE, NET, LIGHT, END , NONE};
+    enum class EShopTab { ROT, ENGINE, NET, LIGHT, END , NONE};
     struct Evt_InvenStorageInitData
     {
-        INVENTYPE invenType = { INVENTYPE ::NONE};
-        SHOPTAB shopTabType = {  };
+        EInvenType invenType = { EInvenType ::NONE};
+        EShopTab shopTabType = {  };
         weak_ptr<class CInventory> invenPtr = {};
     };
 
@@ -290,7 +290,7 @@ namespace Client
 
     struct Evt_InvenShopInitData
     {
-        SHOPTAB shopTabType = {  };
+        EShopTab shopTabType = {  };
         weak_ptr<class CInventory> invenPtr = {};
     };
     struct  Evt_MouseToIndexData
@@ -331,17 +331,17 @@ namespace Client
     {
         _bool isHold = {false};
         ItemInst itemInst = {};
-        LOCATIONSTATE locationState = {};
+        ELocationState locationState = {};
         _bool IsPlayer = {};
     };
 
-    enum class HUD { SKILL, COMPASS, TOP, BOAT, ETC, END };
+    enum class EHud { SKILL, COMPASS, TOP, BOAT, ETC, END };
 
-    enum class NPC { MAYOR, SHIPWRIGHT, FISHMONGER, TRADER, END };
+    enum class ENpc { MAYOR, SHIPWRIGHT, FISHMONGER, TRADER, END };
 
-    enum class LOCATIONSTATE { REPAIR_SHOP, SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP, VILLAGE, END };
+    enum class ELocationState { REPAIR_SHOP, SHOP, SHOP_INVEN, FISHING, SEA, FISH_SHOP, VILLAGE, END };
 
-    enum class E_PLAYERSTATE { REPAIR_SHOP, FISH_SHOP, FISHING, SEA, STORAGE, VILLAGE,INTERACT, END };
+    enum class EPlayerState { REPAIR_SHOP, FISH_SHOP, FISHING, SEA, STORAGE, VILLAGE,INTERACT, END };
 
 
 
@@ -368,11 +368,11 @@ namespace Client
 
 
 
-    enum CAM_MODE { FOLLOW, LERP, STOP, SHACK, END };
+    enum class ECamMode { FOLLOW, LERP, STOP, SHAKE, END };
     struct CamDesc
     {
         virtual ~CamDesc() = default;
-        CAM_MODE eMode;
+        ECamMode eMode;
         function<void()> OnComplete = nullptr;
     };
 
@@ -435,7 +435,7 @@ namespace Client
 
     struct Evt_CamArrived
     {
-        E_PLAYERSTATE playerstate = {};
+        EPlayerState playerstate = {};
 
     };
 
@@ -452,7 +452,7 @@ namespace Client
 
     struct Evt_ChangeState
     {
-        E_PLAYERSTATE playerstate = {};
+        EPlayerState playerstate = {};
     };
 
 
@@ -509,13 +509,13 @@ namespace Client
         _bool Light = false;
     };
 
-    enum class INPUT_RESULT
+    enum class EInputResult
     {
         NONE,
         SUCCESS,
         FAIL,
         START
     };
-    enum class MINIGAME { BASIC_CIRCLE, DIAMOND, BALL, END };
-    enum class EFFTYPE { PLAYER,FISH,END };
+    enum class EMiniGameType { BASIC_CIRCLE, DIAMOND, BALL, END };
+    enum class EEffType { PLAYER,FISH,END };
 }

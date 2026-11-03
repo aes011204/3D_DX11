@@ -225,7 +225,7 @@ HRESULT CBox::Ready_Components()
 
 
 	CInventory::InvenDesc storage_desc = {};
-	storage_desc.invenType = INVENTYPE::CHEST;
+	storage_desc.invenType = EInvenType::CHEST;
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pStorageCom, &storage_desc)))
 		return E_FAIL;
 

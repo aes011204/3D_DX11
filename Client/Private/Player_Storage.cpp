@@ -22,27 +22,27 @@ void CPlayer_Storage::Enter()
 
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CamLerpDesc>();
-	pLerp->eMode = CAM_MODE::LERP;
+	pLerp->eMode = ECamMode::LERP;
 	pLerp->vTargetPos = _float3(3.016f, 2.944f, 0.87f);
 	pLerp->vTargetRot = _float3(33.84f, -55.60f, 0.f);
 	pLerp->fDuration = 2.0f;
 	pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
 		Evt_CamArrived e = {};
-		e.playerstate = E_PLAYERSTATE::STORAGE;
+		e.playerstate = EPlayerState::STORAGE;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 	};
 	event.commands.push_back(pLerp);
 
 	auto pStop = make_shared<CamDesc>();
-	pStop->eMode = CAM_MODE::STOP;
+	pStop->eMode = ECamMode::STOP;
 	event.commands.push_back(pStop);
 
 
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-	eNextState = E_PLAYERSTATE::STORAGE;
+	eNextState = EPlayerState::STORAGE;
 
 
 	/*Evt_OpenInventory e;
@@ -90,7 +90,7 @@ int CPlayer_Storage::Update_State(const _float& timeDelta)
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
 
-		return  ETOI(E_PLAYERSTATE::VILLAGE);
+		return  ETOI(EPlayerState::VILLAGE);
 	}
 
 

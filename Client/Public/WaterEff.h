@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
@@ -15,7 +15,7 @@ class CWaterEff :
         :
     struct EffDESC : public CGameObject::GAMEOBJECT_DESC
     {
-        EFFTYPE eType = {};
+        EEffType eType = {};
         weak_ptr<class CGameObject>Target = {};
 
     };
@@ -47,7 +47,7 @@ protected:
     HRESULT Ready_Components();
 
    
-    EFFTYPE   eType={};
+    EEffType   eType={};
 private:
     weak_ptr<class CGameObject> m_pPlayer = {};
 private:

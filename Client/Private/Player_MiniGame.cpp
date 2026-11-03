@@ -23,7 +23,7 @@ void CPlayer_MiniGame::Enter()
 
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CamLerpDesc>();
-	pLerp->eMode = CAM_MODE::LERP;
+	pLerp->eMode = ECamMode::LERP;
 
 	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
 	XMStoreFloat3(&pLerp->vTargetPos, m_pOwnerTransformCom.lock()->Get_Position()
@@ -33,7 +33,7 @@ void CPlayer_MiniGame::Enter()
 	pLerp->fDuration = 1.5f;
 	pLerp->OnComplete = [this]() {
 		Evt_CamArrived e = {};
-		e.playerstate = E_PLAYERSTATE::FISHING;
+		e.playerstate = EPlayerState::FISHING;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 		
 		};
@@ -41,7 +41,7 @@ void CPlayer_MiniGame::Enter()
 
 
 	auto pStop = make_shared<CamDesc>();
-	pStop->eMode = CAM_MODE::STOP;
+	pStop->eMode = ECamMode::STOP;
 	event.commands.push_back(pStop);
 
 	m_pGameInstance.lock()->Get_EventBus()->Publish(event);
@@ -94,9 +94,9 @@ int CPlayer_MiniGame::Update_State(const _float& timeDelta)
 	
 	if(m_Input_Manager->KeyDown(DIK_X))
 	{
-	return ETOI(E_PLAYERSTATE::SEA);
+	return ETOI(EPlayerState::SEA);
 	}
-		return  ETOI(E_PLAYERSTATE::FISHING);
+		return  ETOI(EPlayerState::FISHING);
 }
 
 void CPlayer_MiniGame::LateUpdate_State(const _float& timeDelta)

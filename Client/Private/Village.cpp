@@ -56,12 +56,12 @@ HRESULT CVillage::Initialize(void* pArg)
 
 
 
-	for (_uint i = 0; i < ETOI(SHOPTAB::END); i++)
+	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
 		Evt_InvenStorageInitData e = {};
 		e.invenPtr = m_pShopCom[i];
 		e.invenType = m_pShopCom[i]->Get_Inventype();
-		e.shopTabType = static_cast<SHOPTAB>(i);
+		e.shopTabType = static_cast<EShopTab>(i);
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStorageInitData>(e);
 	}
 
@@ -216,11 +216,11 @@ HRESULT CVillage::Ready_Components()
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
 
 
-	for(_uint i =0; i < ETOI(SHOPTAB::END) ; i++)
+	for(_uint i =0; i < ETOI(EShopTab::END) ; i++)
 	{
 		CInventory::InvenDesc storage_desc = {};
-		storage_desc.invenType = INVENTYPE::SHOP;
-		storage_desc.equipType = static_cast<EQUIP_TYPE>(i);
+		storage_desc.invenType = EInvenType::SHOP;
+		storage_desc.equipType = static_cast<EEquipType>(i);
 		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pShopCom[i], &storage_desc)))
 			return E_FAIL;
 

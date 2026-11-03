@@ -1,4 +1,4 @@
-#include "UI_Box.h"
+Ôªø#include "UI_Box.h"
 
 #include <UIText.h>
 
@@ -46,13 +46,13 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 {
 	if(IsStorage == true)
 	{
-		m_Name_Text->Set_Text(L"≥ª π∞«∞ ∫∏∞¸«‘");
+		m_Name_Text->Set_Text(L"ÎÇ¥ Î¨ºÌíà Î≥¥Í¥ÄÌï®");
 		m_Storage->UI_Active();
 		m_pUITransformCom->SetLocalScale(_float2(2.56f, 3.21f));
 	}
 	else
 	{
-		m_Name_Text->Set_Text(L"πﬂ∞ﬂ«— æ∆¿Ã≈€");
+		m_Name_Text->Set_Text(L"Î∞úÍ≤¨Ìïú ÏïÑÏù¥ÌÖú");
 		m_Box->UI_Active();
 		m_Box->Get_InvenPanel()->Set_Transparent(true);
 		m_pUITransformCom->SetLocalScale(_float2(2.56f, 1.7f));
@@ -62,8 +62,8 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 
 	//m_Children.clear();
 //	_uint numPanel = {};
-	// ¿œ¥‹ ±‚∫ª¿˚¿∏∑Œ ∆–≥Œ ¿∫ ¥Ÿ inactive, πˆ∆∞¿∫ iTabfig ø° µ˚∂Û active
-	//::OnActive() ø°º≠ ≈¨∏Ø«— ∞≈∏∏ »∞º∫»≠
+	// ÏùºÎã® Í∏∞Î≥∏Ï†ÅÏúºÎ°ú Ìå®ÎÑê ÏùÄ Îã§ inactive, Î≤ÑÌäºÏùÄ iTabfig Ïóê Îî∞Îùº active
+	//::OnActive() ÏóêÏÑú ÌÅ¥Î¶≠Ìïú Í±∞Îßå ÌôúÏÑ±Ìôî
 	m_NameBase->UI_Active();
 	m_Name_Text->UI_Active();
 	/*m_Storage->UI_Active();*/
@@ -101,7 +101,7 @@ HRESULT CUI_Box::OnInit(void* pArg)
 	BoxDesc->TextureComLevel = ETOI(LEVEL::STATIC);
 	BoxDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
 	//BoxDesc->IsUseLayout = true;
-	//pDesc.vAnchorPoint = ¿œ¥‹ ∆–Ω∫
+	//pDesc.vAnchorPoint = ÏùºÎã® Ìå®Ïä§
 	//	pDesc.vPivot
 	//	pDesc.vAnchoredPos
 
@@ -118,7 +118,7 @@ HRESULT CUI_Box::OnInit(void* pArg)
 	{
 		CUIText::TEXT_DESC nameDesc = {};
 		nameDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-		nameDesc.strText = L"≥ª π∞«∞ ∫∏∞¸«‘";
+		nameDesc.strText = L"ÎÇ¥ Î¨ºÌíà Î≥¥Í¥ÄÌï®";
 		shared_ptr<CUIText> Name_Text = CUIText::Create(m_pDevice, m_pContext);
 		Name_Text->Initialize(&nameDesc);
 
@@ -130,12 +130,12 @@ HRESULT CUI_Box::OnInit(void* pArg)
 
 	
 
-		// ¿Œ∫•
+		// Ïù∏Î≤§
 		CUI_Storage::STORAGE_DESC StorageDesc = {};
 		StorageDesc.IsFullScreen = false;
 		StorageDesc.IsTransparent = true;
 		StorageDesc.bSetParentSize = true;
-		StorageDesc.Inventype = INVENTYPE::STORAGE;
+		StorageDesc.Inventype = EInvenType::STORAGE;
 
 		shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
 		pStorage->Initialize(&StorageDesc);
@@ -148,12 +148,12 @@ HRESULT CUI_Box::OnInit(void* pArg)
 
 		//////////////////////////////////////////
 
-		// ¿Œ∫•
+		// Ïù∏Î≤§
 		CUI_Storage::STORAGE_DESC boxDesc = {};
 		boxDesc.IsFullScreen = false;
 		boxDesc.IsTransparent = true;
 		boxDesc.bSetParentSize = true;
-		boxDesc.Inventype = INVENTYPE::CHEST;
+		boxDesc.Inventype = EInvenType::CHEST;
 	
 		shared_ptr<CUI_Storage> pBox = CUI_Storage::Create(m_pDevice, m_pContext);
 		pBox->Initialize(&boxDesc);
@@ -196,7 +196,7 @@ void CUI_Box::OnDisabled()
 
 void CUI_Box::OnUpdate(const _float& timeDelta)
 {
-	// ø©±‚ø°º≠ æ»∫∏ø¥¥Ÿ∞° øÕæﬂ«‘
+	// Ïó¨Í∏∞ÏóêÏÑú ÏïàÎ≥¥ÏòÄÎã§Í∞Ä ÏôÄÏïºÌï®
 	if (m_bStart == true)
 	{
 		m_TimeAcc += timeDelta;

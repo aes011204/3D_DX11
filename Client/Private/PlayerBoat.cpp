@@ -189,7 +189,7 @@ HRESULT CPlayerBoat::Ready_Components()
 	
 
 	CInventory::InvenDesc invenDesc = {};
-	invenDesc.invenType = INVENTYPE::PLAYER;
+	invenDesc.invenType = EInvenType::PLAYER;
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Inven"), &m_invenCom, &invenDesc)))
 		return E_FAIL;
 
@@ -199,7 +199,7 @@ HRESULT CPlayerBoat::Ready_Components()
 
 
 	CInventory::InvenDesc storageDesc = {};
-	storageDesc.invenType = INVENTYPE::STORAGE;
+	storageDesc.invenType = EInvenType::STORAGE;
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_storageCom, &storageDesc)))
 		return E_FAIL;
 	

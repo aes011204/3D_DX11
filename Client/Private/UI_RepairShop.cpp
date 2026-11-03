@@ -58,7 +58,7 @@ void CUI_RepairShop::UI_PanelActive()
 		content->UI_InActive();
 		//dynamic_pointer_cast<CUI_Storage>(content)->Set_SlotNum(8, 8);
 	}
-	m_TabContents[ETOI(SHOPTAB::ROT)]->UI_Active();
+	m_TabContents[ETOI(EShopTab::ROT)]->UI_Active();
 	
 	m_Line->UI_Active();
 	m_Line2->UI_Active();
@@ -131,9 +131,9 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	Add_Child(Line2, L"Line2", false);
 	m_Line2 = Line2;
 
-	for (_uint i = 0; i < ETOI(SHOPTAB::END); i++)
+	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
-		SHOPTAB eTab = static_cast<SHOPTAB>(i);
+		EShopTab eTab = static_cast<EShopTab>(i);
 
 		/// 버튼
 		CUIButton::UIBUTTON_DESC ButDesc = {};
@@ -164,19 +164,19 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 			wstring texKey = {};
 			switch (eTab)
 			{
-			case SHOPTAB::ROT:
+			case EShopTab::ROT:
 			
 				texKey = L"Prototype_Component_Texture_Shop_Rod";
 				break;
-			case SHOPTAB::ENGINE:
+			case EShopTab::ENGINE:
 				
 				texKey=L"Prototype_Component_Texture_Shop_Engine";
 				break;
-			case SHOPTAB::NET:
+			case EShopTab::NET:
 				
 				texKey = L"Prototype_Component_Texture_Shop_Net";
 				break;
-			case SHOPTAB::LIGHT:
+			case EShopTab::LIGHT:
 				
 				texKey = L"Prototype_Component_Texture_Shop_Light";
 				break;
@@ -200,16 +200,16 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 
 	}
 
-	for (_uint i = 0; i < ETOI(SHOPTAB::END); i++)
+	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
 		{
-			SHOPTAB eTab = static_cast<SHOPTAB>(i);
+			EShopTab eTab = static_cast<EShopTab>(i);
 			// 일단 테스트 인벤 3개
 			CUI_Storage::STORAGE_DESC StorageDesc = {};
 			StorageDesc.IsFullScreen = false;
 			StorageDesc.IsTransparent = true;
 			StorageDesc.bSetParentSize = true;
-			StorageDesc.Inventype = INVENTYPE::SHOP;
+			StorageDesc.Inventype = EInvenType::SHOP;
 			StorageDesc.shopTab = eTab;
 			
 
@@ -289,7 +289,7 @@ void CUI_RepairShop::OnActive()
 	m_bStart = true;
 	m_fDuration = 1.5f;
 
-	m_ButtonContents[ETOI(SHOPTAB::ROT)]->ChangeState(BUTTON_STATE::SELECT);
+	m_ButtonContents[ETOI(EShopTab::ROT)]->ChangeState(BUTTON_STATE::SELECT);
 
 
 	CUIPanel::OnActive();
@@ -353,7 +353,7 @@ void CUI_RepairShop::SetActiveTab(_uint btnIndex)
 {
 	
 
-	for (int i = 0; i < ETOI(SHOPTAB::END); i++)
+	for (int i = 0; i < ETOI(EShopTab::END); i++)
 	{
 		if (m_TabContents[i])
 			m_TabContents[i]->UI_InActive(); // 탭은 인엑티브를 해야하고 
@@ -384,7 +384,7 @@ shared_ptr<CUI_RepairShop> CUI_RepairShop::Create(ComPtr<ID3D11Device> pDevice,
 
 void CUI_RepairShop::Free()
 {
-	for (int i = 0; i < ETOI(SHOPTAB::END); ++i)
+	for (int i = 0; i < ETOI(EShopTab::END); ++i)
 	{
 		m_TabContents[i].reset();
 		m_ButtonContents[i].reset();

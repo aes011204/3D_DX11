@@ -1,4 +1,4 @@
-#include "WaterEff.h"
+﻿#include "WaterEff.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "PlayerBoat.h"
@@ -75,7 +75,7 @@ void CWaterEff::Update(_float fTimeDelta)
 	pos3.y = 0.2f;
 
 
-	if (eType == EFFTYPE::PLAYER)
+	if (eType == EEffType::PLAYER)
 	{
 		_vector vPrevPos = XMLoadFloat3(&PrevPos);
 		_vector vCurrentPos = XMLoadFloat3(&pos3);

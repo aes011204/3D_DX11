@@ -28,7 +28,7 @@ public:
     virtual HRESULT Initialize(void* pArg);
     virtual void Priority_Update(_float fTimeDelta);
     void Update_AfterTarget(_float fTimeDelta) override;
-    void Change_CamMode(CAM_MODE m_ChangeMode, CAM_MODE m_NextMode);
+    void Change_CamMode(ECamMode m_ChangeMode, ECamMode m_NextMode);
     void SetTarget(weak_ptr<CGameObject> target, _float startPitchAngle, _float startYawAngle, _float startDistance,
                    _float fTimeDelta);
     virtual void Update(_float fTimeDelta);

@@ -16,8 +16,8 @@ NS_BEGIN(Client)
 public:
     struct STORAGE_DESC : public CUIPanel::UIPANEL_DESC
     {
-        INVENTYPE Inventype = { INVENTYPE::NONE };
-        SHOPTAB shopTab = { SHOPTAB::NONE };
+        EInvenType Inventype = { EInvenType::NONE };
+        EShopTab shopTab = { EShopTab::NONE };
     };
 private:
     CUI_Storage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -48,8 +48,8 @@ public:
     shared_ptr<CUIPanel> Get_InvenPanel() { return m_InvenPanel; }
 
 private:
-    INVENTYPE m_inventype = { INVENTYPE::NONE };
-    SHOPTAB m_shopTab = { SHOPTAB::NONE };
+    EInvenType m_inventype = { EInvenType::NONE };
+    EShopTab m_shopTab = { EShopTab::NONE };
 
     shared_ptr<class CInventory_Controller> Inven_Contrl = { nullptr };
     shared_ptr<CUIPanel> m_InvenPanel = { nullptr };

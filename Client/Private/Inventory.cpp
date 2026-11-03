@@ -32,25 +32,25 @@ HRESULT CInventory::Initialize(void* arg)
 
 		switch (invenDesc->invenType)
 		{
-		case INVENTYPE::PLAYER:
+		case EInvenType::PLAYER:
 		{
 			Init_BoatUpgrade();
 			Upgrade_Boat(0);
 			break;
 		}
-		case INVENTYPE::SHOP:
+		case EInvenType::SHOP:
 		{
 			m_w = 8;
 			m_h = 8;
 			break;
 		}
-		case INVENTYPE::STORAGE:
+		case EInvenType::STORAGE:
 		{
 			m_w = 7;
 			m_h = 8;
 			break;
 		}
-		case INVENTYPE::CHEST:
+		case EInvenType::CHEST:
 		{
 			m_w = 3;
 			m_h = 3;
@@ -81,7 +81,7 @@ HRESULT CInventory::Initialize(void* arg)
 
 	switch (invenDesc->invenType)
 	{
-	case INVENTYPE::PLAYER:
+	case EInvenType::PLAYER:
 	{
 		FishInst instfish = {};
 		ItemInst inst1 = Create_ItemInstance(1001, instfish, 3);
@@ -108,12 +108,12 @@ HRESULT CInventory::Initialize(void* arg)
 		AddItem(inst4, 5, 3);
 		break;
 	}
-	case INVENTYPE::SHOP:
+	case EInvenType::SHOP:
 	{
 
 		EquipInst instEquip = {};
 
-		if (invenDesc->equipType == EQUIP_TYPE::ENGINE)
+		if (invenDesc->equipType == EEquipType::ENGINE)
 		{
 			ItemInst inst3 = Create_ItemInstance(2001, instEquip, 0);
 			AddItem(inst3, 0, 0);
@@ -126,7 +126,7 @@ HRESULT CInventory::Initialize(void* arg)
 
 			
 		}
-		else if (invenDesc->equipType == EQUIP_TYPE::LIGHT)
+		else if (invenDesc->equipType == EEquipType::LIGHT)
 		{
 			ItemInst inst3 = Create_ItemInstance(2002, instEquip, 0);
 			AddItem(inst3, 0, 0);
@@ -140,11 +140,11 @@ HRESULT CInventory::Initialize(void* arg)
 			ItemInst inst6 = Create_ItemInstance(2010, instEquip, 0);
 			AddItem(inst6, 4, 0);
 		}
-		else if (invenDesc->equipType == EQUIP_TYPE::NET)
+		else if (invenDesc->equipType == EEquipType::NET)
 		{
 
 		}
-		else if (invenDesc->equipType == EQUIP_TYPE::ROD)
+		else if (invenDesc->equipType == EEquipType::ROD)
 		{
 			ItemInst inst3 = Create_ItemInstance(2003, instEquip, 0);
 			AddItem(inst3, 0, 0);
@@ -160,7 +160,7 @@ HRESULT CInventory::Initialize(void* arg)
 	
 		break;
 	}
-	case INVENTYPE::STORAGE:
+	case EInvenType::STORAGE:
 	{
 		
 		/*Fish_Inst instfish = {};
@@ -172,7 +172,7 @@ HRESULT CInventory::Initialize(void* arg)
 		Item_Inst inst = Create_ItemInstance(1001, instfish, 1);*/
 		break;
 	}
-	case INVENTYPE::CHEST:
+	case EInvenType::CHEST:
 	{
 		
 		ItemInst inst3 = Create_ItemInstance(3001, monostate{}, 0);
@@ -260,13 +260,13 @@ void CInventory::Update(_float timeDelta)
 ItemInst CInventory::AddItem(ItemInst itemInst, _int baseX, _int baseY)
 {
 	// 밑에 아이템 한개랑 바꿔치기 가능 : 주황 / 불가능 : 빨강 / 가능 : 초록
-	PLACE_COLOR color = {};
+	EPlaceColor color = {};
 	int instID = CanPlace(itemInst, baseX, baseY, color); // 여기서 한번 더 할필요가 있나?
 	ItemInst holdInst = {};
 
 	switch (color)
 	{
-	case PLACE_COLOR::GREEN:
+	case EPlaceColor::GREEN:
 	{
 		if (instID != ID_Absence)
 			MSG_BOX("Wrong Item");
@@ -277,7 +277,7 @@ ItemInst CInventory::AddItem(ItemInst itemInst, _int baseX, _int baseY)
 		return holdInst; // 초기화된 빈인스턴스
 
 	}
-	case PLACE_COLOR::ORANGE:
+	case EPlaceColor::ORANGE:
 	{
 		// 넣을려고 하는 아이템과 원래 있던 하나의 아이템 스왑
 		// 기존 인밴에 있던 inst 제거
@@ -287,7 +287,7 @@ ItemInst CInventory::AddItem(ItemInst itemInst, _int baseX, _int baseY)
 		m_isDirty = true;
 		return holdInst; // 스왑된 인스턴스 
 	}
-	case PLACE_COLOR::RED:
+	case EPlaceColor::RED:
 	{
 		if (instID != -1)
 			MSG_BOX("Wrong Item");
@@ -310,9 +310,9 @@ _bool CInventory::Auto_Add(ItemInst& itemInst)
 		{
 			if (m_invenSlot[i * m_w + j].itemInstId == ID_Absence)
 			{
-				PLACE_COLOR color = {};
+				EPlaceColor color = {};
 				CanPlace(itemInst, j, i, color);
-				if (color == PLACE_COLOR::GREEN)
+				if (color == EPlaceColor::GREEN)
 				{
 					AddItem(itemInst, j, i);
 					return true;
@@ -354,7 +354,7 @@ _bool CInventory::Auto_Move_To(weak_ptr<CInventory> otherInven, _uint baseX, _ui
 		
 		return false;
 }
-_int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, PLACE_COLOR& color)
+_int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceColor& color)
 {
 	// 해당 아이템의 모양 + BaseX,Y
 	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefId);
@@ -369,7 +369,7 @@ _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, PLACE_CO
 		// finalCells.push_back({ fx,fy });
 
 		if (fx < 0 || fx >= m_w || fy < 0 || fy >= m_h) {
-			color = PLACE_COLOR::RED;
+			color = EPlaceColor::RED;
 			return -1;
 		}
 		// 락이랑 겹치는지, 밑아이템 하나랑 겹치는지 , 바로 놓을 수 있는지
@@ -380,40 +380,40 @@ _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, PLACE_CO
 		if (theSlot.isLock == true || theSlot.isBroken == true)
 		{
 			//하나라도 락이랑 겹치면 불가 - 빨강
-			color = PLACE_COLOR::RED;
+			color = EPlaceColor::RED;
 			return -1;
 		}
-		if (itemInst.itemType == ITEM_TYPE::EQUIP&&INVENTYPE::PLAYER==m_invenType)
+		if (itemInst.itemType == EItemType::EQUIP&&EInvenType::PLAYER==m_invenType)
 		{
 			if (auto equip = get_if<EquipDef>(&def.typeDef))
 			{
 				switch (equip->equipTypeEffect.index())
 				{
 				case 0: // Equip_Engine
-					if(theSlot.slotType!=SLOT_TYPE::ENGINE)
+					if(theSlot.slotType!=ESlotType::ENGINE)
 					{
-						color = PLACE_COLOR::RED;
+						color = EPlaceColor::RED;
 						return -1;
 					}
 					break;
 				case 1: // Equip_Light
-					if (theSlot.slotType != SLOT_TYPE::LIGHT)
+					if (theSlot.slotType != ESlotType::LIGHT)
 					{
-						color = PLACE_COLOR::RED;
+						color = EPlaceColor::RED;
 						return -1;
 					}
 					break;
 				case 2: // Equip_Rod
-					if (theSlot.slotType != SLOT_TYPE::ROT)
+					if (theSlot.slotType != ESlotType::ROT)
 					{
-						color = PLACE_COLOR::RED;
+						color = EPlaceColor::RED;
 						return -1;
 					}
 					break;
 				case 3: // Equip_Net
-					if (theSlot.slotType != SLOT_TYPE::NET)
+					if (theSlot.slotType != ESlotType::NET)
 					{
-						color = PLACE_COLOR::RED;
+						color = EPlaceColor::RED;
 						return -1;
 					}
 					break;
@@ -441,7 +441,7 @@ _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, PLACE_CO
 			else if (theSlot.itemInstId != overlapID)
 			{
 
-				color = PLACE_COLOR::RED;
+				color = EPlaceColor::RED;
 				return -1;
 			}
 		}
@@ -450,14 +450,14 @@ _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, PLACE_CO
 	if (absenceNum == def.itemShape.occ[rot].size())
 	{
 		// 해당 칸 전부 빈칸이면 - 그린
-		color = PLACE_COLOR::GREEN;
+		color = EPlaceColor::GREEN;
 		return ID_Absence;
 	}
 
 
 
 	// 겹치는 아이템이 있긴한데 동일한 아이템이다 들고 있는거랑 스위치 가능 - 주황
-	color = PLACE_COLOR::ORANGE;
+	color = EPlaceColor::ORANGE;
 	return static_cast<_int>(overlapID);
 }
 
@@ -611,7 +611,7 @@ Evt_ShipStat CInventory::CalculateEquip()
 	auto db = CItemDB::GetInstance();
 	for (_uint i = 0; i < m_inventory.size(); i++)
 	{
-		if (m_inventory[i].itemType == ITEM_TYPE::EQUIP)
+		if (m_inventory[i].itemType == EItemType::EQUIP)
 		{
 			ItemDef def = db->GetItemByID(m_inventory[i].itemDefId);
 
@@ -619,7 +619,7 @@ Evt_ShipStat CInventory::CalculateEquip()
 			{
 				int cost = equip->cost;
 				_uint installTime = equip->installTime;
-				EQUIP_TYPE equipType = equip->equipType;
+				EEquipType equipType = equip->equipType;
 
 				if (EquipEngine* engine = get_if<EquipEngine>(&equip->equipTypeEffect))
 				{
@@ -644,7 +644,7 @@ Evt_ShipStat CInventory::CalculateEquip()
 
 				  }*/
 			}
-			if (m_inventory[i].itemType == ITEM_TYPE::FISH)
+			if (m_inventory[i].itemType == EItemType::FISH)
 			{
 				ItemDef def = db->GetItemByID(m_inventory[i].itemDefId);
 				if (FishDef* fish = get_if<FishDef>(&def.typeDef))
@@ -685,7 +685,7 @@ void CInventory::Get_Damage()
 	int randIndex = { -1 };
 	randIndex = static_cast<int>(m_pGameInstance.lock()->Random(0, m_invenSlot.size()-1));
 	// 전체 순회 -> 만일 이미 고장난 칸이거나 투명칸이면 다시 렌덤
-	while(m_invenSlot[randIndex].isBroken == true || m_invenSlot[randIndex].isLock == true|| (m_invenSlot[randIndex].slotType != SLOT_TYPE::END && m_invenSlot[randIndex].slotType != SLOT_TYPE::ANY))
+	while(m_invenSlot[randIndex].isBroken == true || m_invenSlot[randIndex].isLock == true|| (m_invenSlot[randIndex].slotType != ESlotType::END && m_invenSlot[randIndex].slotType != ESlotType::ANY))
 	{
 		randIndex = (m_pGameInstance.lock()->RandomInt(0, m_invenSlot.size()-1));
 	}
@@ -760,7 +760,7 @@ void CInventory::ClearHighlightArea()
 {
 	for (auto& slot : m_invenSlot)
 	{
-		slot.slotColor = PLACE_COLOR::END;
+		slot.slotColor = EPlaceColor::END;
 	}
 }
 void CInventory::Apply_BaseMask(vector<Slot>& vecSlot)
@@ -840,27 +840,27 @@ void CInventory::Upgrade_Boat(_uint index)
 			{
 			case  static_cast<_int>('O'):
 				m_invenSlot[th * m_w + tw].isLock = true;
-				m_invenSlot[th * m_w + tw].slotType = SLOT_TYPE::END;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::END;
 				break;
 			case static_cast<_int>('A'):
 				m_invenSlot[th * m_w + tw].isLock = false;
-				m_invenSlot[th * m_w + tw].slotType = SLOT_TYPE::ANY;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::ANY;
 				break;
 			case static_cast<_int>('E'):
 				m_invenSlot[th * m_w + tw].isLock = false;
-				m_invenSlot[th * m_w + tw].slotType = SLOT_TYPE::ENGINE;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::ENGINE;
 				break;
 			case static_cast<_int>('L'):
 				m_invenSlot[th * m_w + tw].isLock = false;
-				m_invenSlot[th * m_w + tw].slotType = SLOT_TYPE::LIGHT;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::LIGHT;
 				break;
 			case static_cast<_int>('R'):
 				m_invenSlot[th * m_w + tw].isLock = false;
-				m_invenSlot[th * m_w + tw].slotType = SLOT_TYPE::ROT;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::ROT;
 				break;
 			case static_cast<_int>('N'):
 				m_invenSlot[th * m_w + tw].isLock = false;
-				m_invenSlot[th * m_w + tw].slotType = SLOT_TYPE::NET;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::NET;
 				break;
 			}
 			// 아 비트 플레그 해야 하나...
@@ -869,7 +869,7 @@ void CInventory::Upgrade_Boat(_uint index)
 
 }
 
-void CInventory::SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, PLACE_COLOR color)
+void CInventory::SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceColor color)
 {
 	//const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
 	//_bool hasOverlap = false;
@@ -888,7 +888,7 @@ void CInventory::SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, 
 
 	for (auto& slot : m_invenSlot)
 	{
-		slot.slotColor = PLACE_COLOR::END;
+		slot.slotColor = EPlaceColor::END;
 	}
 
 	for (int i = 0; i < def.itemShape.occ[rot].size(); i++)
@@ -900,7 +900,7 @@ void CInventory::SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, 
 		if (fx < 0 || fx >= (int)m_w || fy < 0 || fy >= (int)m_h)
 		{
 			//TODO::나간것도 빨간색
-			color = PLACE_COLOR::RED;
+			color = EPlaceColor::RED;
 			continue;;
 
 		}
@@ -908,24 +908,24 @@ void CInventory::SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, 
 
 		switch (color)
 		{
-		case PLACE_COLOR::GREEN:
+		case EPlaceColor::GREEN:
 
 		{
 			Slot& slot = m_invenSlot[fy * m_w + fx];
-			slot.slotColor = PLACE_COLOR::GREEN;
+			slot.slotColor = EPlaceColor::GREEN;
 		}
 		break;
-		case PLACE_COLOR::ORANGE:
+		case EPlaceColor::ORANGE:
 		{
 			Slot& slot = m_invenSlot[fy * m_w + fx];
-			slot.slotColor = PLACE_COLOR::ORANGE;
+			slot.slotColor = EPlaceColor::ORANGE;
 		}
 		break;
 
-		case PLACE_COLOR::RED:
+		case EPlaceColor::RED:
 		{
 			Slot& slot = m_invenSlot[fy * m_w + fx];
-			slot.slotColor = PLACE_COLOR::RED;
+			slot.slotColor = EPlaceColor::RED;
 		}
 		break;
 		}

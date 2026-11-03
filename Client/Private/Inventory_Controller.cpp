@@ -102,7 +102,7 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 			//  플레이어 인벤에서 집은 홀드 아이템이 있으면 그걸 먼저 창고로 보냄
 			if (m_bDragging == true &&
-				m_HoldItemFrom == INVENTYPE::PLAYER &&
+				m_HoldItemFrom == EInvenType::PLAYER &&
 				m_UIHoldItem != nullptr)
 			{
 				ItemInst& holdItem = m_UIHoldItem->Get_HoldItem();
@@ -111,7 +111,7 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 				{
 					if (storage->Auto_Add(holdItem))
 					{
-						if (holdItem.itemType == ITEM_TYPE::FISH)
+						if (holdItem.itemType == EItemType::FISH)
 							m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 						else
 							m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
@@ -129,7 +129,7 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 			if (hoveredItem.itemInstId == ID_Absence)
 				return;
 
-			if (hoveredItem.itemType == ITEM_TYPE::FISH)
+			if (hoveredItem.itemType == EItemType::FISH)
 				m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 			else
 				m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
@@ -164,7 +164,7 @@ void CInventory_Controller::Make_Hold(ItemInst inst)
 {
 
 	m_UIHoldItem->HoldItem(inst);
-	m_HoldItemFrom = INVENTYPE::NONE;
+	m_HoldItemFrom = EInvenType::NONE;
 	m_bDragging = true;
 
 	///
@@ -217,7 +217,7 @@ void CInventory_Controller::Update(float TimeDelta)
 			{
 				//잡고 있는 아이템이 없을경우
 				//
-				if (CurInven->Get_Inventype() == INVENTYPE::SHOP)
+				if (CurInven->Get_Inventype() == EInvenType::SHOP)
 				{
 					ItemInst inst = CurInven->Peek_Item(m_SlotX, m_SlotY);
 					if (inst.itemInstId != 0)
@@ -296,7 +296,7 @@ void CInventory_Controller::Update(float TimeDelta)
 		{
 
 			// 잡고있는 아이템이 있는경우
-			PLACE_COLOR color = PLACE_COLOR::END;
+			EPlaceColor color = EPlaceColor::END;
 
 			CurInven->CanPlace(/*m_HoldItem*/m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY, color);
 
@@ -310,13 +310,13 @@ void CInventory_Controller::Update(float TimeDelta)
 				auto DestInven = Get_CurrentInven();
 				switch (color)
 				{
-				case PLACE_COLOR::GREEN:
+				case EPlaceColor::GREEN:
 					tmpInst = DestInven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
 					//m_HoldItem = tmpInst;// 이건 빈 인스턴스
 
-					if (DestInven->Get_Inventype() == INVENTYPE::PLAYER && m_HoldItemFrom == INVENTYPE::SHOP)
+					if (DestInven->Get_Inventype() == EInvenType::PLAYER && m_HoldItemFrom == EInvenType::SHOP)
 					{
-						if (m_UIHoldItem->Get_HoldItem().itemType == ITEM_TYPE::EQUIP)
+						if (m_UIHoldItem->Get_HoldItem().itemType == EItemType::EQUIP)
 						{
 
 							auto curitem = CItemDB::GetInstance()->GetItemByID(m_UIHoldItem->Get_HoldItem().itemDefId);
@@ -336,7 +336,7 @@ void CInventory_Controller::Update(float TimeDelta)
 
 
 					break;
-				case PLACE_COLOR::ORANGE:
+				case EPlaceColor::ORANGE:
 				{
 				//	tmpInst = DestInven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
 		
@@ -376,9 +376,9 @@ void CInventory_Controller::Update(float TimeDelta)
 						return;
 
 					// 먼저 "방금 놓은 아이템" 기준으로 ActiveTime 판정
-					if (DestInven->Get_Inventype() == INVENTYPE::PLAYER && m_HoldItemFrom == INVENTYPE::SHOP)
+					if (DestInven->Get_Inventype() == EInvenType::PLAYER && m_HoldItemFrom == EInvenType::SHOP)
 					{
-						if (placedItem.itemType == ITEM_TYPE::EQUIP)
+						if (placedItem.itemType == EItemType::EQUIP)
 						{
 							auto curitem = CItemDB::GetInstance()->GetItemByID(placedItem.itemDefId);
 							if (auto pEquipDef = get_if<EquipDef>(&curitem.typeDef))
@@ -402,7 +402,7 @@ void CInventory_Controller::Update(float TimeDelta)
 					break;
 					break;
 				}
-				case PLACE_COLOR::RED:
+				case EPlaceColor::RED:
 					// 레드 일때 애니메이션 뭐 그런거 할거 있음 여기
 					// 홀드 아이템은 그대로
 					m_bDragging = true;

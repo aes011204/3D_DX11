@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 
@@ -64,14 +64,14 @@ public:
 	float m_RodSpeed = {};
 
 
-	// °øÅë
+	// ê³µí†µ
 	_uint m_DefID = { ID_Absence };
 	_bool m_bFin = { false };
 
 	//
 	_uint m_FishCount = {};
 
-	MINIGAME m_MiniGameState = {};
+	EMiniGameType m_MiniGameState = {};
 private:
 	shared_ptr<CUIText> m_nameTex = { nullptr };//
 	shared_ptr<CUIText> m_amountTex = { nullptr };//

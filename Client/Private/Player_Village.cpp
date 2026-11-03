@@ -72,7 +72,7 @@ void CPlayer_Village::Enter()
 
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CamLerpDesc>();
-	pLerp->eMode = CAM_MODE::LERP;
+	pLerp->eMode = ECamMode::LERP;
 	pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
 	pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
 	pLerp->fDuration = duration;
@@ -80,7 +80,7 @@ void CPlayer_Village::Enter()
 	pLerp->OnComplete = [this]() {
 
 		Evt_CamArrived e = {};
-		e.playerstate = E_PLAYERSTATE::VILLAGE;
+		e.playerstate = EPlayerState::VILLAGE;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 	//		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 	//m_Village->UI_Active();
@@ -88,12 +88,12 @@ void CPlayer_Village::Enter()
 	event.commands.push_back(pLerp);
 
 	auto pStop = make_shared<CamDesc>();
-	pStop->eMode = CAM_MODE::STOP;
+	pStop->eMode = ECamMode::STOP;
 	event.commands.push_back(pStop);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-	eNextState = E_PLAYERSTATE::VILLAGE;
+	eNextState = EPlayerState::VILLAGE;
 	//m_pGameInstance.lock()->Play_Loop(L"Waves_Ambience_1");
 
 	CPlayerState::Enter();
@@ -134,7 +134,7 @@ HRESULT CPlayer_Village::Init_State()
 	{
 		if(e.type ==0)
 		{
-			eNextState = E_PLAYERSTATE::SEA;
+			eNextState = EPlayerState::SEA;
 		}
 		else if(e.type == 1)
 		{
@@ -171,7 +171,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 
 			Evt_ChangeCam event = {};
 			auto pLerp = make_shared<CamLerpDesc>();
-			pLerp->eMode = CAM_MODE::LERP;
+			pLerp->eMode = ECamMode::LERP;
 			pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
 			pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
 			pLerp->fDuration = 5.f;
@@ -179,7 +179,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 			pLerp->OnComplete = [this]() {
 
 				Evt_CamArrived e = {};
-				e.playerstate = E_PLAYERSTATE::VILLAGE;
+				e.playerstate = EPlayerState::VILLAGE;
 				CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 				//		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 				//m_Village->UI_Active();
@@ -187,7 +187,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 			event.commands.push_back(pLerp);
 
 			auto pStop = make_shared<CamDesc>();
-			pStop->eMode = CAM_MODE::STOP;
+			pStop->eMode = ECamMode::STOP;
 			event.commands.push_back(pStop);
 
 
@@ -211,7 +211,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 			return ETOI(eNextState);
 		}
 
-		return  ETOI(E_PLAYERSTATE::SEA);
+		return  ETOI(EPlayerState::SEA);
 	}
 
 

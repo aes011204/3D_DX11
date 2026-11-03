@@ -279,7 +279,7 @@ PS_OUT PS_MAIN(PS_IN In)
     }
 
     float3 finalRGB = waterColor * light + vSpecularColor.xyz + pointDiffuse * 0.6f + pointSpecular;
-    // 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트??
+    // 빛의 색 * 텍스쳐의 색 * 빛의 크기 계산한것 + 하이라이트
     //Out.vColor = float4(waterColor,1.f);
 
     // 프레넬

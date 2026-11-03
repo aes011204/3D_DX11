@@ -1,4 +1,4 @@
-#include "Level_Logo.h"
+Ôªø#include "Level_Logo.h"
 
 #include "GameInstance.h"
 #include "Client_Enum.h"
@@ -34,7 +34,7 @@ HRESULT CLevel_Logo::Initialize()
 	if (FAILED(Ready_Lights()))
 		return E_FAIL;
 	
-	auto name_view = magic_enum::enum_name(EUI::Test);
+	auto name_view = magic_enum::enum_name(EUiType::Test);
 	_wstring Wname = S2W(string(name_view));
 
 
@@ -178,7 +178,7 @@ HRESULT CLevel_Logo::Render()
 {
 
 #ifdef _DEBUG
-	SetWindowText(g_hWnd, TEXT("«ˆ¿Á ∑Œ∞Ì∑π∫ß ±∏µø ¡ﬂ"));
+	SetWindowText(g_hWnd, TEXT("ÌòÑÏû¨ Î°úÍ≥†Î†àÎ≤® Íµ¨Îèô Ï§ë"));
 #endif
 	return S_OK;
 }
