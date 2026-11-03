@@ -37,7 +37,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState pla
 
 	float currentY = -m_namePadding;
 
-	ItemDef itemDef = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
+	const ItemDef& itemDef = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
 
 	switch (itemInst.itemType)
 	{
@@ -45,7 +45,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState pla
 
 		if (FishInst* fishInst = get_if<FishInst>(&itemInst.typeDef))
 		{
-			FishDef* fishDef = get_if<FishDef>(&itemDef.typeDef);
+			const FishDef* fishDef = get_if<FishDef>(&itemDef.typeDef);
 
 			if (fishInst->mutationID == kIDAbsence)
 			{
@@ -81,7 +81,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState pla
 	{
 
 		EquipInst* equipInst = get_if<EquipInst>(&itemInst.typeDef);
-		EquipDef* equipDef = get_if<EquipDef>(&itemDef.typeDef);
+		const EquipDef* equipDef = get_if<EquipDef>(&itemDef.typeDef);
 
 		nameInfo = S2W(itemDef.itemName);
 
@@ -91,17 +91,17 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState pla
 		if (isHold == true)
 			break;
 
-		if (EquipEngine* equipEngine = get_if<EquipEngine>(&equipDef->equipTypeEffect))
+		if (const EquipEngine* equipEngine = get_if<EquipEngine>(&equipDef->equipTypeEffect))
 		{
 			leftInfo = L"설치 시간:\n상태:\n속도:";
 			rightInfo = format(L"{}h\n{}\n+{}kn", equipDef->installTime, GetBroken(equipInst->isBroken), equipEngine->speedKn);
 		}
-		else if (EquipLight* equipLight = get_if<EquipLight>(&equipDef->equipTypeEffect))
+		else if (const EquipLight* equipLight = get_if<EquipLight>(&equipDef->equipTypeEffect))
 		{
 			leftInfo = L"설치 시간:\n상태:\n루멘:\n범위";
 			rightInfo = format(L"{}h\n{}\n+{}lm\n{}m", equipDef->installTime, GetBroken(equipInst->isBroken), equipLight->lumen, equipLight->range);
 		}
-		else if (EquipRod* equipRod = get_if<EquipRod>(&equipDef->equipTypeEffect))
+		else if (const EquipRod* equipRod = get_if<EquipRod>(&equipDef->equipTypeEffect))
 		{
 			leftInfo = L"설치 시간:\n상태:\n낚시 속도:\n어종";
 			rightInfo = format(L"{}h\n{}\n+{}%\n{}", equipDef->installTime, GetBroken(equipInst->isBroken), equipRod->speedPer, OcceanToWstr(equipRod->seaTypeMask));
@@ -115,7 +115,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState pla
 	}
 	case EItemType::MATERIAL:
 	{
-		MaterialDef* matDef = get_if<MaterialDef>(&itemDef.typeDef);
+		const MaterialDef* matDef = get_if<MaterialDef>(&itemDef.typeDef);
 		nameInfo = S2W(itemDef.itemName);
 		descInfo = S2W(itemDef.itemDesc);
 		cost = matDef->cost;

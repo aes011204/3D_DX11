@@ -81,7 +81,7 @@ void CLevel_Logo::Update(_float timeDelta)
 		m_isFlag = true;
 	}
 
-	if (m_gameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
+	if (m_gameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_RETURN) == true)
 	{
 		CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
 			make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));

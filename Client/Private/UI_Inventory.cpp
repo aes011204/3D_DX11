@@ -166,6 +166,7 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 	}
 
 	m_slot.resize(h * w);
+	m_itemUI.clear(); // 재구성 시 이전 풀(UI_Clear로 제거됨)이 남아 누적되지 않도록 비운다
 	{
 		for (_uint i = 0; i < 30; i++)
 		{
@@ -489,7 +490,7 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 	LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
 
-	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manager()->Get_MousePos();
 
 
 	
@@ -659,33 +660,27 @@ void CUI_Inventory::Render_Item()
 	{
 		UI->Set_Transparent(true);
 	}
-	for (int i = 0; i < items.size(); i++)
+
+	// 아이템 i번 ↔ 풀 i번을 바로 대응 (빈 UI를 매번 처음부터 찾지 않는다)
+	const LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
+	const size_t drawCount = min(items.size(), m_itemUI.size());
+	for (size_t i = 0; i < drawCount; i++)
 	{
-		
+		auto& UI = m_itemUI[i];
+		const ItemDef& def = CItemDB::GetInstance()->GetItemByID(items[i].itemDefID);
+		UI->Change_Texture(items[i].cachingTexture);
 
-		LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
+		_float2 anchoredPos = Calculate_RenderPos(items[i]);
 
-		for (auto& UI : m_itemUI)
-		{
-			if (UI->Get_Transparent() == true)
-			{
-				ItemDef def = CItemDB::GetInstance()->GetItemByID(items[i].itemDefID);
-				UI->Change_Texture(items[i].cachingTexture);
-
-				_float2 anchoredPos = Calculate_RenderPos(items[i]);
-
-				UI->GetUITransform()->SetAnchoredPos(anchoredPos);
-				UI->GetUITransform()->SetSizeDelta(
-					{ slotSize.x * def.itemShape.width + layout.spacing.x * (def.itemShape.width - 1),
-					slotSize.y * def.itemShape.height + layout.spacing.y * (def.itemShape.height - 1)
-					});
-				// 회전
-				UI->GetUITransform()->SetRotation(items[i].rotation * -90.f);
-				UI->Set_Transparent(false);
-				UI->GetUITransform()->SetPivot({ 0.5f, 0.5f });
-				break;
-			}
-		}
+		UI->GetUITransform()->SetAnchoredPos(anchoredPos);
+		UI->GetUITransform()->SetSizeDelta(
+			{ slotSize.x * def.itemShape.width + layout.spacing.x * (def.itemShape.width - 1),
+			slotSize.y * def.itemShape.height + layout.spacing.y * (def.itemShape.height - 1)
+			});
+		// 회전
+		UI->GetUITransform()->SetRotation(items[i].rotation * -90.f);
+		UI->Set_Transparent(false);
+		UI->GetUITransform()->SetPivot({ 0.5f, 0.5f });
 	}
 
 }

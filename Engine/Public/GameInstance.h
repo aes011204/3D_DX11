@@ -105,7 +105,7 @@ public:/*For.EventBus*/
 	CEventBus* Get_EventBus();
 
 public:/*For.DInput_Manager*/
-	class CDInput_Manager* Get_DInput_Manger() { return m_DInputManager.get(); }
+	class CDInput_Manager* Get_DInput_Manager() { return m_DInputManager.get(); }
 	void Set_MousePos(float x, float y);
 	_float2 Get_MousePos();
 

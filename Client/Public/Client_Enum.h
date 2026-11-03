@@ -46,7 +46,7 @@ namespace Client
 
     struct Shape
     {
-        _uint width , height = { 0 };
+        _uint width = { 0 }, height = { 0 };
         vector<_ubyte> shapeMask = {}; // 0,1 로만 할건데 bool 문제생길수있음 // ex) [ 111, 101 ] 
         vector<OccCell> occ[4] = {}; // uint16_t //Shape_Mask 의 좌표 캐싱 // 회전도 같이 캐싱 // ex) {(0,0),(1,0),(2,0),(0,1),(0,2)}
         

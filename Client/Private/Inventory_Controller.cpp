@@ -189,7 +189,7 @@ void CInventory_Controller::Update(float timeDelta)
         decltype(refreshFinalHover)& refresh;
         ~FinalHoverRefresh() { refresh(); }
     } finalHoverRefresh{ refreshFinalHover };
-	auto input = m_gameInstance.lock()->Get_DInput_Manger();
+	auto input = m_gameInstance.lock()->Get_DInput_Manager();
 	//	->MouseDown(DIMB::LBUTTON);
 
 
@@ -223,7 +223,7 @@ void CInventory_Controller::Update(float timeDelta)
 					if (inst.itemInstID != 0)
 					{
 
-						const ItemDef def = CItemDB::GetInstance()->GetItemByID(inst.itemDefID);
+						const ItemDef& def = CItemDB::GetInstance()->GetItemByID(inst.itemDefID);
 
 						if (auto* equip = get_if<EquipDef>(&def.typeDef))
 						{

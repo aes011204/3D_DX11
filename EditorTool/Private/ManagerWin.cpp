@@ -145,7 +145,7 @@ void CManagerWin::Render()
 	//		}
 
 	//		// 만일 마우스 클릭을하면 끝
-	//		if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON))
+	//		if (CGameInstance::GetInstance()->Get_DInput_Manager()->MouseDown(DIMB::LBUTTON))
 	//		{
 
 	//			m_PickMode = false;
@@ -153,7 +153,7 @@ void CManagerWin::Render()
 	//		}
 
 	//	}
-	//	if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::RBUTTON))
+	//	if (CGameInstance::GetInstance()->Get_DInput_Manager()->MouseDown(DIMB::RBUTTON))
 	//	{
 	//		m_PickMode = false;
 	//		m_pPreview = nullptr;

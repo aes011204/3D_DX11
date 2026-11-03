@@ -354,18 +354,18 @@ _bool CInventory::Auto_Move_To(weak_ptr<CInventory> otherInven, _uint baseX, _ui
 		
 		return false;
 }
-_int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceColor& color)
+_int CInventory::CanPlace(const ItemInst& itemInst, _int baseX, _int baseY, EPlaceColor& color)
 {
 	// 해당 아이템의 모양 + BaseX,Y
 	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
 	_bool hasOverlap = false;
 	int overlapID = {};
-	int absenceNum = {};
+	size_t absenceNum = {};
 	_uint rot = itemInst.rotation % 4;
-	for (int i = 0; i < def.itemShape.occ[rot].size(); i++)
+	for (size_t i = 0; i < def.itemShape.occ[rot].size(); i++)
 	{
-		_int fx = def.itemShape.occ[rot][i].dx + baseX;
-		_int fy = def.itemShape.occ[rot][i].dy + baseY;
+		_int fx = static_cast<_int>(def.itemShape.occ[rot][i].dx) + baseX;
+		_int fy = static_cast<_int>(def.itemShape.occ[rot][i].dy) + baseY;
 		// finalCells.push_back({ fx,fy });
 
 		if (fx < 0 || fx >= m_w || fy < 0 || fy >= m_h) {
@@ -487,9 +487,9 @@ ItemInst CInventory::RemoveFrom_Inven(int instID)
   //      }
   //  }
 
-	for (int i = 0; i < inst.curBase.size(); i++)
+	for (size_t i = 0; i < inst.curBase.size(); i++)
 	{
-		m_invenSlot[inst.curBase[i].dy * m_w + inst.curBase[i].dx].itemInstID = 0;
+		m_invenSlot[inst.curBase[i].dy * m_w + inst.curBase[i].dx].itemInstID = kIDAbsence;
 	}
 
 	m_isDirty = true;
@@ -613,23 +613,23 @@ Evt_ShipStat CInventory::CalculateEquip()
 	{
 		if (m_inventory[i].itemType == EItemType::EQUIP)
 		{
-			ItemDef def = DB->GetItemByID(m_inventory[i].itemDefID);
+			const ItemDef& def = DB->GetItemByID(m_inventory[i].itemDefID);
 
-			if (EquipDef* equip = get_if<EquipDef>(&def.typeDef))
+			if (const EquipDef* equip = get_if<EquipDef>(&def.typeDef))
 			{
 				int cost = equip->cost;
 				_uint installTime = equip->installTime;
 				EEquipType equipType = equip->equipType;
 
-				if (EquipEngine* engine = get_if<EquipEngine>(&equip->equipTypeEffect))
+				if (const EquipEngine* engine = get_if<EquipEngine>(&equip->equipTypeEffect))
 				{
 					stat.engineSpeed += engine->speedKn;
 				}
-				else if (EquipLight* light = get_if<EquipLight>(&equip->equipTypeEffect))
+				else if (const EquipLight* light = get_if<EquipLight>(&equip->equipTypeEffect))
 				{
 					stat.lightIntensity += light->lumen;
 				}
-				else if (EquipRod* rod = get_if<EquipRod>(&equip->equipTypeEffect))
+				else if (const EquipRod* rod = get_if<EquipRod>(&equip->equipTypeEffect))
 				{
 					stat.fishingSpeed += rod->speedPer;
 					stat.seaMask |= rod->seaTypeMask;
@@ -646,8 +646,8 @@ Evt_ShipStat CInventory::CalculateEquip()
 			}
 			if (m_inventory[i].itemType == EItemType::FISH)
 			{
-				ItemDef def = DB->GetItemByID(m_inventory[i].itemDefID);
-				if (FishDef* fish = get_if<FishDef>(&def.typeDef))
+				const ItemDef& def = DB->GetItemByID(m_inventory[i].itemDefID);
+				if (const FishDef* fish = get_if<FishDef>(&def.typeDef))
 				{
 
 					if (m_inventory[i].isMutation == false)
@@ -716,10 +716,11 @@ void CInventory::PlaceOn_Inven(ItemInst itemInst, _int baseX, _int baseY)
 	_uint rot = itemInst.rotation % 4;
 
 
-	for (int i = 0; i < def.itemShape.occ[rot].size(); i++)
+	for (size_t i = 0; i < def.itemShape.occ[rot].size(); i++)
 	{
-		_uint fx = (def.itemShape.occ[rot][i].dx) + baseX;
-		_uint fy = (def.itemShape.occ[rot][i].dy) + baseY;
+		// baseX, baseY는 CanPlace에서 범위 검증이 끝난 값
+		_uint fx = def.itemShape.occ[rot][i].dx + static_cast<_uint>(baseX);
+		_uint fy = def.itemShape.occ[rot][i].dy + static_cast<_uint>(baseY);
 		// finalCells.push_back({ fx,fy });
 
 	  // 락이랑 겹치는지, 밑아이템 하나랑 겹치는지 , 바로 놓을 수 있는지

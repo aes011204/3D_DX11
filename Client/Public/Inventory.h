@@ -44,7 +44,7 @@ public:
 
     EInvenType  Get_Inventype() { return m_invenType; }
 private:
-    int m_w, m_h = {0};
+    int m_w = { 0 }, m_h = { 0 };
     vector<ItemInst> m_inventory = {}; // 순서 상관없이 들어있는데이터
 	vector<Slot> m_invenSlot = {}; // 칸별로 점유중인지 아닌지
 
@@ -57,7 +57,7 @@ public:// 아이템 넣고 뺴기
     ItemInst AddItem(ItemInst itemInst, _int baseX, _int baseY);
     _bool Auto_Add(ItemInst& itemInst);
     _bool Auto_Move_To(weak_ptr<CInventory> otherInven, _uint baseX, _uint baseY);
-    _int CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY,EPlaceColor& color);
+    _int CanPlace(const ItemInst& itemInst, _int baseX, _int baseY, EPlaceColor& color);
     ItemInst TryMove_Item(_uint baseX, _uint baseY);
     void Upgrade_Boat(_uint index);
     void SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceColor color);

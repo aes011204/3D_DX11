@@ -212,7 +212,7 @@ void CFish::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other
 void CFish::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
 
-	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F))
+	//if (m_pGameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_F))
 	//{
 
 	//	Evt_ChangeCam event = {};

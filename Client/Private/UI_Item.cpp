@@ -110,7 +110,7 @@ void CUI_Item::OnDisabled()
 void CUI_Item::OnUpdate(const _float& timeDelta)
 {
 
-	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manager()->Get_MousePos();
 	_float2 screen = m_gameInstance.lock()->Get_WinSize().Size();
 	m_UITransformCom->SetAnchoredPos({ musPos.x-screen.x *0.5f, musPos.y-screen.y*0.5f});
 	m_UITransformCom->SetRotation(m_holdItem.rotation * -90.f);

@@ -62,7 +62,7 @@ void CUI_MiniGame::UI_PanelActive()
 
 	}
 
-	ItemDef def = CItemDB::GetInstance()->GetItemByID(m_defID);
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(m_defID);
 
 	m_nameTex->UI_Active();
 	m_nameTex->Set_Text(S2W(def.itemName));

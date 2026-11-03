@@ -33,7 +33,7 @@ void CCamera_Free::Priority_Update(_float timeDelta)
 
 	if(m_stop != true)
 	{
-		CDInput_Manager* dinput = m_gameInstance.lock()->Get_DInput_Manger();
+		CDInput_Manager* dinput = m_gameInstance.lock()->Get_DInput_Manager();
 
 		if (dinput->KeyPress(DIK_UP))
 		{

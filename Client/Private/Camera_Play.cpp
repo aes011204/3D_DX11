@@ -151,7 +151,7 @@ void CCamera_Play::Update_AfterTarget(_float timeDelta)
 void CCamera_Play::Update_Follow(_float timeDelta, shared_ptr<CamDesc>desc)
 {
 
-	CDInput_Manager* dinput = m_gameInstance.lock()->Get_DInput_Manger();
+	CDInput_Manager* dinput = m_gameInstance.lock()->Get_DInput_Manager();
 	_long dx = dinput->Get_DIMouseMove(EMouseMove::X);
 	_long dy = dinput->Get_DIMouseMove(EMouseMove::Y);
 

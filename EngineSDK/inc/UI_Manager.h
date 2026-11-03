@@ -22,8 +22,8 @@ public:
 
 public:
     HRESULT Initialize(_uint width, _uint height);
-    void Update(float m_deltaTime); //  request 요청 처리기 (ui 업뎃 돌리지 않음)
-    void Late_Update(float m_deltaTime);
+    void Update(float deltaTime); //  request 요청 처리기 (ui 업뎃 돌리지 않음)
+    void Late_Update(float deltaTime);
     void Prepare_Render();
     void Render(); // 안쓸듯 이거는 렌더러에서 하니까
 

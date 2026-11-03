@@ -109,22 +109,23 @@ void CUITransform::UpdateLayoutIfDirty()
     if (!m_isDirty)
         return;
 
-    Computing_WorldRect();
-	        if(m_isSetParentSize==true&& m_parent.lock() !=nullptr)
-	        {
-                m_localScale = m_parent.lock()->Get_LocalScale();
-                m_sizeDelta = m_parent.lock()->Get_SizeDelta();
+    if (m_isSetParentSize)
+    {
+        if (auto parentTransform = m_parent.lock())
+        {
+            parentTransform->UpdateLayoutIfDirty();
+            m_localScale = parentTransform->Get_LocalScale();
+            m_sizeDelta = parentTransform->Get_SizeDelta();
+        }
+    }
 
-	        }
+    Computing_WorldRect();
     m_isDirty = false;
 
-    for (auto& children : m_children)
+    for (auto& child : m_children)
     {
-        if (children)
-        {
-
-            children->UpdateLayoutIfDirty();
-        }
+        if (child)
+            child->UpdateLayoutIfDirty();
     }
 }
 
@@ -286,21 +287,12 @@ void CUITransform::OnGui()
 
 void CUITransform::MarkDirtyRecursive()
 {
-    if (m_isDirty)
-    {
-        // 이미 바뀐 상태면 자식도 다시 마킹
-        for (auto& children : m_children)
-        {
-            if (children)
-                children->MarkDirtyRecursive();
-        }
-    }
     m_isDirty = true;
 
-    for (auto& children : m_children)
+    for (auto& child : m_children)
     {
-        if (children)
-            children->MarkDirtyRecursive();
+        if (child)
+            child->MarkDirtyRecursive();
     }
 }
 

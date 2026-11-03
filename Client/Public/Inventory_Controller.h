@@ -57,8 +57,8 @@ private:
     //bool prevMouseOnSlot = { false };
     bool m_isDragging = false;
     bool m_isPrevDragging = false;
-    _uint m_slotX, m_slotY = {};
-    _uint m_prevSlotX, m_prevSlotY = {};
+    _uint m_slotX = {}, m_slotY = {};
+    _uint m_prevSlotX = {}, m_prevSlotY = {};
     _bool m_isOnSlot = { false };
 
 

@@ -10,7 +10,7 @@ public:
     struct CameraDesc : public CGameObject::GameObjectDesc
     {
         _float4 eyes, at = {};
-        _float fovY, nearZ, farZ = {};
+        _float fovY = {}, nearZ = {}, farZ = {};
 
     };
 protected:

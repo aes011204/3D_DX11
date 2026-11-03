@@ -311,7 +311,7 @@ void CUI_NPC::OnUpdate(const _float& timeDelta)
 	//if (/*?ㅼ씠?대줈洹?媛 ?앸궖?꾨뻹*/)
 	//{
 
-		if (m_gameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_SPACE)&& m_cachedDialogue->lines[m_curIndex].hasChoices == false)
+		if (m_gameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_SPACE)&& m_cachedDialogue->lines[m_curIndex].hasChoices == false)
 		{
 			if(m_cachedDialogue->lines[m_curIndex].nextID >= m_cachedDialogue->lines.size())
 			{

@@ -144,7 +144,7 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 	}
 
 
-	if (m_gameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) 
+	if (m_gameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_TAB)) 
 	{
 		if (m_isOnTab == false) 
 		{

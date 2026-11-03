@@ -33,7 +33,7 @@ shared_ptr<CUI> CUI_Manager::FindUIOnPool(wstring type)
 	return it->second; // UIpool에서 해당 레이어 찾음
 }
 
-void CUI_Manager::Update(float m_deltaTime)
+void CUI_Manager::Update(float deltaTime)
 {
 	//ProcessUIQ();
 
@@ -49,20 +49,20 @@ void CUI_Manager::Update(float m_deltaTime)
 		//}
 		for (auto it = vecCopy.rbegin(); it != vecCopy.rend(); ++it)
 		{
-			(*it)->Update(m_deltaTime, isMouseHold);
+			(*it)->Update(deltaTime, isMouseHold);
 		}
 	}
 
 }
 
-void CUI_Manager::Late_Update(float m_deltaTime)
+void CUI_Manager::Late_Update(float deltaTime)
 {
 	//순서(OVERRIDE -> WINDOW -> STACK -> HUD)
 	for (int i = 0; i < ETOI(EUILayer::END); i++)
 	{
 		for (auto it = m_UI[i].rbegin();it != m_UI[i].rend(); it++)
 		{
-			(*it)->Late_Update(m_deltaTime);
+			(*it)->Late_Update(deltaTime);
 		}
 
 	}

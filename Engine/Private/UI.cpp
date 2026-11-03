@@ -238,7 +238,7 @@ void CUI::Update(_float timeDelta, bool& isMouseHold)
 
 		if (isMouseHold == false && m_isInteractable == true)
 		{
-			Vector2 mousePos = m_gameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+			Vector2 mousePos = m_gameInstance.lock()->Get_DInput_Manager()->Get_MousePos();
 			if (true == m_UITransformCom->Get_WorldRect().Contains(mousePos.x, mousePos.y))
 			{
 				m_isHovered = true;
@@ -418,18 +418,20 @@ void CUI::Set_UI_Disabled(bool isChangeEvent)
 	}
 }
 
-void CUI::UI_Clear() // 이건 삭제
+void CUI::UI_Clear() // 자식 UI 전체 제거 (패널 재구성용)
 {
-
-
 	for (auto& it : m_children)
 	{
 		it->UI_Clear();
 		it->Mark_Destroy();
 	}
 
-
-	//m_Children.clear();
+	// 다음 Late_Update까지 기다리지 않고 바로 목록에서 뺀다.
+	// 남겨 두면 같은 태그로 다시 Add_Child 할 때 이전 자식이 검색돼 등록이 실패한다.
+	m_children.clear();
+	m_mapChildren.clear();
+	if (m_UITransformCom)
+		m_UITransformCom->GetChildren().clear();
 
 
 	// 트랜스폼 끊기
@@ -450,14 +452,15 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool keepWorldRec
 {
 	if (child == nullptr)
 		return E_FAIL;
+	// 같은 태그가 이미 있으면 등록하지 않는다 (목록에 반쯤 들어간 상태를 막기 위해 먼저 검사)
+	if (Find_Children(UITag).lock() != nullptr)
+		return E_FAIL;
+
 	// 백터에 넣기 (본체)
 	m_children.push_back(child);
 	child->m_parent = static_pointer_cast<CUI>(shared_from_this());
 
 	// 맵에 넣기 (검색용)
-	auto ui = Find_Children(UITag).lock();
-	if (ui != nullptr)
-		return E_FAIL;
 	m_mapChildren.emplace(UITag, child);
 
 	// 트렌스폼 연결 (안에서 부모 자식 연결 다함)

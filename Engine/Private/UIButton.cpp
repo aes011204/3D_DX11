@@ -162,14 +162,14 @@ void CUIButton::ProcessInput()
 {
    /* m_bHovered = false;
 
-    Vector2 mousePos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+    Vector2 mousePos = m_pGameInstance.lock()->Get_DInput_Manager()->Get_MousePos();
     if (true == m_pUITransformCom->Get_WorldRect().Contains(mousePos.x, mousePos.y))
     {
         m_bHovered = true;
     }*/
 
-    bool mouseDown = m_gameInstance.lock()->Get_DInput_Manger()->MouseDown(EMouseButton::LBUTTON);
-    bool mouseUp = m_gameInstance.lock()->Get_DInput_Manger()->MouseUp(EMouseButton::LBUTTON);
+    bool mouseDown = m_gameInstance.lock()->Get_DInput_Manager()->MouseDown(EMouseButton::LBUTTON);
+    bool mouseUp = m_gameInstance.lock()->Get_DInput_Manager()->MouseUp(EMouseButton::LBUTTON);
 
     
         if (m_UIState == EButtonState::DISABLE)

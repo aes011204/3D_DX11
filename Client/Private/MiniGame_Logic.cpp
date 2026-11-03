@@ -111,7 +111,7 @@ HRESULT CMiniGame_Logic::Initialize(void* arg)
 void CMiniGame_Logic::Update(const _float& timeDelta)
 {
 	//bool m_chose = false;
-	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F))
+	//if (m_pGameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_F))
 	//{
 	//	if (/*m_bFin == true &&*/ m_InvenCtrl.lock()->Is_Dragging() == true)
 	//	{

@@ -159,7 +159,7 @@ void CLevel_GamePlay::Update(_float timeDelta)
 		m_isFlag = true;
 	}
 
-	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
+	if (gameInstance->Get_DInput_Manager()->KeyDown(DIK_RETURN) == true)
 	{
 		CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
 			make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
@@ -195,33 +195,33 @@ void CLevel_GamePlay::Update(_float timeDelta)
 
 
 
-	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_I))
+	if (gameInstance->Get_DInput_Manager()->KeyDown(DIK_I))
 	{
 		if (nullptr == (gameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_R"),
 			ETOI(ELevel::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
-	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_P))
+	if (gameInstance->Get_DInput_Manager()->KeyDown(DIK_P))
 	{
 		if (nullptr == (gameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
 			ETOI(ELevel::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
-	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_O))
+	if (gameInstance->Get_DInput_Manager()->KeyDown(DIK_O))
 	{
 		if (nullptr == (gameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
 			ETOI(ELevel::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
 
-	//if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_U))
+	//if (pGameInstance->Get_DInput_Manager()->KeyDown(DIK_U))
 	//{
 	//	if (nullptr == (pGameInstance->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
 	//		ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
 	//		return;
 	//}
 
-	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_U))
+	if (gameInstance->Get_DInput_Manager()->KeyDown(DIK_U))
 	{
 		if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
 			ETOI(ELevel::GAMEPLAY), L"Layer_Effect")))
@@ -235,11 +235,11 @@ void CLevel_GamePlay::Update(_float timeDelta)
 
 
 
-	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_M))
+	if (gameInstance->Get_DInput_Manager()->KeyDown(DIK_M))
 	{
 		dynamic_pointer_cast<CUI_Time>(m_time)->UI_Active();
 	}
-	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_N))
+	if (gameInstance->Get_DInput_Manager()->KeyDown(DIK_N))
 	{
 		dynamic_pointer_cast<CUI_Time>(m_time)->UI_InActive();
 	}

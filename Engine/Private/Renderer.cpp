@@ -143,7 +143,7 @@ void CRenderer::Draw()
 
 
 #ifdef _DEBUG
-	if (m_gameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F1))
+	if (m_gameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_F1))
 		m_showColliders = !m_showColliders;
 
 	if (m_showColliders)
@@ -155,7 +155,7 @@ void CRenderer::Draw()
 	}
 	m_debugComponents.clear();
 
-	if (m_gameInstance.lock()->Get_DInput_Manger()->KeyPress(DIK_LCONTROL) == true)
+	if (m_gameInstance.lock()->Get_DInput_Manager()->KeyPress(DIK_LCONTROL) == true)
 	{
 		Render_Debug();
 	}

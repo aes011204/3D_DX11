@@ -56,15 +56,19 @@ _float3 CSea_Manager::Calculate_GerstnerWavePosition(_float3 pos)
     UV.y = 1.0f - ((pos.z - m_terrainPos.z) / m_terrainSize);
     UV.x = max(0.0f, min(1.0f, UV.x));
     UV.y = max(0.0f, min(1.0f, UV.y));
-    float gridX = UV.x * (m_terrainBuffer.lock()->Get_NumVerticeX() - 1);
-    float gridZ = UV.y * (m_terrainBuffer.lock()->Get_NumVerticeZ() - 1);
+    auto terrainBuffer = m_terrainBuffer.lock();
+    if (!terrainBuffer)
+        return pos;
+
+    float gridX = UV.x * (terrainBuffer->Get_NumVerticeX() - 1);
+    float gridZ = UV.y * (terrainBuffer->Get_NumVerticeZ() - 1);
     
     int cellX = (int)gridX;
     int cellZ = (int)gridZ;
 
     
-    int heightIndex = (cellZ * m_terrainBuffer.lock()->Get_NumVerticeX()) + cellX;
-    const vector<float>& vec01 = m_terrainBuffer.lock()->Get_HeightData();
+    int heightIndex = (cellZ * terrainBuffer->Get_NumVerticeX()) + cellX;
+    const vector<float>& vec01 = terrainBuffer->Get_HeightData();
     float height01 = max(1.f- vec01[heightIndex],0.1f);
    
 

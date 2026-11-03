@@ -109,7 +109,7 @@ void CPlayerBoat::Update(_float timeDelta)
 	if (m_inputBlockTime > 0.f)
 		m_inputBlockTime -= timeDelta;
 
-	CDInput_Manager* dinput = m_gameInstance.lock()->Get_DInput_Manger();
+	CDInput_Manager* dinput = m_gameInstance.lock()->Get_DInput_Manager();
 	//?뚯뒪??
 	if (dinput->KeyPress(DIK_0))
 	{

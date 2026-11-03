@@ -42,7 +42,7 @@ void CPlayerState::Find_Player()
 		MSG_BOX("failed to Get Com in StateMachine");
 	m_ownerTransformCom = transform;
 
-	m_inputManager = CGameInstance::GetInstance()->Get_DInput_Manger();
+	m_inputManager = CGameInstance::GetInstance()->Get_DInput_Manager();
 
 
 }

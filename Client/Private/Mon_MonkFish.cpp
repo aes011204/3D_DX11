@@ -269,7 +269,7 @@ void CMon_MonkFish::EnterState(EState newState)
 		break;
 	}
 
-	if(m_gameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_L)==true)
+	if(m_gameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_L)==true)
 	{
 		Mark_Destroy();
 	}
