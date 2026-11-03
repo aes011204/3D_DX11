@@ -23,7 +23,7 @@ class CUI_Box :
 {
 public:
 
-	struct BOX_DESC : public CUIPanel::UIPanelDesc
+	struct BoxDesc : public CUIPanel::UIPanelDesc
 	{
 
 	};
@@ -45,7 +45,7 @@ public:
 	HRESULT OnRender()override;
 	void OnClear()override;
 
-	void SetActiveTab(TAB tab);
+	void SetActiveTab(ETab tab);
 public:
 
 
@@ -53,19 +53,19 @@ private:
 	//TAB m_Active = TAB::NONE;
 
 	//shared_ptr<CUIImage> m_Line = {};
-	shared_ptr<CUIImage> m_NameBase = {};
+	shared_ptr<CUIImage> m_nameBase = {};
 
-	shared_ptr<CUIText> m_Name_Text = {};
+	shared_ptr<CUIText> m_nameText = {};
 
 	/*shared_ptr<CUIButton> m_ButtonContents[32] = {};*/
 	//shared_ptr<CUIPanel> m_TabContents[32] = {};
-	shared_ptr<CUIPanel> m_Storage = {};
-	shared_ptr<class CUI_Storage> m_Box = {};
+	shared_ptr<CUIPanel> m_storage = {};
+	shared_ptr<class CUI_Storage> m_box = {};
 
 
 	Vector2 m_vecAni = {};
-	_bool m_bStart = false;
-	float m_TimeAcc = {};
+	_bool m_isStart = false;
+	float m_timeAcc = {};
 	float m_duration = {};
 
 

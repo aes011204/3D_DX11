@@ -13,7 +13,7 @@ NS_BEGIN(Client)
     public CGameObject
 {
 public:
-    enum STATE{ATTACK, IDLE, RELEASE, END};
+    enum EState{ATTACK, IDLE, RELEASE, END};
 
 private:
     CMonster(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -42,8 +42,8 @@ protected:
     HRESULT Ready_Components();
 
     // 손에 콜라이더
-    const _float4x4* m_pSocketMatrix_RightHand = { nullptr };
-    const _float4x4* m_pSocketMatrix_LefttHand = { nullptr };
+    const _float4x4* m_socketMatrixRightHand = { nullptr };
+    const _float4x4* m_socketMatrixLeftHand = { nullptr };
 
     XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
     {
@@ -52,19 +52,19 @@ protected:
 
 private:
 
-    _uint m_AnimIndex = {};
-    STATE m_State = {};
+    _uint m_animIndex = {};
+    EState m_state = {};
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr }; 
+    shared_ptr<CModel> m_modelCom = { nullptr }; 
     shared_ptr<CTexture> m_textureCom = { nullptr };
-    shared_ptr<CCollider> m_pColliderCom = { nullptr };
+    shared_ptr<CCollider> m_colliderCom = { nullptr };
 
-    shared_ptr<CCollider> m_Hand_Collider_1 = { nullptr };
-    shared_ptr<CCollider> m_Hand_Collider_2 = { nullptr };
+    shared_ptr<CCollider> m_handCollider1 = { nullptr };
+    shared_ptr<CCollider> m_handCollider2 = { nullptr };
 
-    _int m_iAttackPrevFrame = 0;
+    _int m_attackPrevFrame = 0;
 public:
 
     static shared_ptr<CMonster> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

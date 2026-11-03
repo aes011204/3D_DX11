@@ -38,11 +38,11 @@ HRESULT CMiniGame_Logic_Diamond::Render(_uint iMeshIndex)
 
 HRESULT CMiniGame_Logic_Diamond::Initialize(void* pArg)
 {
-	m_MiniGameType = EMiniGameType::DIAMOND;
+	m_miniGameType = EMiniGameType::DIAMOND;
 
-	MINIGAEMELOGIC_DIAMOND_DESC* pDesc = static_cast<MINIGAEMELOGIC_DIAMOND_DESC*>(pArg);
+	MiniGameLogicDiamondDesc* pDesc = static_cast<MiniGameLogicDiamondDesc*>(pArg);
 
-	m_Speed = 1.f;
+	m_speed = 1.f;
 	__super::Initialize(pDesc);
 
 	return S_OK;
@@ -60,26 +60,26 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 
 
-	if (m_bStart == true)
+	if (m_isStart == true)
 	{
-		m_prograssBar01 += m_RodSpeed * 0.005f * timeDelta;
+		m_prograssBar01 += m_rodSpeed * 0.005f * timeDelta;
 
 
 		////////////////////////////////////
-		m_AccTime += timeDelta;
-		float t = m_Speed * m_AccTime;
+		m_accTime += timeDelta;
+		float t = m_speed * m_accTime;
 
 		float loop = fmod(t, 1.f);
-		m_Size = t;
+		m_size = t;
 		m_angle = loop * 90.f;
-		if (m_bInputRequested)
+		if (m_isInputRequested)
 		{
 
 			/*if (m_chose == true)
 			{*/
 				bool isSuccess = false;
 
-				if (m_Size > 1.f && m_Size < 1.2f)
+				if (m_size > 1.f && m_size < 1.2f)
 				{
 					isSuccess = true;
 				}
@@ -92,7 +92,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 					m_prograssBar01 += 0.2;
 					m_gameInstance.lock()->Play_Once(L"Fishing_Success");
 
-					m_LastInputResult = EInputResult::SUCCESS;
+					m_lastInputResult = EInputResult::SUCCESS;
 				}
 				else
 				{
@@ -100,7 +100,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 					m_prograssBar01 -= 0.2;
 
-					m_LastInputResult = EInputResult::FAIL;
+					m_lastInputResult = EInputResult::FAIL;
 					m_gameInstance.lock()->Play_Once(L"Fishing_Failure");
 
 					m_changeColor = true;
@@ -109,29 +109,29 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 			//}
 
 
-			m_bInputRequested = false;
+			m_isInputRequested = false;
 
 		}
 
-		if (m_Size > 2)
+		if (m_size > 2)
 		{
-			m_Size = 0.f;
-			m_AccTime = 0.f;
-			m_LastInputResult = EInputResult::START;
+			m_size = 0.f;
+			m_accTime = 0.f;
+			m_lastInputResult = EInputResult::START;
 		}
 
-		if (m_prograssBar01 >= 1.f && !m_bFin)
+		if (m_prograssBar01 >= 1.f && !m_isFinished)
 		{
 			//진짜 성공 반환
-			m_bStart = false;
+			m_isStart = false;
 
-			m_bFin = true;
+			m_isFinished = true;
 
 
 			Evt_GetFish  e = {};
-			e.DefID = m_DefID;
+			e.DefID = m_defId;
 			e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
-			auto& item = CItemDB::GetInstance()->GetItemByID(m_DefID);
+			auto& item = CItemDB::GetInstance()->GetItemByID(m_defId);
 			if (auto fish = std::get_if<FishDef>(&item.typeDef))
 			{
 				e.fishInst.mutationId = SelectMutationNoRepeat(*fish);
@@ -142,7 +142,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 			m_gameInstance.lock()->Play_Once(L"Fish_New");
 			m_gameInstance.lock()->Stop(L"fishing_loop");
 
-			m_FishCount--;
+			m_fishCount--;
 
 
 
@@ -154,42 +154,42 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 void CMiniGame_Logic_Diamond::OnInput()
 {
-	bool isDragging = m_InvenCtrl.lock()->Is_Dragging();
+	bool isDragging = m_invenCtrl.lock()->Is_Dragging();
 	if (isDragging)
 	{
-		m_bStart = false;
+		m_isStart = false;
 		m_gameInstance.lock()->Stop(L"fishing_loop");
 
 		return;
 	}
-	if (m_bFin && m_FishCount == 0)
+	if (m_isFinished && m_fishCount == 0)
 	{
-		m_bStart = false;
+		m_isStart = false;
 		m_gameInstance.lock()->Play_Once(L"fishing_end");
 
 		return;
 	}
-	if (m_bFin && m_FishCount > 0)
+	if (m_isFinished && m_fishCount > 0)
 	{
-		m_bFin = false;
+		m_isFinished = false;
 	}
 
 	//시작
-	if (!m_bStart)
+	if (!m_isStart)
 	{
 		m_gameInstance.lock()->Play_Loop(L"fishing_loop");
 
-		m_LastInputResult = EInputResult::START;
-		m_bStart = true;
-		m_AccTime = 0.f;
-		m_Size = 0.f;
+		m_lastInputResult = EInputResult::START;
+		m_isStart = true;
+		m_accTime = 0.f;
+		m_size = 0.f;
 		m_prograssBar01 = 0.f;
-		m_bFin = false;
+		m_isFinished = false;
 		return;
 	}
 
 
-	m_bInputRequested = true;
+	m_isInputRequested = true;
 	//else { m_chose = true; }
 
 

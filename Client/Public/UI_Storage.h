@@ -14,7 +14,7 @@ NS_BEGIN(Client)
     public CUIPanel
 {
 public:
-    struct STORAGE_DESC : public CUIPanel::UIPanelDesc
+    struct StorageDesc : public CUIPanel::UIPanelDesc
     {
         EInvenType Inventype = { EInvenType::NONE };
         EShopTab shopTab = { EShopTab::NONE };
@@ -45,19 +45,19 @@ public:
 
     void Set_SlotNum(_uint col, _uint row);
 
-    shared_ptr<CUIPanel> Get_InvenPanel() { return m_InvenPanel; }
+    shared_ptr<CUIPanel> Get_InvenPanel() { return m_invenPanel; }
 
 private:
     EInvenType m_inventype = { EInvenType::NONE };
     EShopTab m_shopTab = { EShopTab::NONE };
 
     shared_ptr<class CInventory_Controller> Inven_Contrl = { nullptr };
-    shared_ptr<CUIPanel> m_InvenPanel = { nullptr };
+    shared_ptr<CUIPanel> m_invenPanel = { nullptr };
 
-    weak_ptr<class CInventory> m_Inven = {};
+    weak_ptr<class CInventory> m_inven = {};
 
-    vector<shared_ptr<CUIImage>> m_ItemUI = {};
-    vector<shared_ptr<CUISlot>> m_Slot = {};
+    vector<shared_ptr<CUIImage>> m_itemUi = {};
+    vector<shared_ptr<CUISlot>> m_slot = {};
 public:
     static shared_ptr<CUI_Storage> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;

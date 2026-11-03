@@ -13,7 +13,7 @@ NS_BEGIN(Client)
     public CGameObject
 {
 public:
-    enum STATE{ATTACK, IDLE, RELEASE, END};
+    enum EState{ATTACK, IDLE, RELEASE, END};
 
 private:
     CMon_Tentacle(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -42,10 +42,10 @@ protected:
     HRESULT Ready_Components();
 
     // 손에 콜라이더
-    const _float4x4* m_pSocketMatrix_Top = { nullptr };
-    const _float4x4* m_pSocketMatrix_Mid = { nullptr };
-    const _float4x4* m_pSocketMatrix_Btm = { nullptr };
-    const _float4x4* m_pSocketMatrix_Btm_F = { nullptr };
+    const _float4x4* m_socketMatrixTop = { nullptr };
+    const _float4x4* m_socketMatrixMid = { nullptr };
+    const _float4x4* m_socketMatrixBtm = { nullptr };
+    const _float4x4* m_socketMatrixBtmF = { nullptr };
 
     XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
     {
@@ -54,28 +54,28 @@ protected:
 
 private:
 
-    float m_TurnSpeed = {};
-    _bool m_IsColl = { false };
+    float m_turnSpeed = {};
+    _bool m_isColl = { false };
 
-    _uint m_AnimIndex = {};
-    STATE m_State = {};
-    _bool m_Flag = false ;
+    _uint m_animIndex = {};
+    EState m_state = {};
+    _bool m_isFlag = false ;
 
-    _vector m_LastDir = {};
+    _vector m_lastDir = {};
 
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr }; 
+    shared_ptr<CModel> m_modelCom = { nullptr }; 
     shared_ptr<CTexture> m_textureCom = { nullptr };
     //shared_ptr<CCollider> m_pColliderCom = { nullptr };
 
-    shared_ptr<CCollider> m_Top_Collider = { nullptr };
-    shared_ptr<CCollider> m_Mid_Collider = { nullptr };
-    shared_ptr<CCollider> m_Btm_Collider = { nullptr };
-    shared_ptr<CCollider> m_Btm_F_Collider = { nullptr };
+    shared_ptr<CCollider> m_topCollider = { nullptr };
+    shared_ptr<CCollider> m_midCollider = { nullptr };
+    shared_ptr<CCollider> m_btmCollider = { nullptr };
+    shared_ptr<CCollider> m_btmFCollider = { nullptr };
 
-    weak_ptr<CGameObject> m_pPlayer = {  };
+    weak_ptr<CGameObject> m_player = {  };
 public:
 
     static shared_ptr<CMon_Tentacle> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

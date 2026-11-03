@@ -18,7 +18,7 @@ class CUI_Inventory :
     public CUIPanel
 {
 public:
-    struct INVENTORY_DESC : public CUIPanel::UIPanelDesc
+    struct InventoryDesc : public CUIPanel::UIPanelDesc
     {
        
     };
@@ -51,14 +51,14 @@ public:
     _float2 Calculate_RenderPos(const ItemInst& item);
 
 private:
-    weak_ptr<class CInventory> m_Inven = {};
-    shared_ptr<CUIText>m_TextInfo = {};
-    shared_ptr<CUIText>m_TextInfo_1 = {};
+    weak_ptr<class CInventory> m_inven = {};
+    shared_ptr<CUIText>m_textInfo = {};
+    shared_ptr<CUIText>m_textInfo1 = {};
 
-    shared_ptr<CUIPanel> m_InvenPanel = { nullptr };
-    vector<shared_ptr<CUIImage>> m_ItemUI = {};
-    vector<shared_ptr<CUISlot>> m_Slot = {};
-    vector<shared_ptr<CUISlot>> m_DemageSlot = {};
+    shared_ptr<CUIPanel> m_invenPanel = { nullptr };
+    vector<shared_ptr<CUIImage>> m_itemUi = {};
+    vector<shared_ptr<CUISlot>> m_slot = {};
+    vector<shared_ptr<CUISlot>> m_damageSlot = {};
 
 public:
     static shared_ptr<CUI_Inventory> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

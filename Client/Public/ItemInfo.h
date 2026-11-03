@@ -16,8 +16,8 @@ class CItemInfo :
 	public CUIPanel
 {
 public:
-	enum BUTTONINFO{ROTATION, THROWUP, RELEASE, SELL, PICK, STORAGE, BUY, END};
-	struct ITEMINFO_DESC : public CUIPanel::UIPanelDesc
+	enum EButtonInfo{ROTATION, THROWUP, RELEASE, SELL, PICK, STORAGE, BUY, END};
+	struct ItemInfoDesc : public CUIPanel::UIPanelDesc
 	{
 
 	};
@@ -40,27 +40,27 @@ public:
 	HRESULT OnRender()override;
 	void OnClear()override;
 
-	void SetPlayerState(EPlayerState state){m_PlayerState = state;}
+	void SetPlayerState(EPlayerState state){m_playerState = state;}
 public:
-	_float Active_ButtonInfo(BUTTONINFO btnInfo, _float2 AnchoredPos, _float cost = 0.f, _float2 Pivot = {0.5f, 0.5f});
+	_float Active_ButtonInfo(EButtonInfo btnInfo, _float2 AnchoredPos, _float cost = 0.f, _float2 Pivot = {0.5f, 0.5f});
 	void GetButtonInfo(_uint buttonInfo, _uint& Texindex, wstring& str, _float extraInfo);
 private:
-	shared_ptr<CUIText> m_NameText = {};
-	shared_ptr<CUIText> m_LeftText = {};
-	shared_ptr<CUIText> m_RightText = {};
-	shared_ptr<CUIText> m_DetailText = {};
-	shared_ptr<CUIImage> m_LineImg = {};
+	shared_ptr<CUIText> m_nameText = {};
+	shared_ptr<CUIText> m_leftText = {};
+	shared_ptr<CUIText> m_rightText = {};
+	shared_ptr<CUIText> m_detailText = {};
+	shared_ptr<CUIImage> m_lineImg = {};
 
 	vector<shared_ptr<CUIImage>> m_vecIcon;
-	shared_ptr<CUIText> m_ButtonInfoText = {};
+	shared_ptr<CUIText> m_buttonInfoText = {};
 
-	_float2 m_Targetsize = {};
+	_float2 m_targetSize = {};
 
-	_float m_NamePadding = {5.f};
-	_float m_PaddingX = {5.f};
-	_float m_PaddingY = {5.f};
+	_float m_namePadding = {5.f};
+	_float m_paddingX = {5.f};
+	_float m_paddingY = {5.f};
 
-	EPlayerState m_PlayerState = {};
+	EPlayerState m_playerState = {};
 
 public:
 	static shared_ptr<CItemInfo> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

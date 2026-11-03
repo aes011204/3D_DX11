@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
@@ -33,7 +33,7 @@ private:
     HRESULT Ready_Components();
 
 private:
-    shared_ptr<CCollider> m_pColliderCom = { nullptr };
+    shared_ptr<CCollider> m_colliderCom = { nullptr };
 
 public:
     static shared_ptr<CColliderObject> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

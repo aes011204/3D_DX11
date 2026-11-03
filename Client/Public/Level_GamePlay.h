@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Define.h"
 #include "Level.h"
 NS_BEGIN(Engine)
@@ -35,21 +35,21 @@ public:
 	HRESULT Ready_Layer_Effect(const _wstring& strLayerTag);
 
 private:
-	_bool m_OnTab = false;
-	shared_ptr<CUI> m_TapUI = {};
-	shared_ptr<class CUI_Item> m_HoldItem ={};
-	shared_ptr<CUI>  m_pNPC = {};
-	shared_ptr<CUI>  m_pMiniGame = {};
+	_bool m_isOnTab = false;
+	shared_ptr<CUI> m_tabUi = {};
+	shared_ptr<class CUI_Item> m_holdItem ={};
+	shared_ptr<CUI>  m_npc = {};
+	shared_ptr<CUI>  m_miniGame = {};
 
-	shared_ptr<class CInventory_Controller> m_pInvenCntl = {};
-	weak_ptr<CGameObject> m_pPlayer = {};
-	weak_ptr<class CInventory> m_PlayerInven = {};
+	shared_ptr<class CInventory_Controller> m_invenCtrl = {};
+	weak_ptr<CGameObject> m_player = {};
+	weak_ptr<class CInventory> m_playerInven = {};
 
-	shared_ptr<class CUI> m_Time = {};
+	shared_ptr<class CUI> m_time = {};
 
-	shared_ptr<class CMiniGameController> m_pMiniGame_Controller = { nullptr };
+	shared_ptr<class CMiniGameController> m_miniGameController = { nullptr };
 	shared_ptr<CCamera> ClientCamera = {nullptr};
-	_bool m_Flag = false;
+	_bool m_isFlag = false;
 
 
 	_bool m_prevIsNight = true;

@@ -36,12 +36,12 @@ HRESULT CMiniGame_Logic_Ball::Render(_uint iMeshIndex)
 
 HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
 {
-	m_MiniGameType = EMiniGameType::BASIC_CIRCLE;
+	m_miniGameType = EMiniGameType::BASIC_CIRCLE;
 
-	MINIGAEMELOGIC_BALL_DESC* pDesc = static_cast<MINIGAEMELOGIC_BALL_DESC*>(pArg);
+	MiniGameLogicBallDesc* pDesc = static_cast<MiniGameLogicBallDesc*>(pArg);
 
 	                                                                                                                                                                             
-	m_Speed = m_gameInstance.lock()->Random(pDesc->Speed.x, pDesc->Speed.y);
+	m_speed = m_gameInstance.lock()->Random(pDesc->Speed.x, pDesc->Speed.y);
 
 	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
 	//	[this](const Evt_FishingData& e) {
@@ -108,14 +108,14 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 
 	
-	if (m_bStart == true)
+	if (m_isStart == true)
 	{
-		m_prograssBar01 += m_RodSpeed * timeDelta;
+		m_prograssBar01 += m_rodSpeed * timeDelta;
 
 
 		////////////////////////////////////
-		m_AccTime += timeDelta;
-		m_angle = m_Speed * m_AccTime;
+		m_accTime += timeDelta;
+		m_angle = m_speed * m_accTime;
 		
 		/*float currentAngle = fmod(m_Angle, 360.f);
 		if (currentAngle < 0) currentAngle += 360.f;
@@ -161,21 +161,21 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 		//}
 	}
 
-	if (m_prograssBar01 >= 1.f && !m_bFin)
+	if (m_prograssBar01 >= 1.f && !m_isFinished)
 	{
 		//진짜 성공 반환
-		m_bStart = false;
+		m_isStart = false;
 
-		m_bFin = true;
+		m_isFinished = true;
 
 		
 		Evt_GetFish  e = {};
-		e.DefID = m_DefID;
+		e.DefID = m_defId;
 		e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
 		e.fishInst.mutationId = 2;
 		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
-		m_FishCount--;
+		m_fishCount--;
 
 		ResetZoon();
 
@@ -199,7 +199,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 void CMiniGame_Logic_Ball::ResetZoon()
 {
-	m_zoneSize = m_gameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
+	m_zoneSize = m_gameInstance.lock()->Random(m_initZoneSize.x, m_initZoneSize.y);
 
 	float divide = 1.f / m_zoneCount;
 
@@ -222,25 +222,25 @@ void CMiniGame_Logic_Ball::ResetZoon()
 void CMiniGame_Logic_Ball::OnInput()
 {
 	//bool m_chose = false;
-	bool isDragging = m_InvenCtrl.lock()->Is_Dragging();
+	bool isDragging = m_invenCtrl.lock()->Is_Dragging();
 	if (isDragging)
 	{
-		m_bStart = false;
+		m_isStart = false;
 		return;
 	}
-	if (m_bFin && m_FishCount == 0)
+	if (m_isFinished && m_fishCount == 0)
 	{
-		m_bStart = false;
+		m_isStart = false;
 		return;
 	}
 
 	// 2. 시작
-	if (!m_bStart)
+	if (!m_isStart)
 	{
-		m_bStart = true;
-		m_AccTime = 0.f;
+		m_isStart = true;
+		m_accTime = 0.f;
 		m_prograssBar01 = 0.f;
-		m_bFin = false;
+		m_isFinished = false;
 		return;
 	}
 		
@@ -273,7 +273,7 @@ void CMiniGame_Logic_Ball::OnInput()
 
 				m_prograssBar01 += 0.2;
 			
-				m_LastInputResult = EInputResult::SUCCESS;
+				m_lastInputResult = EInputResult::SUCCESS;
 			}
 			else
 			{
@@ -281,7 +281,7 @@ void CMiniGame_Logic_Ball::OnInput()
 
 				m_prograssBar01 -= 0.2;
 
-				m_LastInputResult = EInputResult::FAIL;
+				m_lastInputResult = EInputResult::FAIL;
 				
 				m_changeColor = true;
 				colortime = .5f;

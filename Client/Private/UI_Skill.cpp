@@ -19,19 +19,19 @@ HRESULT CUI_Skill::OnInit(void* pArg)
 
 	///////ICON////////
 	{
-		CUIButton::UIButtonDesc SkillDesc = {};
-		SkillDesc.textureComLevel = ETOI(LEVEL::STATIC);
-		SkillDesc.textureProtoName = L"Prototype_Component_Texture_ActionButtonMain";
+		CUIButton::UIButtonDesc skillDesc = {};
+		skillDesc.textureComLevel = ETOI(ELevel::STATIC);
+		skillDesc.textureProtoName = L"Prototype_Component_Texture_ActionButtonMain";
 		//SkillPanelDesc.IsTransparent = true;
-		SkillDesc.useDark = false;
+		skillDesc.useDark = false;
 		shared_ptr<CUIPanel> Skill = CUIPanel::Create(m_device, m_context);
-		Skill->Initialize(&SkillDesc);
+		Skill->Initialize(&skillDesc);
 
 		
 		Add_Child(Skill, L"Skill_Base", false);
 		{
 			CUIImage::UIImageDesc img_k = {};
-			img_k.textureComLevel = ETOI(LEVEL::STATIC);
+			img_k.textureComLevel = ETOI(ELevel::STATIC);
 			img_k.textureProtoName = L"Prototype_Component_Texture_KEY";
 			img_k.textureIndex = 121;
 			shared_ptr<CUIPanel> Image_K = CUIPanel::Create(m_device, m_context);
@@ -42,7 +42,7 @@ HRESULT CUI_Skill::OnInit(void* pArg)
 
 
 			CUIImage::UIImageDesc img_B = {};
-			img_B.textureComLevel = ETOI(LEVEL::STATIC);
+			img_B.textureComLevel = ETOI(ELevel::STATIC);
 			img_B.textureProtoName = L"Prototype_Component_Texture_LightsIcon";
 			shared_ptr<CUIPanel> Image_B = CUIPanel::Create(m_device, m_context);
 			Image_B->Initialize(&img_B);
@@ -56,7 +56,7 @@ HRESULT CUI_Skill::OnInit(void* pArg)
 	///////E KEY//////
 	{
 		CUIButton::UIButtonDesc E_Desc = {};
-		E_Desc.textureComLevel = ETOI(LEVEL::STATIC);
+		E_Desc.textureComLevel = ETOI(ELevel::STATIC);
 		E_Desc.textureProtoName = L"Prototype_Component_Texture_Speaker_Button_Default";
 		//BoatButtonDesc.bUseDark = false;
 
@@ -67,7 +67,7 @@ HRESULT CUI_Skill::OnInit(void* pArg)
 			
 
 			CUIImage::UIImageDesc img_k = {};
-			img_k.textureComLevel = ETOI(LEVEL::STATIC);
+			img_k.textureComLevel = ETOI(ELevel::STATIC);
 			img_k.textureProtoName = L"Prototype_Component_Texture_KEY";
 			img_k.textureIndex = 42;
 			shared_ptr<CUIPanel> Image_K = CUIPanel::Create(m_device, m_context);
@@ -77,7 +77,7 @@ HRESULT CUI_Skill::OnInit(void* pArg)
 
 
 			CUIImage::UIImageDesc img_B = {};
-			img_B.textureComLevel = ETOI(LEVEL::STATIC);
+			img_B.textureComLevel = ETOI(ELevel::STATIC);
 			img_B.textureProtoName = L"Prototype_Component_RadialMenuIcon";
 			shared_ptr<CUIPanel> Image_B = CUIPanel::Create(m_device, m_context);
 			Image_B->Initialize(&img_B);

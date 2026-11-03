@@ -49,22 +49,22 @@ void CUI_RepairShop::UI_PanelActive()
 	// 일단 기본적으로 패널 은 다 inactive, 버튼은 iTabfig 에 따라 active
 	//::OnActive() 에서 클릭한 거만 활성화
 
-	for(auto Button: m_ButtonContents)
+	for(auto Button: m_buttonContents)
 	{
 		Button->UI_Active();
 	}
-	for (auto content : m_TabContents)
+	for (auto content : m_tabContents)
 	{
 		content->UI_InActive();
 		//dynamic_pointer_cast<CUI_Storage>(content)->Set_SlotNum(8, 8);
 	}
-	m_TabContents[ETOI(EShopTab::ROT)]->UI_Active();
+	m_tabContents[ETOI(EShopTab::ROT)]->UI_Active();
 	
-	m_Line->UI_Active();
-	m_Line2->UI_Active();
+	m_line->UI_Active();
+	m_line2->UI_Active();
 //	m_TextIMG->UI_Active();
-	m_BtnFix->UI_Active();
-	m_FixButtonTex->UI_Active();
+	m_btnFix->UI_Active();
+	m_fixButtonTex->UI_Active();
 	/*_wstring strTag = format(L"모두 수리[{:.2f}]", m_repairPrice);
 	m_FixButtonTex->Set_Text(strTag);*/
 	Change_LayoutRawCol( 4,1);
@@ -89,17 +89,17 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_RepairCost>([this](const Evt_RepairCost& e)
 		{
 			_wstring strTag = format(L"모두 수리[${}]", e.cost);
-			m_FixButtonTex->Set_Text(strTag);
+			m_fixButtonTex->Set_Text(strTag);
 			m_repairPrice = e.cost;
 		});
 
 
 	HRESULT hr = E_FAIL;
-	REPAIR_DESC* TABpDesc = static_cast<REPAIR_DESC*>(pArg);
+	RepairDesc* TABpDesc = static_cast<RepairDesc*>(pArg);
 	//TABCONTAINER_DESC pDesc = {};
 	TABpDesc->isFullScreen = false;
 	TABpDesc->isTransparent = false;
-	TABpDesc->textureComLevel = ETOI(LEVEL::STATIC);
+	TABpDesc->textureComLevel = ETOI(ELevel::STATIC);
 	TABpDesc->textureProtoName = L"Prototype_Component_Texture_TabContainer";
 	TABpDesc->isUseLayout = true;
 	//pDesc.vAnchorPoint = 일단 패스
@@ -110,7 +110,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 
 
 	CUIImage::UIImageDesc img = {};
-	img.textureComLevel = ETOI(LEVEL::STATIC);
+	img.textureComLevel = ETOI(ELevel::STATIC);
 	img.textureProtoName = L"Prototype_Component_Texture_TabDivider";
 	img.useNineSlice = true;
 	shared_ptr<CUIImage> Line = CUIImage::Create(m_device, m_context);
@@ -118,10 +118,10 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	Line->Set_Zorder(1);
 
 	Add_Child(Line, L"Line", false); 
-	m_Line = Line;
+	m_line = Line;
 
 	CUIImage::UIImageDesc img2 = {};
-	img2.textureComLevel = ETOI(LEVEL::STATIC);
+	img2.textureComLevel = ETOI(ELevel::STATIC);
 	img2.textureProtoName = L"Prototype_Component_Texture_TabDivider";
 	img2.useNineSlice = true;
 	shared_ptr<CUIImage> Line2 = CUIImage::Create(m_device, m_context);
@@ -129,7 +129,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	Line2->Set_Zorder(1);
 
 	Add_Child(Line2, L"Line2", false);
-	m_Line2 = Line2;
+	m_line2 = Line2;
 
 	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
@@ -137,7 +137,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 
 		/// 버튼
 		CUIButton::UIButtonDesc ButDesc = {};
-		ButDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		ButDesc.textureComLevel = ETOI(ELevel::STATIC);
 		ButDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 
 		ButDesc.scale = Vector2{ 3.28f, 1.25f };
@@ -183,7 +183,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 			}
 
 			CUIImage::UIImageDesc icon{};
-			icon.textureComLevel = ETOI(LEVEL::STATIC);
+			icon.textureComLevel = ETOI(ELevel::STATIC);
 			icon.textureProtoName = texKey;
 			shared_ptr<CUIImage> iconImg = CUIImage::Create(m_device, m_context);
 			iconImg->Initialize(&icon);
@@ -196,7 +196,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 		//Add_Child(pChild, NameTag, false);
 		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
 		Add_Layout_Child(button, NameTag, false);
-		m_ButtonContents[ETOI(eTab)] = button;
+		m_buttonContents[ETOI(eTab)] = button;
 
 	}
 
@@ -205,22 +205,22 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 		{
 			EShopTab eTab = static_cast<EShopTab>(i);
 			// 일단 테스트 인벤 3개
-			CUI_Storage::STORAGE_DESC StorageDesc = {};
-			StorageDesc.isFullScreen = false;
-			StorageDesc.isTransparent = true;
-			StorageDesc.isSetParentSize = true;
-			StorageDesc.Inventype = EInvenType::SHOP;
-			StorageDesc.shopTab = eTab;
+			CUI_Storage::StorageDesc storageDesc = {};
+			storageDesc.isFullScreen = false;
+			storageDesc.isTransparent = true;
+			storageDesc.isSetParentSize = true;
+			storageDesc.Inventype = EInvenType::SHOP;
+			storageDesc.shopTab = eTab;
 			
 
 			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_device, m_context);
-			pStorage->Initialize(&StorageDesc);
+			pStorage->Initialize(&storageDesc);
 
 
 
 			wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
 			Add_Child(pStorage, NameTag, false);
-			m_TabContents[ETOI(eTab)] = pStorage;
+			m_tabContents[ETOI(eTab)] = pStorage;
 			pStorage->UI_InActive();
 
 
@@ -233,7 +233,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 
 	{
 			CUIButton::UIButtonDesc ButDesc = {};
-			ButDesc.textureComLevel = ETOI(LEVEL::STATIC);
+			ButDesc.textureComLevel = ETOI(ELevel::STATIC);
 			ButDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 			//ButDesc.TypeIndex = ETOI(eTab);
 			ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
@@ -261,13 +261,13 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 				shared_ptr<CUIText> Text_storage = CUIText::Create(m_device, m_context);
 				Text_storage->Initialize(&text_Desc);
 				button->Add_Child(Text_storage, L"Text_repairPrice", false);
-				m_FixButtonTex = Text_storage;
+				m_fixButtonTex = Text_storage;
 			}
 
 			//Add_Child(pChild, NameTag, false);
 			wstring NameTag = L"BUTTON_repair";
 			Add_Child(button, NameTag, false);
-			m_BtnFix = button;
+			m_btnFix = button;
 	}
 
 	return hr;
@@ -286,10 +286,10 @@ void CUI_RepairShop::OnActive()
 	GetUITransform()->SetAnchoredPos(Vector2{ GetUITransform()->Get_FinalSize().x, 0.f });
 	//m_vecAni = Vector2{ GetUITransform()->Get_FinalSize().x, 0.f };
 	m_vecAni = Vector2{ -1200.f,0.f };
-	m_bStart = true;
+	m_isStart = true;
 	m_duration = 1.5f;
 
-	m_ButtonContents[ETOI(EShopTab::ROT)]->ChangeState(EButtonState::SELECT);
+	m_buttonContents[ETOI(EShopTab::ROT)]->ChangeState(EButtonState::SELECT);
 
 
 	CUIPanel::OnActive();
@@ -297,8 +297,8 @@ void CUI_RepairShop::OnActive()
 
 void CUI_RepairShop::OnInActive()
 {
-	m_bStart = false;
-	m_TimeAcc = 0;
+	m_isStart = false;
+	m_timeAcc = 0;
 	//m_Active = TAB::NONE;
 	CUIPanel::OnInActive();
 }
@@ -312,11 +312,11 @@ void CUI_RepairShop::OnDisabled()
 void CUI_RepairShop::OnUpdate(const _float& timeDelta)
 {
 	// 여기에서 안보였다가 와야함
-	if (m_bStart == true)
+	if (m_isStart == true)
 	{
-		m_TimeAcc += timeDelta;
+		m_timeAcc += timeDelta;
 
-		float t = m_TimeAcc / m_duration;
+		float t = m_timeAcc / m_duration;
 
 		if (t >= 1.f) t = 1.f;
 		m_vecAni = Vector2{ lerp(m_vecAni.x,  -600.f, t),0.f };
@@ -324,8 +324,8 @@ void CUI_RepairShop::OnUpdate(const _float& timeDelta)
 		//LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
 
 		if (t >= 1.f) {
-			m_bStart = false;
-			m_TimeAcc = 0;
+			m_isStart = false;
+			m_timeAcc = 0;
 		}
 	}
 
@@ -355,18 +355,18 @@ void CUI_RepairShop::SetActiveTab(_uint btnIndex)
 
 	for (int i = 0; i < ETOI(EShopTab::END); i++)
 	{
-		if (m_TabContents[i])
-			m_TabContents[i]->UI_InActive(); // 탭은 인엑티브를 해야하고 
+		if (m_tabContents[i])
+			m_tabContents[i]->UI_InActive(); // 탭은 인엑티브를 해야하고 
 
-		if (m_ButtonContents[i])
-			m_ButtonContents[i]->ChangeState(EButtonState::NORMAL); // 버튼은 언셀렉트 
+		if (m_buttonContents[i])
+			m_buttonContents[i]->ChangeState(EButtonState::NORMAL); // 버튼은 언셀렉트 
 	}
 
-	if (m_TabContents[ETOI(btnIndex)])
-		m_TabContents[ETOI(btnIndex)]->UI_Active(); // 해당 패널 활성화
+	if (m_tabContents[ETOI(btnIndex)])
+		m_tabContents[ETOI(btnIndex)]->UI_Active(); // 해당 패널 활성화
 
-	if (m_ButtonContents[ETOI(btnIndex)])
-		m_ButtonContents[ETOI(btnIndex)]->ChangeState(EButtonState::SELECT); // 셀렉트
+	if (m_buttonContents[ETOI(btnIndex)])
+		m_buttonContents[ETOI(btnIndex)]->ChangeState(EButtonState::SELECT); // 셀렉트
 }
 
 shared_ptr<CUI_RepairShop> CUI_RepairShop::Create(ComPtr<ID3D11Device> pDevice,
@@ -386,8 +386,8 @@ void CUI_RepairShop::Free()
 {
 	for (int i = 0; i < ETOI(EShopTab::END); ++i)
 	{
-		m_TabContents[i].reset();
-		m_ButtonContents[i].reset();
+		m_tabContents[i].reset();
+		m_buttonContents[i].reset();
 	}
 
 	CUIPanel::Free();

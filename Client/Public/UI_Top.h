@@ -16,7 +16,7 @@ NS_BEGIN(Client)
     public CUIPanel
 {
 public:
-    struct Top_DESC : public CUIPanel::UIPanelDesc
+    struct TopDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:
@@ -39,9 +39,9 @@ public:
 public:
 
 private:
-    shared_ptr<CUIText> m_DayText = {};
-    shared_ptr<CUIText> m_TimeText = {};
-    shared_ptr<CUIImage> m_DayCircle = {};
+    shared_ptr<CUIText> m_dayText = {};
+    shared_ptr<CUIText> m_timeText = {};
+    shared_ptr<CUIImage> m_dayCircle = {};
 
     _uint preDay = {};
     _float preMin = {};

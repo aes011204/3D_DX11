@@ -46,8 +46,8 @@ void CColliderObject::Update(_float fTimeDelta)
         m_isDirtyCom = false;
     }
 
-    if (m_pColliderCom != nullptr)
-        m_pColliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
+    if (m_colliderCom != nullptr)
+        m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
 void CColliderObject::Late_Update(_float fTimeDelta)
@@ -61,8 +61,8 @@ HRESULT CColliderObject::Render()
     if (m_gameInstance.lock()->Get_IsDebug() == false)
         return S_OK;
 
-    if (m_pColliderCom != nullptr && m_pColliderCom->Get_CollisionActive())
-        m_gameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+    if (m_colliderCom != nullptr && m_colliderCom->Get_CollisionActive())
+        m_gameInstance.lock()->Add_DebugenderGroup(m_colliderCom);
 #endif
 
     return S_OK;
@@ -150,8 +150,8 @@ void CColliderObject::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CColli
 
 void CColliderObject::OnGui()
 {
-    if (m_pColliderCom != nullptr)
-        m_pColliderCom->OnGui();
+    if (m_colliderCom != nullptr)
+        m_colliderCom->OnGui();
 }
 
 void CColliderObject::RebindCom()
@@ -168,14 +168,14 @@ HRESULT CColliderObject::Ready_Components()
     OBBDesc.otherMask = ECollisionLayer::PLAYER;
 
     if (FAILED(Add_Component(
-        ETOI(LEVEL::GAMEPLAY),
+        ETOI(ELevel::GAMEPLAY),
         TEXT("Prototype_Component_Collider_OBB"),
         TEXT("Com_Collider"),
-        &m_pColliderCom,
+        &m_colliderCom,
         &OBBDesc)))
         return E_FAIL;
 
-    m_gameInstance.lock()->Add_Collider(m_pColliderCom);
+    m_gameInstance.lock()->Add_Collider(m_colliderCom);
 
     return S_OK;
 }

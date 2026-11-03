@@ -13,7 +13,7 @@ class CWaterEff :
 {
     public
         :
-    struct EffDESC : public CGameObject::GameObjectDesc
+    struct EffDesc : public CGameObject::GameObjectDesc
     {
         EEffType type = {};
         weak_ptr<class CGameObject>Target = {};
@@ -37,7 +37,7 @@ public:
 
     virtual void RebindCom();
 
-    void Set_Player(weak_ptr<class CGameObject> Player) { m_pPlayer = Player; }
+    void Set_Player(weak_ptr<class CGameObject> Player) { m_player = Player; }
 
     _float3 curPos = {};
     _float3 PrevPos = {};
@@ -49,7 +49,7 @@ protected:
    
     EEffType   eType={};
 private:
-    weak_ptr<class CGameObject> m_pPlayer = {};
+    weak_ptr<class CGameObject> m_player = {};
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };

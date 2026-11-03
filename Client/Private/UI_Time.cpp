@@ -23,20 +23,20 @@ void CUI_Time::UIPannelActive(_uint time ,_bool IsSleep)
 
 	m_gameInstance.lock()->Play_Loop(L"Hold_Active");
 
-	m_IsSleep = IsSleep;
+	m_isSleep = IsSleep;
 
 	
 
-	if(m_IsSleep == true)
+	if(m_isSleep == true)
 	{
-		m_Text->Set_Text(L"휴식...");
+		m_text->Set_Text(L"휴식...");
 	}
 	else
 	{
-		m_Text->Set_Text(L"장비 설치중");
+		m_text->Set_Text(L"장비 설치중");
 
-		m_StartTod = m_gameInstance.lock()->Get_TOD01();
-		m_TargetTod = m_gameInstance.lock()->Get_TOD01() + time/24.f;
+		m_startTod = m_gameInstance.lock()->Get_TOD01();
+		m_targetTod = m_gameInstance.lock()->Get_TOD01() + time/24.f;
 
 	}
 
@@ -62,13 +62,13 @@ HRESULT CUI_Time::OnInit(void* pArg)
 
 
 
-	UITIME_DESC* pDesc = static_cast<UITIME_DESC*>(pArg);
+	UiTimeDesc* pDesc = static_cast<UiTimeDesc*>(pArg);
 
 
 	//CUIPanel::UIPANEL_DESC LoadingDesc;
 	pDesc->isFullScreen = true;
 	pDesc->textureProtoName = L"Prototype_Component_Texture_Black";
-	pDesc->textureComLevel = ETOI(LEVEL::STATIC);
+	pDesc->textureComLevel = ETOI(ELevel::STATIC);
 	Set_Alpha(0.7f);
 
 	//pDesc->NoDISTACH = true;
@@ -77,13 +77,13 @@ HRESULT CUI_Time::OnInit(void* pArg)
 
 
 	CUIImage::UIImageDesc SandTimerDesc;
-	SandTimerDesc.textureComLevel = ETOI(LEVEL::STATIC);
+	SandTimerDesc.textureComLevel = ETOI(ELevel::STATIC);
 	SandTimerDesc.textureProtoName = L"Prototype_Component_Texture_Timer";
 	shared_ptr<CUIImage> pIcon = CUIImage::Create(m_device, m_context);
 	pIcon->Initialize(&SandTimerDesc);
 	//pIcon->m_behavior.push_back(make_shared<CRotationModifier>(200.f));
 	Add_Child(pIcon, L"ICON_TIME", false);
-	m_iCon = pIcon;
+	m_icon = pIcon;
 
 	CUIText::TextDesc textDesc;
 	//TextDesc.TextColor = _float4{ 1.f,0.f };
@@ -94,7 +94,7 @@ HRESULT CUI_Time::OnInit(void* pArg)
 	text->Initialize(&textDesc);
 	Add_Child(text, L"text_TIME", false);
 
-	m_Text = text;
+	m_text = text;
 
 	CUIText::TextDesc TextDesc1;
 	//TextDesc.TextColor = _float4{ 1.f,0.f };
@@ -110,7 +110,7 @@ HRESULT CUI_Time::OnInit(void* pArg)
 	//
 
 	CUIImage::UIImageDesc CircleDesc = {};
-	CircleDesc.textureComLevel = ETOI(LEVEL::STATIC);
+	CircleDesc.textureComLevel = ETOI(ELevel::STATIC);
 	CircleDesc.textureProtoName = L"Prototype_Component_Texture_FishingUICircle";
 	CircleDesc.shaderType = CUIRenderable::UIShaderType::Radial;
 	shared_ptr<CUIImage> Circle = CUIImage::Create(m_device, m_context);
@@ -119,11 +119,11 @@ HRESULT CUI_Time::OnInit(void* pArg)
 	Circle->Set_ZoneColor(_float4{ 1.f,0.f,0.f, 1.f });
 
 	Add_Child(Circle, L"Circle", false);
-	m_pCircle = Circle;
-	m_CircleShader = dynamic_pointer_cast<CShader>(Circle->Get_Component(L"Com_Shader"));
+	m_circle = Circle;
+	m_circleShader = dynamic_pointer_cast<CShader>(Circle->Get_Component(L"Com_Shader"));
 
 
-	m_TargetAngle = -180;
+	m_targetAngle = -180;
 	//
 	Set_Interactive(false);
 	return S_OK;
@@ -156,23 +156,23 @@ void CUI_Time::OnUpdate(const _float& timeDelta)
 	
 	if(result != true)
 	{
-	result = m_iCon->GetUITransform()->SetRotationTo(m_TargetAngle, timeDelta);
+	result = m_icon->GetUITransform()->SetRotationTo(m_targetAngle, timeDelta);
 		
 	}
 
 	if(result==true)
 	{
-		m_Acc += timeDelta;
-		if(m_Acc > 0.5f)
+		m_acc += timeDelta;
+		if(m_acc > 0.5f)
 		{
-		m_TargetAngle -= 180.f;
-		m_Acc = 0.f;
+		m_targetAngle -= 180.f;
+		m_acc = 0.f;
 		result = false;
 		}
 	}
 
 
-	if(m_IsSleep==true)
+	if(m_isSleep==true)
 	{
 		
 		m_gameInstance.lock()->Set_TimeScale(20.f);
@@ -180,8 +180,8 @@ void CUI_Time::OnUpdate(const _float& timeDelta)
 	else
 	{
 		m_gameInstance.lock()->Set_TimeScale(20.f);
-		m_CurrentTod = m_gameInstance.lock()->Get_TOD01();
-		_float fRatio = (m_CurrentTod - m_StartTod) / (m_TargetTod - m_StartTod);
+		m_currentTod = m_gameInstance.lock()->Get_TOD01();
+		_float fRatio = (m_currentTod - m_startTod) / (m_targetTod - m_startTod);
 		m_zones[0].end = fRatio;
 		
 			if (fRatio >= 1.f)
@@ -204,10 +204,10 @@ void CUI_Time::OnLateUpdate()
 
 HRESULT CUI_Time::OnRender()
 {
-	if (m_CircleShader != nullptr)
+	if (m_circleShader != nullptr)
 	{
-		m_CircleShader->Bind_RawValue("g_zones", m_zones, sizeof(_float4) * 8);
-		m_CircleShader->Bind_RawValue("g_zoneCount", &m_zoneCount, sizeof(float));
+		m_circleShader->Bind_RawValue("g_zones", m_zones, sizeof(_float4) * 8);
+		m_circleShader->Bind_RawValue("g_zoneCount", &m_zoneCount, sizeof(float));
 
 	}
 	return __super::OnRender();

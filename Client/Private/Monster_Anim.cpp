@@ -27,7 +27,7 @@ HRESULT CMonster_Anim::Initialize(void* pArg)
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pModelCom->Set_Animation(0, true);
+	m_modelCom->Set_Animation(0, true);
 
 	return S_OK;
 }
@@ -38,10 +38,10 @@ void CMonster_Anim::Priority_Update(_float fTimeDelta)
 
 void CMonster_Anim::Update(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(fTimeDelta);
 
 
-m_pColliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
+m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
 void CMonster_Anim::Late_Update(_float fTimeDelta)
@@ -57,19 +57,19 @@ HRESULT CMonster_Anim::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	size_t iNumMesh = m_modelCom->Get_NumMeshes();
 
 	for(size_t i=0; i< iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
-		m_pModelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i,TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
+		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i,TextureType_DIFFUSE, 0);
+		m_modelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
 	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->Render(i)))
+	if (FAILED(m_modelCom->Render(i)))
 		return E_FAIL;
 	}
 
@@ -77,7 +77,7 @@ HRESULT CMonster_Anim::Render()
 #ifdef _DEBUG
 	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_gameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_colliderCom);
 
 
 #endif
@@ -95,7 +95,7 @@ void CMonster_Anim::RebindCom()
 {
 	// 이제 모든 컴포넌트는 널체크 잘하기 없는경우도 있을수 있으니까
 	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	m_modelCom = Get_Component<CModel>(L"Com_Model");
 	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
 }
@@ -147,17 +147,17 @@ HRESULT CMonster_Anim::Ready_Components()
 	//	return E_FAIL;
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona_Anim"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Model_Fiona_Anim"), TEXT("Com_Model"), &m_modelCom, nullptr)))
 		return E_FAIL;
 
 	CBounding_OBB::BoundingOBBDesc		OBBDesc{};
 	OBBDesc.extents = _float3(1.f, 1.f, 1.f);
 	OBBDesc.radians = _float3(0.f, 0.f, 0.f);
 	OBBDesc.center = _float3(0.f, 0.f, 0.f);
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_colliderCom, &OBBDesc)))
 		return E_FAIL;
 	return S_OK;
 }

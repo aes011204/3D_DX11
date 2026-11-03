@@ -26,10 +26,10 @@ CLevel_Loading::CLevel_Loading(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11Device
 {
 }
 
-HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
+HRESULT CLevel_Loading::Initialize(ELevel eNextLevelID)
 {
 	m_gameInstance.lock()->Stop_All();
-	m_eNextLevelID = eNextLevelID;
+	m_nextLevelId = eNextLevelID;
 	
 	// 로딩 화면을 구성해주기 위한 객체들을 생성한다
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
@@ -38,8 +38,8 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 		return E_FAIL;
 
 	// 저 객체들이 로딩화면을 구성하고 유저에게 보여주는 동안 자원을 로드해줄수 있는 (Cloader)스레드 객체를 생성헤준다
-	m_pLoader = CLoader::Create(m_device, m_context, eNextLevelID);
-	if(m_pLoader == nullptr)
+	m_loader = CLoader::Create(m_device, m_context, eNextLevelID);
+	if(m_loader == nullptr)
 		return E_FAIL;
 
 
@@ -69,7 +69,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 	//m_LoadingUI->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT))
 	//&& GetKeyState(VK_RETURN) & 0x8000
 
-	if( m_pLoader->Is_Finished() == true)
+	if( m_loader->Is_Finished() == true)
 	{
 
 
@@ -77,16 +77,16 @@ void CLevel_Loading::Update(_float fTimeDelta)
 
 
 		
-		switch (m_eNextLevelID)
+		switch (m_nextLevelId)
 		{
-		case LEVEL::LOGO:
+		case ELevel::LOGO:
 			pNextLevel = CLevel_Logo::Create(m_device, m_context);
 			break;
 
-		case LEVEL::GAMEPLAY:
+		case ELevel::GAMEPLAY:
 			pNextLevel = CLevel_GamePlay::Create(m_device, m_context);
 			break;
-		case LEVEL::EDITOR:
+		case ELevel::EDITOR:
 			pNextLevel = CLevel_Editor::Create(m_device, m_context);
 			break;
 		default:
@@ -99,7 +99,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 			return;
 		}
 
-		if(FAILED(m_gameInstance.lock()->Change_Level(ETOI(m_eNextLevelID),pNextLevel)))
+		if(FAILED(m_gameInstance.lock()->Change_Level(ETOI(m_nextLevelId),pNextLevel)))
 		{
 			MSG_BOX("Failed to Change : NextLevel");
 			return;
@@ -115,7 +115,7 @@ void CLevel_Loading::Update(_float fTimeDelta)
 HRESULT CLevel_Loading::Render()
 {
 #ifdef _DEBUG
-	m_pLoader->Print_LoadText();
+	m_loader->Print_LoadText();
 #endif
 
 	return S_OK;
@@ -147,7 +147,7 @@ HRESULT CLevel_Loading::Ready_Layer_UI(const _tchar* LayerTag)
 	return S_OK;
 }
 
-shared_ptr<CLevel_Loading> CLevel_Loading::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, LEVEL eNextLevelID)
+shared_ptr<CLevel_Loading> CLevel_Loading::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, ELevel eNextLevelID)
 {
 	shared_ptr<CLevel_Loading> pInstance ( new CLevel_Loading(pDevice, pContext));
 

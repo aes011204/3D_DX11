@@ -32,7 +32,7 @@ public:
 	virtual HRESULT Render(_uint iMeshIndex);
 	virtual void Update(const _float& timeDelta);
 
-	void Start_Fishing(weak_ptr<CFish> m_pFish, weak_ptr<CInventory_Controller> InvenCtrl, float RodSpeeed);
+	void Start_Fishing(weak_ptr<CFish> m_fish, weak_ptr<CInventory_Controller> InvenCtrl, float RodSpeeed);
 
 
 public:

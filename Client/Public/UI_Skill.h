@@ -8,7 +8,7 @@ class CUI_Skill final :
     public CUIPanel
 {
 public:
-    struct SKILL_DESC : public CUIPanel::UIPanelDesc
+    struct SkillDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:

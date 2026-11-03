@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 #include "Client_Define.h"
 #include "Client_Enum.h"
@@ -6,7 +6,7 @@
 NS_BEGIN(Client)
 
 class CInventoryUI :
-    public CBase ///�ϴ� �ӽ÷�  base 
+    public CBase ///일단 임시로  base 
 {
 private:
     CInventoryUI();
@@ -21,7 +21,7 @@ public:
 private:
 
 
-    class shared_ptr<class CInventory_Controller> m_Inven_Ctrl = { nullptr };
+    class shared_ptr<class CInventory_Controller> m_invenCtrl = { nullptr };
 
 
 public:

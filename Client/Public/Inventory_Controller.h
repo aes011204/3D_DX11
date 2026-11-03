@@ -35,9 +35,9 @@ public:
     void Make_Hold(ItemInst inst);
     shared_ptr<CInventory> Get_CurrentInven();
 
-    void Set_Inven(weak_ptr<class CInventory> inventory) { m_PlayerInven = inventory; }
+    void Set_Inven(weak_ptr<class CInventory> inventory) { m_playerInven = inventory; }
 
-    bool Is_Dragging() { return m_bDragging; }
+    bool Is_Dragging() { return m_isDragging; }
     //_bool PickUp_Item(Item_Inst HoldItem) {
     //    m_HoldItem = HoldItem; m_bDragging = true;
     //    m_Inven.lock()->RemoveFrom_Inven(m_HoldItem.ItemInst_ID);
@@ -50,34 +50,34 @@ public:
     //HRESULT Create_HoldItem(Item_Inst HoldItem) { m_HoldItem = HoldItem};
 private:
     //Item_Inst m_HoldItem = {};
-    vector<_float2> m_OffSet = {};
+    vector<_float2> m_offset = {};
     /*_float m_Rotaion = {};*/ // 이거 인스턴스 안에 있음
 
     _uint m_prevItemInstId = {};//툴팁용 체크
     //bool prevMouseOnSlot = { false };
-    bool m_bDragging = false;
-    bool m_PrevDragging = false;
-    _uint m_SlotX, m_SlotY = {};
-    _uint m_PrevSlotX, m_PrevSlotY = {};
-    _bool m_bIsOnSlot = { false };
+    bool m_isDragging = false;
+    bool m_isPrevDragging = false;
+    _uint m_slotX, m_slotY = {};
+    _uint m_prevSlotX, m_prevSlotY = {};
+    _bool m_isOnSlot = { false };
 
 
-    _bool m_bPrevOnSlot = { false };
+    _bool m_isPrevOnSlot = { false };
 
     // 상점 등등을 위한 인밴 데이터도 필요함
-     weak_ptr<class CInventory> m_PlayerInven = {}; // 로직
-    weak_ptr<CInventory> m_TargetInven;
+     weak_ptr<class CInventory> m_playerInven = {}; // 로직
+    weak_ptr<CInventory> m_targetInven;
 
 
-    weak_ptr<CInventory> m_SourceInven;
-    weak_ptr<CInventory> m_DestInven;
+    weak_ptr<CInventory> m_sourceInven;
+    weak_ptr<CInventory> m_destInven;
 
-    _bool m_IsPlayerSlot = false;
+    _bool m_isPlayerSlot = false;
 
    // class shared_ptr<class CUI_Inventory> m_UIInven = { nullptr }; // UI
-   shared_ptr<class CUI_Item> m_UIHoldItem = { nullptr };
+   shared_ptr<class CUI_Item> m_uiHoldItem = { nullptr };
    weak_ptr<CGameInstance>m_gameInstance = { };
-   EInvenType m_HoldItemFrom;
+   EInvenType m_holdItemFrom;
 
 
 public:

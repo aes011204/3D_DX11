@@ -15,7 +15,7 @@ NS_BEGIN(Client)
 
 {
 public:
-    struct UITIME_DESC : public CUIPanel::UIPanelDesc
+    struct UiTimeDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:
@@ -40,25 +40,25 @@ public:
 
 private:
 
-    _bool m_IsSleep = {};
+    _bool m_isSleep = {};
   
-    shared_ptr<CUIImage>  m_iCon = {};
-    shared_ptr<CUIText> m_Text = {};
-    shared_ptr<CUIImage> m_pCircle = {};
-    shared_ptr<CShader >m_CircleShader = {};
+    shared_ptr<CUIImage>  m_icon = {};
+    shared_ptr<CUIText> m_text = {};
+    shared_ptr<CUIImage> m_circle = {};
+    shared_ptr<CShader >m_circleShader = {};
 
     Zone m_zones[8];
     float m_zoneCount = 1;
-    float  m_TargetAngle = {};
+    float  m_targetAngle = {};
     
-        float   m_Acc = {};
+        float   m_acc = {};
         _bool  result = false;
-    float   m_Seeed = {};
+    float   m_seed = {};
 
     //
-    float m_CurrentTod = {};
-    float m_StartTod = {};
-    float m_TargetTod = {};
+    float m_currentTod = {};
+    float m_startTod = {};
+    float m_targetTod = {};
 public:
     static shared_ptr<CUI_Time> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     void Free() override;

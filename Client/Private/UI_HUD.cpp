@@ -19,8 +19,8 @@ CUI_HUD::CUI_HUD(const CUIPanel& prototype)
 HRESULT CUI_HUD::OnInit(void* pArg)
 {
 	{
-		CUI_Skill::SKILL_DESC SkillPanelDesc = {};
-		SkillPanelDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		CUI_Skill::SkillDesc SkillPanelDesc = {};
+		SkillPanelDesc.textureComLevel = ETOI(ELevel::STATIC);
 		SkillPanelDesc.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
 		SkillPanelDesc.isTransparent = true;
 		SkillPanelDesc.useDark = false;
@@ -32,7 +32,7 @@ HRESULT CUI_HUD::OnInit(void* pArg)
 	}
 	{
 		CUI_Top::UIPanelDesc TopPanelDesc = {};
-		TopPanelDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		TopPanelDesc.textureComLevel = ETOI(ELevel::STATIC);
 		TopPanelDesc.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
 		TopPanelDesc.isTransparent = true;
 		TopPanelDesc.useDark = false;
@@ -45,7 +45,7 @@ HRESULT CUI_HUD::OnInit(void* pArg)
 	}
 	{
 		CUIButton::UIButtonDesc BoatButtonDesc = {};
-		BoatButtonDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		BoatButtonDesc.textureComLevel = ETOI(ELevel::STATIC);
 		BoatButtonDesc.textureProtoName = L"Prototype_Component_Texture_Speaker_Button_Default";
 		//BoatButtonDesc.bUseDark = false;
 
@@ -56,7 +56,7 @@ HRESULT CUI_HUD::OnInit(void* pArg)
 			
 
 			CUIImage::UIImageDesc img_k = {};
-			img_k.textureComLevel = ETOI(LEVEL::STATIC);
+			img_k.textureComLevel = ETOI(ELevel::STATIC);
 			img_k.textureProtoName = L"Prototype_Component_Texture_KEY";
 			img_k.textureIndex = 196;
 			shared_ptr<CUIPanel> Image_K = CUIPanel::Create(m_device, m_context);
@@ -66,7 +66,7 @@ HRESULT CUI_HUD::OnInit(void* pArg)
 
 
 			CUIImage::UIImageDesc img_B = {};
-			img_B.textureComLevel = ETOI(LEVEL::STATIC);
+			img_B.textureComLevel = ETOI(ELevel::STATIC);
 			img_B.textureProtoName = L"Prototype_Component_Texture_ShipIcon";
 			shared_ptr<CUIPanel> Image_B = CUIPanel::Create(m_device, m_context);
 			Image_B->Initialize(&img_B);

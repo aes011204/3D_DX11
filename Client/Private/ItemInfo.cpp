@@ -26,7 +26,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 
 
 
-	if (itemInst.itemInstId == ID_Absence)
+	if (itemInst.itemInstId == kIdAbsence)
 	{
 
 		UI_InActive();
@@ -35,7 +35,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 
 	float cost = {};
 
-	float fCurrentY = -m_NamePadding;
+	float fCurrentY = -m_namePadding;
 
 	ItemDef itemDef = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefId);
 
@@ -47,7 +47,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 		{
 			FishDef* fishDef = get_if<FishDef>(&itemDef.typeDef);
 
-			if (fishInst->mutationId == ID_Absence)
+			if (fishInst->mutationId == kIdAbsence)
 			{
 				NameInfo = S2W(itemDef.itemName);
 				DescInfo = S2W(itemDef.itemDesc);
@@ -123,34 +123,34 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 
 	}
 	}
-	m_NameText->Set_Text(NameInfo); //위치조정 필요 없음
-	if (m_NameText->Get_UIState() != EUIState::ACTIVE)
-		m_NameText->UI_Active();
-	m_NameText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
-	fCurrentY -= (m_NameText->Get_TextSize().y + m_NamePadding);
+	m_nameText->Set_Text(NameInfo); //위치조정 필요 없음
+	if (m_nameText->Get_UIState() != EUIState::ACTIVE)
+		m_nameText->UI_Active();
+	m_nameText->GetUITransform()->SetAnchoredPos({ m_paddingX, fCurrentY });
+	fCurrentY -= (m_nameText->Get_TextSize().y + m_namePadding);
 
-	if (m_LineImg->Get_UIState() != EUIState::ACTIVE)
-		m_LineImg->UI_Active();
-	m_LineImg->GetUITransform()->SetAnchoredPos({ 0, fCurrentY });
-	fCurrentY -= (m_LineImg->GetUITransform()->Get_SizeDelta().y + m_PaddingY);
+	if (m_lineImg->Get_UIState() != EUIState::ACTIVE)
+		m_lineImg->UI_Active();
+	m_lineImg->GetUITransform()->SetAnchoredPos({ 0, fCurrentY });
+	fCurrentY -= (m_lineImg->GetUITransform()->Get_SizeDelta().y + m_paddingY);
 
-	m_LeftText->Set_Text(LeftInfo);
-	m_LeftText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
-	if (m_LeftText->Get_UIState() != EUIState::ACTIVE)
-		m_LeftText->UI_Active();
+	m_leftText->Set_Text(LeftInfo);
+	m_leftText->GetUITransform()->SetAnchoredPos({ m_paddingX, fCurrentY });
+	if (m_leftText->Get_UIState() != EUIState::ACTIVE)
+		m_leftText->UI_Active();
 
-	m_RightText->Set_Text(RightInfo);
-	m_RightText->GetUITransform()->SetAnchoredPos({ -m_PaddingX, fCurrentY });
-	if (m_RightText->Get_UIState() != EUIState::ACTIVE)
-		m_RightText->UI_Active();
-	fCurrentY -= (m_LeftText->Get_TextSize().y + m_PaddingY);
+	m_rightText->Set_Text(RightInfo);
+	m_rightText->GetUITransform()->SetAnchoredPos({ -m_paddingX, fCurrentY });
+	if (m_rightText->Get_UIState() != EUIState::ACTIVE)
+		m_rightText->UI_Active();
+	fCurrentY -= (m_leftText->Get_TextSize().y + m_paddingY);
 
 
-	m_DetailText->Set_Text(DescInfo);
-	m_DetailText->GetUITransform()->SetAnchoredPos({ -m_PaddingX, fCurrentY });
-	if (m_DetailText->Get_UIState() != EUIState::ACTIVE)
-		m_DetailText->UI_Active();
-	fCurrentY -= (m_DetailText->Get_TextSize().y + m_PaddingY);
+	m_detailText->Set_Text(DescInfo);
+	m_detailText->GetUITransform()->SetAnchoredPos({ -m_paddingX, fCurrentY });
+	if (m_detailText->Get_UIState() != EUIState::ACTIVE)
+		m_detailText->UI_Active();
+	fCurrentY -= (m_detailText->Get_TextSize().y + m_paddingY);
 
 	for (auto& infoBtn : m_vecIcon)
 	{
@@ -168,14 +168,14 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 		case EPlayerState::FISHING:
 		case EPlayerState::SEA:
 			// 놓기 회전 버리기
-			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f ,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::RELEASE, { 40.f ,fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::ROTATION, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::ROTATION, { 40.f, fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::THROWUP, { 40.f, fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
 			break;
 		case EPlayerState::REPAIR_SHOP:
@@ -183,18 +183,18 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 			//설치 회전 창고로보내기 환불
 
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::RELEASE, { 40.f,fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::ROTATION, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::ROTATION, { 40.f, fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::STORAGE, { 40.f, fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 			if (itemInst.itemType == EItemType::EQUIP)
 			{
-				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 40.f, fCurrentY }, cost*.5f);
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::SELL, { 40.f, fCurrentY }, cost*.5f);
+				fCurrentY -= (sizeY + m_paddingY);
 			}
 			break;
 		}
@@ -205,19 +205,19 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 
 			//설치 회전 창고로보내기 환불
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::RELEASE, { 40.f,fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::ROTATION, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::ROTATION, { 40.f, fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::STORAGE, { 40.f, fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 			if (itemInst.itemType == EItemType::FISH)
 			{
-				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 40.f, fCurrentY }, cost);
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::SELL, { 40.f, fCurrentY }, cost);
+				fCurrentY -= (sizeY + m_paddingY);
 
 			}
 
@@ -234,11 +234,11 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 		case EPlayerState::FISHING:
 		case EPlayerState::SEA:
 			//집기 버리기
-			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::PICK, { 50.f ,fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::THROWUP, { 50.f, fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 			break;
 			//case E_PLAYERSTATE::REPAIR_SHOP: // 이거 구매 측
 			//	//구매
@@ -249,17 +249,17 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 		case EPlayerState::REPAIR_SHOP:
 			if (IsPlayer)
 			{
-				sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::PICK, { 50.f ,fCurrentY });
+				fCurrentY -= (sizeY + m_paddingY);
 
-				sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
-				fCurrentY -= (sizeY + m_PaddingY);
-				sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::THROWUP, { 50.f, fCurrentY });
+				fCurrentY -= (sizeY + m_paddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::STORAGE, { 50.f ,fCurrentY });
+				fCurrentY -= (sizeY + m_paddingY);
 				if (itemInst.itemType == EItemType::EQUIP)
 				{
-					sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost * 0.5f);
-					fCurrentY -= (sizeY + m_PaddingY);
+					sizeY = Active_ButtonInfo(EButtonInfo::SELL, { 50.f, fCurrentY }, cost * 0.5f);
+					fCurrentY -= (sizeY + m_paddingY);
 
 				}
 			}
@@ -267,8 +267,8 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 			{
 
 
-				sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f, fCurrentY }, cost);
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::BUY, { 50.f, fCurrentY }, cost);
+				fCurrentY -= (sizeY + m_paddingY);
 			}
 			//집기 버리기 창고로보내기 판매
 
@@ -277,17 +277,17 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 
 		case EPlayerState::FISH_SHOP:
 			//집기 버리기 창고로보내기 판매
-			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::PICK, { 50.f ,fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
-			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::THROWUP, { 50.f, fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::STORAGE, { 50.f ,fCurrentY });
+			fCurrentY -= (sizeY + m_paddingY);
 			if (itemInst.itemType == EItemType::FISH)
 			{
-				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost);
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::SELL, { 50.f, fCurrentY }, cost);
+				fCurrentY -= (sizeY + m_paddingY);
 			}
 
 			break;
@@ -302,7 +302,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState Pla
 
 		}
 	}*/
-	m_Targetsize.y = abs(fCurrentY) + m_PaddingY;
+	m_targetSize.y = abs(fCurrentY) + m_paddingY;
 	//m_Targetsize.y = rc.Bottom() - GetUITransform()->Get_WorldRect().Top() ;
 
 
@@ -330,9 +330,9 @@ HRESULT CItemInfo::OnInit(void* pArg)
 
 
 	HRESULT hr = E_FAIL;
-	ITEMINFO_DESC* INFODesc = static_cast<ITEMINFO_DESC*>(pArg);
+	ItemInfoDesc* INFODesc = static_cast<ItemInfoDesc*>(pArg);
 	INFODesc->useNineSlice = true;
-	INFODesc->textureComLevel = ETOI(LEVEL::STATIC);
+	INFODesc->textureComLevel = ETOI(ELevel::STATIC);
 	INFODesc->textureProtoName = L"Prototype_Component_Texture_PopupBackground";
 	INFODesc->pivot = (_float2{ 0.f,0.f });
 	hr = CUIPanel::OnInit(INFODesc);
@@ -349,11 +349,11 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	shared_ptr<CUIText> ItemNameText = CUIText::Create(m_device, m_context);
 	ItemNameText->Initialize(&ItemNameDesc);
 	Add_Child(ItemNameText, L"ItemNameText", false);
-	m_NameText = ItemNameText;
+	m_nameText = ItemNameText;
 
 	// 선 - 고정
 	CUIImage::UIImageDesc LineDesc = {};
-	LineDesc.textureComLevel = ETOI(LEVEL::STATIC);
+	LineDesc.textureComLevel = ETOI(ELevel::STATIC);
 	LineDesc.textureProtoName = L"Prototype_Component_Texture_TabDivider";
 	LineDesc.pivot = (_float2{ 0.5f,0.5f });
 	LineDesc.anchorPoint = (_float2{ 0.5f,1.f });
@@ -361,7 +361,7 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	shared_ptr<CUIImage> Line = CUIImage::Create(m_device, m_context);
 	Line->Initialize(&LineDesc);
 	Add_Child(Line, L"Line", false);
-	m_LineImg = Line;
+	m_lineImg = Line;
 
 
 	//오른쪽 왼쪽 - 변동
@@ -374,7 +374,7 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	shared_ptr<CUIText> ItemLeftText = CUIText::Create(m_device, m_context);
 	ItemLeftText->Initialize(&ItemLeftDesc);
 	Add_Child(ItemLeftText, L"ItemLeftText", false);
-	m_LeftText = ItemLeftText;
+	m_leftText = ItemLeftText;
 
 	CUIText::TextDesc ItemRightDesc = {};
 	ItemRightDesc.fontAlign = CUIText::EFontAlign::RIGHT;
@@ -385,7 +385,7 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	shared_ptr<CUIText> ItemRightText = CUIText::Create(m_device, m_context);
 	ItemRightText->Initialize(&ItemRightDesc);
 	Add_Child(ItemRightText, L"ItemRightText", false);
-	m_RightText = ItemRightText;
+	m_rightText = ItemRightText;
 
 	// 상세 설명 - 변동 
 
@@ -400,7 +400,7 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	shared_ptr<CUIText> ItemDetailText = CUIText::Create(m_device, m_context);
 	ItemDetailText->Initialize(&ItemDetailDesc);
 	Add_Child(ItemDetailText, L"ItemDetailText", false);
-	m_DetailText = ItemDetailText;
+	m_detailText = ItemDetailText;
 
 
 
@@ -408,16 +408,16 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	{
 
 
-		m_vecIcon.resize(BUTTONINFO::END);
-		for (size_t i = 0; i < BUTTONINFO::END; i++)
+		m_vecIcon.resize(EButtonInfo::END);
+		for (size_t i = 0; i < EButtonInfo::END; i++)
 		{
-			BUTTONINFO currentBtn = static_cast<BUTTONINFO>(i);
+			EButtonInfo currentBtn = static_cast<EButtonInfo>(i);
 			string viewName = string(magic_enum::enum_name(currentBtn));
 			wstring wName = S2W(viewName);
 
 			//버튼인포 아이콘 - 변동
 			CUIImage::UIImageDesc ButtonIconDesc = {};
-			ButtonIconDesc.textureComLevel = ETOI(LEVEL::STATIC);
+			ButtonIconDesc.textureComLevel = ETOI(ELevel::STATIC);
 			ButtonIconDesc.textureProtoName = L"Prototype_Component_Texture_KEY";
 			ButtonIconDesc.textureIndex = 119;
 			ButtonIconDesc.pivot = (_float2{ 0.5f,1.f });
@@ -458,31 +458,31 @@ void CItemInfo::GetButtonInfo(_uint buttonInfo, _uint& Texindex, wstring& str, _
 	// 119 - 집기 / 213- z / 123 - 창고 / 53 - 판매 /119 놓기/ 121 회전
 	switch (buttonInfo)
 	{
-	case ETOI(CItemInfo::BUTTONINFO::STORAGE):
+	case ETOI(CItemInfo::EButtonInfo::STORAGE):
 		Texindex = 123;
 		str = L"창고로 보내기";
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::BUY):
+	case ETOI(CItemInfo::EButtonInfo::BUY):
 		Texindex = 123;
 		str = format(L"구매 [${:.2f}]", extraInfo);
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::PICK):
+	case ETOI(CItemInfo::EButtonInfo::PICK):
 		Texindex = 119;
 		str = L"집기";
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::RELEASE):
+	case ETOI(CItemInfo::EButtonInfo::RELEASE):
 		Texindex = 119;
 		str = L"놓기";
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::ROTATION):
+	case ETOI(CItemInfo::EButtonInfo::ROTATION):
 		Texindex = 121;
 		str = L"회전";
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::SELL):
+	case ETOI(CItemInfo::EButtonInfo::SELL):
 		Texindex = 53;
 		str = format(L"판매 [${:.2f}]", extraInfo);
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::THROWUP):
+	case ETOI(CItemInfo::EButtonInfo::THROWUP):
 		Texindex = 213;
 		str = L"버리기";
 		return;
@@ -509,8 +509,8 @@ void CItemInfo::OnDisabled()
 void CItemInfo::OnUpdate(const _float& timeDelta)
 {
 
-	GetUITransform()->SetLocalScale({ 1.4f, m_Targetsize.y / GetUITransform()->Get_SizeDelta().y });
-	m_LineImg->GetUITransform()->SetLocalScale({ GetUITransform()->Get_FinalSize().x / m_LineImg->GetUITransform()->Get_SizeDelta().x, 0.5f });
+	GetUITransform()->SetLocalScale({ 1.4f, m_targetSize.y / GetUITransform()->Get_SizeDelta().y });
+	m_lineImg->GetUITransform()->SetLocalScale({ GetUITransform()->Get_FinalSize().x / m_lineImg->GetUITransform()->Get_SizeDelta().x, 0.5f });
 
 
 	CUIPanel::OnUpdate(timeDelta);
@@ -540,7 +540,7 @@ void CItemInfo::OnClear()
 	CUIPanel::OnClear();
 }
 
-_float CItemInfo::Active_ButtonInfo(BUTTONINFO btnInfo, _float2 AnchoredPos, _float cost, _float2 Pivot)
+_float CItemInfo::Active_ButtonInfo(EButtonInfo btnInfo, _float2 AnchoredPos, _float cost, _float2 Pivot)
 {
 	wstring str = L"";
 	_uint TexIndex = {};

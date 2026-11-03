@@ -11,7 +11,7 @@ class CMiniGame;
     public CGameObject
 {
 public:
-    struct FISH_DESC : public CGameObject::GameObjectDesc
+    struct FishDesc : public CGameObject::GameObjectDesc
     {
         _uint FishCount = {};
 
@@ -28,7 +28,7 @@ public:
     };
 
 
-    struct  FishSData
+    struct  FishData
     {
         _float4x4 FishMatrices={};
 
@@ -57,23 +57,23 @@ public:
 
     virtual void OnGui() override;
 
-    int GetInitFishCount() const { return m_InitFishCount; }
+    int GetInitFishCount() const { return m_initFishCount; }
     int GetCurFishCount() const {
-        if (m_MiniGame_Logic == nullptr)
+        if (m_miniGameLogic == nullptr)
             return -1;
 
-        return m_MiniGame_Logic->GetFishCount();
+        return m_miniGameLogic->GetFishCount();
     }
-    shared_ptr<CMiniGame> GetMiniGameLogic() const {return m_MiniGame_Logic;}
-    void SetMiniGameLogic(shared_ptr<class CMiniGame> logic) {m_MiniGame_Logic = logic;}
+    shared_ptr<CMiniGame> GetMiniGameLogic() const {return m_miniGameLogic;}
+    void SetMiniGameLogic(shared_ptr<class CMiniGame> logic) {m_miniGameLogic = logic;}
 
 	virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
-    EMiniGameType GetMiniGameType() const{return m_MiniGameType;}
+    EMiniGameType GetMiniGameType() const{return m_miniGameType;}
 
-    void Change_Cam(shared_ptr<CGameObject> m_Player);
+    void Change_Cam(shared_ptr<CGameObject> m_player);
 
     virtual void RebindCom();
     HRESULT Bind_ShaderResources();
@@ -86,21 +86,21 @@ protected:
 private:
 
     shared_ptr<CShader> m_shaderCom = {nullptr};
-    shared_ptr<CModel> m_pModelCom = {nullptr};
-    shared_ptr<CCollider> m_pColliderCom = { nullptr };
+    shared_ptr<CModel> m_modelCom = {nullptr};
+    shared_ptr<CCollider> m_colliderCom = { nullptr };
 
 private:
 
-    EMiniGameType m_MiniGameType = {};
+    EMiniGameType m_miniGameType = {};
    //_uint m_CurFishCount = {};
 
-    _uint m_InitFishCount = {};
+    _uint m_initFishCount = {};
     float m_acc = {};
-    vector<FishSData> m_Fishs = {};
+    vector<FishData> m_fishes = {};
     _uint fish_DefID = {};
 
 
-    shared_ptr<class CMiniGame> m_MiniGame_Logic = { nullptr };
+    shared_ptr<class CMiniGame> m_miniGameLogic = { nullptr };
 
 public:
     static shared_ptr<CFish> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

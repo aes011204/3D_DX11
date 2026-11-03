@@ -18,7 +18,7 @@ public:
     
 
 public:
-    struct SEA_DESC final : public CGameObject::GameObjectDesc
+    struct SeaDesc final : public CGameObject::GameObjectDesc
     {
 
     };
@@ -45,11 +45,11 @@ protected:
 private:
     shared_ptr<CShader> m_shaderCom = { nullptr };
     shared_ptr<CVIBuffer> m_VIBufferCom = { nullptr };
-    shared_ptr<CVIBuffer_Sea> m_pVIBufferComCashing = { nullptr };
+    shared_ptr<CVIBuffer_Sea> m_cachedVIBufferCom = { nullptr };
     shared_ptr<CTexture> m_textureCom = { nullptr };
 
-    shared_ptr<class CSky_Controller> m_SkyContrl = { nullptr };
-   weak_ptr<class CSea_Manager> m_SeaManager = {};
+    shared_ptr<class CSky_Controller> m_skyControl = { nullptr };
+   weak_ptr<class CSea_Manager> m_seaManager = {};
  /*   float m_AccTime = {};
     int m_WaveCount = {};
     Wave_Desc m_waveDesc[10] = {};

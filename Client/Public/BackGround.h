@@ -14,7 +14,7 @@ class CBackGround final:
     public CUIObject
 {
 public:
-    struct BACKGROUND_DESC final:  public CUIObject::UIObjectDesc
+    struct BackGroundDesc final:  public CUIObject::UIObjectDesc
     {
 	    
     };

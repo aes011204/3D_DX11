@@ -26,8 +26,8 @@ namespace Client
 
 	enum class ESeaType : _ubyte { COASTAL, SHALLOW, OCEANIC, ABYSSAL, HADAL, MANGROVE, VOLCANIC, ICE, CRAB, END };
 	// 비트 플레그로쓸거임 //uint8_t : “하나 선택” → 8비트로 충분
-    using SEA_MASK = _uint; // uint16_t (_ushort) : 16개 까지 가능 // 여러 개 ON/OFF 집합” → 16비트로 넉넉하게 // _uint 32 비트로 해도됨 
-    constexpr SEA_MASK Set_SeaType_Mask(ESeaType SeaType) { return SEA_MASK{ 1u } << static_cast<uint32_t>(SeaType);
+    using SeaMask = _uint; // uint16_t (_ushort) : 16개 까지 가능 // 여러 개 ON/OFF 집합” → 16비트로 넉넉하게 // _uint 32 비트로 해도됨 
+    constexpr SeaMask Set_SeaType_Mask(ESeaType SeaType) { return SeaMask{ 1u } << static_cast<uint32_t>(SeaType);
     } // 1u = unsigned 1 // << 비트 연산 왼쪽으로 한칸씩 이동
 
 }
@@ -36,9 +36,9 @@ namespace Client
 
 namespace Client
 {
-    using ID_uint = _ushort;
+    using IdType = _ushort;
     
-    static constexpr ID_uint ID_Absence = 0;
+    static constexpr IdType kIdAbsence = 0;
 
 	// 아이템 관련
 
@@ -54,7 +54,7 @@ namespace Client
 
      struct Mutation
      {
-         ID_uint speciesId = { ID_Absence }; ID_uint mutationId = { ID_Absence };
+         IdType speciesId = { kIdAbsence }; IdType mutationId = { kIdAbsence };
          _string mutName = {}; _string mutDesc = {}; _string mutTexturePath = {};
          _float mutCost = { 0 };
          shared_ptr<Engine::CTexture> texture = { nullptr };
@@ -62,7 +62,7 @@ namespace Client
 
     struct FishDef
     {
-        float cost = { 0 }; EDayTime fishTime = EDayTime::END; SEA_MASK seaTypeMask = { 0 };
+        float cost = { 0 }; EDayTime fishTime = EDayTime::END; SeaMask seaTypeMask = { 0 };
         _bool isRod = false; _bool isTrawl = false; _bool  isPot = false;
 
         vector<Mutation> vecMutation = {}; // array 는 현제 몇개가 있는지 카운트하는기능이 없어서 struct로 만들어서 / 근데 난 귀찬
@@ -70,8 +70,8 @@ namespace Client
 
 		struct EquipEngine { _uint researchLv = { 0 }; _uint speedKn = { 0 }; };
         struct EquipLight { _uint lumen = { 0 }; _uint range = { 0 }; };
-        struct EquipRod {_uint researchLv = { 0 }; SEA_MASK seaTypeMask = { 0 }; _uint speedPer = { 0 }; };
-        struct EquipNet {_uint researchLv = { 0 }; SEA_MASK seaTypeMask = { 0 }; _uint capSizeX, capSizeY = { 0 };
+        struct EquipRod {_uint researchLv = { 0 }; SeaMask seaTypeMask = { 0 }; _uint speedPer = { 0 }; };
+        struct EquipNet {_uint researchLv = { 0 }; SeaMask seaTypeMask = { 0 }; _uint capSizeX, capSizeY = { 0 };
         	_uint yield = { 0 }; _uint lastFor = { 0 }; };
         struct EquipCrabPot { _uint researchLv = { 0 }; _uint capSizeX, capSizeY = { 0 };
         	_uint yield = { 0 }; _uint lastFor = { 0 };
@@ -88,14 +88,14 @@ namespace Client
     struct TrinketDef { float cost = { 0 }; };
 
 
-    struct FishInst { EFreshness freshness = EFreshness::FRESH; ID_uint mutationId = { ID_Absence }; _float size = {}; };
+    struct FishInst { EFreshness freshness = EFreshness::FRESH; IdType mutationId = { kIdAbsence }; _float size = {}; };
     struct EquipInst { bool isBroken = false; };
 
     /// 아이템 인스턴스 
     struct ItemInst
     {
-        ID_uint itemDefId = { ID_Absence }; 
-        ID_uint itemInstId = { ID_Absence };
+        IdType itemDefId = { kIdAbsence }; 
+        IdType itemInstId = { kIdAbsence };
         EItemType itemType = EItemType::END; // 이건 그냥 캐싱용으로 두자
 
         bool isMutation = { false };
@@ -118,7 +118,7 @@ namespace Client
     /// 아이템 정의
     struct ItemDef
 	{
-		ID_uint itemId = { ID_Absence }; // 이제 id 는 0 을 아무것도 없는 가짜 상태로
+		IdType itemId = { kIdAbsence }; // 이제 id 는 0 을 아무것도 없는 가짜 상태로
 		EItemType itemType = EItemType::END;
 		_string itemName = {};
 		_string itemDesc = {};
@@ -172,13 +172,13 @@ namespace Client
         }
     }
 
-    static wstring OcceanToWstr(SEA_MASK sea)
+    static wstring OcceanToWstr(SeaMask sea)
     {
         wstring result = L"";
 
         for (_uint i = 0; i < ETOI(ESeaType::END); ++i)
         {
-            SEA_MASK typeMask = 1u << i;
+            SeaMask typeMask = 1u << i;
 
             if (sea & typeMask)
             {
@@ -210,7 +210,7 @@ namespace Client
     /// 슬롯
     struct Slot
     {
-        ID_uint itemInstId = { ID_Absence };
+        IdType itemInstId = { kIdAbsence };
         ESlotType slotType = ESlotType::ANY;
         _bool isLock = { false };
         _bool isBroken = { false };
@@ -318,13 +318,13 @@ namespace Client
 
     struct Evt_GetFish
     {
-        _uint DefID = { ID_Absence };
+        _uint DefID = { kIdAbsence };
         FishInst fishInst = {};
     };
 
     struct Evt_ItemSold
     {
-        ID_uint itemInstId = ID_Absence;
+        IdType itemInstId = kIdAbsence;
     };
 
     struct Evt_ItemHovered
@@ -387,7 +387,7 @@ namespace Client
 
         _float fFov = 0;
         _bool IsLerpTarget = false;
-        weak_ptr<Engine::CGameObject> m_Target = {};
+        weak_ptr<Engine::CGameObject> target = {};
     };
 
 
@@ -419,7 +419,7 @@ namespace Client
         _uint engineSpeed = {};
         _uint lightIntensity = {};
         _uint fishingSpeed = {};
-        SEA_MASK seaMask = {};
+        SeaMask seaMask = {};
         _float invenMoney = {};
     };
 

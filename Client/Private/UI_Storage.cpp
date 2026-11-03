@@ -34,9 +34,9 @@ HRESULT CUI_Storage::Initialize_Prototype()
 			{
 				if(m_shopTab == e.shopTabType)
 				{
-					m_Inven = e.invenPtr;
-					if (m_Inven.lock() != nullptr)
-						Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+					m_inven = e.invenPtr;
+					if (m_inven.lock() != nullptr)
+						Rebuild_InventorySlot(m_inven.lock()->Get_W(), m_inven.lock()->Get_H(), m_inven.lock()->Get_Invenslot());
 
 					return;
 				}
@@ -44,9 +44,9 @@ HRESULT CUI_Storage::Initialize_Prototype()
 			}
 			else if (e.invenType == m_inventype)
 			{
-				m_Inven = e.invenPtr;
-				if (m_Inven.lock() != nullptr)
-					Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+				m_inven = e.invenPtr;
+				if (m_inven.lock() != nullptr)
+					Rebuild_InventorySlot(m_inven.lock()->Get_W(), m_inven.lock()->Get_H(), m_inven.lock()->Get_Invenslot());
 			}
 
 		});
@@ -58,7 +58,7 @@ HRESULT CUI_Storage::Initialize_Prototype()
 HRESULT CUI_Storage::OnInit(void* pArg)
 {
 
-	STORAGE_DESC* pDesc = static_cast<STORAGE_DESC*>(pArg);
+	StorageDesc* pDesc = static_cast<StorageDesc*>(pArg);
 	m_inventype = pDesc->Inventype;
 	m_shopTab = pDesc->shopTab;
 
@@ -70,7 +70,7 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 	///// 창고 슬롯 패널 /////
 	CUIPanel::UIPanelDesc Panel_Inven = {};
 	Panel_Inven.textureProtoName = L"Prototype_Component_Texture_StorageInventoryBackground";
-	Panel_Inven.textureComLevel = ETOI(LEVEL::STATIC);
+	Panel_Inven.textureComLevel = ETOI(ELevel::STATIC);
 	Panel_Inven.isFullScreen = false;
 	Panel_Inven.isTransparent = false;
 	Panel_Inven.isUseLayout = true;
@@ -84,9 +84,9 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 
 	shared_ptr<CUIPanel> StoragePanel = CUIPanel::Create(m_device, m_context);
 	StoragePanel->Initialize(&Panel_Inven);
-	m_InvenPanel = StoragePanel;
+	m_invenPanel = StoragePanel;
 
-	Add_Child(m_InvenPanel, L"Panel_storage", false);
+	Add_Child(m_invenPanel, L"Panel_storage", false);
 
 
 	/// slot ///
@@ -127,7 +127,7 @@ void CUI_Storage::OnActive()
 	__super::OnActive();
 
 	Evt_OpenInventory e;
-	e.inven = m_Inven;
+	e.inven = m_inven;
 	m_gameInstance.lock()->Get_EventBus()->Publish(e);
 
 	//m_shopTab = SHOPTAB::ENGINE;
@@ -146,43 +146,43 @@ void CUI_Storage::OnDisabled()
 
 void CUI_Storage::OnUpdate(const _float& timeDelta)
 {
-    if (!m_Inven.expired() && m_InvenPanel && !m_Slot.empty())
+    if (!m_inven.expired() && m_invenPanel && !m_slot.empty())
         MousePosToSlot();
     __super::OnUpdate(timeDelta);
 }
 
 void CUI_Storage::OnPrepareRender()
 {
-    auto inventory = m_Inven.lock();
-    if (!inventory || !m_InvenPanel || m_Slot.empty())
+    auto inventory = m_inven.lock();
+    if (!inventory || !m_invenPanel || m_slot.empty())
         return;
-	auto& InvenItem = m_Inven.lock()->Get_InventoryItem();
-	auto& InvenSlot = m_Inven.lock()->Get_Invenslot();
+	auto& InvenItem = m_inven.lock()->Get_InventoryItem();
+	auto& InvenSlot = m_inven.lock()->Get_Invenslot();
 
 	for (_uint index = 0; index < InvenSlot.size(); index++)
 	{
 		_float4 Muscolor = {};
 		_float4 colorReset = { 0.f,0.f,0.f,0.f };
 
-		m_Slot[index]->Set_ColorFlat(colorReset);
+		m_slot[index]->Set_ColorFlat(colorReset);
 		switch (InvenSlot[index].slotColor)
 		{
 		case EPlaceColor::GREEN:
 			Muscolor = { 0.f,1.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(Muscolor);
 
 			break;
 		case EPlaceColor::ORANGE:
 			Muscolor = { 1.0f,0.6f,0.0f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(Muscolor);
 
 			break;
 		case EPlaceColor::RED:
 			Muscolor = { 1.f,0.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(Muscolor);
 			break;
 		case EPlaceColor::END:
 
@@ -192,7 +192,7 @@ void CUI_Storage::OnPrepareRender()
 
 		if (InvenSlot[index].isBroken == true)
 		{
-			m_Slot[index]->Set_TextureIndex(1);
+			m_slot[index]->Set_TextureIndex(1);
 		}
 	}
 
@@ -218,10 +218,10 @@ void CUI_Storage::OnPrepareRender()
 
 			_uint x = invnelItem.curBase[i].dx;
 			_uint y = invnelItem.curBase[i].dy;
-			_uint index = y * m_Inven.lock()->Get_W() + x;
+			_uint index = y * m_inven.lock()->Get_W() + x;
 
-			m_Slot[index]->Set_UseColorFlat(true);
-			m_Slot[index]->Set_ColorFlat(color);
+			m_slot[index]->Set_UseColorFlat(true);
+			m_slot[index]->Set_ColorFlat(color);
 		}
 	}
 
@@ -263,8 +263,8 @@ void CUI_Storage::Free()
 {
 	__super::Free();
 
-	m_ItemUI.clear();
-	m_Slot.clear();
+	m_itemUi.clear();
+	m_slot.clear();
 
 }
 
@@ -275,7 +275,7 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 	//보트 슬롯모양이 바뀌면 람다등으로 Init_InventorySlot 호출 
 	//find boat back ground ->  clear boat back ground's chilren -> for{for{}} add new slot children
 
-	if (/*Inven_Contrl == nullptr||*/ m_InvenPanel == nullptr)
+	if (/*Inven_Contrl == nullptr||*/ m_invenPanel == nullptr)
 	{
 		MSG_BOX("failed  : Rebuild_InventorySlot");
 		return false;
@@ -283,16 +283,16 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 
 
 
-	m_InvenPanel->UI_Clear();
+	m_invenPanel->UI_Clear();
 
 
-	m_InvenPanel->Change_LayoutRawCol(w, h);
+	m_invenPanel->Change_LayoutRawCol(w, h);
 
 
 	/// slot ///
 
-	m_Slot.clear();
-	m_Slot.resize(h * w);
+	m_slot.clear();
+	m_slot.resize(h * w);
 
 	for (_uint i = 0; i < h; i++)
 	{
@@ -300,7 +300,7 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 		{
 			Engine::CUISlot::SlotDesc slot_Inven = {};
 			//slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-			slot_Inven.textureComLevel = ETOI(LEVEL::STATIC);
+			slot_Inven.textureComLevel = ETOI(ELevel::STATIC);
 			slot_Inven.scale = Vector2{ 1.6f,1.6f };
 			slot_Inven.index = i * w + j;
 			if (inven_slot[i * w + j].isLock == true)
@@ -335,8 +335,8 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 			wstring NameTag = L"SLOT_STORAGE_" + S2W(to_string(i * w + j));
 
 
-			m_InvenPanel->Add_Layout_Child(m_pInstanceINVEN, NameTag, false);
-			m_Slot[i * w + j] = m_pInstanceINVEN;
+			m_invenPanel->Add_Layout_Child(m_pInstanceINVEN, NameTag, false);
+			m_slot[i * w + j] = m_pInstanceINVEN;
 
 			m_pInstanceINVEN->Set_ButtonState(false);
 			m_pInstanceINVEN->Set_UseDark(true);
@@ -345,12 +345,12 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 		}
 	}
 
-	m_Slot.resize(h * w);
+	m_slot.resize(h * w);
 	{
 		for (_uint i = 0; i < 30; i++)
 		{
 			CUIImage::UIImageDesc ImgItemPool = {};
-			ImgItemPool.textureComLevel = ETOI(LEVEL::STATIC);
+			ImgItemPool.textureComLevel = ETOI(ELevel::STATIC);
 			ImgItemPool.textureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
 			ImgItemPool.ZOrder = 5;
 			ImgItemPool.isTransparent = true;
@@ -363,9 +363,9 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 			wstring NameTag = L"ITEM_STORAGE_" + S2W(to_string(i));
 
 
-			m_InvenPanel->Add_Child(pChild, NameTag, false);
+			m_invenPanel->Add_Child(pChild, NameTag, false);
 
-			m_ItemUI.push_back(pChild);
+			m_itemUi.push_back(pChild);
 		}
 	}
 
@@ -379,7 +379,7 @@ _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 	Evt_MouseToIndexData e = {};
 	e.IsOnSlot = false; // 기본 false
 
-	if (m_Inven.lock()->Get_Inventype() == EInvenType::PLAYER)
+	if (m_inven.lock()->Get_Inventype() == EInvenType::PLAYER)
 	{
 		e.IsPlayer = true;
 	}
@@ -388,14 +388,14 @@ _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 		e.IsPlayer = false;
 	}
 
-	LayoutDesc layout = m_InvenPanel->Get_LayoutDesc();
+	LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
 
 	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
 
 
 
 
-	for (auto& slot : m_Slot)
+	for (auto& slot : m_slot)
 	{
 		if (true == slot->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 		{
@@ -415,7 +415,7 @@ _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 	}
 
 
-	if (m_InvenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
+	if (m_invenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 	{
 		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
 	}
@@ -431,8 +431,8 @@ _float2 CUI_Storage::Calculate_RenderPos(const ItemInst& item)
 	_float minX = FLT_MAX, minY = FLT_MAX;
 	_float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
-	_uint col = m_InvenPanel->Get_LayoutDesc().col;
-	_uint row = m_InvenPanel->Get_LayoutDesc().row;
+	_uint col = m_invenPanel->Get_LayoutDesc().col;
+	_uint row = m_invenPanel->Get_LayoutDesc().row;
 	// 아이템이 점유한 모든 칸을 돌면서 실제 슬롯들의 위치를 수집
 	for (auto& OccCell : item.curBase)
 	{
@@ -445,7 +445,7 @@ _float2 CUI_Storage::Calculate_RenderPos(const ItemInst& item)
 		//int index = y * col + x;
 		int index = OccCell.dy * col + OccCell.dx;
 
-		_float2 slotPos = m_Slot[index]->GetUITransform()->Get_AnchoredPos();
+		_float2 slotPos = m_slot[index]->GetUITransform()->Get_AnchoredPos();
 
 		minX = min(minX, slotPos.x);
 		maxX = max(maxX, slotPos.x);
@@ -477,14 +477,14 @@ void CUI_Storage::Render_Item()
 
 	//이 함수는 유아이가 추가되거나 줄었을떄 신호받으면 그떄 한번씩 하는거임
 
-	auto inven = m_Inven.lock();
+	auto inven = m_inven.lock();
 	if (inven == nullptr)
 		return;
 
 	auto& items = inven->Get_InventoryItem();
-	_float2 slotSize = m_Slot[0]->GetUITransform()->Get_FinalSize();
+	_float2 slotSize = m_slot[0]->GetUITransform()->Get_FinalSize();
 
-	for (auto& UI : m_ItemUI)
+	for (auto& UI : m_itemUi)
 	{
 		UI->Set_Transparent(true);
 	}
@@ -492,9 +492,9 @@ void CUI_Storage::Render_Item()
 	{
 
 
-		LayoutDesc layout = m_InvenPanel->Get_LayoutDesc();
+		LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
 
-		for (auto& UI : m_ItemUI)
+		for (auto& UI : m_itemUi)
 		{
 			if (UI->Get_Transparent() == true)
 			{
@@ -525,7 +525,7 @@ void CUI_Storage::Render_Item()
 
 void CUI_Storage::Set_SlotNum(_uint col, _uint row)
 {
-	Rebuild_InventorySlot(col, row, m_Inven.lock()->Get_Invenslot());
+	Rebuild_InventorySlot(col, row, m_inven.lock()->Get_Invenslot());
 }
 
 

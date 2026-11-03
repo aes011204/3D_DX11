@@ -45,31 +45,31 @@ public:
 
 private:
 
-    weak_ptr<class CSea_Manager> m_pSea_Manager = {};
+    weak_ptr<class CSea_Manager> m_seaManager = {};
    
 private:
-    EPlayerState m_NextState = EPlayerState::SEA;
+    EPlayerState m_nextState = EPlayerState::SEA;
 
     //float m_TargetSpeed = {};
-    float m_CurSpeed = {};
-    float m_MaxSpeed = {};
-    float m_Acceleration = {};
-    float m_Deceleration = {}; // 아무것도 안할떄 줄어드는 양
+    float m_curSpeed = {};
+    float m_maxSpeed = {};
+    float m_acceleration = {};
+    float m_deceleration = {}; // 아무것도 안할떄 줄어드는 양
 
-    float m_CurTurnSpeed = {};
-    float m_MaxTurnSpeed = {};
-    float m_TurnAcceleration = {};
-    float m_TurnDeceleration = {};
+    float m_curTurnSpeed = {};
+    float m_maxTurnSpeed = {};
+    float m_turnAcceleration = {};
+    float m_turnDeceleration = {};
    ///
-    bool m_bIsDocking = false;
-    bool m_bFinDock = false;
+    bool m_isDocking = false;
+    bool m_isFinDock = false;
     _float3 m_targetPos = {};
-    weak_ptr<CLight> m_LightObj = {  };
-    bool m_OnTab = false;
+    weak_ptr<CLight> m_lightObj = {  };
+    bool m_isOnTab = false;
     bool On_Light = false;
     bool bPlaying = false;
 
-    weak_ptr<class CUI_TabContainer> m_TapUI={};
+    weak_ptr<class CUI_TabContainer> m_tabUi={};
 public:
     static shared_ptr<CPlayer_Sea> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
 

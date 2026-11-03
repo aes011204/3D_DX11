@@ -34,11 +34,11 @@ public:
   
     void Set_Target(const shared_ptr<CGameObject>& target)
     {
-        m_pTarget = target;
+        m_target = target;
     }
     shared_ptr<CGameObject> Get_TargetShared() const
     {
-        return m_pTarget.lock();
+        return m_target.lock();
     }
 	_int GetCurStateNum();
 
@@ -48,10 +48,10 @@ public:
     shared_ptr<class CPlayerState> Get_State(_uint stateKey);
 
 private:
-   weak_ptr<class CPlayerBoat> m_pOwner;
+   weak_ptr<class CPlayerBoat> m_owner;
    virtual void Change_State(_uint changeStateKey); // 내부용 밖에서 불러도 안바뀜
 
-   weak_ptr< CGameObject> m_pTarget = {};
+   weak_ptr< CGameObject> m_target = {};
 
 
 protected:

@@ -28,9 +28,9 @@ HRESULT CMonster_Tantacle::Initialize(void* pArg)
 		return E_FAIL;
 
 
-	m_AnimIndex = 1;
-	m_pModelCom->Set_Animation(m_AnimIndex, true);
-	m_State = STATE::IDLE;
+	m_animIndex = 1;
+	m_modelCom->Set_Animation(m_animIndex, true);
+	m_state = EState::IDLE;
 
 
 
@@ -45,31 +45,31 @@ void CMonster_Tantacle::Priority_Update(_float fTimeDelta)
 
 void CMonster_Tantacle::Update(_float fTimeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(fTimeDelta);
 
 
-	if(m_pModelCom->Get_IsFinishAnim() == true)
+	if(m_modelCom->Get_IsFinishAnim() == true)
 	{
 		int i = 0;
 	}
 
-	if(m_State == ATTACK && m_pModelCom->Get_IsFinishAnim()==true)
+	if(m_state == ATTACK && m_modelCom->Get_IsFinishAnim()==true)
 	{
-		m_AnimIndex = 2;
-		m_pModelCom->Set_Animation(m_AnimIndex, false);
-		m_State = STATE::RELEASE;
+		m_animIndex = 2;
+		m_modelCom->Set_Animation(m_animIndex, false);
+		m_state = EState::RELEASE;
 	}
-	else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
+	else if(m_state == RELEASE && m_modelCom->Get_IsFinishAnim() == true)
 	{
-		m_AnimIndex = 1;
-		m_pModelCom->Set_Animation(m_AnimIndex, true);
-		m_State = STATE::IDLE;
+		m_animIndex = 1;
+		m_modelCom->Set_Animation(m_animIndex, true);
+		m_state = EState::IDLE;
 	}
 
-	m_pColliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
+	m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 
 
-	m_Attack_Col->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_AttackPoint)));
+	m_attackCol->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_socketMatrixAttackPoint)));
 	
 	
 }
@@ -88,18 +88,18 @@ HRESULT CMonster_Tantacle::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	size_t iNumMesh = m_modelCom->Get_NumMeshes();
 
 	for(size_t i=0; i< iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
-		m_pModelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
+		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_modelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
 	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->Render(i)))
+	if (FAILED(m_modelCom->Render(i)))
 		return E_FAIL;
 	}
 
@@ -107,8 +107,8 @@ HRESULT CMonster_Tantacle::Render()
 #ifdef _DEBUG
 	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_gameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
-	m_gameInstance.lock()->Add_DebugenderGroup(m_Attack_Col);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_colliderCom);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_attackCol);
 
 
 #endif
@@ -123,9 +123,9 @@ void CMonster_Tantacle::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CC
 
 
 
-	if(m_State == ATTACK)
+	if(m_state == ATTACK)
 	{
-		if (self == m_Attack_Col)
+		if (self == m_attackCol)
 		{
 			int i = 0;
 		}
@@ -157,7 +157,7 @@ void CMonster_Tantacle::RebindCom()
 {
 
 	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	m_modelCom = Get_Component<CModel>(L"Com_Model");
 
 }
 
@@ -200,10 +200,10 @@ HRESULT CMonster_Tantacle::Ready_Components()
 {
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_modelCom, nullptr)))
 		return E_FAIL;
 
 
@@ -213,9 +213,9 @@ HRESULT CMonster_Tantacle::Ready_Components()
 	OBBDesc.center = _float3(0.f, 0.f, 5.f);
 	OBBDesc.myLayer = ECollisionLayer::TRIGGER;
 	OBBDesc.otherMask = ECollisionLayer::PLAYER;
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_colliderCom, &OBBDesc)))
 		return E_FAIL;
-	m_gameInstance.lock()->Add_Collider(m_pColliderCom);
+	m_gameInstance.lock()->Add_Collider(m_colliderCom);
 
 	CBounding_Sphere::BoundingSphereDesc		SPhereDesc{};
 	
@@ -223,10 +223,10 @@ HRESULT CMonster_Tantacle::Ready_Components()
 	SPhereDesc.center = _float3(0.f, 0.f,0.f);
 	SPhereDesc.myLayer = ECollisionLayer::MONSTERATT;
 	SPhereDesc.otherMask = ECollisionLayer::PLAYER;
-	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Hand_Collider_1"), &m_Attack_Col, &SPhereDesc)))
+	if (FAILED(__super::Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
+		TEXT("Com_Hand_Collider_1"), &m_attackCol, &SPhereDesc)))
 		return E_FAIL;
-	m_gameInstance.lock()->Add_Collider(m_Attack_Col);
+	m_gameInstance.lock()->Add_Collider(m_attackCol);
 
 	
 

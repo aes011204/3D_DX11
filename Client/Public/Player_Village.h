@@ -31,14 +31,14 @@ private:
 
     EPlayerState eNextState = EPlayerState::VILLAGE;
 
-    _float m_Acc = {};
+    _float m_acc = {};
     //weak_ptr<class CSea_Manager> m_pSea_Manager = {};
     _bool IsSleep = { false };
 public:
     static shared_ptr<CPlayer_Village> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
    
 private:
-    _bool  m_Flag = false;
+    _bool  m_isFlag = false;
 
 private:
     virtual void Free();

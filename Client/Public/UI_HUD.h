@@ -8,7 +8,7 @@ class CUI_HUD final :
     public CUIPanel
 {
 public:
-    struct HUD_DESC : public CUIPanel::UIPanelDesc
+    struct HudDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:

@@ -31,7 +31,7 @@ HRESULT CTerrain::Initialize_Prototype()
 HRESULT CTerrain::Initialize(void* pArg)
 {
 	/* 백그라운드의 멤버를 채워넣어야한다면 여기서 채운다. */
-	TERRAIN_DESC			Desc{};
+	TerrainDesc			Desc{};
 
 	if (FAILED(__super::Initialize(&Desc)))
 		return E_FAIL;
@@ -93,11 +93,11 @@ void CTerrain::OnGui()
 
 HRESULT CTerrain::Ready_Components()
 {
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"),& m_VIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"),& m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"),& m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"),& m_shaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"),& m_textureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"),& m_textureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;

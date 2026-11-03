@@ -38,7 +38,7 @@ private:
     void Parse_Fish_Def(FishDef& fishDef, const nlohmann::json& node);
     void Parse_Equip_Def(EquipDef& fishDef, const nlohmann::json& node);
 
-    SEA_MASK BitFlag_SeaType (const nlohmann::json& node,const string str);
+    SeaMask BitFlag_SeaType (const nlohmann::json& node,const string str);
     void Compute_Occ(Shape& shape, _uint w, _uint h);
 private:
     vector<ItemDef>               m_vecItemDefs;

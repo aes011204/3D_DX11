@@ -20,7 +20,7 @@ HRESULT CBody_Player::Initialize_Prototype()
 
 HRESULT CBody_Player::Initialize(void* pArg)
 {
-	auto pDesc = static_cast<BodyPlayer_DESC*>(pArg);
+	auto pDesc = static_cast<BodyPlayerDesc*>(pArg);
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -63,19 +63,19 @@ HRESULT CBody_Player::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	size_t iNumMesh = m_modelCom->Get_NumMeshes();
 
 	for (size_t i = 0; i < iNumMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
-		m_pModelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
 		if (FAILED(m_shaderCom->Begin(0)))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
+		if (FAILED(m_modelCom->Render(i)))
 			return E_FAIL;
 	}
 
@@ -90,7 +90,7 @@ void CBody_Player::RebindCom()
 {
 	
 	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	m_modelCom = Get_Component<CModel>(L"Com_Model");
 	
 }
 
@@ -137,16 +137,16 @@ HRESULT CBody_Player::Bind_ShaderResources()
 
 const _float4x4* CBody_Player::Get_SocketBoneMatrix(const _char* pBoneName)
 {
-	return m_pModelCom->Get_BoneMatrixPtr(pBoneName);
+	return m_modelCom->Get_BoneMatrixPtr(pBoneName);
 }
 
 HRESULT CBody_Player::Ready_Components()
 {
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"), TEXT("Com_Model"), &m_modelCom, nullptr)))
 		return E_FAIL;
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 	//	return E_FAIL;

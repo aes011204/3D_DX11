@@ -29,7 +29,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 {
 	//if(pArg==nullptr)
 		
-    MAINMENU_DESC* pDesc = static_cast<MAINMENU_DESC*>(pArg);
+    MainMenuDesc* pDesc = static_cast<MainMenuDesc*>(pArg);
 	HRESULT hr = {};
 	hr = __super::OnInit(pDesc);
     
@@ -37,22 +37,22 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 	// 람다 제외 전부 데이터로 수정 가능
 	{
 		wstring name = {};
-		LEVEL eLevel = {};
+		ELevel eLevel = {};
 		for (_uint i = 0; i < 3;i++)
 		{
 			switch (i)
 			{
 			case 0:
-				eLevel = LEVEL::GAMEPLAY;
+				eLevel = ELevel::GAMEPLAY;
 				name = L"새 게임";
 				break;
 			case 1:
-				eLevel = LEVEL::END;
+				eLevel = ELevel::END;
 				name = L"설정";
 
 				break;
 			case 2:
-				eLevel = LEVEL::EDITOR;
+				eLevel = ELevel::EDITOR;
 				name = L"에디터";
 
 				break;
@@ -61,7 +61,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 
 
 			CUIButton::UIButtonDesc pDesc = {};
-			pDesc.textureComLevel = ETOI(LEVEL::STATIC);
+			pDesc.textureComLevel = ETOI(ELevel::STATIC);
 			pDesc.textureProtoName = L"Prototype_Component_Texture_Button";
 			pDesc.anchoredPos = Vector2{ 0.f,16.7f + (98.f * i) };
 			pDesc.sizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
@@ -100,7 +100,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 				//if (eLevel != LEVEL::END)
 				//	m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eLevel));
 				
-				shared_ptr <CFadeModifier> eff = make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .2f, false, _float4{ 0.f,0.f,0.f,0.f });
+				shared_ptr <CFadeModifier> eff = make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_IN, .2f, false, _float4{ 0.f,0.f,0.f,0.f });
 				CUI_Controller::GetInstance()->Get_LoadingUI()->UI_Active();
 				CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(eff
 				);
@@ -141,7 +141,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			//
 
 			CUIImage::UIImageDesc selectImage{};
-			selectImage.textureComLevel = ETOI(LEVEL::STATIC);
+			selectImage.textureComLevel = ETOI(ELevel::STATIC);
 			selectImage.textureProtoName = L"Prototype_Component_Texture_Select";
 			selectImage.pxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
 			selectImage.useNineSlice = true;
@@ -157,7 +157,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 		}
 
 		CUIImage::UIImageDesc image_desc{};
-		image_desc.textureComLevel = ETOI(LEVEL::STATIC);
+		image_desc.textureComLevel = ETOI(ELevel::STATIC);
 		image_desc.textureProtoName = L"Prototype_Component_Texture_Dredge";
 		image_desc.anchoredPos = Vector2{ 0.f,0.f };
 		image_desc.sizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정

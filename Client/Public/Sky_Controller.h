@@ -26,19 +26,19 @@ public:
     void Update(float TimeDelta);
 
  virtual void OnGui() override;
- const _float4& Get_Direction() const { return m_Direction; }
- const _float4& Get_Diffuse()   const { return m_Diffuse; }
- const _float4& Get_Ambient()   const { return m_Ambient; }
- const _float4& Get_Specular()  const { return m_Specular; }
- const _float3& Get_SkyColor()  const { return m_SkyColor; }
+ const _float4& Get_Direction() const { return m_direction; }
+ const _float4& Get_Diffuse()   const { return m_diffuse; }
+ const _float4& Get_Ambient()   const { return m_ambient; }
+ const _float4& Get_Specular()  const { return m_specular; }
+ const _float3& Get_SkyColor()  const { return m_skyColor; }
 
 private:
 
-    _float4 m_Direction = {};
-    _float4 m_Diffuse = { 1.f, 1.f, 1.f, 1.f };//색
-    _float4 m_Ambient = { 0.4f, 0.4f, 0.4f, 1.f };//환경 광 전체 밝기
-    _float4 m_Specular = { 1.f, 1.f, 1.f, 1.f }; // 하이라이트 밤에 0 낮은 약하게 있음
-    _float3 m_SkyColor = { 1.f, 1.f, 1.f};
+    _float4 m_direction = {};
+    _float4 m_diffuse = { 1.f, 1.f, 1.f, 1.f };//색
+    _float4 m_ambient = { 0.4f, 0.4f, 0.4f, 1.f };//환경 광 전체 밝기
+    _float4 m_specular = { 1.f, 1.f, 1.f, 1.f }; // 하이라이트 밤에 0 낮은 약하게 있음
+    _float3 m_skyColor = { 1.f, 1.f, 1.f};
 
 
 

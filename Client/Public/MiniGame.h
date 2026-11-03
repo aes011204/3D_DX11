@@ -14,7 +14,7 @@ class CMiniGame :
 {
 public:
 
-	struct MINIGAEME_L_DESC
+	struct MiniGameDesc
 	{
 		
 		_uint DefID = {};
@@ -40,8 +40,8 @@ public:
 	_uint SelectMutationNoRepeat(const FishDef& fishDef);
 
 	EInputResult ConsumeInputResult() {
-		EInputResult result = m_LastInputResult;
-		m_LastInputResult = EInputResult::NONE;
+		EInputResult result = m_lastInputResult;
+		m_lastInputResult = EInputResult::NONE;
 		return result;
 	};
 	virtual void OnInput() = 0;
@@ -51,9 +51,9 @@ public:
 	//bool IsStart() const { return m_bStart; }
 	//bool IsFinish() const { return m_bFin; }
 
-	EMiniGameType Get_MiniGameType() { return m_MiniGameType; }
-	_uint Get_DefID() { return m_DefID; };
-	_uint GetFishCount() const { return m_FishCount; }
+	EMiniGameType Get_MiniGameType() { return m_miniGameType; }
+	_uint Get_DefID() { return m_defId; };
+	_uint GetFishCount() const { return m_fishCount; }
 	float GetProgress01() const { return m_prograssBar01; }
 
 
@@ -69,19 +69,19 @@ public:
 	///
 	///
 protected:
-	EInputResult m_LastInputResult = EInputResult::NONE;
+	EInputResult m_lastInputResult = EInputResult::NONE;
 
-	_bool m_bInputRequested = false;
+	_bool m_isInputRequested = false;
 
-	_uint m_DefID = { ID_Absence };
-	float m_RodSpeed = {};
-	_uint m_FishCount = {};
+	_uint m_defId = { kIdAbsence };
+	float m_rodSpeed = {};
+	_uint m_fishCount = {};
 	float m_prograssBar01 = { 0 };
 
-	EMiniGameType m_MiniGameType = {};
-	weak_ptr<class CInventory_Controller> m_InvenCtrl = {};
+	EMiniGameType m_miniGameType = {};
+	weak_ptr<class CInventory_Controller> m_invenCtrl = {};
 	weak_ptr<CGameInstance> m_gameInstance = {};
-	_uint m_PrevFishID = { ID_Absence };
+	_uint m_prevFishId = { kIdAbsence };
 public:
 //	static shared_ptr<CMiniGame> Create(void* pArg);
 	void Free() override;

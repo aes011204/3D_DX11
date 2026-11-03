@@ -21,7 +21,7 @@ class CUI_RepairShop :
 {
 public:
 
-	struct REPAIR_DESC : public CUIPanel::UIPanelDesc
+	struct RepairDesc : public CUIPanel::UIPanelDesc
 	{
 
 	};
@@ -49,21 +49,21 @@ public:
 
 private:
 
-	shared_ptr<CUIImage> m_Line = { nullptr };
-	shared_ptr<CUIImage> m_Line2 = { nullptr };
-	shared_ptr<CUIImage> m_TextIMG = { nullptr };
-	shared_ptr<CUIText> m_TextFont = { nullptr };
-	shared_ptr<CUIButton> m_BtnFix = { nullptr };
-	shared_ptr<CUIText> m_FixButtonTex = { nullptr };
+	shared_ptr<CUIImage> m_line = { nullptr };
+	shared_ptr<CUIImage> m_line2 = { nullptr };
+	shared_ptr<CUIImage> m_textImg = { nullptr };
+	shared_ptr<CUIText> m_textFont = { nullptr };
+	shared_ptr<CUIButton> m_btnFix = { nullptr };
+	shared_ptr<CUIText> m_fixButtonTex = { nullptr };
 	float m_repairPrice = {};
 
-	shared_ptr<CUIButton> m_ButtonContents[ETOI(EShopTab::END)] = {};
-	shared_ptr<CUIPanel> m_TabContents[ETOI(EShopTab::END)] = {};
+	shared_ptr<CUIButton> m_buttonContents[ETOI(EShopTab::END)] = {};
+	shared_ptr<CUIPanel> m_tabContents[ETOI(EShopTab::END)] = {};
 
 
 	Vector2 m_vecAni = {};
-	_bool m_bStart = false;
-	float m_TimeAcc = {};
+	_bool m_isStart = false;
+	float m_timeAcc = {};
 	float m_duration = {};
 
 

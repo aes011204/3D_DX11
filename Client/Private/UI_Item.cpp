@@ -16,13 +16,13 @@ CUI_Item::CUI_Item(const CUI_Item& prototype)
 
 void CUI_Item::HoldItem(ItemInst HoldItemInst)
 {
-	if (HoldItemInst.itemInstId == ID_Absence)
+	if (HoldItemInst.itemInstId == kIdAbsence)
 		return;
 
 	//const Item_Def& def = CItemDB::GetInstance()->GetItemByID(HoldItemInst.ItemDef_ID);
 
-		m_bIsHold = true; 
-		m_HoldItem = HoldItemInst;
+		m_isHold = true; 
+		m_holdItem = HoldItemInst;
 
 		Change_Texture(HoldItemInst.cachingTexture);
 		Set_Transparent(false);
@@ -40,15 +40,15 @@ void CUI_Item::HoldItem(ItemInst HoldItemInst)
 void CUI_Item::ReleaseItem()
 {
 
-	if (m_HoldItem.itemType == EItemType::FISH)
+	if (m_holdItem.itemType == EItemType::FISH)
 		m_gameInstance.lock()->Play_Once(L"OrganicItem_Place");
 	else
 		m_gameInstance.lock()->Play_Once(L"InorganicItem_Place");
 
-	m_bIsHold = false;
+	m_isHold = false;
 	/*m_HoldItem = HoldItem;*/
 	ItemInst NoInst = {};
-	m_HoldItem = NoInst;
+	m_holdItem = NoInst;
 	//Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
 	Set_Transparent(true);
 	m_children[0]->UI_InActive();
@@ -58,7 +58,7 @@ void CUI_Item::ReleaseItem()
 
 HRESULT CUI_Item::OnInit(void* pArg)
 {
-	CUI_Item::ITEM_DESC pDesc{};
+	CUI_Item::ItemDesc pDesc{};
 
 	pDesc.isTransparent = true;
 
@@ -67,7 +67,7 @@ HRESULT CUI_Item::OnInit(void* pArg)
 
 	{
 	CUIImage::UIImageDesc selectImage{};
-	selectImage.textureComLevel = ETOI(LEVEL::STATIC);
+	selectImage.textureComLevel = ETOI(ELevel::STATIC);
 	selectImage.textureProtoName = L"Prototype_Component_Texture_Select";
 	selectImage.pxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
 	selectImage.useNineSlice = true;
@@ -113,13 +113,13 @@ void CUI_Item::OnUpdate(const _float& timeDelta)
 	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
 	_float2 screen = m_gameInstance.lock()->Get_WinSize().Size();
 	m_UITransformCom->SetAnchoredPos({ musPos.x-screen.x *0.5f, musPos.y-screen.y*0.5f});
-	m_UITransformCom->SetRotation(m_HoldItem.rotation * -90.f);
+	m_UITransformCom->SetRotation(m_holdItem.rotation * -90.f);
 	//m_Children[0]->GetUITransform()->SetRotation(m_HoldItem.Rotation * 90.f);
 	_float2 sizeD = m_children[0]->GetUITransform()->Get_SizeDelta();
 
 	_float2 finalSize = m_UITransformCom->Get_FinalSize();
 
-	if (m_HoldItem.rotation % 2 != 0) // 90도 혹은 270도일 때
+	if (m_holdItem.rotation % 2 != 0) // 90도 혹은 270도일 때
 	{
 		swap(finalSize.x, finalSize.y);
 	}

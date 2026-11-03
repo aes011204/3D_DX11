@@ -3,8 +3,8 @@
 
 
 
-CFadeModifier::CFadeModifier(FADE fadeType, _float duration, _bool useColor, _float4 color, _bool Inactive)
-	: m_fadeType(fadeType),m_Duration(duration), m_useColor(useColor), m_color(color), m_Inactive(Inactive), m_AccTime(0.f)
+CFadeModifier::CFadeModifier(EFade fadeType, _float duration, _bool useColor, _float4 color, _bool Inactive)
+	: m_fadeType(fadeType),m_duration(duration), m_useColor(useColor), m_color(color), m_isInactive(Inactive), m_accTime(0.f)
 {
 	if (m_fadeType == FADE_IN)
 		m_alpha = 0.f;
@@ -21,29 +21,29 @@ CFadeModifier::~CFadeModifier()
 
 void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 {
-	if(m_This == nullptr)
+	if(m_self == nullptr)
 	{
-		m_This = dynamic_cast<CUIRenderable*>(pOwner);
+		m_self = dynamic_cast<CUIRenderable*>(pOwner);
 
 
 
 		if(m_useColor == true)
 		{
-			m_This->Set_UseColorMix(true);
+			m_self->Set_UseColorMix(true);
 			
 		}
 
 	
 	}
 
-	m_AccTime += fDeltaTime;
+	m_accTime += fDeltaTime;
 
 	if (m_fadeType == FADE_OUT)
 	{
 	
 	
 
-		_float fRatio = m_AccTime / m_Duration;
+		_float fRatio = m_accTime / m_duration;
 		//LOG_F(LOG_LEVEL::INFO, "Time: %.4f / Duration: %.4f / Ratio: %.4f", m_AccTime, m_Duration, m_AccTime / m_Duration);
 
 		if (fRatio > 1) fRatio = 1.f;
@@ -52,18 +52,18 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		if (m_useColor == true)
 		{
-			m_This->Set_ColorMix(m_color);
+			m_self->Set_ColorMix(m_color);
 
 		}
 
-		m_This->Set_Alpha(m_alpha);
+		m_self->Set_Alpha(m_alpha);
 
 		if (m_alpha <= 0.01f)
 		{
-			if(m_Inactive ==true)
+			if(m_isInactive ==true)
 				pOwner->UI_InActive(); // UI 끄기
 
-			m_Finished = true;
+			m_isFinished = true;
 		}
 
 
@@ -72,7 +72,7 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 		
 	else if (m_fadeType == FADE_IN)
 	{
-		_float fRatio = m_AccTime / m_Duration;
+		_float fRatio = m_accTime / m_duration;
 
 		if (fRatio > 1) fRatio = 1.f;
 
@@ -82,22 +82,22 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 		{
 			float lerpRadio = 1 - m_alpha;
 			_float4 colorWAlpha = { m_color.x, m_color.y, m_color.z, lerpRadio };
-			m_This->Set_ColorMix(m_color);
+			m_self->Set_ColorMix(m_color);
 
 		}
 
-		m_This->Set_Alpha(m_alpha);
+		m_self->Set_Alpha(m_alpha);
 
 		if (fRatio >= 1.f)
 		{
-			m_This->Set_Alpha(1.f);
+			m_self->Set_Alpha(1.f);
 			if(EndEvent != nullptr )
 			{
 				EndEvent();
 			}
 			//pOwner->UI_InActive(); // UI 끄기
 
-			m_Finished = true;
+			m_isFinished = true;
 		}
 	}
 		

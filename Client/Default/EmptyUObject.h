@@ -12,7 +12,7 @@ class CEmptyUObject final:
     public CGameObject
 {
 public:
-    struct EMPTYOBJECT_DESC final : public CGameObject::GameObjectDesc
+    struct EmptyObjectDesc final : public CGameObject::GameObjectDesc
     {
 
     };

@@ -30,32 +30,32 @@ HRESULT CMon_R::Initialize(void* pArg)
 
 
 
-	m_pPlayer = m_gameInstance.lock()->Get_GameObject(
-		ETOI(LEVEL::GAMEPLAY),
+	m_player = m_gameInstance.lock()->Get_GameObject(
+		ETOI(ELevel::GAMEPLAY),
 		L"Layer_Player", 0
 	);
 
 
-	if (m_pPlayer.lock())
+	if (m_player.lock())
 	{
 	_float3 newPos = {};
-	_vector TargetPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(ETransformState::LOOK) * 100.f;
+	_vector TargetPos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::LOOK) * 100.f;
 
 		//XMVectorSet(targetPos.x, targetPos.y, targetPos.z + 20.f, 1.f)
-	m_transformCom->Set_Position(m_pPlayer.lock()->Get_TransformCom()->Get_Position() + TargetPos);
+	m_transformCom->Set_Position(m_player.lock()->Get_TransformCom()->Get_Position() + TargetPos);
 
 
 	m_transformCom->SetUp_Scale(2.f, 2.f, 2.f);
 	}
 
 
-	m_AnimIndex = 1;
-	m_pModelCom_One->Set_Animation(m_AnimIndex, false);
+	m_animIndex = 1;
+	m_modelComOne->Set_Animation(m_animIndex, false);
 
 
 
-	m_IndexETC = 4;
-	m_pModelCom_Etc->Set_Animation(m_IndexETC, true);
+	m_indexEtc = 4;
+	m_modelComEtc->Set_Animation(m_indexEtc, true);
 	
 	
 
@@ -72,26 +72,26 @@ void CMon_R::Priority_Update(_float fTimeDelta)
 
 void CMon_R::Update(_float fTimeDelta)
 {
-	m_pModelCom_One->Play_Animation(fTimeDelta);
+	m_modelComOne->Play_Animation(fTimeDelta);
 
 
 
-		m_pModelCom_Etc->Play_Animation(fTimeDelta);
+		m_modelComEtc->Play_Animation(fTimeDelta);
 
 	
-	if(m_pModelCom_One->Get_IsFinishAnim() == true)
+	if(m_modelComOne->Get_IsFinishAnim() == true)
 	{
-		++m_Count;
-		if(m_Count == 1)
+		++m_count;
+		if(m_count == 1)
 		{
 
-			if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
-				ETOI(LEVEL::GAMEPLAY), L"Layer_Moster")))
+			if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_R_Act"),
+				ETOI(ELevel::GAMEPLAY), L"Layer_Moster")))
 				return;
 		}
 
 		
-	m_pModelCom_One->Set_Animation(m_AnimIndex, false);
+	m_modelComOne->Set_Animation(m_animIndex, false);
 	}
 
 
@@ -129,19 +129,19 @@ HRESULT CMon_R::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 	{
-		size_t iNumMesh = m_pModelCom_One->Get_NumMeshes();
+		size_t iNumMesh = m_modelComOne->Get_NumMeshes();
 
 		for (size_t i = 0; i < iNumMesh; i++)
 		{
-			m_pModelCom_One->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+			m_modelComOne->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
-			m_pModelCom_One->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-			m_pModelCom_One->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
+			m_modelComOne->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+			m_modelComOne->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
 			if (FAILED(m_shaderCom->Begin(0)))
 				return E_FAIL;
 
-			if (FAILED(m_pModelCom_One->Render(i)))
+			if (FAILED(m_modelComOne->Render(i)))
 				return E_FAIL;
 		}
 	}
@@ -149,7 +149,7 @@ HRESULT CMon_R::Render()
 	{
 		/*for (int j =8; j < 11; j++)
 		{*/
-			size_t iNumMesh = m_pModelCom_Etc->Get_NumMeshes();
+			size_t iNumMesh = m_modelComEtc->Get_NumMeshes();
 		
 			//for (size_t i = 0; i < iNumMesh; i++)
 			//{
@@ -313,16 +313,16 @@ HRESULT CMon_R::Ready_Components()
 {
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_One"), TEXT("Com_Model_One"), &m_pModelCom_One, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_One"), TEXT("Com_Model_One"), &m_modelComOne, nullptr)))
 		return E_FAIL;
 
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함
 	
 
-		if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"), TEXT("Com_Model_Etc"), &m_pModelCom_Etc, nullptr)))
+		if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act_Etc"), TEXT("Com_Model_Etc"), &m_modelComEtc, nullptr)))
 			return E_FAIL;
 
 

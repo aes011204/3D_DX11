@@ -16,13 +16,13 @@
 
 
 CSea::CSea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CGameObject(pDevice, pContext), m_SeaManager(CSea_Manager::GetInstance())
+	:CGameObject(pDevice, pContext), m_seaManager(CSea_Manager::GetInstance())
 
 {
 }
 
 CSea::CSea(const CSea& prototype)
-	:CGameObject(prototype), m_SeaManager(CSea_Manager::GetInstance())
+	:CGameObject(prototype), m_seaManager(CSea_Manager::GetInstance())
 
 {
 
@@ -37,9 +37,9 @@ HRESULT CSea::Initialize_Prototype()
 HRESULT CSea::Initialize(void* pArg)
 {
 
-	m_SkyContrl = (CSky_Controller::GetInstance());
+	m_skyControl = (CSky_Controller::GetInstance());
 	/* 백그라운드의 멤버를 채워넣어야한다면 여기서 채운다. */
-	SEA_DESC			Desc{};
+	SeaDesc			Desc{};
 
 	// float2 dir1 = float2(1.f, 1.f);
   // float2 dir2 = float2(0.f,-0.46f);
@@ -70,7 +70,7 @@ void CSea::Priority_Update(_float fTimeDelta)
 void CSea::Update(_float fTimeDelta)
 {
 	// 스냅핑
-	_float3 snapedPos = m_pVIBufferComCashing->Snapping((m_SeaManager.lock()->Get_GlobalY()));
+	_float3 snapedPos = m_cachedVIBufferCom->Snapping((m_seaManager.lock()->Get_GlobalY()));
 	m_transformCom->Set_Position(XMLoadFloat3(&snapedPos));
 
 
@@ -102,7 +102,7 @@ HRESULT CSea::Render()
 	if (FAILED(m_VIBufferCom->Bind_Resources()))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferComCashing->Render(m_shaderCom)))
+	if (FAILED(m_cachedVIBufferCom->Render(m_shaderCom)))
 		return E_FAIL;
 
 	return S_OK;
@@ -122,12 +122,12 @@ void CSea::OnGui()
 
 HRESULT CSea::Ready_Components()
 {
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_VIBuffer_Sea"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	m_pVIBufferComCashing = dynamic_pointer_cast<CVIBuffer_Sea> (m_VIBufferCom);
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_Sea"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
+	m_cachedVIBufferCom = dynamic_pointer_cast<CVIBuffer_Sea> (m_VIBufferCom);
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_Sea"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_TerrainHeight"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;
@@ -135,7 +135,7 @@ HRESULT CSea::Ready_Components()
 
 HRESULT CSea::Bind_ShaderResources()
 {
-	auto Sea = m_SeaManager.lock();
+	auto Sea = m_seaManager.lock();
 	_float fTime = Sea->Get_AccTime();
 	int WaveCount = Sea->Get_WaveCount();
 	//float depthMask01 = Sea->Get_DepthMask01();
@@ -162,10 +162,10 @@ HRESULT CSea::Bind_ShaderResources()
 	const LightDesc* desc = m_gameInstance.lock()->Get_LightDesc(0);
 	if (nullptr == desc)
 		return E_FAIL;
-	const _float4& dir = m_SkyContrl->Get_Direction();
-	const _float4& diff = m_SkyContrl->Get_Diffuse();
-	const _float4& amb = m_SkyContrl->Get_Ambient();
-	const _float4& spec = m_SkyContrl->Get_Specular();
+	const _float4& dir = m_skyControl->Get_Direction();
+	const _float4& diff = m_skyControl->Get_Diffuse();
+	const _float4& amb = m_skyControl->Get_Ambient();
+	const _float4& spec = m_skyControl->Get_Specular();
 	if (FAILED(m_shaderCom->Bind_RawValue("g_vLightDir", &dir, sizeof(_float4))))
 		return E_FAIL;
 	if (FAILED(m_shaderCom->Bind_RawValue("g_vLightDiffuse", &diff, sizeof(_float4))))

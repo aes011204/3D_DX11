@@ -13,13 +13,13 @@ HRESULT CMiniGame::Initialize_Prototype()
 HRESULT CMiniGame::Initialize(void* pArg)
 {
 
-	MINIGAEME_L_DESC* pDesc = static_cast<MINIGAEME_L_DESC*>(pArg);
+	MiniGameDesc* pDesc = static_cast<MiniGameDesc*>(pArg);
 
-	m_DefID = pDesc->DefID;
-	m_RodSpeed = pDesc->RodSpeed;
-	m_FishCount = pDesc->FishCount;
-	m_MiniGameType = pDesc->MiniGameType;
-	m_InvenCtrl = pDesc->pInvenCtrl;
+	m_defId = pDesc->DefID;
+	m_rodSpeed = pDesc->RodSpeed;
+	m_fishCount = pDesc->FishCount;
+	m_miniGameType = pDesc->MiniGameType;
+	m_invenCtrl = pDesc->pInvenCtrl;
 
 	return S_OK;
 }
@@ -35,8 +35,8 @@ void CMiniGame::Update(const _float& timeDelta)
 }
 _uint CMiniGame::SelectMutationRandom(const FishDef& fishDef)
 {
-    vector<ID_uint> candidates;
-    candidates.push_back(ID_Absence);
+    vector<IdType> candidates;
+    candidates.push_back(kIdAbsence);
 
     for (const Mutation& mut : fishDef.vecMutation)
         candidates.push_back(mut.mutationId);
@@ -46,28 +46,28 @@ _uint CMiniGame::SelectMutationRandom(const FishDef& fishDef)
 }
 _uint CMiniGame::SelectMutationNoRepeat(const FishDef& fishDef)
 {
-    vector<ID_uint> candidates;
-    candidates.push_back(ID_Absence); // 기본형 포함
+    vector<IdType> candidates;
+    candidates.push_back(kIdAbsence); // 기본형 포함
 
     for (const Mutation& mut : fishDef.vecMutation)
         candidates.push_back(mut.mutationId);
 
     if (candidates.empty())
-        return ID_Absence;
+        return kIdAbsence;
 
     if (candidates.size() == 1)
         return candidates[0];
 
     int index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
-    ID_uint pickedID = candidates[index];
+    IdType pickedID = candidates[index];
 
-    while (pickedID == m_PrevFishID)
+    while (pickedID == m_prevFishId)
     {
         index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
         pickedID = candidates[index];
     }
 
-    m_PrevFishID = pickedID;
+    m_prevFishId = pickedID;
     return pickedID;
 }
 

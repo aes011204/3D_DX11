@@ -29,7 +29,7 @@ public:
     void Update(float TimeDelta);
     HRESULT Ready_UI();
 
-    shared_ptr<CUI> Get_LoadingUI() { return m_Loading; };
+    shared_ptr<CUI> Get_LoadingUI() { return m_loading; };
 
    // void Set_InvenCtrl(shared_ptr<class CInventory_Controller> invenCtrl);
 
@@ -44,7 +44,7 @@ public:
     void End_StateUI();
     void CacheToolTip(const Evt_ItemHovered& e);
 private:
-    struct TOOLTIP_RESTORE_DESC
+    struct ToolTipRestoreDesc
     {
         _bool bValid = false;
         _bool isHold = false;
@@ -55,14 +55,14 @@ private:
     void RestoreToolTip();
 
 
-    TOOLTIP_RESTORE_DESC m_ToolTipRestore = {};
+    ToolTipRestoreDesc m_toolTipRestore = {};
 private:
-    shared_ptr<CUI> m_Loading = {nullptr};
-    shared_ptr < class CUI_Time > m_pTime = { nullptr };
+    shared_ptr<CUI> m_loading = {nullptr};
+    shared_ptr < class CUI_Time > m_time = { nullptr };
 
     shared_ptr<class CUI_MiniGame> m_miniGame = { nullptr };
 
-    Client::EPlayerState m_PendingUIState;
+    Client::EPlayerState m_pendingUiState;
 private:
     ComPtr<ID3D11Device> m_device = { nullptr };
     ComPtr<ID3D11DeviceContext> m_context = { nullptr };

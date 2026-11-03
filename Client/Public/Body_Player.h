@@ -7,7 +7,7 @@ class CBody_Player :
     public CPartObject
 {
 public:
-    struct BodyPlayer_DESC : public CPartObject::PartObjDesc
+    struct BodyPlayerDesc : public CPartObject::PartObjDesc
     {
 
     };
@@ -35,7 +35,7 @@ protected:
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr };
+    shared_ptr<CModel> m_modelCom = { nullptr };
     shared_ptr<CTexture> m_textureCom = { nullptr };
 
     float  emissivePower = 0.f;

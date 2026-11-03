@@ -52,9 +52,9 @@ HRESULT CLevel_Logo::Initialize()
 			pLoadingUI->m_behavior.push_back(eff);*/
 
 		ChangeNextLevel = e.IsChange;
-			m_NextLevel = static_cast<LEVEL>(e.level);
+			m_nextLevel = static_cast<ELevel>(e.level);
 
-			m_Acc = 0.f;
+			m_acc = 0.f;
 		});
 
 
@@ -73,18 +73,18 @@ void CLevel_Logo::Update(_float fTimeDelta)
 {
 
 
-	m_Acc += fTimeDelta;
-	if (m_Flag == false)
+	m_acc += fTimeDelta;
+	if (m_isFlag == false)
 	{
 		CGameInstance::GetInstance()->Change_Camera(L"STOP_CAM");
 		m_gameInstance.lock()->Load(ESaveType::GAMEOBJECT, "Lasst_2.json");
-		m_Flag = true;
+		m_isFlag = true;
 	}
 
 	if (m_gameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
 	{
 		CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
-			make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
+			make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
 		//for (auto& pChild : CUI_Controller::GetInstance()->Get_LoadingUI()->GetChildren())
 		//{
 		//	pChild->m_behavior.push_back(
@@ -98,15 +98,15 @@ void CLevel_Logo::Update(_float fTimeDelta)
 	{
 	
 
-		if (FAILED(m_gameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_device, m_context, LEVEL::GAMEPLAY))))
+		if (FAILED(m_gameInstance.lock()->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, ELevel::GAMEPLAY))))
 			return;
 	}
 
-	if (ChangeNextLevel == true&& m_Acc >= 1.f)
+	if (ChangeNextLevel == true&& m_acc >= 1.f)
 	{
-		m_gameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_device, m_context, m_NextLevel));
+		m_gameInstance.lock()->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, m_nextLevel));
 		ChangeNextLevel = false;
-		m_Acc = 0;
+		m_acc = 0;
 	}
 
 }
@@ -123,12 +123,12 @@ HRESULT CLevel_Logo::Ready_Layer_Camera(const wchar_t* str)
 	FRCamDesc.degreePerSec = 180.f;
 	FRCamDesc.mouseSensor = 0.01f;
 
-	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
-		ETOI(LEVEL::LOGO), str, &FRCamDesc));
+	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
+		ETOI(ELevel::LOGO), str, &FRCamDesc));
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
-	m_gameInstance.lock()->Add_Camera(ETOI(LEVEL::LOGO), L"STOP_CAM", freeCamera);
+	m_gameInstance.lock()->Add_Camera(ETOI(ELevel::LOGO), L"STOP_CAM", freeCamera);
 
 	freeCamera->Get_TransformCom()->Set_RotationDegree(_float3{-7.55f,33.0f, 0.f});
 
@@ -138,8 +138,8 @@ HRESULT CLevel_Logo::Ready_Layer_Camera(const wchar_t* str)
 
 HRESULT CLevel_Logo::Ready_Layer_Wave(const wchar_t* str)
 {
-	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sea"),
-		ETOI(LEVEL::LOGO), str)))
+	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Sea"),
+		ETOI(ELevel::LOGO), str)))
 		return E_FAIL;
 	return S_OK;
 
@@ -185,16 +185,16 @@ HRESULT CLevel_Logo::Render()
 
 HRESULT CLevel_Logo::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Terrain"),
-		ETOI(LEVEL::LOGO), strLayerTag)))
+	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Terrain"),
+		ETOI(ELevel::LOGO), strLayerTag)))
 		return E_FAIL;
 
 
 
 
 
-	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Sky"),
-		ETOI(LEVEL::LOGO), strLayerTag)))
+	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Sky"),
+		ETOI(ELevel::LOGO), strLayerTag)))
 		return E_FAIL;
 
 

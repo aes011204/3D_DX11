@@ -15,7 +15,7 @@ class CUI_Item :
     public CUIImage
 {
 public:
-    struct ITEM_DESC : public CUIImage::UIImageDesc
+    struct ItemDesc : public CUIImage::UIImageDesc
     {
         
     };
@@ -26,15 +26,15 @@ public:
     ~CUI_Item() = default;
 
 public:
-    void Set_Rotation(_uint rot) { m_HoldItem.rotation = rot; };
+    void Set_Rotation(_uint rot) { m_holdItem.rotation = rot; };
 
     void HoldItem(ItemInst HoldItemInst);
 
     void ReleaseItem();
 
-    ItemInst& Get_HoldItem() { return m_HoldItem; }
+    ItemInst& Get_HoldItem() { return m_holdItem; }
 
-    void Set_HoldItem(const ItemInst& _item) { m_HoldItem = _item; }
+    void Set_HoldItem(const ItemInst& _item) { m_holdItem = _item; }
 
     HRESULT OnInit(void* pArg) override;
     void OnActive()override;
@@ -48,8 +48,8 @@ public:
 
 
 private:
-    bool m_bIsHold = {};
-    ItemInst m_HoldItem = {};
+    bool m_isHold = {};
+    ItemInst m_holdItem = {};
 public:
     static shared_ptr<CUI_Item> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     virtual void Free() override;

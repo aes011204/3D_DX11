@@ -24,16 +24,16 @@ public:
     shared_ptr<Dialogue>   GetDialogueById(const string& dialogueId);
     wstring     Utf8ToWstring(const string& str);
 
-   void Set_PendingDialogue(list<string> dialogueIds, _int startid = 0) { m_NextIds = dialogueIds; };
-    list<string>& Get_PendingDialogue() { return m_NextIds; }
+   void Set_PendingDialogue(list<string> dialogueIds, _int startid = 0) { m_nextIds = dialogueIds; };
+    list<string>& Get_PendingDialogue() { return m_nextIds; }
 
 private:
      weak_ptr<CGameInstance> m_gameInstance = {};
-    vector< shared_ptr<Dialogue>> m_Dialogues;
-    unordered_map<string, _int> m_DialogueIndex;
+    vector< shared_ptr<Dialogue>> m_dialogues;
+    unordered_map<string, _int> m_dialogueIndex;
 
 
-    list<string> m_NextIds;
+    list<string> m_nextIds;
 
 private:
     void Free() override;

@@ -31,12 +31,12 @@ protected:
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr };
+    shared_ptr<CModel> m_modelCom = { nullptr };
     shared_ptr<CTexture> m_textureCom = { nullptr };
-    shared_ptr<CCollider> m_pColliderCom = { nullptr };
+    shared_ptr<CCollider> m_colliderCom = { nullptr };
 
 
-    shared_ptr<class CInventory>  m_pShopCom[ETOI(EShopTab::END)];
+    shared_ptr<class CInventory>  m_shopCom[ETOI(EShopTab::END)];
 public:
     static shared_ptr<CVillage> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     shared_ptr<CGameObject> Clone(void* pArg) override;

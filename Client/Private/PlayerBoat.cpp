@@ -190,7 +190,7 @@ HRESULT CPlayerBoat::Ready_Components()
 
 	CInventory::InvenDesc invenDesc = {};
 	invenDesc.invenType = EInvenType::PLAYER;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Inven"), &m_invenCom, &invenDesc)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Inven"), &m_invenCom, &invenDesc)))
 		return E_FAIL;
 
 
@@ -200,7 +200,7 @@ HRESULT CPlayerBoat::Ready_Components()
 
 	CInventory::InvenDesc storageDesc = {};
 	storageDesc.invenType = EInvenType::STORAGE;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_storageCom, &storageDesc)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_storageCom, &storageDesc)))
 		return E_FAIL;
 	
 
@@ -210,7 +210,7 @@ HRESULT CPlayerBoat::Ready_Components()
 	obbDesc.center = _float3(0.f, 0.f, 0.f);
 	obbDesc.myLayer = ECollisionLayer::PLAYER;
 	obbDesc.otherMask = ECollisionLayer::TRIGGER | ECollisionLayer::MONSTERATT | ECollisionLayer::FISH| ECollisionLayer::ITEM;
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_colliderCom, &obbDesc)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_colliderCom, &obbDesc)))
 		return E_FAIL;
 	m_gameInstance.lock()->Add_Collider(m_colliderCom);
 
@@ -225,10 +225,10 @@ HRESULT CPlayerBoat::Ready_Components()
 
 HRESULT CPlayerBoat::Ready_PartObjects()
 {
-	CBody_Player::BodyPlayer_DESC bodyDesc{};
+	CBody_Player::BodyPlayerDesc bodyDesc{};
 	bodyDesc.parentMatrix = m_transformCom->Get_WorldMatrixPtr();
 
-	if (FAILED(__super::Add_PartObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Body_Player"), TEXT("Part_Body"), &bodyDesc)))
+	if (FAILED(__super::Add_PartObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Body_Player"), TEXT("Part_Body"), &bodyDesc)))
 		return E_FAIL;
 
 
@@ -275,7 +275,7 @@ bool CPlayerBoat::MinusMoney(int amount)
 	}
 }
 
-void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask, _float invenMoney)
+void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SeaMask seaMask, _float invenMoney)
 {
 
 

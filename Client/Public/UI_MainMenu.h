@@ -6,7 +6,7 @@ class CUI_MainMenu final:
     public CUIPanel
 {
 public:
-    struct MAINMENU_DESC : public CUIPanel::UIPanelDesc
+    struct MainMenuDesc : public CUIPanel::UIPanelDesc
     {
        /* _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";*/

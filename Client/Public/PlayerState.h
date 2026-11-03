@@ -42,18 +42,18 @@ protected:
 
 	_bool       DoneAnim = false;
 
-	weak_ptr<CPlayerBoat> m_Owner = {};
+	weak_ptr<CPlayerBoat> m_owner = {};
 	weak_ptr<CGameInstance> m_gameInstance;
-	weak_ptr < CPlayerStateMachine> m_pStateMachine = { };
+	weak_ptr < CPlayerStateMachine> m_stateMachine = { };
 
 	weak_ptr<CTransform> m_ownerTransformCom = { };
 	
-	CDInput_Manager* m_Input_Manager = { nullptr };
+	CDInput_Manager* m_inputManager = { nullptr };
 
 
 
 
-	list<string> m_VecDialogue;
+	list<string> m_vecDialogue;
 private:
 	// CBase을(를) 통해 상속됨
 	//void Free() override;

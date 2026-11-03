@@ -1,6 +1,6 @@
-#pragma once
+ï»¿#pragma once
 
-#include <Windows.h> // ´Ù¸¥µ¥¼­ ÀÌ µğÆÄÀÎ¸¸ Æ÷ÇÔÇØµµ HWND,HINSTANCE ¸¦ ¾µ¼ö ÀÖ°Ô ÇÏ±â À§ÇØ 
+#include <Windows.h> // ë‹¤ë¥¸ë°ì„œ ì´ ë””íŒŒì¸ë§Œ í¬í•¨í•´ë„ HWND,HINSTANCE ë¥¼ ì“¸ìˆ˜ ìˆê²Œ í•˜ê¸° ìœ„í•´ 
 #include <process.h>
 
 #include"Client_Enum.h"
@@ -10,7 +10,7 @@ extern HWND g_hWnd;
 extern HINSTANCE g_hInst;
 
 
-// Å×½ºÆ®¿ë
+// í…ŒìŠ¤íŠ¸ìš©
 extern WNDCLASSEXW wcex;
 
 namespace Client
@@ -20,8 +20,8 @@ namespace Client
 	//const unsigned int g_iWinSizeX = { 1280 };
 	//const unsigned int g_iWinSizeY = { 720 };
 
-	enum class LEVEL { STATIC, LOADING, LOGO, GAMEPLAY, EDITOR, END };
-	enum class TAB : unsigned int { NONE = 0, INVEN = 1 << 0, STORAGE = 1 << 1, ETC = 1 << 2 };
+	enum class ELevel { STATIC, LOADING, LOGO, GAMEPLAY, EDITOR, END };
+	enum class ETab : unsigned int { NONE = 0, INVEN = 1 << 0, STORAGE = 1 << 1, ETC = 1 << 2 };
 
 	
 

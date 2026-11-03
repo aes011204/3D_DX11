@@ -35,7 +35,7 @@ void CSky::Priority_Update(_float fTimeDelta)
 void CSky::Update(_float fTimeDelta)
 {
 
-	m_Acc += fTimeDelta;
+	m_acc += fTimeDelta;
 
 }
 
@@ -66,16 +66,16 @@ HRESULT CSky::Render()
 HRESULT CSky::Ready_Components()
 {
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxCube"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxCube"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_VIBuffer_Cube"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_Sky"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Noise"), TEXT("Com_TextureNoise"), &m_pTextureNoiseCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_Sky_Noise"), TEXT("Com_TextureNoise"), &m_textureNoiseCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Sky_Distortion"), TEXT("Com_TextureDistortion"), &m_pTextureDistiortionCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_Sky_Distortion"), TEXT("Com_TextureDistortion"), &m_textureDistortionCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;
@@ -95,13 +95,13 @@ HRESULT CSky::Bind_ShaderResources()
 	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_Texture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureNoiseCom->Bind_ShaderResourceView(m_shaderCom, "g_NoiseTexture", 0)))
+	if (FAILED(m_textureNoiseCom->Bind_ShaderResourceView(m_shaderCom, "g_NoiseTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureDistiortionCom->Bind_ShaderResourceView(m_shaderCom, "g_DistortaionTexture", 0)))
+	if (FAILED(m_textureDistortionCom->Bind_ShaderResourceView(m_shaderCom, "g_DistortaionTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_shaderCom->Bind_RawValue( "g_Acc", &m_Acc, sizeof(float))))
+	if (FAILED(m_shaderCom->Bind_RawValue( "g_Acc", &m_acc, sizeof(float))))
 		return E_FAIL;
 
 	float tod01 = m_gameInstance.lock()->Get_TOD01();

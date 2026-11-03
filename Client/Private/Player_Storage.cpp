@@ -87,7 +87,7 @@ HRESULT CPlayer_Storage::Init_State()
 int CPlayer_Storage::Update_State(const _float& timeDelta)
 {
 
-	if(m_Input_Manager->KeyDown(DIK_X))
+	if(m_inputManager->KeyDown(DIK_X))
 	{
 
 		return  ETOI(EPlayerState::VILLAGE);

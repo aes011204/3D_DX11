@@ -52,23 +52,23 @@ protected:
 
 private:
 
-    _uint m_AnimIndex = {};
-    _uint   m_IndexETC = {};
+    _uint m_animIndex = {};
+    _uint   m_indexEtc = {};
     //STATE m_State = {};
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };
     //shared_ptr<CModel> m_pModelCom_Etc[11] = { nullptr };
-    shared_ptr<CModel> m_pModelCom_Etc = { nullptr };
-    shared_ptr<CModel> m_pModelCom_One= { nullptr };
+    shared_ptr<CModel> m_modelComEtc = { nullptr };
+    shared_ptr<CModel> m_modelComOne= { nullptr };
     shared_ptr<CTexture> m_textureCom = { nullptr };
     //shared_ptr<CCollider> m_pColliderCom = { nullptr };
 
     //shared_ptr<CCollider> m_Hand_Collider_1 = { nullptr };
     //shared_ptr<CCollider> m_Hand_Collider_2 = { nullptr };
 
-    _uint  m_Count = {};
-    weak_ptr<CGameObject> m_pPlayer = {  };
+    _uint  m_count = {};
+    weak_ptr<CGameObject> m_player = {  };
 
 public:
 

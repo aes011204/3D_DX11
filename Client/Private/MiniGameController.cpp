@@ -38,19 +38,19 @@ void Client::CMiniGameController::Update(const _float& timeDelta)
 {
 }
 
-void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_ptr<class CInventory_Controller> InvenCtrl, float RodSpeeed)
+void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_fish, weak_ptr<class CInventory_Controller> InvenCtrl, float RodSpeeed)
 {
 	shared_ptr<CMiniGame>  pInstance = {};
-	auto minigame  = m_pFish.lock()->GetMiniGameType();
+	auto minigame  = m_fish.lock()->GetMiniGameType();
 	switch (minigame)
 	{
 	case EMiniGameType::BASIC_CIRCLE:
 	{
-		CMiniGame_Logic::MINIGAEMELOGIC_DESC pLogicDesc = { };
+		CMiniGame_Logic::MiniGameLogicDesc pLogicDesc = { };
 		pLogicDesc.pInvenCtrl = InvenCtrl.lock();
 
-		pLogicDesc.FishCount = m_pFish.lock()->GetInitFishCount();
-		pLogicDesc.DefID = m_pFish.lock()->Get_fish_DefID();
+		pLogicDesc.FishCount = m_fish.lock()->GetInitFishCount();
+		pLogicDesc.DefID = m_fish.lock()->Get_fish_DefID();
 		pLogicDesc.RodSpeed = RodSpeeed;
 		pLogicDesc.zoneCount =_float2(2.f, 4.f);
 		/*float baseSegment = 1.f / pLogicDesc.zoneCount;
@@ -64,23 +64,23 @@ void Client::CMiniGameController::Start_Fishing(weak_ptr<CFish> m_pFish, weak_pt
 
 
 		pInstance = CMiniGame_Logic::Create(&pLogicDesc);
-		m_pFish.lock()->SetMiniGameLogic(pInstance);
+		m_fish.lock()->SetMiniGameLogic(pInstance);
 
 		break;
 	}
 
 	case EMiniGameType::DIAMOND:
 	{
-		CMiniGame_Logic_Diamond::MINIGAEMELOGIC_DIAMOND_DESC pLogicDesc = { };
+		CMiniGame_Logic_Diamond::MiniGameLogicDiamondDesc pLogicDesc = { };
 		pLogicDesc.pInvenCtrl = InvenCtrl.lock();
 
-		pLogicDesc.FishCount = m_pFish.lock()->GetInitFishCount();
-		pLogicDesc.DefID = m_pFish.lock()->Get_fish_DefID();
+		pLogicDesc.FishCount = m_fish.lock()->GetInitFishCount();
+		pLogicDesc.DefID = m_fish.lock()->Get_fish_DefID();
 		pLogicDesc.RodSpeed = RodSpeeed;
 		pLogicDesc.MiniGameType = EMiniGameType::DIAMOND;
 		
 		pInstance = CMiniGame_Logic_Diamond::Create(&pLogicDesc);
-		m_pFish.lock()->SetMiniGameLogic(pInstance);
+		m_fish.lock()->SetMiniGameLogic(pInstance);
 
 		break;
 	}

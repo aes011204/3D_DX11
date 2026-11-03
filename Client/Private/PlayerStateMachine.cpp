@@ -12,7 +12,7 @@
 #include "Player_Village.h"
 
 CPlayerStateMachine::CPlayerStateMachine(weak_ptr<CPlayerBoat> owner)
-	: m_pOwner(owner)
+	: m_owner(owner)
 {
 }
 
@@ -115,17 +115,17 @@ HRESULT CPlayerStateMachine::Init_PlayerStates()
     m_vecState.resize(ETOI(EPlayerState::END));
    shared_ptr<CPlayerState> pState = nullptr;
 
-    if (nullptr == (pState = CPlayer_Sea::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (pState = CPlayer_Sea::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
     m_vecState[ETOI(EPlayerState::SEA)] = pState;
     pState->Init_State();
 
-    if (nullptr == (pState = CPlayer_MiniGame::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (pState = CPlayer_MiniGame::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
     m_vecState[ETOI(EPlayerState::FISHING)] = pState;
     pState->Init_State();
 
-    if (nullptr == (pState = CPlayer_Village::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (pState = CPlayer_Village::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
     m_vecState[ETOI(EPlayerState::VILLAGE)] = pState;
     pState->Init_State();
@@ -133,22 +133,22 @@ HRESULT CPlayerStateMachine::Init_PlayerStates()
 
 
 
-    if (nullptr == (pState = CPlayer_Storage::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (pState = CPlayer_Storage::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
     m_vecState[ETOI(EPlayerState::STORAGE)] = pState;
     pState->Init_State();
 
-        if (nullptr == (pState = CPlayer_RepairShop::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        if (nullptr == (pState = CPlayer_RepairShop::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
             return E_FAIL;
     m_vecState[ETOI(EPlayerState::REPAIR_SHOP)] = pState;
     pState->Init_State();;
 
-        if (nullptr == (pState = CPlayer_FishShop::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        if (nullptr == (pState = CPlayer_FishShop::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
             return E_FAIL;
     m_vecState[ETOI(EPlayerState::FISH_SHOP)] = pState;
     pState->Init_State();
 
-    if (nullptr == (pState = CPlayer_Interact::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (pState = CPlayer_Interact::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
     m_vecState[ETOI(EPlayerState::INTERACT)] = pState;
     pState->Init_State();

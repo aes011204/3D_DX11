@@ -21,7 +21,7 @@ class CUI_TabContainer :
 {
 public:
 
-	struct TABCONTAINER_DESC : public CUIPanel::UIPanelDesc
+	struct TabContainerDesc : public CUIPanel::UIPanelDesc
 	{
 
 	};
@@ -32,7 +32,7 @@ public:
 	~CUI_TabContainer() = default;
 
 public:
-	void UI_PanelActive(_uint iTabfig, TAB Active);
+	void UI_PanelActive(_uint iTabfig, ETab Active);
 	virtual void UI_Active() override; //  UI 활성활시 호출되는 함수// 이 패널은 다 켜지면 안되기떄문에 오버라이딩으로 호출뻇고 여기서 처리
 	HRESULT OnInit(void* pArg) override;
 	void OnActive()override;
@@ -43,28 +43,28 @@ public:
 	HRESULT OnRender()override;
 	void OnClear()override;
 
-	void SetActiveTab(TAB tab);
+	void SetActiveTab(ETab tab);
 public:
 
 
 private:
-	TAB m_active = TAB::NONE;
+	ETab m_active = ETab::NONE;
 
-	shared_ptr<CUIImage> m_Line = {};
-	shared_ptr<CUIImage> m_TextIMG = {};
-	shared_ptr<CUIText> m_TextFont = {};
+	shared_ptr<CUIImage> m_line = {};
+	shared_ptr<CUIImage> m_textImg = {};
+	shared_ptr<CUIText> m_textFont = {};
 
-	shared_ptr<CUIButton> m_ButtonContents[32] = {};
-	shared_ptr<CUIPanel> m_TabContents[32] = {};
+	shared_ptr<CUIButton> m_buttonContents[32] = {};
+	shared_ptr<CUIPanel> m_tabContents[32] = {};
 
 
 	Vector2 m_vecAni = {};
-	_bool m_bStart = false;
-	float m_TimeAcc = {};
+	_bool m_isStart = false;
+	float m_timeAcc = {};
 	float m_duration = {};
 
 
-	weak_ptr<CPlayerBoat> m_PlayerBoat = {  };
+	weak_ptr<CPlayerBoat> m_playerBoat = {  };
 
 public:
 	static shared_ptr<CUI_TabContainer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

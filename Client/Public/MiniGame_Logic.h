@@ -16,7 +16,7 @@ NS_BEGIN(Client)
 {
 public:
 	
-	struct MINIGAEMELOGIC_DESC :public CMiniGame::MINIGAEME_L_DESC
+	struct MiniGameLogicDesc :public CMiniGame::MiniGameDesc
 	{
 		_float2 zoneCount = {};
 		_float2 zoneSize = {};
@@ -49,32 +49,32 @@ public:
 	virtual int GetZoneCount() const override { return m_zoneCount; }
 
 
-	bool IsStart() const { return m_bStart; }
-	bool IsFinish() const { return m_bFin; }
+	bool IsStart() const { return m_isStart; }
+	bool IsFinish() const { return m_isFinished; }
 
 	//_uint Get_DefID() { return m_DefID; };
 
 	void OnInput()override;
 
 
-	EMiniGameType Get_MiniGameType() { return m_MiniGameType; }
+	EMiniGameType Get_MiniGameType() { return m_miniGameType; }
 public:
 	
 
 	Zone m_zones[8];
 	int m_zoneCount;
-	float m_AccTime = { 0 };
+	float m_accTime = { 0 };
 	float m_angle = { 0 };
-	float m_Speed = {};
-	_bool m_bStart = { false };
+	float m_speed = {};
+	_bool m_isStart = { false };
 
 	float m_zoneSize = {};
 
-	_float2 m_InitZoonSize = {};
-	_float2 m_InitZoonCount = {};
+	_float2 m_initZoneSize = {};
+	_float2 m_initZoneCount = {};
 	///
 	bool m_changeColor = { false };
-	float m_AccTime2 = { 0 };
+	float m_accTime2 = { 0 };
 	float colortime = { 0 };
 
 	///
@@ -84,7 +84,7 @@ public:
 
 	//
 	//_uint m_DefID = { ID_Absence };
-	_bool m_bFin = { false };
+	_bool m_isFinished = { false };
 
 	//
 	//_uint m_FishCount = {};

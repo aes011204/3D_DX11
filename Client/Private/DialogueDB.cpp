@@ -114,7 +114,7 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
             dialogue.Texture_Back_Path = dynamic_pointer_cast<CTexture>(
                 m_gameInstance.lock()->Clone_Prototype(
                     EPrototype::COMPONENT,
-                    ETOI(LEVEL::STATIC),
+                    ETOI(ELevel::STATIC),
                     wstrBack.c_str() // c_str()로 확실히 넘기기
                 )
             );
@@ -127,13 +127,13 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
             dialogue.Texture_Char_Path = dynamic_pointer_cast<CTexture>(
                 m_gameInstance.lock()->Clone_Prototype(
                     EPrototype::COMPONENT,
-                    ETOI(LEVEL::STATIC),
+                    ETOI(ELevel::STATIC),
                     wstrChar.c_str()
                 )
             );
         }
-        m_DialogueIndex[dialogue.dialogueId] = m_Dialogues.size();
-        m_Dialogues.push_back(make_shared<Dialogue>(dialogue));
+        m_dialogueIndex[dialogue.dialogueId] = m_dialogues.size();
+        m_dialogues.push_back(make_shared<Dialogue>(dialogue));
     }
 
     return S_OK;
@@ -141,11 +141,11 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
 
 shared_ptr<Dialogue> CDialogueDB::GetDialogueById(const string& dialogueId)
 {
-    auto it = m_DialogueIndex.find(dialogueId);
-    if (it == m_DialogueIndex.end())
+    auto it = m_dialogueIndex.find(dialogueId);
+    if (it == m_dialogueIndex.end())
         return nullptr;
 
-    return m_Dialogues[it->second];
+    return m_dialogues[it->second];
 }
 
 wstring CDialogueDB::Utf8ToWstring(const string& str)
@@ -167,7 +167,7 @@ wstring CDialogueDB::Utf8ToWstring(const string& str)
 
 void CDialogueDB::Free()
 {
-    m_NextIds.clear();
+    m_nextIds.clear();
     __super::Free();
 }
 

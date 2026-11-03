@@ -21,16 +21,16 @@ CPlayer_Village::~CPlayer_Village()
 
 void CPlayer_Village::Enter()
 {
-	if (m_Owner.lock()->Get_WasDead())
+	if (m_owner.lock()->Get_WasDead())
 	{
-		m_VecDialogue.push_back("Mayer_End");
+		m_vecDialogue.push_back("Mayer_End");
 
 	}
 	CGameInstance::GetInstance()->Set_TimeScale(1.f);
 
 
 	float duration = 2.f;
-	if(m_Flag !=  true)
+	if(m_isFlag !=  true)
 	{
 		// 시간 6시로
 
@@ -66,7 +66,7 @@ void CPlayer_Village::Enter()
 	}
 	
 	
-	CDialogueDB::GetInstance()->Set_PendingDialogue(m_VecDialogue);
+	CDialogueDB::GetInstance()->Set_PendingDialogue(m_vecDialogue);
 
 
 
@@ -110,8 +110,8 @@ void CPlayer_Village::Exit()
 	//e.playerstate = E_PLAYERSTATE::VILLAGE;
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 
-	m_VecDialogue.clear();
-	CDialogueDB::GetInstance()->Set_PendingDialogue(m_VecDialogue);
+	m_vecDialogue.clear();
+	CDialogueDB::GetInstance()->Set_PendingDialogue(m_vecDialogue);
 
 	//m_pGameInstance.lock()->Stop(L"GM_BGM_Theme");
 
@@ -154,19 +154,19 @@ HRESULT CPlayer_Village::Init_State()
 
 int CPlayer_Village::Update_State(const _float& timeDelta)
 {
-	if (m_Flag != true)
+	if (m_isFlag != true)
 	{
-		m_Acc += timeDelta;
+		m_acc += timeDelta;
 
 
 
 
-		if(m_Acc > 4.f)
+		if(m_acc > 4.f)
 		{
 
-			m_VecDialogue.push_back("Start");
-			m_VecDialogue.push_back("Mayer_start");
-			CDialogueDB::GetInstance()->Set_PendingDialogue(m_VecDialogue);
+			m_vecDialogue.push_back("Start");
+			m_vecDialogue.push_back("Mayer_start");
+			CDialogueDB::GetInstance()->Set_PendingDialogue(m_vecDialogue);
 
 
 			Evt_ChangeCam event = {};
@@ -197,12 +197,12 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 
 
 
-		m_Flag = true;
+		m_isFlag = true;
 		}
 	}
 
 
-	if(m_Input_Manager->KeyDown(DIK_X))
+	if(m_inputManager->KeyDown(DIK_X))
 	{
 		if(IsSleep == true)
 		{

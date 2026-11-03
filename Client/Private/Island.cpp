@@ -56,7 +56,7 @@ HRESULT CIsland::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	size_t iNumMesh = m_modelCom->Get_NumMeshes();
 
 	for (size_t i = 0; i < iNumMesh; i++)
 	{
@@ -66,7 +66,7 @@ HRESULT CIsland::Render()
 		if (FAILED(m_shaderCom->Begin(0)))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(0)))
+		if (FAILED(m_modelCom->Render(0)))
 			return E_FAIL;
 	}
 
@@ -79,9 +79,9 @@ HRESULT CIsland::Render()
 void CIsland::OnGui()
 {
 
-	ImGui::DragFloat("Lamp 1 Intensity", &m_ColorLamp1, 0.1f, 0.0f, 0.0f, "%.2f");
+	ImGui::DragFloat("Lamp 1 Intensity", &m_colorLamp1, 0.1f, 0.0f, 0.0f, "%.2f");
 
-	ImGui::SliderFloat("Lamp 2 Intensity", &m_ColorLamp2, 0.0f, 1.0f, "%.3f");
+	ImGui::SliderFloat("Lamp 2 Intensity", &m_colorLamp2, 0.0f, 1.0f, "%.3f");
 
 	ImGui::Separator(); 
 
@@ -89,11 +89,11 @@ void CIsland::OnGui()
 
 	ImGui::Text("Terrain Colors (RGBA)");
 
-	ImGui::ColorEdit4("Sand Color", (float*)&m_SandColor);
+	ImGui::ColorEdit4("Sand Color", (float*)&m_sandColor);
 
-	ImGui::ColorEdit4("Rock Color", (float*)&m_RockColor);
+	ImGui::ColorEdit4("Rock Color", (float*)&m_rockColor);
 
-	ImGui::ColorEdit4("Grass Color", (float*)&m_GrassColor);
+	ImGui::ColorEdit4("Grass Color", (float*)&m_grassColor);
 
 
 }
@@ -102,7 +102,7 @@ void CIsland::RebindCom()
 {
 	
 	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	m_modelCom = Get_Component<CModel>(L"Com_Model");
 	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
 }
@@ -137,15 +137,15 @@ HRESULT CIsland::Bind_ShaderResources()
 		return E_FAIL;*/
 
 	////
-	if (FAILED(m_shaderCom->Bind_RawValue("g_ColorLamp1", &m_ColorLamp1, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_ColorLamp1", &m_colorLamp1, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_ColorLamp2", &m_ColorLamp2, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_ColorLamp2", &m_colorLamp2, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_SandColor", &m_SandColor, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_SandColor", &m_sandColor, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_RockColor", &m_RockColor, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_RockColor", &m_rockColor, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_GrassColor", &m_GrassColor, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_GrassColor", &m_grassColor, sizeof(_float4))))
 		return E_FAIL;
 
 	float fFar = m_gameInstance.lock()->Get_Far();
@@ -159,12 +159,12 @@ void CIsland::Save_ToJson(nlohmann::json& j)
 {
 	CGameObject::Save_ToJson(j);
 
-	j["ColorLamp1"] = m_ColorLamp1;
-	j["ColorLamp2"] = m_ColorLamp2;
+	j["ColorLamp1"] = m_colorLamp1;
+	j["ColorLamp2"] = m_colorLamp2;
 
-	j["SandColor"] = { m_SandColor.x, m_SandColor.y, m_SandColor.z, m_SandColor.w };
-	j["RockColor"] = { m_RockColor.x, m_RockColor.y, m_RockColor.z, m_RockColor.w };
-	j["GrassColor"] = { m_GrassColor.x, m_GrassColor.y, m_GrassColor.z, m_GrassColor.w };
+	j["SandColor"] = { m_sandColor.x, m_sandColor.y, m_sandColor.z, m_sandColor.w };
+	j["RockColor"] = { m_rockColor.x, m_rockColor.y, m_rockColor.z, m_rockColor.w };
+	j["GrassColor"] = { m_grassColor.x, m_grassColor.y, m_grassColor.z, m_grassColor.w };
 
 }
 
@@ -172,17 +172,17 @@ void CIsland::Load_FromJson(nlohmann::json& j)
 {
 	CGameObject::Load_FromJson(j);
 
-	m_ColorLamp1 = j["ColorLamp1"];
-	m_ColorLamp2 = j["ColorLamp2"];
+	m_colorLamp1 = j["ColorLamp1"];
+	m_colorLamp2 = j["ColorLamp2"];
 	
 	auto sand = j["SandColor"];
-	m_SandColor = { sand[0], sand[1], sand[2], sand[3] };
+	m_sandColor = { sand[0], sand[1], sand[2], sand[3] };
 	
 	auto rock = j["RockColor"];
-	m_RockColor = { rock[0], rock[1], rock[2], rock[3] };
+	m_rockColor = { rock[0], rock[1], rock[2], rock[3] };
 	
 	auto grass = j["GrassColor"];
-	m_GrassColor = { grass[0], grass[1], grass[2], grass[3] };
+	m_grassColor = { grass[0], grass[1], grass[2], grass[3] };
 
 
 }
@@ -198,10 +198,10 @@ HRESULT CIsland::Ready_Components()
 	//	return E_FAIL;
 
 	// 쉐이더는 클래스를 갈아끼는게 아니라 안에 리소스를 바꾸는 거임
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh_CustomTexture"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxMesh_CustomTexture"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 	// 이거는 필수로 있어야 하지만 클래스를 갈아 끼울수 있어야 함 
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_Island"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_Island"), TEXT("Com_Model"), &m_modelCom, nullptr)))
 		return E_FAIL;
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 	//	return E_FAIL;

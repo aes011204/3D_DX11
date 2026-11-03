@@ -89,7 +89,7 @@ HRESULT CPlayer_Interact::Init_State()
 int CPlayer_Interact::Update_State(const _float& timeDelta)
 {
 
-	if(m_Input_Manager->KeyDown(DIK_X))
+	if(m_inputManager->KeyDown(DIK_X))
 	{
 
 		return  ETOI(EPlayerState::SEA);

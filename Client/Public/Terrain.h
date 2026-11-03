@@ -12,7 +12,7 @@ NS_BEGIN(Client)
 class CTerrain final:
     public CGameObject {
 public:
-    struct TERRAIN_DESC final : public CGameObject::GameObjectDesc
+    struct TerrainDesc final : public CGameObject::GameObjectDesc
     {
 
     };

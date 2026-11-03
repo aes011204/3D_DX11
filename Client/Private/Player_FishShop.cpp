@@ -23,7 +23,7 @@ CPlayer_FishShop::~CPlayer_FishShop()
 void CPlayer_FishShop::Enter()
 {
 
-	CDialogueDB::GetInstance()->Set_PendingDialogue(m_VecDialogue);
+	CDialogueDB::GetInstance()->Set_PendingDialogue(m_vecDialogue);
 
 	Evt_ChangeCam event = {};
 	auto pLerp = make_shared<CamLerpDesc>();
@@ -65,7 +65,7 @@ void CPlayer_FishShop::Exit()
 
 HRESULT CPlayer_FishShop::Init_State()
 {
-	m_VecDialogue.push_back("FishStore_First");
+	m_vecDialogue.push_back("FishStore_First");
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeState>([this](const Evt_ChangeState& e)
 		{
@@ -75,7 +75,7 @@ HRESULT CPlayer_FishShop::Init_State()
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ItemHovered>([this](const Evt_ItemHovered& e)
 		{
-			m_ItemIdInst = e.itemInst;
+			m_itemIdInst = e.itemInst;
 		});
 
 	return CPlayerState::Init_State();
@@ -84,38 +84,38 @@ HRESULT CPlayer_FishShop::Init_State()
 int CPlayer_FishShop::Update_State(const _float& timeDelta)
 {
 
-	if (m_Input_Manager->KeyDown(DIK_X))
+	if (m_inputManager->KeyDown(DIK_X))
 	{
 
 		return  ETOI(EPlayerState::VILLAGE);
 	}
-	else if (m_Input_Manager->KeyDown(DIK_F) && !m_ItemIdInst.itemInstId == ID_Absence)
+	else if (m_inputManager->KeyDown(DIK_F) && !m_itemIdInst.itemInstId == kIdAbsence)
 	{
-		if (m_ItemIdInst.itemType == EItemType::FISH)
+		if (m_itemIdInst.itemType == EItemType::FISH)
 		{
 			float money = {};
-			if (m_ItemIdInst.isMutation == true)
-				money = m_ItemIdInst.mutationCaching.mutCost;
+			if (m_itemIdInst.isMutation == true)
+				money = m_itemIdInst.mutationCaching.mutCost;
 			else
 			{
-				auto def = CItemDB::GetInstance()->GetItemByID(m_ItemIdInst.itemDefId).typeDef;
+				auto def = CItemDB::GetInstance()->GetItemByID(m_itemIdInst.itemDefId).typeDef;
 
 				money = get<FishDef>(def).cost;
 
 			}
 
-			m_Owner.lock()->Add_Money(money);
-			m_Owner.lock()->GetInventory()->RemoveFrom_Inven(m_ItemIdInst.itemInstId);
+			m_owner.lock()->Add_Money(money);
+			m_owner.lock()->GetInventory()->RemoveFrom_Inven(m_itemIdInst.itemInstId);
             Evt_ItemSold soldEvent = {};
-            soldEvent.itemInstId = m_ItemIdInst.itemInstId;
-            m_ItemIdInst = {};
+            soldEvent.itemInstId = m_itemIdInst.itemInstId;
+            m_itemIdInst = {};
             m_gameInstance.lock()->Get_EventBus()->Publish(soldEvent);
 			
 
 		}
 
 	}
-	else if (m_Input_Manager->MouseDown(EMouseButton::WHEEL))
+	else if (m_inputManager->MouseDown(EMouseButton::WHEEL))
 	{
 		Evt_MoveToStorage e = {};
 		

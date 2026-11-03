@@ -25,11 +25,11 @@ CUI_Village::CUI_Village(const CUIPanel& prototype)
 void CUI_Village::UI_Active()
 {
 	CUIPanel::UI_Active();
-	for (auto& it : m_Select_boat)
+	for (auto& it : m_selectBoat)
 	{
 		it->UI_InActive();
 	}
-	for (auto& it : m_Select)
+	for (auto& it : m_select)
 	{
 		it->UI_InActive();
 
@@ -39,7 +39,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 {
 	//if(pArg==nullptr)
 
-	MAINMENU_DESC* pDesc = static_cast<MAINMENU_DESC*>(pArg);
+	VillageDesc* pDesc = static_cast<VillageDesc*>(pArg);
 	HRESULT hr = {};
 	hr = __super::OnInit(pDesc);
 
@@ -47,7 +47,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 	// 람다 제외 전부 데이터로 수정 가능
 
 	wstring name = {};
-	VIllAGE_LOCATION eLevel = {};
+	EVillageLocation eLevel = {};
 	EPlayerState ePlayerState = {};
 	wstring tex = {};
 	wstring sound = {};
@@ -56,14 +56,14 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		switch (i)
 		{
 		case 0:
-			eLevel = VIllAGE_LOCATION::REPAIR;
+			eLevel = EVillageLocation::REPAIR;
 			name = L"조선공";
 			tex = L"Prototype_Component_Texture_MerchantIcon";
 			ePlayerState = EPlayerState::REPAIR_SHOP;
 			sound = L"Repair_Visit";
 			break;
 		case 1:
-			eLevel = VIllAGE_LOCATION::FISH;
+			eLevel = EVillageLocation::FISH;
 			name = L"생선장수";
 			tex = L"Prototype_Component_Texture_FishIconVill";
 			ePlayerState = EPlayerState::FISH_SHOP;
@@ -71,7 +71,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 			break;
 		case 2:
-			eLevel = VIllAGE_LOCATION::STORAGE;
+			eLevel = EVillageLocation::STORAGE;
 			name = L"내창고";
 
 			tex = L"Prototype_Component_Texture_StorageIcon";
@@ -87,7 +87,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		}
 
 		CUIImage::UIImageDesc underBar_desc{};
-		underBar_desc.textureComLevel = ETOI(LEVEL::STATIC);
+		underBar_desc.textureComLevel = ETOI(ELevel::STATIC);
 		underBar_desc.textureProtoName = L"Prototype_Component_Texture_VillageUnderBar";
 		shared_ptr<CUIImage> underBar = CUIImage::Create(m_device, m_context);
 		underBar->Initialize(&underBar_desc);
@@ -100,20 +100,20 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 
 			CUIButton::UIButtonDesc pDesc = {};
-			pDesc.textureComLevel = ETOI(LEVEL::STATIC);
+			pDesc.textureComLevel = ETOI(ELevel::STATIC);
 			pDesc.textureProtoName = L"Prototype_Component_Texture_Button";
 			pDesc.typeIndex = i;
 			pDesc.OverlapStartEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-				m_Select[pThis->Get_TypeIndex()]->UI_Active();
+				m_select[pThis->Get_TypeIndex()]->UI_Active();
 				_float2 tmp = { 4.f, 2.f };
-				m_Select[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
+				m_select[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
 
 				m_gameInstance.lock()->Play_Once(L"Hover");
 				};
 			pDesc.OverlapEndEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 			
-				m_Select[pThis->Get_TypeIndex()]->UI_InActive();
-				m_Select[pThis->Get_TypeIndex()]->m_behavior.clear();
+				m_select[pThis->Get_TypeIndex()]->UI_InActive();
+				m_select[pThis->Get_TypeIndex()]->m_behavior.clear();
 		
 				};
 
@@ -137,7 +137,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			//
 			{
 				CUIImage::UIImageDesc selectImage{};
-				selectImage.textureComLevel = ETOI(LEVEL::STATIC);
+				selectImage.textureComLevel = ETOI(ELevel::STATIC);
 				selectImage.textureProtoName = L"Prototype_Component_Texture_Select";
 				selectImage.pxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
 				selectImage.useNineSlice = true;
@@ -146,7 +146,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 				Select->UI_InActive();
 				wstring NameTag1 = L"Select_" + S2W(string(magic_enum::enum_name(eLevel)));
 				pBut->Add_Child(Select, NameTag1, false);
-				m_Select[i] = Select;
+				m_select[i] = Select;
 
 
 
@@ -161,7 +161,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 
 				CUIImage::UIImageDesc iconImage{};
-				iconImage.textureComLevel = ETOI(LEVEL::STATIC);
+				iconImage.textureComLevel = ETOI(ELevel::STATIC);
 				iconImage.textureProtoName = tex;
 				shared_ptr<CUIImage> icon = CUIImage::Create(m_device, m_context);
 				icon->Initialize(&iconImage);
@@ -179,7 +179,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 	}
 
 	CUIImage::UIImageDesc underBar_desc{};
-	underBar_desc.textureComLevel = ETOI(LEVEL::STATIC);
+	underBar_desc.textureComLevel = ETOI(ELevel::STATIC);
 	underBar_desc.textureProtoName = L"Prototype_Component_Texture_VillageUnderBar";
 	shared_ptr<CUIImage> underBar = CUIImage::Create(m_device, m_context);
 	underBar->Initialize(&underBar_desc);
@@ -213,25 +213,25 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		}
 
 		CUIButton::UIButtonDesc pDesc = {};
-		pDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		pDesc.textureComLevel = ETOI(ELevel::STATIC);
 		pDesc.textureProtoName = L"Prototype_Component_Texture_Button";
 		pDesc.typeIndex =i;
 		pDesc.OverlapStartEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 		
-			m_Select_boat[pThis->Get_TypeIndex()]->UI_Active();
+			m_selectBoat[pThis->Get_TypeIndex()]->UI_Active();
 			
 			_float2 tmp = { 1.3f, 3.6f };
 			
-			m_Select_boat[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
-			m_Select_boat[pThis->Get_TypeIndex()]->Set_Zorder(4);
+			m_selectBoat[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
+			m_selectBoat[pThis->Get_TypeIndex()]->Set_Zorder(4);
 			m_gameInstance.lock()->Play_Once(L"Hover");
 
 			};
 		pDesc.OverlapEndEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
 		
-			m_Select_boat[pThis->Get_TypeIndex()]->UI_InActive();
-			m_Select_boat[pThis->Get_TypeIndex()]->m_behavior.clear();
-			m_Select_boat[pThis->Get_TypeIndex()]->Set_Zorder(2);
+			m_selectBoat[pThis->Get_TypeIndex()]->UI_InActive();
+			m_selectBoat[pThis->Get_TypeIndex()]->m_behavior.clear();
+			m_selectBoat[pThis->Get_TypeIndex()]->Set_Zorder(2);
 	
 			};
 		pDesc.ClickEvent = [this,i,sound](CUIButton* pThis) {
@@ -250,7 +250,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 		{
 			CUIImage::UIImageDesc selectImage{};
-			selectImage.textureComLevel = ETOI(LEVEL::STATIC);
+			selectImage.textureComLevel = ETOI(ELevel::STATIC);
 			selectImage.textureProtoName = L"Prototype_Component_Texture_Select";
 			selectImage.pxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
 			selectImage.useNineSlice = true;
@@ -260,11 +260,11 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			Select->Set_Zorder(4);
 			wstring NameTag1 = L"select_" + to_wstring(i);
 			/*BoatOP->*/underBar->Add_Child(Select, NameTag1, false);
-			m_Select_boat[i] = Select;
+			m_selectBoat[i] = Select;
 
 
 			CUIImage::UIImageDesc iconImage{};
-			iconImage.textureComLevel = ETOI(LEVEL::STATIC);
+			iconImage.textureComLevel = ETOI(ELevel::STATIC);
 			iconImage.textureProtoName = tex;
 			shared_ptr<CUIImage> icon = CUIImage::Create(m_device, m_context);
 			icon->Initialize(&iconImage);
@@ -277,7 +277,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 
 	CUIImage::UIImageDesc Title_desc{};
-	Title_desc.textureComLevel = ETOI(LEVEL::STATIC);
+	Title_desc.textureComLevel = ETOI(ELevel::STATIC);
 	Title_desc.textureProtoName = L"Prototype_Component_Texture_TitleBackground";
 	shared_ptr<CUIImage> Title = CUIImage::Create(m_device, m_context);
 	Title->Initialize(&Title_desc);

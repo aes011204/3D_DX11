@@ -34,7 +34,7 @@ HRESULT CBackGround::Initialize(void* pArg)
 
 
 	/* 백그라운드의 멤버를 채워넣어야한다면 여기서 채운다. */
-	BACKGROUND_DESC			Desc{};
+	BackGroundDesc			Desc{};
 
 	Desc.degreePerSec = 90.f;
 	Desc.speedPerSec = 1.f;
@@ -107,11 +107,11 @@ void CBackGround::OnGui()
 
 HRESULT CBackGround::Ready_Components()
 {
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"),&m_VIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"),&m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"),&m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"),&m_shaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::LOGO), TEXT("Prototype_Component_Texture_BackGround"), TEXT("Com_Texture"),& m_textureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::LOGO), TEXT("Prototype_Component_Texture_BackGround"), TEXT("Com_Texture"),& m_textureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;

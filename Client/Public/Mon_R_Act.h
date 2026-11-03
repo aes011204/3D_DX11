@@ -13,7 +13,7 @@ class CMon_R_Act :
     public CGameObject
 {
 public:
-    enum STATE { ATTACK, IDLE, RELEASE, END };
+    enum EState { ATTACK, IDLE, RELEASE, END };
 
 private:
     CMon_R_Act(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
@@ -42,7 +42,7 @@ protected:
     HRESULT Ready_Components();
 
     // 손에 콜라이더
-    const _float4x4* m_pSocketMatrix = { nullptr };
+    const _float4x4* m_socketMatrix = { nullptr };
 
 
     XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
@@ -52,23 +52,23 @@ protected:
 
 private:
 
-    float m_TurnSpeed = {};
-    _bool m_IsColl = { false };
+    float m_turnSpeed = {};
+    _bool m_isColl = { false };
 
-    _uint m_AnimIndex = {};
-    STATE m_State = {};
+    _uint m_animIndex = {};
+    EState m_state = {};
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr };
+    shared_ptr<CModel> m_modelCom = { nullptr };
     shared_ptr<CTexture> m_textureCom = { nullptr };
     //shared_ptr<CCollider> m_pColliderCom = { nullptr };
 
-    shared_ptr<CCollider> m_Collider = { nullptr };
+    shared_ptr<CCollider> m_collider = { nullptr };
   
 
-    _vector m_pCurRot = {};
-    weak_ptr<CGameObject> m_pPlayer = {  };
+    _vector m_curRot = {};
+    weak_ptr<CGameObject> m_player = {  };
 public:
 
     static shared_ptr<CMon_R_Act> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

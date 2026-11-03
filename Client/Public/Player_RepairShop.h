@@ -36,7 +36,7 @@ public:
 private:
     EPlayerState eNextState = EPlayerState::REPAIR_SHOP;
 
-    ItemInst m_ItemIdInst = {};
+    ItemInst m_itemIdInst = {};
 private:
     virtual void Free();
 

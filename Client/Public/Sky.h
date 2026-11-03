@@ -12,10 +12,10 @@ class CSky :
     public CGameObject
 {
 public:
-	typedef struct tagTerrainDesc final : public CGameObject::GameObjectDesc
+	typedef struct tagSkyDesc final : public CGameObject::GameObjectDesc
 	{
 
-	}TERRAIN_DESC;
+	}SkyDesc;
 private:
 	CSky(ComPtr<ID3D11Device> pDevice, ComPtr< ID3D11DeviceContext> pContext);
 	CSky(const CSky& Prototype);
@@ -30,13 +30,13 @@ public:
 	virtual HRESULT Render() override;
 
 protected:
-	float m_Acc = {};
+	float m_acc = {};
 
 	shared_ptr<CShader> m_shaderCom = { nullptr };
 	shared_ptr<CVIBuffer> m_VIBufferCom = { nullptr };
 	shared_ptr<CTexture> m_textureCom = { nullptr };
-	shared_ptr<CTexture> m_pTextureNoiseCom = { nullptr };
-	shared_ptr<CTexture> m_pTextureDistiortionCom = { nullptr };
+	shared_ptr<CTexture> m_textureNoiseCom = { nullptr };
+	shared_ptr<CTexture> m_textureDistortionCom = { nullptr };
 protected:
 
 	HRESULT Ready_Components();

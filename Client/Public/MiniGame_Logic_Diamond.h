@@ -16,7 +16,7 @@ NS_BEGIN(Client)
 {
 public:
 	
-	struct MINIGAEMELOGIC_DIAMOND_DESC :public CMiniGame::MINIGAEME_L_DESC
+	struct MiniGameLogicDiamondDesc :public CMiniGame::MiniGameDesc
 	{
 		//_float Speed = {};
 	};
@@ -36,7 +36,7 @@ public:
 	
 	virtual float GetAngle() const override { return m_angle; }
 
-	float GetSize() const override{return m_Size;}
+	float GetSize() const override{return m_size;}
 
 
 	//bool IsStart() const { return m_bStart; }
@@ -50,22 +50,22 @@ public:
 
 	
 	
-	float m_AccTime = { 0 };
-	float m_Speed = {};
-	_bool m_bStart = { false };
+	float m_accTime = { 0 };
+	float m_speed = {};
+	_bool m_isStart = { false };
 
-	float m_Size = {0};
+	float m_size = {0};
 
 	float m_angle = {};
 
 	///
 	bool m_changeColor = { false };
-	float m_AccTime2 = { 0 };
+	float m_accTime2 = { 0 };
 	float colortime = { 0 };
 
 
 
-	_bool m_bFin = { false };
+	_bool m_isFinished = { false };
 
 
 private:

@@ -20,10 +20,10 @@ HRESULT CLevel_Editor::Initialize()
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtCloneProto>([this](const EvtCloneProto& e)
 		{
-			if (CGameInstance::GetInstance()->Get_Current_LevelIdx() == ETOI(LEVEL::EDITOR)) 
+			if (CGameInstance::GetInstance()->Get_Current_LevelIdx() == ETOI(ELevel::EDITOR)) 
 			{
 				m_gameInstance.lock()->Add_GameObject(e.level, e.tag,
-					ETOI(LEVEL::EDITOR), L"GameObject",nullptr);
+					ETOI(ELevel::EDITOR), L"GameObject",nullptr);
 			}
 		});
 
@@ -46,7 +46,7 @@ void CLevel_Editor::Update(_float fTimeDelta)
 {
 	if (GetKeyState(VK_NUMPAD1) & 0x8000)
 	{
-		if (FAILED(m_gameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_device, m_context, LEVEL::LOGO))))
+		if (FAILED(m_gameInstance.lock()->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, ELevel::LOGO))))
 			return;
 	}
 	int a = 10;
@@ -79,8 +79,8 @@ HRESULT CLevel_Editor::Ready_Lights()
 
 HRESULT CLevel_Editor::Ready_Layer_BackGround(const _wstring& strLayerTag)
 {
-	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
-		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
+		ETOI(ELevel::GAMEPLAY), strLayerTag)))
 		return E_FAIL;
 
 	return S_OK;
@@ -120,12 +120,12 @@ HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& strLayerTag)
 	FRCamDesc.degreePerSec = 180.f;
 	FRCamDesc.mouseSensor = 0.01f;
 
-	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
-		ETOI(LEVEL::STATIC), strLayerTag, &FRCamDesc));
+	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
+		ETOI(ELevel::STATIC), strLayerTag, &FRCamDesc));
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
-	m_gameInstance.lock()->Add_Camera(ETOI(LEVEL::STATIC), L"FREE_CAM", freeCamera);
+	m_gameInstance.lock()->Add_Camera(ETOI(ELevel::STATIC), L"FREE_CAM", freeCamera);
 
 
 

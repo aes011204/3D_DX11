@@ -29,7 +29,7 @@ void CPlayer_MiniGame::Enter()
 	XMStoreFloat3(&pLerp->vTargetPos, m_ownerTransformCom.lock()->Get_Position()
 		- XMVector3Normalize(forward) * 3.f   // 살짝 뒤로
 		+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // 위);
-	pLerp->m_Target = m_Owner;
+	pLerp->target = m_owner;
 	pLerp->fDuration = 1.5f;
 	pLerp->OnComplete = [this]() {
 		Evt_CamArrived e = {};
@@ -64,9 +64,9 @@ void CPlayer_MiniGame::Exit()
 	auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
 	ui->UI_InActive();*/
 
-	if(m_pStateMachine.lock()->Get_TargetShared() != nullptr)
+	if(m_stateMachine.lock()->Get_TargetShared() != nullptr)
 	{
-		auto fish = dynamic_pointer_cast<CFish>(m_pStateMachine.lock()->Get_TargetShared());
+		auto fish = dynamic_pointer_cast<CFish>(m_stateMachine.lock()->Get_TargetShared());
 		if(fish->GetCurFishCount() == 0)
 		{
 			fish->Mark_Destroy();
@@ -92,7 +92,7 @@ HRESULT CPlayer_MiniGame::Init_State()
 int CPlayer_MiniGame::Update_State(const _float& timeDelta)
 {
 	
-	if(m_Input_Manager->KeyDown(DIK_X))
+	if(m_inputManager->KeyDown(DIK_X))
 	{
 	return ETOI(EPlayerState::SEA);
 	}

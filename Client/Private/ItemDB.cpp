@@ -162,7 +162,7 @@ HRESULT CItemDB::Load_ItemData(const string& fileName)
 
 		// 일단 이러면 복사된 택스쳐의 얕은 복사인데 일단 문제는 없을듯 문제 생기면 수정
 		itemDef.texture = dynamic_pointer_cast<CTexture>(m_gameInstance.lock()->
-			Clone_Prototype(EPrototype::COMPONENT, ETOI(LEVEL::STATIC), S2W(itemDef.texturePath)));
+			Clone_Prototype(EPrototype::COMPONENT, ETOI(ELevel::STATIC), S2W(itemDef.texturePath)));
 
 
 
@@ -217,7 +217,7 @@ void CItemDB::Parse_Fish_Def(FishDef& fishDef, const nlohmann::json& node)
 
 
 			fishDef.vecMutation[i].texture = dynamic_pointer_cast<CTexture>(m_gameInstance.lock()->
-				Clone_Prototype(EPrototype::COMPONENT, ETOI(LEVEL::STATIC), S2W(fishDef.vecMutation[i].mutTexturePath)));
+				Clone_Prototype(EPrototype::COMPONENT, ETOI(ELevel::STATIC), S2W(fishDef.vecMutation[i].mutTexturePath)));
 
 		}
 	}
@@ -299,9 +299,9 @@ void CItemDB::Parse_Equip_Def(EquipDef& equipDef, const nlohmann::json& node)
 	}
 }
 
-SEA_MASK CItemDB::BitFlag_SeaType(const nlohmann::json& node, const string str)
+SeaMask CItemDB::BitFlag_SeaType(const nlohmann::json& node, const string str)
 {
-	SEA_MASK mask = 0;
+	SeaMask mask = 0;
 	if (!node.contains(str) || !node.at(str).is_array())
 		return mask;
 	for (const auto& v : node.at(str)) //.get<_string>() 이건 안됨 배열로 저장 되어 있는거라

@@ -24,10 +24,10 @@ HRESULT CWaterEff::Initialize_Prototype()
 HRESULT CWaterEff::Initialize(void* pArg)
 {
 
-	EffDESC* pDesc = static_cast<EffDESC*>(pArg);
+	EffDesc* pDesc = static_cast<EffDesc*>(pArg);
 
 	eType = pDesc->type;
-	m_pPlayer = pDesc->Target;
+	m_player = pDesc->Target;
 
 	if (FAILED(__super::Initialize(pArg)))
 		return E_FAIL;
@@ -40,7 +40,7 @@ HRESULT CWaterEff::Initialize(void* pArg)
 	//m_pSocketMatrix_AttackPoint = m_pModelCom->Get_BoneMatrixPtr(/*"l_botclaw_jnt"*/);
 	//m_pTransformCom->Set_Position(XMVectorSet(50.f, 2.f, 1.f, 1.f));
 
-	_vector vPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
+	_vector vPos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
 	//m_pTransformCom->Set_Position(vPos);
 	_float3 pos3;
 	XMStoreFloat3(&pos3, vPos);
@@ -57,7 +57,7 @@ void CWaterEff::Priority_Update(_float fTimeDelta)
 
 void CWaterEff::Update(_float fTimeDelta)
 {
-	if (!m_pPlayer.lock())
+	if (!m_player.lock())
 	{
 		m_VIBufferCom->Stop();
 		m_VIBufferCom->Spawn(fTimeDelta);
@@ -68,7 +68,7 @@ void CWaterEff::Update(_float fTimeDelta)
 		return;
 	}
 
-	_vector vPos = m_pPlayer.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
+	_vector vPos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
 	//m_pTransformCom->Set_Position(vPos);
 	_float3 pos3;
 	XMStoreFloat3(&pos3, vPos);
@@ -183,13 +183,13 @@ HRESULT CWaterEff::Ready_Components()
 {
 
 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_WaterEff"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_WaterEff"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
 		return E_FAIL;
 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_WaterEff"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_WaterEff"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
 
 

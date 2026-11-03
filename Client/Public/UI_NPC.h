@@ -16,7 +16,7 @@ NS_BEGIN(Client)
     public CUIPanel
 {
 public:
-    struct NPC_DESC : public CUIPanel::UIPanelDesc
+    struct NpcDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:
@@ -41,23 +41,23 @@ public:
 
     void ChangeToSpeech();
 public:
-    shared_ptr<CUIImage> m_Dialogue = { nullptr };
-    shared_ptr<CUIImage> m_NpcImg = { nullptr };
-    shared_ptr<CUIImage> m_NameBase = { nullptr };
-    shared_ptr<CUIImage> m_BackImg = { nullptr };
-    shared_ptr<CUIText> m_Name_Text = { nullptr };
-    shared_ptr<CUIText> m_Dialogue_Text = { nullptr };
+    shared_ptr<CUIImage> m_dialogue = { nullptr };
+    shared_ptr<CUIImage> m_npcImg = { nullptr };
+    shared_ptr<CUIImage> m_nameBase = { nullptr };
+    shared_ptr<CUIImage> m_backImg = { nullptr };
+    shared_ptr<CUIText> m_nameText = { nullptr };
+    shared_ptr<CUIText> m_dialogueText = { nullptr };
 
-    shared_ptr<CUIButton>m_Rightchoice = { nullptr };
-    shared_ptr<CUIButton>m_Leftchoice = { nullptr };
-    shared_ptr<CUIText> m_Up_Text = { nullptr };
-    shared_ptr<CUIText> m_Down_Text = { nullptr };
+    shared_ptr<CUIButton>m_rightChoice = { nullptr };
+    shared_ptr<CUIButton>m_leftChoice = { nullptr };
+    shared_ptr<CUIText> m_upText = { nullptr };
+    shared_ptr<CUIText> m_downText = { nullptr };
 private:
-    shared_ptr<Dialogue> m_CashingDialogue = { nullptr };
-    _uint m_CurIndex = { 0 };
-    _bool m_bFIn = false;
+    shared_ptr<Dialogue> m_cachedDialogue = { nullptr };
+    _uint m_curIndex = { 0 };
+    _bool m_isFinished = false;
 
-    list<string> m_DialogueList;
+    list<string> m_dialogueList;
 
 public:
     static shared_ptr<CUI_NPC> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);

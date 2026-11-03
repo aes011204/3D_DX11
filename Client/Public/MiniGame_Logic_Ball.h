@@ -15,7 +15,7 @@ NS_BEGIN(Client)
 {
 public:
 	
-	struct MINIGAEMELOGIC_BALL_DESC 
+	struct MiniGameLogicBallDesc 
 	{
 		_uint CallNum = {};
 			_float2 Speed = {};
@@ -38,7 +38,7 @@ public:
 	void ResetZoon();
 
 
-	_uint GetFishCount() const{return m_FishCount;}
+	_uint GetFishCount() const{return m_fishCount;}
 	float GetProgress01() const { return m_prograssBar01; }
 
 	float GetAngle() const { return m_angle; }
@@ -48,37 +48,37 @@ public:
 	int GetZoneCount() const { return m_zoneCount; }
 
 
-	bool IsStart() const { return m_bStart; }
-	bool IsFinish() const { return m_bFin; }
+	bool IsStart() const { return m_isStart; }
+	bool IsFinish() const { return m_isFinished; }
 
-	_uint Get_DefID() { return m_DefID; };
+	_uint Get_DefID() { return m_defId; };
 
 	void OnInput();
 
 	EInputResult ConsumeInputResult() {
-		EInputResult result = m_LastInputResult;
-		m_LastInputResult = EInputResult::NONE;
+		EInputResult result = m_lastInputResult;
+		m_lastInputResult = EInputResult::NONE;
 		return result;
 	}
-	EMiniGameType Get_MiniGameType() { return m_MiniGameType; }
+	EMiniGameType Get_MiniGameType() { return m_miniGameType; }
 public:
 
-	EInputResult m_LastInputResult = EInputResult::NONE;
+	EInputResult m_lastInputResult = EInputResult::NONE;
 
 	Zone m_zones[8];
 	int m_zoneCount;
-	float m_AccTime = { 0 };
+	float m_accTime = { 0 };
 	float m_angle = { 0 };
-	float m_Speed = {};
-	_bool m_bStart = { false };
+	float m_speed = {};
+	_bool m_isStart = { false };
 
 	float m_zoneSize = {};
 
-	_float2 m_InitZoonSize = {};
+	_float2 m_initZoneSize = {};
 
 	///
 	bool m_changeColor = { false };
-	float m_AccTime2 = { 0 };
+	float m_accTime2 = { 0 };
 	float colortime = { 0 };
 
 	///
@@ -87,7 +87,7 @@ public:
 
 
 
-	_bool m_bFin = { false };
+	_bool m_isFinished = { false };
 
 	
 private:

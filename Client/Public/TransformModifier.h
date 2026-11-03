@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 
 #include "IModifier.h"
 #include "Client_Define.h"
@@ -14,25 +14,25 @@ public:
 	virtual ~CTransformModifier();
 
 
-	// IModifier¿ª(∏¶) ≈Î«ÿ ªÛº”µ 
+	// IModifierÏùÑ(Î•º) ÌÜµÌï¥ ÏÉÅÏÜçÎê®
 	void Tick(float fDeltaTime, CUI* pOwner) override;
 
 	void OnAppear(float fDeltaTime, CUI* pOwner) override;
 
 	void OnDisappear(float fDeltaTime, CUI* pOwner) override;
 
-	virtual bool IsFinished() { return m_bFinish; };
+	virtual bool IsFinished() { return m_isFinish; };
 
 private:
-	CUITransform* m_pOwnerTransform = { nullptr };
+	CUITransform* m_ownerTransform = { nullptr };
 	_float2 m_startPos = {};
 	_float2 m_endPos = {};
 	_float m_speed = {};
 
-	_float m_AccTime = {};
-	_float m_Duration={};
+	_float m_accTime = {};
+	_float m_duration={};
 
-	_bool m_bFinish = false;
+	_bool m_isFinish = false;
 };
 
 NS_END

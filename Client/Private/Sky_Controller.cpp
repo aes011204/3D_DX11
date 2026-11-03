@@ -61,7 +61,7 @@ void CSky_Controller::Update(float TimeDelta)
 	dir.y = -sin(angle);
 	dir.z = sin(angle );
 	dir.w = 0.f;
-	XMStoreFloat4( &m_Direction , XMVector4Normalize(XMLoadFloat4(&dir)));
+	XMStoreFloat4( &m_direction , XMVector4Normalize(XMLoadFloat4(&dir)));
 
 
 	//
@@ -88,36 +88,36 @@ void CSky_Controller::Update(float TimeDelta)
 	//
 	skyColor = Lerp3(skyColor, Night, smooth(NightT2.x, NightT2.y, t));
 
-	m_SkyColor = skyColor ;
+	m_skyColor = skyColor ;
 
 	_float3 sunColor = Lerp3(_float3(1, 1, 1), skyColor, 0.5f);
 	//_float3 ambient = skyColor * 0.25f;
 
 	//m_Ambient = _float4{ ambient.x,ambient.y,ambient.z,1.f };
-	m_Diffuse = _float4{ sunColor.x,sunColor.y,sunColor.z,1.f };
+	m_diffuse = _float4{ sunColor.x,sunColor.y,sunColor.z,1.f };
 
 	LightDesc light = {};
-	light.direction = m_Direction;
-	light.diffuse = m_Diffuse;
-	light.ambient = m_Ambient;
-	light.specular = m_Specular;
+	light.direction = m_direction;
+	light.diffuse = m_diffuse;
+	light.ambient = m_ambient;
+	light.specular = m_specular;
 	pGameInstance->Set_LightDesc(0, light);
 
 
-	pGameInstance->Set_SkyColor(m_SkyColor);
+	pGameInstance->Set_SkyColor(m_skyColor);
 
 }
 
 
 void CSky_Controller::OnGui()
 {
-	ImGui::ColorEdit3("Diffuse", (float*)&m_Diffuse);
-	ImGui::ColorEdit3("Ambient", (float*)&m_Ambient);
-	ImGui::ColorEdit3("Specular", (float*)&m_Specular);
+	ImGui::ColorEdit3("Diffuse", (float*)&m_diffuse);
+	ImGui::ColorEdit3("Ambient", (float*)&m_ambient);
+	ImGui::ColorEdit3("Specular", (float*)&m_specular);
 
-	ImGui::DragFloat3("Direction", (float*)&m_Direction, 0.01f, -1.f, 1.f);
-	XMVECTOR dir = XMVector3Normalize(XMLoadFloat4(&m_Direction));
-	XMStoreFloat4(&m_Direction, dir);
+	ImGui::DragFloat3("Direction", (float*)&m_direction, 0.01f, -1.f, 1.f);
+	XMVECTOR dir = XMVector3Normalize(XMLoadFloat4(&m_direction));
+	XMStoreFloat4(&m_direction, dir);
 }
 
 void CSky_Controller::Free()

@@ -13,8 +13,8 @@ NS_BEGIN(Client)
     public CUIPanel
 {
 public:
-    enum VIllAGE_LOCATION {FISH, REPAIR, STORAGE,BOAT,END};
-    struct MAINMENU_DESC : public CUIPanel::UIPanelDesc
+    enum EVillageLocation {FISH, REPAIR, STORAGE,BOAT,END};
+    struct VillageDesc : public CUIPanel::UIPanelDesc
     {
        /* _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";*/
@@ -43,8 +43,8 @@ public:
     virtual void UI_Active()override;
 
 public:
-    shared_ptr<CUIImage> m_Select[3];
-    shared_ptr<CUIImage> m_Select_boat[3];
+    shared_ptr<CUIImage> m_select[3];
+    shared_ptr<CUIImage> m_selectBoat[3];
 private:
 
 public:

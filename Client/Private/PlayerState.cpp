@@ -4,7 +4,7 @@
 #include "Camera_Play.h"
 
 CPlayerState::CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
-	: m_Owner(owner), m_pStateMachine(pStateMachine), m_gameInstance(CGameInstance::GetInstance())
+	: m_owner(owner), m_stateMachine(pStateMachine), m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -24,7 +24,7 @@ void CPlayerState::Exit()
 {
 	CState::Exit();
 
-	m_VecDialogue.clear();
+	m_vecDialogue.clear();
 
 }
 
@@ -37,12 +37,12 @@ HRESULT CPlayerState::Init_State()
 void CPlayerState::Find_Player()
 {
 
-	auto transform =dynamic_pointer_cast<CTransform>( m_Owner.lock()->Get_Component(g_strTransformTag));
+	auto transform =dynamic_pointer_cast<CTransform>( m_owner.lock()->Get_Component(g_strTransformTag));
 	if (transform == nullptr)
 		MSG_BOX("failed to Get Com in StateMachine");
 	m_ownerTransformCom = transform;
 
-	m_Input_Manager = CGameInstance::GetInstance()->Get_DInput_Manger();
+	m_inputManager = CGameInstance::GetInstance()->Get_DInput_Manger();
 
 
 }

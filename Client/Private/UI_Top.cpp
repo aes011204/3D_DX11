@@ -21,7 +21,7 @@ HRESULT CUI_Top::OnInit(void* pArg)
 
 	{
 		CUIImage::UIImageDesc Time_BaseDesc = {};
-		Time_BaseDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		Time_BaseDesc.textureComLevel = ETOI(ELevel::STATIC);
 		Time_BaseDesc.textureProtoName = L"Prototype_Component_Texture_HorizontalUITray";
 		shared_ptr<CUIImage> Time_Base = CUIImage::Create(m_device, m_context);
 		Time_Base->Initialize(&Time_BaseDesc);
@@ -34,7 +34,7 @@ HRESULT CUI_Top::OnInit(void* pArg)
 			shared_ptr<CUIText> Text_Day = CUIText::Create(m_device, m_context);
 			Text_Day->Initialize(&textDay_Desc);
 			Time_Base->Add_Child(Text_Day, L"Text_Day", false);
-			m_DayText = Text_Day;
+			m_dayText = Text_Day;
 
 
 			CUIText::TextDesc textTime_Desc = {};
@@ -43,20 +43,20 @@ HRESULT CUI_Top::OnInit(void* pArg)
 			shared_ptr<CUIText> Text_Time = CUIText::Create(m_device, m_context);
 			Text_Time->Initialize(&textTime_Desc);
 			Time_Base->Add_Child(Text_Time, L"Text_Time", false);
-			m_TimeText = Text_Time;
+			m_timeText = Text_Time;
 
 		}
 
 		CUIImage::UIImageDesc TimeWheelDesc = {};
-		TimeWheelDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		TimeWheelDesc.textureComLevel = ETOI(ELevel::STATIC);
 		TimeWheelDesc.textureProtoName = L"Prototype_Component_Texture_TimeOfDayWheel";
 		shared_ptr<CUIImage> Time_Wheel = CUIImage::Create(m_device, m_context);
 		Time_Wheel->Initialize(&TimeWheelDesc);
 		Add_Child(Time_Wheel, L"Time_Wheel", false);
-		m_DayCircle = Time_Wheel;
+		m_dayCircle = Time_Wheel;
 
 		CUIImage::UIImageDesc TimePointerDesc = {};
-		TimePointerDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		TimePointerDesc.textureComLevel = ETOI(ELevel::STATIC);
 		TimePointerDesc.textureProtoName = L"Prototype_Component_Texture_TimeOfDayPointer";
 		shared_ptr<CUIImage> TimePointer = CUIImage::Create(m_device, m_context);
 		TimePointer->Initialize(&TimePointerDesc);
@@ -67,7 +67,7 @@ HRESULT CUI_Top::OnInit(void* pArg)
 
 	{
 		CUIImage::UIImageDesc CompassDesc = {};
-		CompassDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		CompassDesc.textureComLevel = ETOI(ELevel::STATIC);
 		CompassDesc.textureProtoName = L"Prototype_Component_Texture_Compass";
 		shared_ptr<CUIImage> Compass = CUIImage::Create(m_device, m_context);
 		Compass->Initialize(&CompassDesc);
@@ -75,7 +75,7 @@ HRESULT CUI_Top::OnInit(void* pArg)
 
 
 		CUIImage::UIImageDesc CompassRingDesc = {};
-		CompassRingDesc.textureComLevel = ETOI(LEVEL::STATIC);
+		CompassRingDesc.textureComLevel = ETOI(ELevel::STATIC);
 		CompassRingDesc.textureProtoName = L"Prototype_Component_Texture_CompassRing";
 		shared_ptr<CUIImage> CompassRing = CUIImage::Create(m_device, m_context);
 		CompassRing->Initialize(&CompassRingDesc);
@@ -112,7 +112,7 @@ void CUI_Top::OnUpdate(const _float& timeDelta)
 	if (fMinute != preMin)
 	{
 
-		m_TimeText->Set_Text(format(L"{:02.0f}:{:02.0f}", fHour, fMinute));
+		m_timeText->Set_Text(format(L"{:02.0f}:{:02.0f}", fHour, fMinute));
 
 	}
 	if (preDay != iDay)
@@ -145,7 +145,7 @@ void CUI_Top::OnUpdate(const _float& timeDelta)
 		default:
 			break;
 		}
-		m_DayText->Set_Text(format(L"{}, {}일 차", strDay, iDay));
+		m_dayText->Set_Text(format(L"{}, {}일 차", strDay, iDay));
 	}
 
 	preDay = iDay;
@@ -153,7 +153,7 @@ void CUI_Top::OnUpdate(const _float& timeDelta)
 
 
 	float circel = m_gameInstance.lock()->Get_TOD01() * -360.f;
-	m_DayCircle->GetUITransform()->SetRotation(circel);
+	m_dayCircle->GetUITransform()->SetRotation(circel);
 
 
 	__super::OnUpdate(timeDelta);

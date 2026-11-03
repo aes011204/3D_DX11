@@ -32,16 +32,16 @@ protected:
     HRESULT Ready_Components();
 private:
 
-    float m_ColorLamp1={};
-    float m_ColorLamp2={};
+    float m_colorLamp1={};
+    float m_colorLamp2={};
 
-    _float4 m_SandColor={};
-    _float4 m_RockColor={};
-    _float4 m_GrassColor={};
+    _float4 m_sandColor={};
+    _float4 m_rockColor={};
+    _float4 m_grassColor={};
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr };
+    shared_ptr<CModel> m_modelCom = { nullptr };
     shared_ptr<CTexture> m_textureCom = { nullptr };
 
 public:
