@@ -1,4 +1,4 @@
-#include "Body_Player.h"
+ï»¿#include "Body_Player.h"
 #include "Model.h"
 #include "../../Engine/Public/EventBus.h"
 
@@ -31,7 +31,7 @@ HRESULT CBody_Player::Initialize(void* pArg)
 	//m_pModelCom->Set_Animation(0,true)
 
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_Boat_Light>([this](const Evt_Boat_Light& e)
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_BoatLight>([this](const Evt_BoatLight& e)
 	{
 			if (e.Light == true) emissivePower = 1;
 			else  emissivePower = 0;
@@ -142,10 +142,10 @@ const _float4x4* CBody_Player::Get_SocketBoneMatrix(const _char* pBoneName)
 
 HRESULT CBody_Player::Ready_Components()
 {
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
+	// ì‰ì´ë”ëŠ” í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ì„
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨ 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_PlayerBoat"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))

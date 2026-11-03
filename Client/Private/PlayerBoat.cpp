@@ -1,4 +1,4 @@
-
+﻿
 #include "PlayerBoat.h"
 #include "Collider.h"
 
@@ -12,14 +12,14 @@
 #include "PlayerStateMachine.h"
 #include "Sea_Manager.h"
 
-CPlayerBoat::CPlayerBoat(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CContainerObject{ pDevice ,pContext }, m_pSea_Manager(CSea_Manager::GetInstance())
+CPlayerBoat::CPlayerBoat(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CContainerObject{ device ,context }, m_seaManager(CSea_Manager::GetInstance())
 
 {
 }
 
 CPlayerBoat::CPlayerBoat(const CPlayerBoat& prototype)
-	: CContainerObject{ prototype }, m_pSea_Manager(CSea_Manager::GetInstance())
+	: CContainerObject{ prototype }, m_seaManager(CSea_Manager::GetInstance())
 
 {
 }
@@ -29,15 +29,15 @@ HRESULT CPlayerBoat::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CPlayerBoat::Initialize(void* pArg)
+HRESULT CPlayerBoat::Initialize(void* arg)
 {
 	//m_pSea_Manager = CSea_Manager::GetInstance();
 
-	PLAYERBOAT_DESC pDesc = {};
-	pDesc.fSpeedPerSec = 10.f;
-	pDesc.fDegreePerSec = 40.f;
+	PlayerBoatDesc desc = {};
+	desc.fSpeedPerSec = 10.f;
+	desc.fDegreePerSec = 40.f;
 
-	if (FAILED(__super::Initialize(&pDesc)))
+	if (FAILED(__super::Initialize(&desc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -51,32 +51,32 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 		return E_FAIL;
 
 	{
-		Evt_InvenPlayerInit_Data e = {};
-		e.Inven_ptr = m_pInvenCom;
+		Evt_InvenPlayerInitData e = {};
+		e.invenPtr = m_invenCom;
 
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenPlayerInit_Data>(e);
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenPlayerInitData>(e);
 	}
 
 	{
-		Evt_InvenStrageInit_Data e = {};
-		e.Inven_ptr = m_pStorageCom;
-		e.inventype = m_pStorageCom->Get_Inventype();
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
+		Evt_InvenStorageInitData e = {};
+		e.invenPtr = m_storageCom;
+		e.invenType = m_storageCom->Get_Inventype();
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStorageInitData>(e);
 	}
 
-	LIGHT_DESC LightDesc = {};
+	LIGHT_DESC lightDesc = {};
 
-	LightDesc.eType = LIGHT::POINT;
-	LightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
-	LightDesc.fRange = 3.f;
-	LightDesc.vDiffuse = _float4(1.0f, 0.8f, 0.5f, 1.f);
-	LightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	lightDesc.eType = LIGHT::POINT;
+	lightDesc.vPosition = _float4(0.f, 0.f, 0.f, 1.f);
+	lightDesc.fRange = 3.f;
+	lightDesc.vDiffuse = _float4(1.0f, 0.8f, 0.5f, 1.f);
+	lightDesc.vAmbient = _float4(0.f, 0.f, 0.f, 1.f);
+	lightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	m_LightObj = (m_pGameInstance.lock()->Add_Light(LightDesc));
-	if (m_LightObj == nullptr)
+	m_lightObj = (m_pGameInstance.lock()->Add_Light(lightDesc));
+	if (m_lightObj == nullptr)
 		return E_FAIL;
-	m_LightObj->Set_Active(false);
+	m_lightObj->Set_Active(false);
 
 	_float3 pos = _float3(1.987f, 0.f, -0.189f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
@@ -87,33 +87,33 @@ HRESULT CPlayerBoat::Initialize(void* pArg)
 
 
 
-	m_pPlayerStateMachine = CPlayerStateMachine::Create(dynamic_pointer_cast<CPlayerBoat>(shared_from_this()));
+	m_playerStateMachine = CPlayerStateMachine::Create(dynamic_pointer_cast<CPlayerBoat>(shared_from_this()));
 
 
 
 	return S_OK;
 }
 
-void CPlayerBoat::Priority_Update(_float fTimeDelta)
+void CPlayerBoat::Priority_Update(_float timeDelta)
 {
-	__super::Priority_Update(fTimeDelta);
+	__super::Priority_Update(timeDelta);
 }
 
-void CPlayerBoat::Update(_float fTimeDelta)
+void CPlayerBoat::Update(_float timeDelta)
 {
-	m_pPlayerStateMachine->Update_StateMachine(fTimeDelta);
+	m_playerStateMachine->Update_StateMachine(timeDelta);
 
-	if (m_fInvincibleTime > 0.f)
-		m_fInvincibleTime -= fTimeDelta;
+	if (m_invincibleTime > 0.f)
+		m_invincibleTime -= timeDelta;
 
-	if (m_fInputBlockTime > 0.f)
-		m_fInputBlockTime -= fTimeDelta;
+	if (m_inputBlockTime > 0.f)
+		m_inputBlockTime -= timeDelta;
 
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
 	//?뚯뒪??
 	if (dinput->KeyPress(DIK_0))
 	{
-		Add_Money(m_Money++);
+		Add_Money(m_money++);
 	}
 
 	//m_pTransformCom->Get_WorldMatrix();
@@ -131,17 +131,17 @@ void CPlayerBoat::Update(_float fTimeDelta)
 	//	Location_Sea(fTimeDelta, dinput);
 	//	break;
 	//}
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	m_colliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
 	
-	__super::Update(fTimeDelta);
+	__super::Update(timeDelta);
 	//m_pModelCom->Play_Animation(fTimeDelta);
 }
 
-void CPlayerBoat::Late_Update(_float fTimeDelta)
+void CPlayerBoat::Late_Update(_float timeDelta)
 {
-	__super::Late_Update(fTimeDelta);
-	m_pPlayerStateMachine->LateUpdate_StateMachine(fTimeDelta);
+	__super::Late_Update(timeDelta);
+	m_playerStateMachine->LateUpdate_StateMachine(timeDelta);
 
 
 	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CPlayerBoat>(shared_from_this()));
@@ -188,9 +188,9 @@ HRESULT CPlayerBoat::Ready_Components()
 
 	
 
-	CInventory::INVEN_DESC inven_desc = {};
-	inven_desc.invenType = INVENTYPE::PLAYER;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Inven"), &m_pInvenCom, &inven_desc)))
+	CInventory::InvenDesc invenDesc = {};
+	invenDesc.invenType = INVENTYPE::PLAYER;
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Inven"), &m_invenCom, &invenDesc)))
 		return E_FAIL;
 
 
@@ -198,21 +198,21 @@ HRESULT CPlayerBoat::Ready_Components()
 
 
 
-	CInventory::INVEN_DESC storage_desc = {};
-	storage_desc.invenType = INVENTYPE::STORAGE;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pStorageCom, &storage_desc)))
+	CInventory::InvenDesc storageDesc = {};
+	storageDesc.invenType = INVENTYPE::STORAGE;
+	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_storageCom, &storageDesc)))
 		return E_FAIL;
 	
 
-	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
-	OBBDesc.vExtents = _float3(0.5f, 0.6f, 1.5f);
-	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
-	OBBDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	OBBDesc.MyLayer = COLLISION_LAYER::PLAYER;
-	OBBDesc.OtherMask = COLLISION_LAYER::TRIGGER | COLLISION_LAYER::MONSTERATT | COLLISION_LAYER::FISH| COLLISION_LAYER::ITEM;
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
+	CBounding_OBB::BOUNDING_OBB_DESC		obbDesc{};
+	obbDesc.vExtents = _float3(0.5f, 0.6f, 1.5f);
+	obbDesc.vRadians = _float3(0.f, 0.f, 0.f);
+	obbDesc.vCenter = _float3(0.f, 0.f, 0.f);
+	obbDesc.MyLayer = COLLISION_LAYER::PLAYER;
+	obbDesc.OtherMask = COLLISION_LAYER::TRIGGER | COLLISION_LAYER::MONSTERATT | COLLISION_LAYER::FISH| COLLISION_LAYER::ITEM;
+	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_colliderCom, &obbDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+	m_pGameInstance.lock()->Add_Collider(m_colliderCom);
 
 
 
@@ -239,10 +239,10 @@ HRESULT CPlayerBoat::Ready_PartObjects()
 void CPlayerBoat::Add_Money(_float money)
 {
 	{
-		m_Money += money;
+		m_money += money;
 
 		Evt_AddMoney e = {};
-		e.money = m_Money;
+		e.money = m_money;
 		m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 	}
 	m_pGameInstance.lock()->Play_Once(L"Money_Gained");
@@ -251,9 +251,9 @@ void CPlayerBoat::Add_Money(_float money)
 void CPlayerBoat::SetHPFull()
 {
 	{
-        m_Hp = m_MAXHp;
-        Evt_RepairCoat e = {};
-        e.cost = Get_DemageFixPrice();
+        m_hp = m_maxHp;
+        Evt_RepairCost e = {};
+        e.cost = Get_DamageFixPrice();
         m_pGameInstance.lock()->Get_EventBus()->Publish(e);
     };
 	
@@ -261,13 +261,13 @@ void CPlayerBoat::SetHPFull()
 
 bool CPlayerBoat::MinusMoney(int amount)
 {
-	  {    if (m_Money < amount)
+	  {    if (m_money < amount)
 		return false;
 
-	m_Money -= amount;
+	m_money -= amount;
 
 	Evt_AddMoney e = {};
-	e.money = m_Money;
+	e.money = m_money;
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 	  m_pGameInstance.lock()->Play_Once(L"Money_Spent");
@@ -275,41 +275,41 @@ bool CPlayerBoat::MinusMoney(int amount)
 	}
 }
 
-void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask, _float InvenMoney)
+void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SEA_MASK seaMask, _float invenMoney)
 {
 
 
 int i = {};
 
 	Evt_ShipStat e = {};
-	e.EngineSpeed = m_BoatSpeed = boatSpeed;
-	e.FishingSpeed = m_RodSpeed = fishingSpeed;
-	e.LightIntensity = m_Light = light;
-	e.SeaMask = m_SeaMask = seaMask;
+	e.engineSpeed = m_boatSpeed = boatSpeed;
+	e.fishingSpeed = m_rodSpeed = fishingSpeed;
+	e.lightIntensity = m_light = light;
+	e.seaMask = m_seaMask = seaMask;
 
-	e.InvenMoney = m_InvenMoney;
+	e.invenMoney = m_invenMoney;
 
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 
 }
 
-void CPlayerBoat::Get_Demage(_uint Demage)
+void CPlayerBoat::Get_Damage(_uint damage)
 {
-	if (m_fInvincibleTime > 0.f)
+	if (m_invincibleTime > 0.f)
 		return;
 
 	
-	m_fInvincibleTime = 2.f;
+	m_invincibleTime = 2.f;
 	
 
-	m_Hp -= Demage;
+	m_hp -= damage;
 
 	// 梨꾨젰 ?섎굹 以꾧퀬
-	if(m_Hp <= 0)
+	if(m_hp <= 0)
 	{
 	//留뚯씪 梨꾨젰??0 ?대㈃ 二쎌쓬 ?곹깭
 		Dead();
-		m_WasDead = true;
+		m_wasDead = true;
 	}
 
 
@@ -320,58 +320,58 @@ void CPlayerBoat::Get_Demage(_uint Demage)
 
 
 	// 移대찓???먯씠??-> ?곕?吏 以履쎌뿉??
-	Evt_Demage e = {};
-	e.ShakePower = 0.3f;
-	e.ShakeTime = 1.f;
+	Evt_Damage e = {};
+	e.shakePower = 0.3f;
+	e.shakeTime = 1.f;
 	//e.DeAc = 0.1f;
-	e.DemageCount = m_MAXHp - m_Hp;
+	e.damageCount = m_maxHp - m_hp;
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 	// ?몃객 ??移??뚮? ??젣
 
 
-	Evt_RepairCoat e1 = {};
-	e1.cost = Get_DemageFixPrice();
+	Evt_RepairCost e1 = {};
+	e1.cost = Get_DamageFixPrice();
 	m_pGameInstance.lock()->Get_EventBus()->Publish(e1);
 
 }
 
-void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
+void CPlayerBoat::Location_Sea(_float timeDelta, CDInput_Manager* dinput)
 {
 	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
 
 	if (dinput->KeyPress(DIK_W))
 	{
-		m_pTransformCom->Go_Forward(fTimeDelta);
+		m_pTransformCom->Go_Forward(timeDelta);
 	}
 
 	if (dinput->KeyPress(DIK_S))
 	{
-		m_pTransformCom->Go_Backward(fTimeDelta);
+		m_pTransformCom->Go_Backward(timeDelta);
 	}
 
 	if (dinput->KeyPress(DIK_D))
 	{
-		m_pTransformCom->Turn(XMLoadFloat4(&upDir), fTimeDelta);
+		m_pTransformCom->Turn(XMLoadFloat4(&upDir), timeDelta);
 	}
 
 	if (dinput->KeyPress(DIK_A))
 	{
-		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -fTimeDelta);
+		m_pTransformCom->Turn(XMLoadFloat4(&upDir), -timeDelta);
 	}
-	auto Sea = m_pSea_Manager.lock();
+	auto sea = m_seaManager.lock();
 
 	// ?꾩떆肄붾뱶 ///////////////// 3??-> 4?먯쑝濡??섏젙?덉젙 + 肄붾뱶 ?뺣━
 	//
-	_vector CurPos = m_pTransformCom->Get_Position();
+	_vector curPos = m_pTransformCom->Get_Position();
 
 	//以묒젏?쇰줈 y ?꾩튂
 	//{
-	_float fFinalPosY = {};
+	_float finalPosY = {};
 
 	//m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fFinalPosY);
-	_float3 fianlPos = { XMVectorGetX(CurPos), Sea->Get_GlobalY(), XMVectorGetZ(CurPos) };
-	fianlPos.y = Sea->Calculate_GerstnerWavePosition(fianlPos).y;
-	m_pTransformCom->Set_Position(XMLoadFloat3(&fianlPos));
+	_float3 finalPos = { XMVectorGetX(curPos), sea->Get_GlobalY(), XMVectorGetZ(curPos) };
+	finalPos.y = sea->Calculate_GerstnerWavePosition(finalPos).y;
+	m_pTransformCom->Set_Position(XMLoadFloat3(&finalPos));
 	//	
 	//}
 
@@ -379,53 +379,53 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 	// 4???쇰줈 湲곗슱湲?+ 蹂닿컙
 	{
 		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
-		_float3 FRBL[4] = {};
+		_float3 frbl[4] = {};
 		_vector flatLook = XMVectorSetY(m_pTransformCom->Get_State(STATE::LOOK), 0.f);
 		flatLook = XMVector3Normalize(flatLook);
 		const _vector worldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 		_vector flatRight = XMVector3Normalize(XMVector3Cross(worldUp, flatLook));
 
-		XMStoreFloat3(&FRBL[0], flatLook * 1.5f);
-		XMStoreFloat3(&FRBL[1], flatRight * 0.5f);
-		XMStoreFloat3(&FRBL[2], flatLook * -1.5f);
-		XMStoreFloat3(&FRBL[3], flatRight * -0.5f);
+		XMStoreFloat3(&frbl[0], flatLook * 1.5f);
+		XMStoreFloat3(&frbl[1], flatRight * 0.5f);
+		XMStoreFloat3(&frbl[2], flatLook * -1.5f);
+		XMStoreFloat3(&frbl[3], flatRight * -0.5f);
 
-		_float3 Pos[4];
-		Pos[0] = fianlPos + FRBL[0];
-		Pos[1] = fianlPos + FRBL[1];
-		Pos[2] = fianlPos + FRBL[2];
-		Pos[3] = fianlPos + FRBL[3];
+		_float3 pos[4];
+		pos[0] = finalPos + frbl[0];
+		pos[1] = finalPos + frbl[1];
+		pos[2] = finalPos + frbl[2];
+		pos[3] = finalPos + frbl[3];
 
-		_float3 fianlPosFRBL[4];
+		_float3 finalPosFrbl[4];
 		for (_uint i = 0; i < 4; i++)
 		{
 
-			fianlPosFRBL[i] = Sea->Calculate_GerstnerWavePosition(Pos[i]);
+			finalPosFrbl[i] = sea->Calculate_GerstnerWavePosition(pos[i]);
 		}
 
-		_vector forwordDir = XMLoadFloat3(&fianlPosFRBL[0]) - XMLoadFloat3(&fianlPosFRBL[2]);
-		_vector RightDir = XMLoadFloat3(&fianlPosFRBL[1]) - XMLoadFloat3(&fianlPosFRBL[3]);
+		_vector forwardDir = XMLoadFloat3(&finalPosFrbl[0]) - XMLoadFloat3(&finalPosFrbl[2]);
+		_vector rightDir = XMLoadFloat3(&finalPosFrbl[1]) - XMLoadFloat3(&finalPosFrbl[3]);
 
-		forwordDir = XMVector3Normalize(forwordDir);
-		RightDir = XMVector3Normalize(RightDir);
+		forwardDir = XMVector3Normalize(forwardDir);
+		rightDir = XMVector3Normalize(rightDir);
 
-		_vector FinalUpDir = XMVector3Normalize(XMVector3Cross(forwordDir, RightDir));
+		_vector finalUpDir = XMVector3Normalize(XMVector3Cross(forwardDir, rightDir));
 
-		_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, flatLook));
+		_vector finalRightDir = XMVector3Normalize(XMVector3Cross(finalUpDir, flatLook));
 
-		_vector FinalLookDir = XMVector3Normalize(XMVector3Cross(FinalRightDir, FinalUpDir));
+		_vector finalLookDir = XMVector3Normalize(XMVector3Cross(finalRightDir, finalUpDir));
 
-		_matrix NewRotationMatrix;
-		NewRotationMatrix.r[0] = FinalRightDir;
-		NewRotationMatrix.r[1] = FinalUpDir;
-		NewRotationMatrix.r[2] = FinalLookDir;
-		NewRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
+		_matrix newRotationMatrix;
+		newRotationMatrix.r[0] = finalRightDir;
+		newRotationMatrix.r[1] = finalUpDir;
+		newRotationMatrix.r[2] = finalLookDir;
+		newRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
 
-		_vector targetQuat = XMQuaternionRotationMatrix(NewRotationMatrix);
+		_vector targetQuat = XMQuaternionRotationMatrix(newRotationMatrix);
 		targetQuat = XMQuaternionNormalize(targetQuat);
 		_vector currentQuat = m_pTransformCom->Get_Quaternion();
 
-		_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 4.f * fTimeDelta);
+		_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 4.f * timeDelta);
 
 		m_pTransformCom->Set_Quaternion(smoothQuat);
 	}
@@ -438,14 +438,14 @@ void CPlayerBoat::Location_Sea(_float fTimeDelta, CDInput_Manager* dinput)
 	m_pTransformCom->Update_WorldMatrix();
 
 
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	m_colliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
 
 }
 
 void CPlayerBoat::Dead()
 {
 	SetHPFull();
-	m_fInputBlockTime = 2.f;
+	m_inputBlockTime = 2.f;
 	_float3 pos = _float3(0.f, 5.f, 0.f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
 
@@ -453,15 +453,15 @@ void CPlayerBoat::Dead()
 
 void CPlayerBoat::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-	if(m_pPlayerStateMachine)
-	m_pPlayerStateMachine->OnBeginOverlap(self, other);
+	if(m_playerStateMachine)
+	m_playerStateMachine->OnBeginOverlap(self, other);
 	//CContainerObject::OnBeginOverlap(self, other);
 }
 
 void CPlayerBoat::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-	if (m_pPlayerStateMachine)
-		m_pPlayerStateMachine->OnEndOverlap(self, other);
+	if (m_playerStateMachine)
+		m_playerStateMachine->OnEndOverlap(self, other);
 
 
 	//CContainerObject::OnEndOverlap(self, other);
@@ -469,34 +469,34 @@ void CPlayerBoat::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider>
 
 void CPlayerBoat::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-	if (m_pPlayerStateMachine)
-		m_pPlayerStateMachine->OnStayOverlap(self, other);
+	if (m_playerStateMachine)
+		m_playerStateMachine->OnStayOverlap(self, other);
 
 
 	//CContainerObject::OnStayOverlap(self, other);
 }
 
-shared_ptr<CPlayerBoat> CPlayerBoat::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CPlayerBoat> CPlayerBoat::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CPlayerBoat> pInstance(new CPlayerBoat(pDevice, pContext), [](CPlayerBoat* p) {p->Free(); delete p; });
+	shared_ptr<CPlayerBoat> instance(new CPlayerBoat(device, context), [](CPlayerBoat* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CPlayerBoat");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CPlayerBoat::Clone(void* pArg)
+shared_ptr<CGameObject> CPlayerBoat::Clone(void* arg)
 {
-	shared_ptr<CPlayerBoat> pInstance(new CPlayerBoat(*this), [](CPlayerBoat* p) {p->Free(); delete p; });
+	shared_ptr<CPlayerBoat> instance(new CPlayerBoat(*this), [](CPlayerBoat* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CPlayerBoat");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CPlayerBoat::Free()

@@ -1,4 +1,4 @@
-#include "Sea.h"
+ï»¿#include "Sea.h"
 
 #include "GameInstance.h"
 #include "Transform.h"
@@ -38,7 +38,7 @@ HRESULT CSea::Initialize(void* pArg)
 {
 
 	m_SkyContrl = (CSky_Controller::GetInstance());
-	/* ¹é±×¶ó¿îµåÀÇ ¸â¹ö¸¦ Ã¤¿ö³Ö¾î¾ßÇÑ´Ù¸é ¿©±â¼­ Ã¤¿î´Ù. */
+	/* ë°±ê·¸ë¼ìš´ë“œì˜ ë©¤ë²„ë¥¼ ì±„ì›Œë„£ì–´ì•¼í•œë‹¤ë©´ ì—¬ê¸°ì„œ ì±„ìš´ë‹¤. */
 	SEA_DESC			Desc{};
 
 	// float2 dir1 = float2(1.f, 1.f);
@@ -69,8 +69,8 @@ void CSea::Priority_Update(_float fTimeDelta)
 
 void CSea::Update(_float fTimeDelta)
 {
-	// ½º³ÀÇÎ
-	_float3 snapedPos = m_pVIBufferComCashing->Snaping((m_SeaManager.lock()->Get_GlobalY()));
+	// ìŠ¤ëƒ…í•‘
+	_float3 snapedPos = m_pVIBufferComCashing->Snapping((m_SeaManager.lock()->Get_GlobalY()));
 	m_pTransformCom->Set_Position(XMLoadFloat3(&snapedPos));
 
 
@@ -139,7 +139,7 @@ HRESULT CSea::Bind_ShaderResources()
 	_float fTime = Sea->Get_AccTime();
 	int WaveCount = Sea->Get_WaveCount();
 	//float depthMask01 = Sea->Get_DepthMask01();
-	const Wave_Desc* waveDesc = Sea->Get_WaveDescArray();
+	const WaveDesc* waveDesc = Sea->Get_WaveDescArray();
 
 	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		return E_FAIL;
@@ -210,17 +210,17 @@ if (FAILED(m_pShaderCom->Bind_RawValue("g_iPlayerPointLightActive", &iPlayerPoin
 	///////Wave///////
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_WaveCount", &WaveCount, sizeof(int))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Waves", waveDesc, sizeof(Wave_Desc)*10)))
-		return E_FAIL; // °íÁ¤ ¹è¿­ 10
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_Waves", waveDesc, sizeof(WaveDesc)*10)))
+		return E_FAIL; // ê³ ì • ë°°ì—´ 10
 	
 
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_TerrainSize", &Sea->TerrainSize, sizeof(_float))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_TerrainSize", &Sea->m_terrainSize, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_TerrainPos", &Sea->TerrainPos, sizeof(_float3))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_TerrainPos", &Sea->m_terrainPos, sizeof(_float3))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_deepColor", &Sea->deepColor, sizeof(_float3))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_deepColor", &Sea->m_deepColor, sizeof(_float3))))
 		return E_FAIL;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_shallowColor", &Sea->shallowColor, sizeof(_float3))))
+	if (FAILED(m_pShaderCom->Bind_RawValue("g_shallowColor", &Sea->m_shallowColor, sizeof(_float3))))
 		return E_FAIL;
 	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_TerrainHeight", 0)))
 		return E_FAIL;

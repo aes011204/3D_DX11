@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 
 
-// Inven_controller -> UIInventory // º¯°æÇÏ¸é ¾ÈµÊ // ÄÁÆ®·Ñ·¯°¡ ÀÌ¹êÆ® ÀÌ¿ëÇÏ¿© ½ÅÈ£ -> ³ª ¸ğ¾ç ¹Ù²ñ
-// UIInventory -> Inven_controller ¾Ë¾Æµµ µÊ , ¸Å´ÏÁ®³ª ÃÊ±â »ı¼ºÇÒ‹š Æ÷ÀÎÅÍ ³Ñ°Ü ÁÖ±â
+// Inven_controller -> UIInventory // ë³€ê²½í•˜ë©´ ì•ˆë¨ // ì»¨íŠ¸ë¡¤ëŸ¬ê°€ ì´ë°´íŠ¸ ì´ìš©í•˜ì—¬ ì‹ í˜¸ -> ë‚˜ ëª¨ì–‘ ë°”ë€œ
+// UIInventory -> Inven_controller ì•Œì•„ë„ ë¨ , ë§¤ë‹ˆì ¸ë‚˜ ì´ˆê¸° ìƒì„±í• ë–„ í¬ì¸í„° ë„˜ê²¨ ì£¼ê¸°
 
 
 NS_BEGIN(Engine)
@@ -48,7 +48,7 @@ public:
  
     void Render_Item();
     _float2 SlotToPos(int col, int row);
-    _float2 Calculate_RenderPos(const Item_Inst& item);
+    _float2 Calculate_RenderPos(const ItemInst& item);
 
 private:
     weak_ptr<class CInventory> m_Inven = {};

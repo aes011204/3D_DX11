@@ -1,4 +1,4 @@
-#include "UI_Item.h"
+ï»¿#include "UI_Item.h"
 #include "ItemDB.h"
 #include "GameInstance.h"
 #include "DInput_Manager.h"
@@ -14,9 +14,9 @@ CUI_Item::CUI_Item(const CUI_Item& prototype)
 {
 }
 
-void CUI_Item::HoldItem(Item_Inst HoldItemInst)
+void CUI_Item::HoldItem(ItemInst HoldItemInst)
 {
-	if (HoldItemInst.ItemInst_ID == ID_Absence)
+	if (HoldItemInst.itemInstId == ID_Absence)
 		return;
 
 	//const Item_Def& def = CItemDB::GetInstance()->GetItemByID(HoldItemInst.ItemDef_ID);
@@ -24,13 +24,13 @@ void CUI_Item::HoldItem(Item_Inst HoldItemInst)
 		m_bIsHold = true; 
 		m_HoldItem = HoldItemInst;
 
-		Change_Texture(HoldItemInst.pCashingTexture);
+		Change_Texture(HoldItemInst.cachingTexture);
 		Set_Transparent(false);
 		m_Children[0]->UI_Active();
 		static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(false);
 
 
-		if (HoldItemInst.ItemType == ITEM_TYPE::FISH)
+		if (HoldItemInst.itemType == ITEM_TYPE::FISH)
 			m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 		else
 			m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
@@ -40,14 +40,14 @@ void CUI_Item::HoldItem(Item_Inst HoldItemInst)
 void CUI_Item::ReleaseItem()
 {
 
-	if (m_HoldItem.ItemType == ITEM_TYPE::FISH)
+	if (m_HoldItem.itemType == ITEM_TYPE::FISH)
 		m_pGameInstance.lock()->Play_Once(L"OrganicItem_Place");
 	else
 		m_pGameInstance.lock()->Play_Once(L"InorganicItem_Place");
 
 	m_bIsHold = false;
 	/*m_HoldItem = HoldItem;*/
-	Item_Inst NoInst = {};
+	ItemInst NoInst = {};
 	m_HoldItem = NoInst;
 	//Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
 	Set_Transparent(true);
@@ -113,13 +113,13 @@ void CUI_Item::OnUpdate(const _float& timeDelta)
 	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
 	_float2 screen = m_pGameInstance.lock()->Get_WinSize().Size();
 	m_pUITransformCom->SetAnchoredPos({ musPos.x-screen.x *0.5f, musPos.y-screen.y*0.5f});
-	m_pUITransformCom->SetRotation(m_HoldItem.Rotation * -90.f);
+	m_pUITransformCom->SetRotation(m_HoldItem.rotation * -90.f);
 	//m_Children[0]->GetUITransform()->SetRotation(m_HoldItem.Rotation * 90.f);
 	_float2 sizeD = m_Children[0]->GetUITransform()->Get_SizeDelta();
 
 	_float2 finalSize = m_pUITransformCom->Get_FinalSize();
 
-	if (m_HoldItem.Rotation % 2 != 0) // 90µµ È¤Àº 270µµÀÏ ¶§
+	if (m_HoldItem.rotation % 2 != 0) // 90ë„ í˜¹ì€ 270ë„ì¼ ë•Œ
 	{
 		swap(finalSize.x, finalSize.y);
 	}

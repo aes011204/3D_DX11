@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Client_Define.h"
 #include "Client_Enum.h"
 #include "Component.h"
@@ -10,92 +10,92 @@ class CInventory :
     public CComponent
 {
 public:
-    struct INVEN_DESC
+    struct InvenDesc
     {
         _uint width = {};
         _uint height = {};
         INVENTYPE invenType = {};
-        EQUIP_TYPE EquipType = {};
+        EQUIP_TYPE equipType = {};
         //vector<_char> type = {};
     };
 
     struct BoatLevelData
     {
-        _uint m_width = {};
-        _uint m_height = {};
-        vector<_char> m_type = {};
+        _uint width = {};
+        _uint height = {};
+        vector<_char> type = {};
     };
 private:
-    CInventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CInventory(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
     virtual ~CInventory() = default;
 
 public:
     virtual HRESULT Initialize_Prototype();
-    virtual HRESULT Initialize(void* pArg);
-    Item_Inst Create_ItemInstance(ID_uint itemDefID, variant<monostate, Fish_Inst, Equip_Inst>  TypeDefInst, int rot=0);
+    virtual HRESULT Initialize(void* arg);
+    ItemInst Create_ItemInstance(ID_uint itemDefId, variant<monostate, FishInst, EquipInst>  typeDefInst, int rot=0);
 
-    void Update(_float fTimeDelta);
+    void Update(_float timeDelta);
 
-    vector<Slot>& Get_Invenslot() { return m_InvenSlot; }
-    vector<Item_Inst>& Get_InventoryItem() { return m_Inventory; }
+    vector<Slot>& Get_Invenslot() { return m_invenSlot; }
+    vector<ItemInst>& Get_InventoryItem() { return m_inventory; }
     int Get_W() { return m_w; }
     int Get_H() { return m_h; }
 
-    INVENTYPE  Get_Inventype() { return m_InvenType; }
+    INVENTYPE  Get_Inventype() { return m_invenType; }
 private:
     int m_w, m_h = {0};
-    vector<Item_Inst> m_Inventory = {}; // ¼ø¼­ »ó°ü¾øÀÌ µé¾îÀÖ´Âµ¥ÀÌÅÍ
-	vector<Slot> m_InvenSlot = {}; // Ä­º°·Î Á¡À¯ÁßÀÎÁö ¾Æ´ÑÁö
+    vector<ItemInst> m_inventory = {}; // ìˆœì„œ ìƒê´€ì—†ì´ ë“¤ì–´ìˆëŠ”ë°ì´í„°
+	vector<Slot> m_invenSlot = {}; // ì¹¸ë³„ë¡œ ì ìœ ì¤‘ì¸ì§€ ì•„ë‹Œì§€
 
-    _bool m_Dirty = { false };
+    _bool m_isDirty = { false };
 
-    class shared_ptr<class CInventory_Controller> m_Controller;
-    // ÄÁÆ®·Ñ·¯´Â ½Ì±ÛÅæ? ¾Æ´Ô ¿©±â¼­ ¸¸µé¾î¾ß ÇÏ³ª?
+    class shared_ptr<class CInventory_Controller> m_controller;
+    // ì»¨íŠ¸ë¡¤ëŸ¬ëŠ” ì‹±ê¸€í†¤? ì•„ë‹˜ ì—¬ê¸°ì„œ ë§Œë“¤ì–´ì•¼ í•˜ë‚˜?
 
-public:// ¾ÆÀÌÅÛ ³Ö°í •û±â
-    Item_Inst AddItem(Item_Inst itemInst, _int BaseX, _int BaseY);
-    _bool Auto_Add(Item_Inst& itemInst);
-    _bool Auto_Move_To(weak_ptr<CInventory> OtherInven, _uint BaseX, _uint BaseY);
-    _int CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY,PLACE_COLOR& color);
-    Item_Inst TryMove_Item(_uint BaseX, _uint BaseY);
+public:// ì•„ì´í…œ ë„£ê³  ëº´ê¸°
+    ItemInst AddItem(ItemInst itemInst, _int baseX, _int baseY);
+    _bool Auto_Add(ItemInst& itemInst);
+    _bool Auto_Move_To(weak_ptr<CInventory> otherInven, _uint baseX, _uint baseY);
+    _int CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY,PLACE_COLOR& color);
+    ItemInst TryMove_Item(_uint baseX, _uint baseY);
     void Upgrade_Boat(_uint index);
-    void SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_COLOR color);
+    void SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, PLACE_COLOR color);
     void FixAll();
-    void ThrowAwayFrom_Inven(_uint BaseX, _uint BaseY);// ÀÌ°Å´Â Ä­À¸·Î 
+    void ThrowAwayFrom_Inven(_uint baseX, _uint baseY);// ì´ê±°ëŠ” ì¹¸ìœ¼ë¡œ 
     void ClearHighlightArea();
-    Item_Inst RemoveFrom_Inven(int inst_id);// ÀÌ°Å´Â ¾ÆÀÌµğ·Î
-    Item_Inst Peek_Item(_uint MusX, _uint MusY);
+    ItemInst RemoveFrom_Inven(int instId);// ì´ê±°ëŠ” ì•„ì´ë””ë¡œ
+    ItemInst Peek_Item(_uint musX, _uint musY);
 
 
 
 
     void OnGui() override;
-    Evt_ShipStat CalculateEquip();// Àåºñ ÀÎÆ÷ ¹è¿¡ ¾÷µ«
-    void Get_Damage();// Àåºñ ÀÎÆ÷ ¹è¿¡ ¾÷µ«
+    Evt_ShipStat CalculateEquip();// ì¥ë¹„ ì¸í¬ ë°°ì— ì—…ëƒ
+    void Get_Damage();// ì¥ë¹„ ì¸í¬ ë°°ì— ì—…ëƒ
 
 
-    _bool Get_Dirty() const { return m_Dirty; }
-    void Set_Dirty(_bool dirty) { m_Dirty = dirty; }
+    _bool Get_Dirty() const { return m_isDirty; }
+    void Set_Dirty(_bool dirty) { m_isDirty = dirty; }
 private:
-    void PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY);
+    void PlaceOn_Inven(ItemInst itemInst, _int baseX, _int baseY);
 
-private:// ÀÎ¹êÄ­ ¼³Á¤
-    static constexpr int m_MaxBoatLevel = 3;
-    BoatLevelData m_BoatUpgrade_type[m_MaxBoatLevel] = {};
+private:// ì¸ë°´ì¹¸ ì„¤ì •
+    static constexpr int kMaxBoatLevel = 3;
+    BoatLevelData m_boatUpgradeType[kMaxBoatLevel] = {};
 
 private:
-    void Apply_BaseMask(vector<Slot>& vecSlot);// ¶ô
-    SLOT_TYPE CharToType(char c);// ½½¶ù Å¸ÀÔ
+    void Apply_BaseMask(vector<Slot>& vecSlot);// ë½
+    SLOT_TYPE CharToType(char c);// ìŠ¬ë íƒ€ì…
     void Init_BoatUpgrade();
 
-    INVENTYPE m_InvenType = {};
+    INVENTYPE m_invenType = {};
     
 
 public:
-    static shared_ptr<CInventory> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CInventory> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
-    virtual shared_ptr<CComponent> Clone (void* pArg) override;
+    virtual shared_ptr<CComponent> Clone (void* arg) override;
 	void Free() override;
 };
 

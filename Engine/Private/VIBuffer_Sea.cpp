@@ -1,182 +1,182 @@
-#include "VIBuffer_Sea.h"
+ï»¿#include "VIBuffer_Sea.h"
 
 #include "GameInstance.h"
 #include "Shader.h"
 
-CVIBuffer_Sea::CVIBuffer_Sea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, _uint gridSize, _uint NumLevel)
-	:CVIBuffer(pDevice, pContext) ,m_GridSize(gridSize), m_NumLevel(NumLevel)
+CVIBuffer_Sea::CVIBuffer_Sea(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, _uint gridSize, _uint numLevel)
+	:CVIBuffer(device, context) ,m_gridSize(gridSize), m_numLevel(numLevel)
 {
 }
 
-CVIBuffer_Sea::CVIBuffer_Sea(const CVIBuffer_Sea& Prototype)
-	: CVIBuffer(Prototype),
-	m_NumLevel(Prototype.m_NumLevel), m_GridSize(Prototype.m_GridSize),
-m_iNumRingIndices(Prototype.m_iNumRingIndices), m_iNumCenterIndices(Prototype.m_iNumCenterIndices)
+CVIBuffer_Sea::CVIBuffer_Sea(const CVIBuffer_Sea& prototype)
+	: CVIBuffer(prototype),
+	m_numLevel(prototype.m_numLevel), m_gridSize(prototype.m_gridSize),
+m_numRingIndices(prototype.m_numRingIndices), m_numCenterIndices(prototype.m_numCenterIndices)
 {
-	m_VtxPos = new _float3[m_iNumVertices];
-	memcpy(m_VtxPos, Prototype.m_VtxPos, sizeof(_float3) * m_iNumVertices);
+	m_vtxPos = new _float3[m_iNumVertices];
+	memcpy(m_vtxPos, prototype.m_vtxPos, sizeof(_float3) * m_iNumVertices);
 }
 
 HRESULT CVIBuffer_Sea::Initialize_Prototype(/*const _tchar* pHeightMapFilePath*/)
 {
-	// ¹«Á¶°Ç 4ÀÇ ¹è¼ö¿©¾ß ÇÔ
-	if (m_GridSize % 4 != 0)
+	// ë¬´ì¡°ê±´ 4ì˜ ë°°ìˆ˜ì—¬ì•¼ í•¨
+	if (m_gridSize % 4 != 0)
 	{
 		MSG_BOX("wrong size");
 		return E_FAIL;
 	}
 
-	m_iNumVertexBuffers = 1; // ¹öÅÃ½º ¹öÆÛ°¡ ¸î°µÁö »ç°¢Çü±×¸®´Â °Å´Ï±î 1°³
-	m_iNumVertices = (m_GridSize+1) * (m_GridSize+1);
+	m_iNumVertexBuffers = 1; // ë²„íƒìŠ¤ ë²„í¼ê°€ ëª‡ê° ì§€ ì‚¬ê°í˜•ê·¸ë¦¬ëŠ” ê±°ë‹ˆê¹Œ 1ê°œ
+	m_iNumVertices = (m_gridSize+1) * (m_gridSize+1);
 	m_iVertexStride = sizeof(VTXPOS);
 	//m_iNumIndices = (m_GridSize - 1) * (m_GridSize - 1) * 2 * 3;
-	m_iIndexStride = 4; // 2¹ÙÀÌÆ®¶û 4¹ÙÀÌÆ® Áß ÅÃ1
+	m_iIndexStride = 4; // 2ë°”ì´íŠ¸ë‘ 4ë°”ì´íŠ¸ ì¤‘ íƒ1
 	m_ePrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	// Vertex Buffer//////////////////////
 
-	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_iVertexStride;
+	D3D11_BUFFER_DESC vertexBufferDesc{};
+	vertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.StructureByteStride = m_iVertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
-	VertexBufferDesc.MiscFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
+	vertexBufferDesc.CPUAccessFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìˆìŒ
+	vertexBufferDesc.MiscFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìˆìŒ
 
-	VTXPOS* pVertices = new VTXPOS[m_iNumVertices];
+	VTXPOS* vertices = new VTXPOS[m_iNumVertices];
 
-	// ¹öÅÃ½º °¹¼ö´Â Â¦¼ö // Á¤»ç°¢Çü °¡Á¤
-	_uint* pPixels = new _uint[m_iNumVertices];
+	// ë²„íƒìŠ¤ ê°¯ìˆ˜ëŠ” ì§ìˆ˜ // ì •ì‚¬ê°í˜• ê°€ì •
+	_uint* pixels = new _uint[m_iNumVertices];
 
-	float halfSize = m_GridSize * 0.5f;
+	float halfSize = m_gridSize * 0.5f;
 
-	m_VtxPos = new _float3[m_iNumVertices];
+	m_vtxPos = new _float3[m_iNumVertices];
 
-	for (_uint z = 0; z < m_GridSize+1; ++z)
+	for (_uint z = 0; z < m_gridSize+1; ++z)
 	{
-		for (_uint x = 0; x < m_GridSize+1; ++x)
+		for (_uint x = 0; x < m_gridSize+1; ++x)
 		{
-			_uint iIndex = z * (m_GridSize + 1) + x;
+			_uint index = z * (m_gridSize + 1) + x;
 
-			pVertices[iIndex].vPosition = _float3(x - halfSize, 0.0f, z - halfSize);
+			vertices[index].vPosition = _float3(x - halfSize, 0.0f, z - halfSize);
 
-			m_VtxPos[iIndex] = pVertices[iIndex].vPosition;
+			m_vtxPos[index] = vertices[index].vPosition;
 
 		}
 
 	}
 
-	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
-	VertexInitialData.pSysMem = pVertices;
-	if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
+	D3D11_SUBRESOURCE_DATA			vertexInitialData{};
+	vertexInitialData.pSysMem = vertices;
+	if (FAILED(m_pDevice->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_pVB)))
 		return E_FAIL;
 
 
 	//Index Buffer/////////////////////////////
 
 
-	vector<_uint> pCenterIndices;
-	pCenterIndices.reserve(m_GridSize * m_GridSize * 6);
-	for (size_t i = 0; i < m_GridSize ; i++)
+	vector<_uint> centerIndices;
+	centerIndices.reserve(m_gridSize * m_gridSize * 6);
+	for (size_t i = 0; i < m_gridSize ; i++)
 	{
-		for (size_t j = 0; j < m_GridSize; j++)
+		for (size_t j = 0; j < m_gridSize; j++)
 		{
-			size_t iIndex = i * (m_GridSize + 1) + j;
+			size_t index = i * (m_gridSize + 1) + j;
 
-			_uint iIndices[4] = {
-				iIndex + (m_GridSize+1),
-				iIndex + (m_GridSize + 1) + 1,
-				iIndex + 1,
-				iIndex
+			_uint indices[4] = {
+				index + (m_gridSize+1),
+				index + (m_gridSize + 1) + 1,
+				index + 1,
+				index
 			};
 
-			_vector		vSour, vDest, vNormal;
+			_vector		sour, dest, normal;
 
-			pCenterIndices.push_back(iIndices[0]);
-			pCenterIndices.push_back(iIndices[1]);
-			pCenterIndices.push_back(iIndices[2]);
+			centerIndices.push_back(indices[0]);
+			centerIndices.push_back(indices[1]);
+			centerIndices.push_back(indices[2]);
 
-			pCenterIndices.push_back(iIndices[0]);
-			pCenterIndices.push_back(iIndices[2]);
-			pCenterIndices.push_back(iIndices[3]);
+			centerIndices.push_back(indices[0]);
+			centerIndices.push_back(indices[2]);
+			centerIndices.push_back(indices[3]);
 		}
 
 	}
-	m_iNumCenterIndices = pCenterIndices.size();
+	m_numCenterIndices = centerIndices.size();
 
 	//////////////////////////////////////////
 
-	vector<_uint> pRingIndices;
-	pCenterIndices.reserve(m_GridSize * m_GridSize * 6);
+	vector<_uint> ringIndices;
+	centerIndices.reserve(m_gridSize * m_gridSize * 6);
 
-	int holeStart = m_GridSize / 4; // 1/4 ÁöÁ¡
-	int holeEnd = (m_GridSize * 3) / 4; // 3/4 ÁöÁ¡
-	for (size_t z = 0; m_NumLevel > 1 && z < m_GridSize; z++)
+	int holeStart = m_gridSize / 4; // 1/4 ì§€ì 
+	int holeEnd = (m_gridSize * 3) / 4; // 3/4 ì§€ì 
+	for (size_t z = 0; m_numLevel > 1 && z < m_gridSize; z++)
 	{
-		for (size_t x = 0; x < m_GridSize ; x++)
+		for (size_t x = 0; x < m_gridSize ; x++)
 		{
 			if(x >= holeStart && x < holeEnd&& z >= holeStart && z < holeEnd)
 			{
 					continue;
 			}
 
-			size_t iIndex = z * (m_GridSize+1) + x;
+			size_t index = z * (m_gridSize+1) + x;
 
-			_uint iIndices[4] = {
-				iIndex + (m_GridSize + 1),
-				iIndex + (m_GridSize + 1) + 1,
-				iIndex + 1,
-				iIndex
+			_uint indices[4] = {
+				index + (m_gridSize + 1),
+				index + (m_gridSize + 1) + 1,
+				index + 1,
+				index
 			};
 
-			_vector		vSour, vDest, vNormal;
+			_vector		sour, dest, normal;
 
-			pRingIndices.push_back(iIndices[0]);
-			pRingIndices.push_back(iIndices[1]);
-			pRingIndices.push_back(iIndices[2]);
+			ringIndices.push_back(indices[0]);
+			ringIndices.push_back(indices[1]);
+			ringIndices.push_back(indices[2]);
 
-			pRingIndices.push_back(iIndices[0]);
-			pRingIndices.push_back(iIndices[2]);
-			pRingIndices.push_back(iIndices[3]);
+			ringIndices.push_back(indices[0]);
+			ringIndices.push_back(indices[2]);
+			ringIndices.push_back(indices[3]);
 			
 		}
 	}
 
-	m_iNumRingIndices = pRingIndices.size();
+	m_numRingIndices = ringIndices.size();
 
 	vector<UINT> mergedIndices;
-	mergedIndices.insert(mergedIndices.end(), pCenterIndices.begin(), pCenterIndices.end());
-	mergedIndices.insert(mergedIndices.end(), pRingIndices.begin(), pRingIndices.end());
+	mergedIndices.insert(mergedIndices.end(), centerIndices.begin(), centerIndices.end());
+	mergedIndices.insert(mergedIndices.end(), ringIndices.begin(), ringIndices.end());
 
 	m_iNumIndices = mergedIndices.size();
 
-	D3D11_BUFFER_DESC	IndexBufferDesc{};
-	IndexBufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
-	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.StructureByteStride = m_iIndexStride;
-	IndexBufferDesc.CPUAccessFlags = 0;
-	IndexBufferDesc.MiscFlags = 0;
+	D3D11_BUFFER_DESC	indexBufferDesc{};
+	indexBufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.StructureByteStride = m_iIndexStride;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
 
 
-	D3D11_SUBRESOURCE_DATA			IndexInitialData{};
-	IndexInitialData.pSysMem = mergedIndices.data();
-	if (FAILED(m_pDevice->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_pIB)))
+	D3D11_SUBRESOURCE_DATA			indexInitialData{};
+	indexInitialData.pSysMem = mergedIndices.data();
+	if (FAILED(m_pDevice->CreateBuffer(&indexBufferDesc, &indexInitialData, &m_pIB)))
 		return E_FAIL;
 
-	//////Á¤¸®///////
-	Safe_Delete_Array(pPixels);
-	Safe_Delete_Array(pVertices);
-	pRingIndices.clear();
-	pCenterIndices.clear();
+	//////ì •ë¦¬///////
+	Safe_Delete_Array(pixels);
+	Safe_Delete_Array(vertices);
+	ringIndices.clear();
+	centerIndices.clear();
 
 
 	return S_OK;
 
 }
 
-HRESULT CVIBuffer_Sea::Initialize(void* pArg)
+HRESULT CVIBuffer_Sea::Initialize(void* arg)
 {
 	return S_OK;
 
@@ -184,52 +184,52 @@ HRESULT CVIBuffer_Sea::Initialize(void* pArg)
 
 HRESULT CVIBuffer_Sea::Bind_Resources()
 {
-	ID3D11Buffer* pVertexBuffers[] = {
+	ID3D11Buffer* vertexBuffers[] = {
 		m_pVB.Get(),
 		// m_pVBInstance, 
 	};
 
-	_uint			iVertexStrides[] = {
+	_uint			vertexStrides[] = {
 		m_iVertexStride,
 
 	};
 
-	_uint			iOffsets[] = {
+	_uint			offsets[] = {
 		0
 	};
 
-	m_pContext->IASetVertexBuffers(0, m_iNumVertexBuffers, pVertexBuffers, iVertexStrides, iOffsets);
+	m_pContext->IASetVertexBuffers(0, m_iNumVertexBuffers, vertexBuffers, vertexStrides, offsets);
 	m_pContext->IASetIndexBuffer(m_pIB.Get(), 2 == m_iIndexStride ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
 	m_pContext->IASetPrimitiveTopology(m_ePrimitiveType);
 	
-	// ÀÌ ÀÌÈÄ¿¡ ½¦ÀÌ´õ¶û ¾ê±â ÇØ¼­ ¹öÆÛÀÇ À§Ä¡¸¦ È­Á¤
+	// ì´ ì´í›„ì— ì‰ì´ë”ë‘ ì–˜ê¸° í•´ì„œ ë²„í¼ì˜ ìœ„ì¹˜ë¥¼ í™”ì •
 
 	return S_OK;
 
 
 }
 
-HRESULT CVIBuffer_Sea::Render(shared_ptr<CShader> ShaderCom)
+HRESULT CVIBuffer_Sea::Render(shared_ptr<CShader> shaderCom)
 {
-	const int useLOD = m_NumLevel > 1 ? 1 : 0;
-	if (FAILED(ShaderCom->Bind_RawValue("g_UseLOD", &useLOD, sizeof(useLOD))))
+	const int useLOD = m_numLevel > 1 ? 1 : 0;
+	if (FAILED(shaderCom->Bind_RawValue("g_UseLOD", &useLOD, sizeof(useLOD))))
 		return E_FAIL;
-	for(_uint i=0; i < m_NumLevel; i++ )
+	for(_uint i=0; i < m_numLevel; i++ )
 	{
-		float currentScale = pow(2.f, i); // ½¦ÀÌ´õ¿¡¼­´Â float·Î
+		float currentScale = pow(2.f, i); // ì‰ì´ë”ì—ì„œëŠ” floatë¡œ
 
-		ShaderCom->Bind_RawValue("g_Scale", &currentScale, sizeof(float));
+		shaderCom->Bind_RawValue("g_Scale", &currentScale, sizeof(float));
 
-		ShaderCom->Begin(0);
+		shaderCom->Begin(0);
 
 		if(i ==0 )
 		{
-			m_pContext->DrawIndexed(m_iNumCenterIndices, 0, 0);
+			m_pContext->DrawIndexed(m_numCenterIndices, 0, 0);
 			
 		}
 		else
 		{
-			m_pContext->DrawIndexed(m_iNumRingIndices, m_iNumCenterIndices, 0);
+			m_pContext->DrawIndexed(m_numRingIndices, m_numCenterIndices, 0);
 
 		}
 
@@ -240,7 +240,7 @@ HRESULT CVIBuffer_Sea::Render(shared_ptr<CShader> ShaderCom)
 	return S_OK;
 }
 
-_float3 CVIBuffer_Sea::Snaping(float PosY)
+_float3 CVIBuffer_Sea::Snapping(float posY)
 {
 	_float3 result = {};
 	const _float4* camPos = m_pGameInstance.lock()->Get_CamPositon();
@@ -248,37 +248,37 @@ _float3 CVIBuffer_Sea::Snaping(float PosY)
 	constexpr float snapCellSize = 8.f;
 	result.x = floor(camPos->x / snapCellSize) * snapCellSize;
 	result.z = floor(camPos->z / snapCellSize) * snapCellSize;
-	result.y = PosY;
+	result.y = posY;
 
 	return result;
 }
 
-shared_ptr<CVIBuffer_Sea> CVIBuffer_Sea::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, _uint NumVerticesX, _uint NumVerticesZ/* const _tchar* pHeightMapFilePath*/)
+shared_ptr<CVIBuffer_Sea> CVIBuffer_Sea::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, _uint numVerticesX, _uint numVerticesZ/* const _tchar* pHeightMapFilePath*/)
 {
-	shared_ptr<CVIBuffer_Sea> pInstance(new CVIBuffer_Sea(pDevice, pContext, NumVerticesX, NumVerticesZ), [](CVIBuffer_Sea* p) {p->Free(); delete p; });
+	shared_ptr<CVIBuffer_Sea> instance(new CVIBuffer_Sea(device, context, numVerticesX, numVerticesZ), [](CVIBuffer_Sea* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CVIBuffer_Sea");
 	}
-	return pInstance;
+	return instance;
 }
 
-shared_ptr<CComponent> CVIBuffer_Sea::Clone(void* pArg)
+shared_ptr<CComponent> CVIBuffer_Sea::Clone(void* arg)
 {
-	shared_ptr<CVIBuffer_Sea> pInstance(new CVIBuffer_Sea(*this), [](CVIBuffer_Sea* p) {p->Free(); delete p; });
+	shared_ptr<CVIBuffer_Sea> instance(new CVIBuffer_Sea(*this), [](CVIBuffer_Sea* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CVIBuffer_Sea");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CVIBuffer_Sea::Free()
 {
 
 	__super::Free();
-	delete[] m_VtxPos;
+	delete[] m_vtxPos;
 
 }

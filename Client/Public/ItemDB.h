@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "Client_Define.h"
 #include "Base.h"
 
 #include "Client_Enum.h"
 
-// json ÆÄÀÏµç Á¤Àûµ¥ÀÌÅÍ ·Îµå , Á¶È¸
+// json íŒŒì¼ë“  ì •ì ë°ì´í„° ë¡œë“œ , ì¡°íšŒ
 
 
 NS_BEGIN(Engine)
@@ -25,26 +25,26 @@ public:
     virtual ~CItemDB() = default;
 
 public:
-    HRESULT Initialize(); // »ı¼º ÇÒ‹š È£Ãâ
-    const Item_Def& GetItemByID(_uint ItemID); 
+    HRESULT Initialize(); // ìƒì„± í• ë–„ í˜¸ì¶œ
+    const ItemDef& GetItemByID(_uint itemId); 
 
     _wstring Utf8ToWstring(const string& str);
 private:
-    _uint GetIndexByID(_uint id); // ¹Ù·Î Á¢±Ù ÇÏ±â À§ÇÑ º¤ÅÍÀÇ ÀÎµ¦½º¸¦ ¹İÈ¯ÇÑ´Ù 
+    _uint GetIndexByID(_uint id); // ë°”ë¡œ ì ‘ê·¼ í•˜ê¸° ìœ„í•œ ë²¡í„°ì˜ ì¸ë±ìŠ¤ë¥¼ ë°˜í™˜í•œë‹¤ 
 
 private:// for Item_def
-    HRESULT Load_ItemDate(const string& fileName);
+    HRESULT Load_ItemData(const string& fileName);
 private:
-    void Parse_Fish_Def(Fish_Def& fish_def, const nlohmann::json& node);
-    void Parse_Equip_Def(Equip_Def& fish_def, const nlohmann::json& node);
+    void Parse_Fish_Def(FishDef& fishDef, const nlohmann::json& node);
+    void Parse_Equip_Def(EquipDef& fishDef, const nlohmann::json& node);
 
     SEA_MASK BitFlag_SeaType (const nlohmann::json& node,const string str);
     void Compute_Occ(Shape& shape, _uint w, _uint h);
 private:
-    vector<Item_Def>               m_vec_ItemDefs;
-    unordered_map<_uint, _uint> m_map_ItemID;
+    vector<ItemDef>               m_vecItemDefs;
+    unordered_map<_uint, _uint> m_mapItemId;
 
-    weak_ptr<CGameInstance >m_pGameInstance = {};
+    weak_ptr<CGameInstance >m_gameInstance = {};
 public:
     //shared_ptr<CData_Manager> Create();
     void Free() override;

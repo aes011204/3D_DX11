@@ -1,4 +1,4 @@
-#include "Box.h"
+ï»¿#include "Box.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "Collider.h"
@@ -38,10 +38,10 @@ HRESULT CBox::Initialize(void* pArg)
 
 
 	{
-		Evt_InvenStrageInit_Data e = {};
-		e.Inven_ptr = m_pStorageCom;
-		e.inventype = m_pStorageCom->Get_Inventype();
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
+		Evt_InvenStorageInitData e = {};
+		e.invenPtr = m_pStorageCom;
+		e.invenType = m_pStorageCom->Get_Inventype();
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStorageInitData>(e);
 	}
 	_float3 pos = _float3(49.5f, -0.4f, -19.f);
 	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
@@ -204,10 +204,10 @@ HRESULT CBox::Bind_ShaderResources()
 HRESULT CBox::Ready_Components()
 {
 
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
+	// ì‰ì´ë”ëŠ” í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ì„
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨ 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_HalfBoat"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
 
@@ -224,7 +224,7 @@ HRESULT CBox::Ready_Components()
 
 
 
-	CInventory::INVEN_DESC storage_desc = {};
+	CInventory::InvenDesc storage_desc = {};
 	storage_desc.invenType = INVENTYPE::CHEST;
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pStorageCom, &storage_desc)))
 		return E_FAIL;

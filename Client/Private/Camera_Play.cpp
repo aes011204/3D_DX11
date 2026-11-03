@@ -1,4 +1,4 @@
-#include "Camera_Play.h"
+ï»¿#include "Camera_Play.h"
 #include "DInput_Manager.h"
 #include "Transform.h"
 #include "EventBus.h"
@@ -40,14 +40,14 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 		}
 	);
 
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Demage>(
-		[this](const Evt_Demage& e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Damage>(
+		[this](const Evt_Damage& e)
 		{
 			if (m_isShack) return;
 
-			m_ShakePower = e.ShakePower;
-			m_ShakeTime = e.ShakeTime;
-			m_DeAc = e.ShakePower / e.ShakeTime;;
+			m_ShakePower = e.shakePower;
+			m_ShakeTime = e.shakeTime;
+			m_DeAc = e.shakePower / e.shakeTime;;
 
 
 			m_isShack = true;
@@ -118,7 +118,7 @@ void CCamera_Play::Update_AfterTarget(_float fTimeDelta)
 	Shake_Cam(fTimeDelta);
 
 
-	// 4. ÃÖÁ¾ Çà·Ä ¾÷µ¥ÀÌÆ®
+	// 4. ìµœì¢… í–‰ë ¬ ì—…ë°ì´íŠ¸
 	__super::Update_TransformMatrices();
 
 
@@ -148,7 +148,7 @@ void CCamera_Play::Update_AfterTarget(_float fTimeDelta)
 //}
 
 
-void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
+void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CamDesc>pDesc)
 {
 
 	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
@@ -158,7 +158,7 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 	if (m_FirstFlag == false)
 	{
-		auto pFollowDesc = dynamic_pointer_cast<CAM_FOLLOW_DESC>(pDesc);
+		auto pFollowDesc = dynamic_pointer_cast<CamFollowDesc>(pDesc);
 		if (!pFollowDesc) return;
 
 
@@ -170,7 +170,7 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 		_float3 fDir;
 		XMStoreFloat3(&fDir, XMVector3Normalize(vDir));
 
-		// ¿ª°è»ê
+		// ì—­ê³„ì‚°
 		m_Yaw = XMConvertToDegrees(atan2f(fDir.x, fDir.z)) - 180.f;
 		m_Pitch = XMConvertToDegrees(asinf(fDir.y));
 		m_fDistance = XMVectorGetX(XMVector3Length(vDir));
@@ -182,7 +182,7 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 
 
-	// Å¸°ÙÀ» Ç×»ó º¸°íÀÖ´Ù
+	// íƒ€ê²Ÿì„ í•­ìƒ ë³´ê³ ìˆë‹¤
 	if (auto pTarget = m_pTarget.lock())
 	{
 
@@ -210,7 +210,7 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 		if (dx == 0 && dy == 0)
 		{
 			float delta = NormalizeAngle(targetDegree - m_Yaw);
-			m_Yaw += delta * 2.f * fTimeDelta; // ÃßÀû ¼Óµµ (Á¶Àı °¡´É)
+			m_Yaw += delta * 2.f * fTimeDelta; // ì¶”ì  ì†ë„ (ì¡°ì ˆ ê°€ëŠ¥)
 		}
 		m_Yaw = NormalizeAngle(m_Yaw);
 
@@ -249,12 +249,12 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 	//__super::Update_TransformMatrices();
 }
 
-bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
+bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CamDesc>pDesc)
 {
-	//Lerp ÀÏ‹š´Â Ä«¸Ş¶ó ½¦ÀÌÅ© ¾øÀ½ -> ÀÌ°Å´Â Transform //
+	//Lerp ì¼ë–„ëŠ” ì¹´ë©”ë¼ ì‰ì´í¬ ì—†ìŒ -> ì´ê±°ëŠ” Transform //
 
-	// ÀÌ³ÑÀ¸·Î Å¸ÀÔ È®½ÇÇÑµ¥ ½ºÅ×Æ½À¸·Î ³ªÁß¿¡
-	auto pLerpDesc = dynamic_pointer_cast<CAM_LERP_DESC>(pDesc);
+	// ì´ë„˜ìœ¼ë¡œ íƒ€ì… í™•ì‹¤í•œë° ìŠ¤í…Œí‹±ìœ¼ë¡œ ë‚˜ì¤‘ì—
+	auto pLerpDesc = dynamic_pointer_cast<CamLerpDesc>(pDesc);
 	if (!pLerpDesc) return false;
 
 	if (m_FirstFlag == false)
@@ -376,7 +376,7 @@ void CCamera_Play::Get_Target_PosLook(_float3& camPos, _float3& vTargetRot)
 	_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
 	m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
 
-	float yawRad = XMConvertToRadians(m_Yaw + 180.f); // ¹èÀÇ µÚÂÊ ÁÂÇ¥¸¦ ±¸ÇÏ±â À§ÇØ 180µµ ´õÇÔ
+	float yawRad = XMConvertToRadians(m_Yaw + 180.f); // ë°°ì˜ ë’¤ìª½ ì¢Œí‘œë¥¼ êµ¬í•˜ê¸° ìœ„í•´ 180ë„ ë”í•¨
 	float pitchRad = XMConvertToRadians(m_Pitch);
 
 	float x = m_fDistance * cosf(pitchRad) * sinf(yawRad);
@@ -416,7 +416,7 @@ _float3 CCamera_Play::Shake_Cam(_float fTimeDelta)
 			m_isShack = false;
 
 		m_pTransformCom->Set_Position(m_BasePos + _float3{ randX,randY,0.f });
-		return _float3{ randX, randY, 0.f }; // ¿ÀÇÁ¼Â¸¸ ¹İÈ¯
+		return _float3{ randX, randY, 0.f }; // ì˜¤í”„ì…‹ë§Œ ë°˜í™˜
 	}
 	return _float3{ 0.f, 0.f, 0.f };
 
@@ -430,7 +430,7 @@ void CCamera_Play::SetTarget(weak_ptr<CGameObject> target, _float startPitchAngl
 
 void CCamera_Play::Update(_float fTimeDelta)
 {
-	// ·¹ÀÌÃæµ¹·Î Àå¾Ö¹°ÀÌ ÀÖÀ»°æ¿ì ¾ÕÀ¸·Î ´ç±â´ø°¡ ÇØ¾ßÇÔ
+	// ë ˆì´ì¶©ëŒë¡œ ì¥ì• ë¬¼ì´ ìˆì„ê²½ìš° ì•ìœ¼ë¡œ ë‹¹ê¸°ë˜ê°€ í•´ì•¼í•¨
 }
 
 void CCamera_Play::Late_Update(_float fTimeDelta)

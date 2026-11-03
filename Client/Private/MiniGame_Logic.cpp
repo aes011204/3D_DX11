@@ -1,4 +1,4 @@
-#include "MiniGame_Logic.h"
+﻿#include "MiniGame_Logic.h"
 
 
 #include <UIButton.h>
@@ -257,9 +257,9 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 		e.DefID = m_DefID;
 		e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
 		auto& item = CItemDB::GetInstance()->GetItemByID(m_DefID);
-		if (auto fish = std::get_if<Fish_Def>(&item.TypeDef))
+		if (auto fish = std::get_if<FishDef>(&item.typeDef))
 		{
-			e.fishInst.mutation_ID = SelectMutationNoRepeat(*fish);
+			e.fishInst.mutationId = SelectMutationNoRepeat(*fish);
 		}
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 

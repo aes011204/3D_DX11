@@ -1,4 +1,4 @@
-#include "UI_NPC.h"
+﻿#include "UI_NPC.h"
 
 #include <UIButton.h>
 #include <UIImage.h>
@@ -325,7 +325,7 @@ void CUI_NPC::OnUpdate(const _float& timeDelta)
 				if(m_DialogueList.empty())
 				{
 					// ?대객??
-					m_pGameInstance.lock()->Get_EventBus()->Publish(Evt_Dialogue_Finish{});
+					m_pGameInstance.lock()->Get_EventBus()->Publish(Evt_DialogueFinish{});
 
 				}
 				else

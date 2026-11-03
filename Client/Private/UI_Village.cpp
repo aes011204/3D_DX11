@@ -1,4 +1,4 @@
-#include "UI_Village.h"
+Ôªø#include "UI_Village.h"
 
 #include "UIText.h"
 
@@ -44,7 +44,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 	hr = __super::OnInit(pDesc);
 
 
-	// ∂˜¥Ÿ ¡¶ø‹ ¿¸∫Œ µ•¿Ã≈Õ∑Œ ºˆ¡§ ∞°¥…
+	// ÎûåÎã§ Ï†úÏô∏ Ï†ÑÎ∂Ä Îç∞Ïù¥ÌÑ∞Î°ú ÏàòÏ†ï Í∞ÄÎä•
 
 	wstring name = {};
 	VIllAGE_LOCATION eLevel = {};
@@ -57,14 +57,14 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		{
 		case 0:
 			eLevel = VIllAGE_LOCATION::REPAIR;
-			name = L"¡∂º±∞¯";
+			name = L"Ï°∞ÏÑ†Í≥µ";
 			tex = L"Prototype_Component_Texture_MerchantIcon";
 			ePlayerState = E_PLAYERSTATE::REPAIR_SHOP;
 			sound = L"Repair_Visit";
 			break;
 		case 1:
 			eLevel = VIllAGE_LOCATION::FISH;
-			name = L"ª˝º±¿Âºˆ";
+			name = L"ÏÉùÏÑ†Ïû•Ïàò";
 			tex = L"Prototype_Component_Texture_FishIconVill";
 			ePlayerState = E_PLAYERSTATE::FISH_SHOP;
 			sound = L"Fishmonger_Visit";
@@ -72,7 +72,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			break;
 		case 2:
 			eLevel = VIllAGE_LOCATION::STORAGE;
-			name = L"≥ª√¢∞Ì";
+			name = L"ÎÇ¥Ï∞ΩÍ≥†";
 
 			tex = L"Prototype_Component_Texture_StorageIcon";
 			ePlayerState = E_PLAYERSTATE::STORAGE;
@@ -235,7 +235,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 	
 			};
 		pDesc.ClickEvent = [this,i,sound](CUIButton* pThis) {
-			Evt_Village_Btn e = {};
+			Evt_VillageBtn e = {};
 			e.type = i;
 				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
 				m_pGameInstance.lock()->Play_Once(sound);
@@ -285,7 +285,7 @@ HRESULT CUI_Village::OnInit(void* pArg)
 
 	CUIText::TEXT_DESC textVill_Name = {};
 	textVill_Name.strFontTag = L"Noto_Sans_CJK_SC_32";
-	textVill_Name.strText = L"≈´∞Ò∏∂¿ª";
+	textVill_Name.strText = L"ÌÅ∞Í≥®ÎßàÏùÑ";
 	shared_ptr<CUIText> TextVill = CUIText::Create(m_pDevice, m_pContext);
 	TextVill->Initialize(&textVill_Name);
 

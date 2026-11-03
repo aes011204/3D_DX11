@@ -1,4 +1,4 @@
-#include "MiniGame_Logic_Diamond.h"
+ï»¿#include "MiniGame_Logic_Diamond.h"
 
 
 #include <UIButton.h>
@@ -86,7 +86,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 				if (isSuccess == true)
 				{
-					// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+					// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 				//m_bStart = false;
 
 					m_prograssBar01 += 0.2;
@@ -96,7 +96,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 				}
 				else
 				{
-					// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+					// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 					m_prograssBar01 -= 0.2;
 
@@ -122,7 +122,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 		if (m_prograssBar01 >= 1.f && !m_bFin)
 		{
-			//ÁøÂ¥ ¼º°ø ¹İÈ¯
+			//ì§„ì§œ ì„±ê³µ ë°˜í™˜
 			m_bStart = false;
 
 			m_bFin = true;
@@ -132,9 +132,9 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 			e.DefID = m_DefID;
 			e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
 			auto& item = CItemDB::GetInstance()->GetItemByID(m_DefID);
-			if (auto fish = std::get_if<Fish_Def>(&item.TypeDef))
+			if (auto fish = std::get_if<FishDef>(&item.typeDef))
 			{
-				e.fishInst.mutation_ID = SelectMutationNoRepeat(*fish);
+				e.fishInst.mutationId = SelectMutationNoRepeat(*fish);
 			}
 			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
@@ -174,7 +174,7 @@ void CMiniGame_Logic_Diamond::OnInput()
 		m_bFin = false;
 	}
 
-	//½ÃÀÛ
+	//ì‹œì‘
 	if (!m_bStart)
 	{
 		m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
@@ -205,7 +205,7 @@ void CMiniGame_Logic_Diamond::OnInput()
 
 	//	if (isSuccess == true)
 	//	{
-	//		// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+	//		// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 	//	//m_bStart = false;
 
 	//		m_prograssBar01 += 0.2;
@@ -214,7 +214,7 @@ void CMiniGame_Logic_Diamond::OnInput()
 	//	}
 	//	else
 	//	{
-	//		// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+	//		// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 	//		m_prograssBar01 -= 0.2;
 

@@ -1,4 +1,4 @@
-#include "MiniGame_Logic_Ball.h"
+ï»¿#include "MiniGame_Logic_Ball.h"
 
 
 #include <UIButton.h>
@@ -65,7 +65,7 @@ HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
 
 		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
 
-		// ±¸°£ ¾È¿¡¼­¸¸ »ı¼ºµÇ°Ô Á¦ÇÑ
+		// êµ¬ê°„ ì•ˆì—ì„œë§Œ ìƒì„±ë˜ê²Œ ì œí•œ
 		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
 		float end = start + m_zoneSize;
 
@@ -137,7 +137,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 		//	if (isSuccess == true)
 		//	{
-		//		// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+		//		// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 		//	//m_bStart = false;
 
 		//		m_prograssBar01 += 0.2;
@@ -147,7 +147,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 		//	}
 		//	else
 		//	{
-		//		// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+		//		// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 		//		m_prograssBar01 -= 0.2;
 
@@ -163,7 +163,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 	if (m_prograssBar01 >= 1.f && !m_bFin)
 	{
-		//ÁøÂ¥ ¼º°ø ¹İÈ¯
+		//ì§„ì§œ ì„±ê³µ ë°˜í™˜
 		m_bStart = false;
 
 		m_bFin = true;
@@ -172,7 +172,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 		Evt_GetFish  e = {};
 		e.DefID = m_DefID;
 		e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
-		e.fishInst.mutation_ID = 2;
+		e.fishInst.mutationId = 2;
 		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
 		m_FishCount--;
@@ -210,7 +210,7 @@ void CMiniGame_Logic_Ball::ResetZoon()
 
 		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
 
-		// ±¸°£ ¾È¿¡¼­¸¸ »ı¼ºµÇ°Ô Á¦ÇÑ
+		// êµ¬ê°„ ì•ˆì—ì„œë§Œ ìƒì„±ë˜ê²Œ ì œí•œ
 		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
 		float end = start + m_zoneSize;
 
@@ -234,7 +234,7 @@ void CMiniGame_Logic_Ball::OnInput()
 		return;
 	}
 
-	// 2. ½ÃÀÛ
+	// 2. ì‹œì‘
 	if (!m_bStart)
 	{
 		m_bStart = true;
@@ -268,7 +268,7 @@ void CMiniGame_Logic_Ball::OnInput()
 
 			if (isSuccess == true)
 			{
-				// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+				// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 			//m_bStart = false;
 
 				m_prograssBar01 += 0.2;
@@ -277,7 +277,7 @@ void CMiniGame_Logic_Ball::OnInput()
 			}
 			else
 			{
-				// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+				// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 				m_prograssBar01 -= 0.2;
 

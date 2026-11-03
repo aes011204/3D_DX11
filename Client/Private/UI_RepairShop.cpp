@@ -1,4 +1,4 @@
-#include "UI_RepairShop.h"
+ï»¿#include "UI_RepairShop.h"
 
 #include <UIText.h>
 
@@ -46,8 +46,8 @@ void CUI_RepairShop::UI_PanelActive()
 {
 	//m_Children.clear();
 	_uint numPanel = {};
-	// ÀÏ´Ü ±âº»ÀûÀ¸·Î ÆĞ³Î Àº ´Ù inactive, ¹öÆ°Àº iTabfig ¿¡ µû¶ó active
-	//::OnActive() ¿¡¼­ Å¬¸¯ÇÑ °Å¸¸ È°¼ºÈ­
+	// ì¼ë‹¨ ê¸°ë³¸ì ìœ¼ë¡œ íŒ¨ë„ ì€ ë‹¤ inactive, ë²„íŠ¼ì€ iTabfig ì— ë”°ë¼ active
+	//::OnActive() ì—ì„œ í´ë¦­í•œ ê±°ë§Œ í™œì„±í™”
 
 	for(auto Button: m_ButtonContents)
 	{
@@ -65,7 +65,7 @@ void CUI_RepairShop::UI_PanelActive()
 //	m_TextIMG->UI_Active();
 	m_BtnFix->UI_Active();
 	m_FixButtonTex->UI_Active();
-	/*_wstring strTag = format(L"¸ğµÎ ¼ö¸®[{:.2f}]", m_repairPrice);
+	/*_wstring strTag = format(L"ëª¨ë‘ ìˆ˜ë¦¬[{:.2f}]", m_repairPrice);
 	m_FixButtonTex->Set_Text(strTag);*/
 	Change_LayoutRawCol( 4,1);
 
@@ -86,9 +86,9 @@ void CUI_RepairShop::UI_PanelActive()
 
 HRESULT CUI_RepairShop::OnInit(void* pArg)
 {
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_RepairCoat>([this](const Evt_RepairCoat& e)
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_RepairCost>([this](const Evt_RepairCost& e)
 		{
-			_wstring strTag = format(L"¸ğµÎ ¼ö¸®[${}]", e.cost);
+			_wstring strTag = format(L"ëª¨ë‘ ìˆ˜ë¦¬[${}]", e.cost);
 			m_FixButtonTex->Set_Text(strTag);
 			m_repairPrice = e.cost;
 		});
@@ -102,7 +102,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	TABpDesc->TextureComLevel = ETOI(LEVEL::STATIC);
 	TABpDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
 	TABpDesc->IsUseLayout = true;
-	//pDesc.vAnchorPoint = ÀÏ´Ü ÆĞ½º
+	//pDesc.vAnchorPoint = ì¼ë‹¨ íŒ¨ìŠ¤
 	//	pDesc.vPivot
 	//	pDesc.vAnchoredPos
 
@@ -135,7 +135,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	{
 		SHOPTAB eTab = static_cast<SHOPTAB>(i);
 
-		/// ¹öÆ°
+		/// ë²„íŠ¼
 		CUIButton::UIBUTTON_DESC ButDesc = {};
 		ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 		ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
@@ -204,7 +204,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	{
 		{
 			SHOPTAB eTab = static_cast<SHOPTAB>(i);
-			// ÀÏ´Ü Å×½ºÆ® ÀÎº¥ 3°³
+			// ì¼ë‹¨ í…ŒìŠ¤íŠ¸ ì¸ë²¤ 3ê°œ
 			CUI_Storage::STORAGE_DESC StorageDesc = {};
 			StorageDesc.IsFullScreen = false;
 			StorageDesc.IsTransparent = true;
@@ -229,7 +229,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	}
 		
 
-		///µ·///
+		///ëˆ///
 
 	{
 			CUIButton::UIBUTTON_DESC ButDesc = {};
@@ -240,7 +240,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 			ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
 			ButDesc.ClickEvent = [this](CUIButton* pThis)
 				{
-					// ÀüÃ¼¼ö¸®
+					// ì „ì²´ìˆ˜ë¦¬
 
 					Evt_FixAll event{};
 					
@@ -257,7 +257,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 
 				CUIText::TEXT_DESC text_Desc = {};
 				text_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
-				text_Desc.strText = L"Å×½ºÆ®";
+				text_Desc.strText = L"í…ŒìŠ¤íŠ¸";
 				shared_ptr<CUIText> Text_storage = CUIText::Create(m_pDevice, m_pContext);
 				Text_storage->Initialize(&text_Desc);
 				button->Add_Child(Text_storage, L"Text_repairPrice", false);
@@ -311,7 +311,7 @@ void CUI_RepairShop::OnDisabled()
 
 void CUI_RepairShop::OnUpdate(const _float& timeDelta)
 {
-	// ¿©±â¿¡¼­ ¾Èº¸¿´´Ù°¡ ¿Í¾ßÇÔ
+	// ì—¬ê¸°ì—ì„œ ì•ˆë³´ì˜€ë‹¤ê°€ ì™€ì•¼í•¨
 	if (m_bStart == true)
 	{
 		m_TimeAcc += timeDelta;
@@ -356,17 +356,17 @@ void CUI_RepairShop::SetActiveTab(_uint btnIndex)
 	for (int i = 0; i < ETOI(SHOPTAB::END); i++)
 	{
 		if (m_TabContents[i])
-			m_TabContents[i]->UI_InActive(); // ÅÇÀº ÀÎ¿¢Æ¼ºê¸¦ ÇØ¾ßÇÏ°í 
+			m_TabContents[i]->UI_InActive(); // íƒ­ì€ ì¸ì—‘í‹°ë¸Œë¥¼ í•´ì•¼í•˜ê³  
 
 		if (m_ButtonContents[i])
-			m_ButtonContents[i]->ChangeState(BUTTON_STATE::NORMAL); // ¹öÆ°Àº ¾ğ¼¿·ºÆ® 
+			m_ButtonContents[i]->ChangeState(BUTTON_STATE::NORMAL); // ë²„íŠ¼ì€ ì–¸ì…€ë ‰íŠ¸ 
 	}
 
 	if (m_TabContents[ETOI(btnIndex)])
-		m_TabContents[ETOI(btnIndex)]->UI_Active(); // ÇØ´ç ÆĞ³Î È°¼ºÈ­
+		m_TabContents[ETOI(btnIndex)]->UI_Active(); // í•´ë‹¹ íŒ¨ë„ í™œì„±í™”
 
 	if (m_ButtonContents[ETOI(btnIndex)])
-		m_ButtonContents[ETOI(btnIndex)]->ChangeState(BUTTON_STATE::SELECT); // ¼¿·ºÆ®
+		m_ButtonContents[ETOI(btnIndex)]->ChangeState(BUTTON_STATE::SELECT); // ì…€ë ‰íŠ¸
 }
 
 shared_ptr<CUI_RepairShop> CUI_RepairShop::Create(ComPtr<ID3D11Device> pDevice,

@@ -1,4 +1,4 @@
-#include "ColliderObject.h"
+﻿#include "ColliderObject.h"
 
 #include "GameInstance.h"
 #include "Collider.h"
@@ -77,7 +77,7 @@ void CColliderObject::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCol
     {
         auto player = dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner());
         if (player != nullptr)
-            player->Get_Demage();
+            player->Get_Damage();
     }
 }
 

@@ -1,4 +1,4 @@
-#include "Mon_R_Act.h"
+ï»¿#include "Mon_R_Act.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "Collider.h"
@@ -144,7 +144,7 @@ void CMon_R_Act::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 	{
 		if (other->Get_MyLayer()==COLLISION_LAYER::PLAYER)
 		{
-			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Demage(4);
+			dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner())->Get_Damage(4);
 
 			m_IsColl = true;
 			m_pGameInstance.lock()->Stop(L"Leviathan_Rumble_Loop",1.5);
@@ -230,10 +230,10 @@ HRESULT CMon_R_Act::Bind_ShaderResources()
 HRESULT CMon_R_Act::Ready_Components()
 {
 
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
+	// ì‰ì´ë”ëŠ” í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ì„
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨ 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_R_Act"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
 

@@ -1,4 +1,4 @@
-#include "UI_Controller.h"
+ï»¿#include "UI_Controller.h"
 
 #include <numbers>
 
@@ -40,7 +40,7 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 	Ready_UI();
 
 
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Cam_Arrived>([this](const Evt_Cam_Arrived e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_CamArrived>([this](const Evt_CamArrived e)
 	{
 		if(!CDialogueDB::GetInstance()->Get_PendingDialogue().empty())
 		{
@@ -57,7 +57,7 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 	});
 	
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Dialogue_Finish>([this](const Evt_Dialogue_Finish e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_DialogueFinish>([this](const Evt_DialogueFinish e)
 		{
 		if(m_PendingUIState ==E_PLAYERSTATE::VILLAGE)
 		{
@@ -94,7 +94,7 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 			CacheToolTip(e);
 
-			if (e.locationState == LOCATIONSTATE::END || e.itemInst.ItemInst_ID == ID_Absence)
+			if (e.locationState == LOCATIONSTATE::END || e.itemInst.itemInstId == ID_Absence)
 			{
 				ui->UI_InActive();
 				return;
@@ -301,7 +301,7 @@ HRESULT CUI_Controller::Ready_UI()
 		CUIText::TEXT_DESC TextDesc;
 		//TextDesc.TextColor = _float4{ 1.f,0.f };
 		TextDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
-		TextDesc.strText = L"½ÉÇØ·ÎºÎÅÍ";
+		TextDesc.strText = L"ì‹¬í•´ë¡œë¶€í„°";
 		TextDesc.fontaline = CUIText::FONTALINE::DEFAULT;
 
 		shared_ptr<CUIText> text = CUIText::Create(m_pDevice, m_pContext);
@@ -311,7 +311,7 @@ HRESULT CUI_Controller::Ready_UI()
 
 		m_pGameInstance.lock()->UI_InsertToPool(L"Loading", pInstance);
 
-		/// ÀúÀå ÇØ µÎ±â ¸ðµç ·¹º§¿¡¼­ ÇÊ¿ä ÇÒ¿¹Á¤
+		/// ì €ìž¥ í•´ ë‘ê¸° ëª¨ë“  ë ˆë²¨ì—ì„œ í•„ìš” í• ì˜ˆì •
 		
 		m_Loading = pInstance;
 
@@ -442,7 +442,7 @@ void CUI_Controller::InActiveTime()
 }
 void CUI_Controller::CacheToolTip(const Evt_ItemHovered& e)
 {
-	if (e.locationState == LOCATIONSTATE::END || e.itemInst.ItemInst_ID == ID_Absence)
+	if (e.locationState == LOCATIONSTATE::END || e.itemInst.itemInstId == ID_Absence)
 	{
 		m_ToolTipRestore = {};
 		return;
@@ -459,7 +459,7 @@ void CUI_Controller::RestoreToolTip()
 	if (m_ToolTipRestore.bValid == false)
 		return;
 
-	if (m_ToolTipRestore.itemInst.ItemInst_ID == ID_Absence)
+	if (m_ToolTipRestore.itemInst.itemInstId == ID_Absence)
 		return;
 
 	auto ToolTip = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"ToolTip");

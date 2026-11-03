@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
 #include "Client_Enum.h"
 #include "Inventory.h"
 
-// ½Ì±ÛÅæ or Àü¿ª ¸¶¿ì½ºÄ¿¼­¿Í ºñ½ÁÇÏ°Ô»ç¿ë
-// °ÔÀÓ ¿ÀºêÁ§Æ® ÀÎµ¥ 1°³¸¸ ¸¸µé°ÅÀÓ
+// ì‹±ê¸€í†¤ or ì „ì—­ ë§ˆìš°ìŠ¤ì»¤ì„œì™€ ë¹„ìŠ·í•˜ê²Œì‚¬ìš©
+// ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì¸ë° 1ê°œë§Œ ë§Œë“¤ê±°ì„
 NS_BEGIN(Engine)
 class CGameInstance;
 NS_END
@@ -32,7 +32,7 @@ private:
     bool m_hoverValid = false;
     bool m_hoverDirty = false;
 public:
-    void Make_Hold(Item_Inst inst);
+    void Make_Hold(ItemInst inst);
     shared_ptr<CInventory> Get_CurrentInven();
 
     void Set_Inven(weak_ptr<class CInventory> inventory) { m_PlayerInven = inventory; }
@@ -51,9 +51,9 @@ public:
 private:
     //Item_Inst m_HoldItem = {};
     vector<_float2> m_OffSet = {};
-    /*_float m_Rotaion = {};*/ // ÀÌ°Å ÀÎ½ºÅÏ½º ¾È¿¡ ÀÖÀ½
+    /*_float m_Rotaion = {};*/ // ì´ê±° ì¸ìŠ¤í„´ìŠ¤ ì•ˆì— ìˆìŒ
 
-    _uint m_prevItemInstId = {};//ÅøÆÁ¿ë Ã¼Å©
+    _uint m_prevItemInstId = {};//íˆ´íŒìš© ì²´í¬
     //bool prevMouseOnSlot = { false };
     bool m_bDragging = false;
     bool m_PrevDragging = false;
@@ -64,8 +64,8 @@ private:
 
     _bool m_bPrevOnSlot = { false };
 
-    // »óÁ¡ µîµîÀ» À§ÇÑ ÀÎ¹ê µ¥ÀÌÅÍµµ ÇÊ¿äÇÔ
-     weak_ptr<class CInventory> m_PlayerInven = {}; // ·ÎÁ÷
+    // ìƒì  ë“±ë“±ì„ ìœ„í•œ ì¸ë°´ ë°ì´í„°ë„ í•„ìš”í•¨
+     weak_ptr<class CInventory> m_PlayerInven = {}; // ë¡œì§
     weak_ptr<CInventory> m_TargetInven;
 
 

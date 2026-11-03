@@ -1,4 +1,4 @@
-#include "Village.h"
+ï»¿#include "Village.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "Bounding_AABB.h"
@@ -58,11 +58,11 @@ HRESULT CVillage::Initialize(void* pArg)
 
 	for (_uint i = 0; i < ETOI(SHOPTAB::END); i++)
 	{
-		Evt_InvenStrageInit_Data e = {};
-		e.Inven_ptr = m_pShopCom[i];
-		e.inventype = m_pShopCom[i]->Get_Inventype();
-		e.ShopTabType = static_cast<SHOPTAB>(i);
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
+		Evt_InvenStorageInitData e = {};
+		e.invenPtr = m_pShopCom[i];
+		e.invenType = m_pShopCom[i]->Get_Inventype();
+		e.shopTabType = static_cast<SHOPTAB>(i);
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStorageInitData>(e);
 	}
 
 	return S_OK;
@@ -75,7 +75,7 @@ void CVillage::Priority_Update(_float fTimeDelta)
 void CVillage::Update(_float fTimeDelta)
 {
 	if (m_bIsDirtyCom) {
-		RebindCom();      // "¹Ù²ï °Í"¸¸ ÇÑ ¹ø °»½Å
+		RebindCom();      // "ë°”ë€ ê²ƒ"ë§Œ í•œ ë²ˆ ê°±ì‹ 
 		m_bIsDirtyCom = false;
 	}
 	int a = 1;
@@ -197,10 +197,10 @@ HRESULT CVillage::Ready_Components()
 	//	TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	//	return E_FAIL;
 
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
+	// ì‰ì´ë”ëŠ” í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ì„
 	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨ 
 	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Town"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 		return E_FAIL;
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
@@ -218,9 +218,9 @@ HRESULT CVillage::Ready_Components()
 
 	for(_uint i =0; i < ETOI(SHOPTAB::END) ; i++)
 	{
-		CInventory::INVEN_DESC storage_desc = {};
+		CInventory::InvenDesc storage_desc = {};
 		storage_desc.invenType = INVENTYPE::SHOP;
-		storage_desc.EquipType = static_cast<EQUIP_TYPE>(i);
+		storage_desc.equipType = static_cast<EQUIP_TYPE>(i);
 		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pShopCom[i], &storage_desc)))
 			return E_FAIL;
 

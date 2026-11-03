@@ -1,4 +1,4 @@
-#include "Player_RepairShop.h"
+﻿#include "Player_RepairShop.h"
 
 #include <UI.h>
 
@@ -25,20 +25,20 @@ void CPlayer_RepairShop::Enter()
 
 
 	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CAM_LERP_DESC>();
+	auto pLerp = make_shared<CamLerpDesc>();
 	pLerp->eMode = CAM_MODE::LERP;
 	pLerp->vTargetPos = _float3(3.14f, 3.429f, 5.734f);
 	pLerp->vTargetRot = _float3(5.58f, -145.63f, 0.f);
 	pLerp->fDuration = 2.0f;
 	pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
-		Evt_Cam_Arrived e = {};
+		Evt_CamArrived e = {};
 		e.playerstate = E_PLAYERSTATE::REPAIR_SHOP;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 	};
 	event.commands.push_back(pLerp);
 
-	auto pStop = make_shared<CAM_DESC>();
+	auto pStop = make_shared<CamDesc>();
 	pStop->eMode = CAM_MODE::STOP;
 	event.commands.push_back(pStop);
 
@@ -89,23 +89,23 @@ int CPlayer_RepairShop::Update_State(const _float& timeDelta)
 		return  ETOI(E_PLAYERSTATE::VILLAGE);
 	}
 
-	else if (m_Input_Manager->KeyDown(DIK_F) && !m_ItemIdInst.ItemInst_ID == ID_Absence)
+	else if (m_Input_Manager->KeyDown(DIK_F) && !m_ItemIdInst.itemInstId == ID_Absence)
 	{
-		if (m_ItemIdInst.ItemType == ITEM_TYPE::EQUIP)
+		if (m_ItemIdInst.itemType == ITEM_TYPE::EQUIP)
 		{
 			float money = {};
-			if (m_ItemIdInst.IsMutaion == true)
-				money = m_ItemIdInst.MutaionCashing.MutCost;
+			if (m_ItemIdInst.isMutation == true)
+				money = m_ItemIdInst.mutationCaching.mutCost;
 			else
 			{
-				auto def = CItemDB::GetInstance()->GetItemByID(m_ItemIdInst.ItemDef_ID).TypeDef;
+				auto def = CItemDB::GetInstance()->GetItemByID(m_ItemIdInst.itemDefId).typeDef;
 
-				money = get<Fish_Def>(def).Cost;
+				money = get<FishDef>(def).cost;
 
 			}
 
 			m_Owner.lock()->Add_Money(money);
-			m_Owner.lock()->GetInventory()->RemoveFrom_Inven(m_ItemIdInst.ItemInst_ID);
+			m_Owner.lock()->GetInventory()->RemoveFrom_Inven(m_ItemIdInst.itemInstId);
 
 
 		}
@@ -113,7 +113,7 @@ int CPlayer_RepairShop::Update_State(const _float& timeDelta)
 	}
 	else if (m_Input_Manager->MouseDown(DIMB::WHEEL))
 	{
-		Evt_MoveTo_Storage e = {};
+		Evt_MoveToStorage e = {};
 
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 

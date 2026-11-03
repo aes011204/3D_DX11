@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Client_Define.h"
 #include "Camera.h"
 
@@ -35,18 +35,18 @@ public:
     virtual void Late_Update(_float fTimeDelta);
     virtual HRESULT Render();
 
-    void Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
-    bool Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
+    void Update_Follow(_float fTimeDelta, shared_ptr<CamDesc> pDesc);
+    bool Update_Lerp(_float fTimeDelta, shared_ptr<CamDesc> pDesc);
     void Get_Target_PosLook(_float3& camPos, _float3& vTargetRot);
     _float3 Shake_Cam(_float fTimeDelta);
 private:
     void Start_Targetting(_float4 startPos, _float degree, _float distance);
 
 private:
-    //shared_ptr<CAM_DESC> m_pCurrentDesc = nullptr; // µ¥ÀÌÅÍ ¾È¿¡ ¸ğµå Á¤º¸°¡ ÀÖÀ½
-    //shared_ptr<CAM_DESC> m_pNextDesc = nullptr; // ´ÙÀ½ ¿¹¾à¼®
+    //shared_ptr<CAM_DESC> m_pCurrentDesc = nullptr; // ë°ì´í„° ì•ˆì— ëª¨ë“œ ì •ë³´ê°€ ìˆìŒ
+    //shared_ptr<CAM_DESC> m_pNextDesc = nullptr; // ë‹¤ìŒ ì˜ˆì•½ì„
 
-    _float3 m_BasePos; // ÇØ´ç ÇÁ·¹ÀÓ¿¡ Ã³À½ À§Ä¡
+    _float3 m_BasePos; // í•´ë‹¹ í”„ë ˆì„ì— ì²˜ìŒ ìœ„ì¹˜
 
     _bool m_isShack = false;
     float m_ShakeTime = {};
@@ -58,7 +58,7 @@ private:
     float  m_fStartFovy = 0.f;
     float m_Acc = 0.f;
 
-    deque<shared_ptr<CAM_DESC>> m_CamCommands;
+    deque<shared_ptr<CamDesc>> m_CamCommands;
 
     _bool m_bFinish = false;
     _bool m_bChange = false;
@@ -86,7 +86,7 @@ private:
     //_float  m_fDuration={};
     _bool m_FirstFlag = {false};
 public:
-    //void* pArg : »çº»°´Ã¼ÀÇ Ãß°¡ÀûÀÎ ÃÊ±âÈ­°¡ ÇÊ¿ä ÇÒ¼ö ÀÖÀ½ ·±Å¸ÀÓ ÇÒ´ç µÇ´Â ÁÖ¼Ò °°Àº°Å
+    //void* pArg : ì‚¬ë³¸ê°ì²´ì˜ ì¶”ê°€ì ì¸ ì´ˆê¸°í™”ê°€ í•„ìš” í• ìˆ˜ ìˆìŒ ëŸ°íƒ€ì„ í• ë‹¹ ë˜ëŠ” ì£¼ì†Œ ê°™ì€ê±°
     static shared_ptr<CCamera_Play> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
     virtual shared_ptr<CGameObject> Clone(void* pArg) override;
     void Free() override;

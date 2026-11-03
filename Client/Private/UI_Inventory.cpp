@@ -1,4 +1,4 @@
-#include "UI_Inventory.h"
+Ôªø#include "UI_Inventory.h"
 
 #include "UIText.h"
 
@@ -13,7 +13,7 @@
 
 namespace Engine
 {
-	struct Evt_Demage;
+	struct Evt_Damage;
 }
 
 CUI_Inventory::CUI_Inventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
@@ -29,55 +29,55 @@ CUI_Inventory::CUI_Inventory(const CUIPanel& prototype)
 
 HRESULT CUI_Inventory::Initialize_Prototype()
 {
-	// ¿Ã∞« ±◊≥…  PreInitialize ¥ÎøÎ¿∏∑Œ ªÁøÎ
+	// Ïù¥Í±¥ Í∑∏ÎÉ•  PreInitialize ÎåÄÏö©ÏúºÎ°ú ÏÇ¨Ïö©
 	//
-	///πﬂ«‡¿Ã ≥™¡ﬂø° µ«æﬂ«‘ 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenPlayerInit_Data>([this](const Evt_InvenPlayerInit_Data& e)
+	///Î∞úÌñâÏù¥ ÎÇòÏ§ëÏóê ÎêòÏïºÌï® 
+	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenPlayerInitData>([this](const Evt_InvenPlayerInitData& e)
 		{
-			m_Inven = e.Inven_ptr;
+			m_Inven = e.invenPtr;
 			if (m_Inven.lock() != nullptr)
 				Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
 		});
 
 	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ShipStat>([this](const Evt_ShipStat& e)
 		{
-			wstring strInfo = format(L"æÓº± º”µµ : {}kn\n≥¨Ω√ º”µµ : {}%\nµÓ∫“ : {}lm",
-				e.EngineSpeed, e.FishingSpeed, e.LightIntensity);
+			wstring strInfo = format(L"Ïñ¥ÏÑ† ÏÜçÎèÑ : {}kn\nÎÇöÏãú ÏÜçÎèÑ : {}%\nÎì±Î∂à : {}lm",
+				e.engineSpeed, e.fishingSpeed, e.lightIntensity);
 			this->m_TextInfo->Set_Text(strInfo);
 
 			wstring strSeaTypes = L"";
 			_uint iCount = 0;
 			for (_uint i = 0; i < (_uint)SEA_TYPE::END; ++i)
 			{
-				// e.maskø° «ÿ¥Á ∫Ò∆Æ∞° ƒ—¡Æ ¿÷¥¬¡ˆ »Æ¿Œ (øπ: 1 << 0, 1 << 1 ...)
-				if (e.SeaMask & (1 << i))
+				// e.maskÏóê Ìï¥Îãπ ÎπÑÌä∏Í∞Ä ÏºúÏ†∏ ÏûàÎäîÏßÄ ÌôïÏù∏ (Ïòà: 1 << 0, 1 << 1 ...)
+				if (e.seaMask & (1 << i))
 				{
-					if (iCount > 0) strSeaTypes += L", "; // µŒ π¯¬∞ ¿Ã∏ß∫Œ≈Õ¥¬ Ω∞«• √ﬂ∞°
+					if (iCount > 0) strSeaTypes += L", "; // Îëê Î≤àÏß∏ Ïù¥Î¶ÑÎ∂ÄÌÑ∞Îäî ÏâºÌëú Ï∂îÍ∞Ä
 					strSeaTypes += GetSeaTypeName((SEA_TYPE)(1 << i));
 					iCount++;
 				}
 			}
 
-			if (iCount == 0) strSeaTypes = L"æ¯¿Ω";
+			if (iCount == 0) strSeaTypes = L"ÏóÜÏùå";
 
-			wstring strInfo_2 = format(L"¿‚¿ªºˆ ¿÷¥¬ æÓ¡æ :\n {}", strSeaTypes);
+			wstring strInfo_2 = format(L"Ïû°ÏùÑÏàò ÏûàÎäî Ïñ¥Ï¢Ö :\n {}", strSeaTypes);
 			this->m_TextInfo_1->Set_Text(strInfo_2);
 		});
 
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Demage>(
-		[this](const Evt_Demage& e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Damage>(
+		[this](const Evt_Damage& e)
 		{
-			if (e.DemageCount > m_DemageSlot.size())
+			if (e.damageCount > m_DemageSlot.size())
 				return;
 			
-			for (_uint i = 0; i < e.DemageCount; i++)
+			for (_uint i = 0; i < e.damageCount; i++)
 			{
 				m_DemageSlot[i]->Set_TextureIndex(1);
 			}
 		});
 
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_FixAll_Done>(
-		[this](const Evt_FixAll_Done& e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_FixAllDone>(
+		[this](const Evt_FixAllDone& e)
 		{
 			
 			for (_uint i = 0; i < m_DemageSlot.size(); i++)
@@ -91,7 +91,7 @@ HRESULT CUI_Inventory::Initialize_Prototype()
 
 _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& inven_slot)
 {
-	//∫∏∆Æ ΩΩ∑‘∏æÁ¿Ã πŸ≤Ó∏È ∂˜¥ŸµÓ¿∏∑Œ Init_InventorySlot »£√‚ 
+	//Î≥¥Ìä∏ Ïä¨Î°ØÎ™®ÏñëÏù¥ Î∞îÎÄåÎ©¥ ÎûåÎã§Îì±ÏúºÎ°ú Init_InventorySlot Ìò∏Ï∂ú 
 	//find boat back ground ->  clear boat back ground's chilren -> for{for{}} add new slot children
 
 	if (/*Inven_Contrl == nullptr||*/ m_InvenPanel == nullptr)
@@ -122,7 +122,7 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 			slot_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
 			slot_Inven.vScale = Vector2{ 1.6f,1.6f };
 			slot_Inven.Index = i * w + j;
-			if (inven_slot[i * w + j].IsLock == true)
+			if (inven_slot[i * w + j].isLock == true)
 			{
 				slot_Inven.IsTransparent = true;
 			}
@@ -138,7 +138,7 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
 				break;
 			case ETOI(SLOT_TYPE::NET):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // æÿ æ¯¥¬µÌ
+				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // Ïï§ ÏóÜÎäîÎìØ
 				break;
 			case ETOI(SLOT_TYPE::ROT):
 				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
@@ -200,7 +200,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 
 
-	///// ¡§∫∏ ¿ÃπÃ¡ˆ /////
+	///// Ï†ïÎ≥¥ Ïù¥ÎØ∏ÏßÄ /////
 
 	CUIImage::UIIMAGE_DESC ImgDesc = {};
 	ImgDesc.TextureComLevel = ETOI(LEVEL::STATIC);
@@ -215,7 +215,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 	{
 		CUIText::TEXT_DESC InfoTexDesc = {};
 		InfoTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
-		InfoTexDesc.strText = format(L"æÓº± º”µµ : {}kn\n≥¨Ω√ º”µµ : {}%\nµÓ∫“ : {}lm",
+		InfoTexDesc.strText = format(L"Ïñ¥ÏÑ† ÏÜçÎèÑ : {}kn\nÎÇöÏãú ÏÜçÎèÑ : {}%\nÎì±Î∂à : {}lm",
 			0, 0, 0);
 		InfoTexDesc.fontaline = CUIText::FONTALINE::LEFT;
 		shared_ptr<CUIText>InfoTex = CUIText::Create(m_pDevice, m_pContext);
@@ -226,7 +226,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 		CUIText::TEXT_DESC InfoTexDesc_1 = {};
 		InfoTexDesc_1.strFontTag = L"Noto_Sans_CJK_SC";
-		InfoTexDesc_1.strText = format(L"¿‚¿ªºˆ ¿÷¥¬ æÓ¡æ :\n {}kn",0);
+		InfoTexDesc_1.strText = format(L"Ïû°ÏùÑÏàò ÏûàÎäî Ïñ¥Ï¢Ö :\n {}kn",0);
 		InfoTexDesc_1.fontaline = CUIText::FONTALINE::LEFT;
 		shared_ptr<CUIText> InfoTex_1 = CUIText::Create(m_pDevice, m_pContext);
 		InfoTex_1->Initialize(&InfoTexDesc_1);
@@ -238,7 +238,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 	Add_Child(pChild, NameTag, false);
 
 
-	///// ¿ŒπÍ ΩΩ∑‘ ∆–≥Œ /////
+	///// Ïù∏Î∞¥ Ïä¨Î°Ø Ìå®ÎÑê /////
 	CUIPanel::UIPANEL_DESC Panel_Inven = {};
 	Panel_Inven.TextureProtoName = L"Prototype_Component_Texture_PlayerInventoryBackground";
 	Panel_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
@@ -261,7 +261,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 
 
-	///// µ•πÃ¡ˆ ΩΩ∑Œ ∆–≥Œ /////
+	///// Îç∞ÎØ∏ÏßÄ Ïä¨Î°ú Ìå®ÎÑê /////
 	CUIPanel::UIPANEL_DESC Panel_damage = {};
 	Panel_damage.TextureProtoName = L"Prototype_Component_Texture_HealthBarPanel";
 	Panel_damage.TextureComLevel = ETOI(LEVEL::STATIC);
@@ -322,8 +322,8 @@ void CUI_Inventory::OnActive()
 void CUI_Inventory::OnInActive()
 {
 
-	Evt_MouseToIndex_Data e = {};
-	e.IsOnSlot = false; // ±‚∫ª false
+	Evt_MouseToIndexData e = {};
+	e.IsOnSlot = false; // Í∏∞Î≥∏ false
 
 	//if (m_Inven.lock()->Get_Inventype() == INVENTYPE::PLAYER)
 	//{
@@ -345,7 +345,7 @@ void CUI_Inventory::OnInActive()
 
 
 
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
 	
 
 	__super::OnInActive();
@@ -379,7 +379,7 @@ void CUI_Inventory::OnPrepareRender()
 		_float4 colorReset = { 0.f,0.f,0.f,0.f };
 
 		m_Slot[index]->Set_ColorFlat(colorReset);
-		switch (InvenSlot[index].Slot_Color)
+		switch (InvenSlot[index].slotColor)
 		{
 		case PLACE_COLOR::GREEN:
 			Muscolor = { 0.f,1.f,0.f,.8f };
@@ -405,9 +405,9 @@ void CUI_Inventory::OnPrepareRender()
 		}
 
 
-		if(InvenSlot[index].IsLock == false)
+		if(InvenSlot[index].isLock == false)
 		{
-			if (InvenSlot[index].IsBroken == true)
+			if (InvenSlot[index].isBroken == true)
 			{
 				m_Slot[index]->Set_TextureIndex(1);
 			}
@@ -423,7 +423,7 @@ void CUI_Inventory::OnPrepareRender()
 	for (auto& invnelItem : InvenItem)
 	{
 		_float4 color = {};
-		switch (invnelItem.ItemType)
+		switch (invnelItem.itemType)
 		{
 		case ITEM_TYPE::MATERIAL:
 		case ITEM_TYPE::EQUIP:
@@ -436,11 +436,11 @@ void CUI_Inventory::OnPrepareRender()
 		}
 
 
-		for (_uint i = 0; i < invnelItem.CurBase.size(); i++)
+		for (_uint i = 0; i < invnelItem.curBase.size(); i++)
 		{
 
-			_uint x = invnelItem.CurBase[i].dx;
-			_uint y = invnelItem.CurBase[i].dy;
+			_uint x = invnelItem.curBase[i].dx;
+			_uint y = invnelItem.curBase[i].dy;
 			_uint index = y * m_Inven.lock()->Get_W() + x;
 
 			m_Slot[index]->Set_UseColorFlat(true);
@@ -475,8 +475,8 @@ void CUI_Inventory::OnClear()
 
 _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 {
-	Evt_MouseToIndex_Data e = {};
-	e.IsOnSlot = false; // ±‚∫ª false
+	Evt_MouseToIndexData e = {};
+	e.IsOnSlot = false; // Í∏∞Î≥∏ false
 
 	if(m_Inven.lock()->Get_Inventype() == INVENTYPE::PLAYER)
 	{
@@ -526,7 +526,7 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 	if (m_InvenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 	{
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
 	}
 	
 	return true;
@@ -557,7 +557,7 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 //
 //	return { posX, posY };
 //}
-_float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
+_float2 CUI_Inventory::Calculate_RenderPos(const ItemInst& item)
 {
 
 	_float minX = FLT_MAX, minY = FLT_MAX;
@@ -565,8 +565,8 @@ _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
 
 	_uint col = m_InvenPanel->Get_LayoutDesc().m_Col;
 	_uint row = m_InvenPanel->Get_LayoutDesc().m_Row;
-	// æ∆¿Ã≈€¿Ã ¡°¿Ø«— ∏µÁ ƒ≠¿ª µπ∏Èº≠ Ω«¡¶ ΩΩ∑‘µÈ¿« ¿ßƒ°∏¶ ºˆ¡˝
-	for (auto& OccCell : item.CurBase)
+	// ÏïÑÏù¥ÌÖúÏù¥ Ï†êÏú†Ìïú Î™®Îì† Ïπ∏ÏùÑ ÎèåÎ©¥ÏÑú Ïã§Ï†ú Ïä¨Î°ØÎì§Ïùò ÏúÑÏπòÎ•º ÏàòÏßë
+	for (auto& OccCell : item.curBase)
 	{
 		//   int index = OccCell.dy * m_w + OccCell.dx;
 		//_uint col = Get_LayoutDesc().m_Col;
@@ -589,7 +589,7 @@ _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
 
 	}
 
-	// 4. ºˆ¡˝µ» ΩΩ∑‘ ¡¬«•µÈ¿« ¡§¡ﬂæ”¿ª ±∏«‘
+	// 4. ÏàòÏßëÎêú Ïä¨Î°Ø Ï¢åÌëúÎì§Ïùò Ï†ïÏ§ëÏïôÏùÑ Íµ¨Ìï®
 	_float2 center = {
 		(minX + maxX) * 0.5f,
 		(minY + maxY) * 0.5f
@@ -646,7 +646,7 @@ void CUI_Inventory::Render_Item()
 {
 	
 
-	//¿Ã «‘ºˆ¥¬ ¿Øæ∆¿Ã∞° √ﬂ∞°µ«∞≈≥™ ¡Ÿæ˙¿ªãö Ω≈»£πﬁ¿∏∏È ±◊ãö «—π¯æø «œ¥¬∞≈¿”
+	//Ïù¥ Ìï®ÏàòÎäî Ïú†ÏïÑÏù¥Í∞Ä Ï∂îÍ∞ÄÎêòÍ±∞ÎÇò Ï§ÑÏóàÏùÑÎñÑ Ïã†Ìò∏Î∞õÏúºÎ©¥ Í∑∏ÎñÑ ÌïúÎ≤àÏî© ÌïòÎäîÍ±∞ÏûÑ
 
 	auto inven = m_Inven.lock();
 	if (inven == nullptr)
@@ -669,18 +669,18 @@ void CUI_Inventory::Render_Item()
 		{
 			if (UI->Get_Transparent() == true)
 			{
-				Item_Def def = CItemDB::GetInstance()->GetItemByID(items[i].ItemDef_ID);
-				UI->Change_Texture(items[i].pCashingTexture);
+				ItemDef def = CItemDB::GetInstance()->GetItemByID(items[i].itemDefId);
+				UI->Change_Texture(items[i].cachingTexture);
 
 				_float2 vAnchoredPos = Calculate_RenderPos(items[i]);
 
 				UI->GetUITransform()->SetAnchoredPos(vAnchoredPos);
 				UI->GetUITransform()->SetSizeDelta(
-					{ slotSize.x * def.ItemShape.Width + layout.m_Spacing.x * (def.ItemShape.Width - 1),
-					slotSize.y * def.ItemShape.Height + layout.m_Spacing.y * (def.ItemShape.Height - 1)
+					{ slotSize.x * def.itemShape.width + layout.m_Spacing.x * (def.itemShape.width - 1),
+					slotSize.y * def.itemShape.height + layout.m_Spacing.y * (def.itemShape.height - 1)
 					});
-				// »∏¿¸
-				UI->GetUITransform()->SetRotation(items[i].Rotation * -90.f);
+				// ÌöåÏ†Ñ
+				UI->GetUITransform()->SetRotation(items[i].rotation * -90.f);
 				UI->Set_Transparent(false);
 				UI->GetUITransform()->SetPivot({ 0.5f, 0.5f });
 				break;

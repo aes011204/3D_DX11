@@ -1,4 +1,4 @@
-#include "MiniGame.h"
+Ôªø#include "MiniGame.h"
 #include "GameInstance.h"
 
 CMiniGame::CMiniGame() : m_pGameInstance(CGameInstance::GetInstance())
@@ -33,24 +33,24 @@ HRESULT CMiniGame::Render(_uint iMeshIndex)
 void CMiniGame::Update(const _float& timeDelta)
 {
 }
-_uint CMiniGame::SelectMutationRandom(const Fish_Def& fishDef)
+_uint CMiniGame::SelectMutationRandom(const FishDef& fishDef)
 {
     vector<ID_uint> candidates;
     candidates.push_back(ID_Absence);
 
-    for (const Mutation& mut : fishDef.vec_Mutation)
-        candidates.push_back(mut.Mutation_ID);
+    for (const Mutation& mut : fishDef.vecMutation)
+        candidates.push_back(mut.mutationId);
 
     int index = m_pGameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
     return candidates[index];
 }
-_uint CMiniGame::SelectMutationNoRepeat(const Fish_Def& fishDef)
+_uint CMiniGame::SelectMutationNoRepeat(const FishDef& fishDef)
 {
     vector<ID_uint> candidates;
-    candidates.push_back(ID_Absence); // ±‚∫ª«¸ ∆˜«‘
+    candidates.push_back(ID_Absence); // Í∏∞Î≥∏Ìòï Ìè¨Ìï®
 
-    for (const Mutation& mut : fishDef.vec_Mutation)
-        candidates.push_back(mut.Mutation_ID);
+    for (const Mutation& mut : fishDef.vecMutation)
+        candidates.push_back(mut.mutationId);
 
     if (candidates.empty())
         return ID_Absence;

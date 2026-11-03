@@ -1,4 +1,4 @@
-#include "ItemInfo.h"
+Ôªø#include "ItemInfo.h"
 
 #include <UIImage.h>
 
@@ -16,7 +16,7 @@ CItemInfo::CItemInfo(const CUIPanel& prototype)
 {
 }
 
-void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE PlayerState, _bool IsPlayer)
+void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, E_PLAYERSTATE PlayerState, _bool IsPlayer)
 {
 	wstring NameInfo = L"";
 	wstring LeftInfo = L"";
@@ -26,7 +26,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 
 
 
-	if (itemInst.ItemInst_ID == ID_Absence)
+	if (itemInst.itemInstId == ID_Absence)
 	{
 
 		UI_InActive();
@@ -37,42 +37,42 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 
 	float fCurrentY = -m_NamePadding;
 
-	Item_Def itemDef = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
+	ItemDef itemDef = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefId);
 
-	switch (itemInst.ItemType)
+	switch (itemInst.itemType)
 	{
 	case ITEM_TYPE::FISH:
 
-		if (Fish_Inst* FishInst = get_if<Fish_Inst>(&itemInst.TypeDef))
+		if (FishInst* fishInst = get_if<FishInst>(&itemInst.typeDef))
 		{
-			Fish_Def* FishDef = get_if<Fish_Def>(&itemDef.TypeDef);
+			FishDef* fishDef = get_if<FishDef>(&itemDef.typeDef);
 
-			if (FishInst->mutation_ID == ID_Absence)
+			if (fishInst->mutationId == ID_Absence)
 			{
-				NameInfo = S2W(itemDef.ItemName);
-				DescInfo = S2W(itemDef.ItemDesc);
-				cost = FishDef->Cost;
+				NameInfo = S2W(itemDef.itemName);
+				DescInfo = S2W(itemDef.itemDesc);
+				cost = fishDef->cost;
 			}
 			else
 			{
-				const int mutationIndex = static_cast<int>(FishInst->mutation_ID) - 1;
+				const int mutationIndex = static_cast<int>(fishInst->mutationId) - 1;
 
-				if (mutationIndex >= 0 && mutationIndex < static_cast<int>(FishDef->vec_Mutation.size()))
+				if (mutationIndex >= 0 && mutationIndex < static_cast<int>(fishDef->vecMutation.size()))
 				{
-					NameInfo = S2W(FishDef->vec_Mutation[mutationIndex].MutName);
-					DescInfo = S2W(FishDef->vec_Mutation[mutationIndex].MutDesc);
-					cost = FishDef->vec_Mutation[mutationIndex].MutCost;
+					NameInfo = S2W(fishDef->vecMutation[mutationIndex].mutName);
+					DescInfo = S2W(fishDef->vecMutation[mutationIndex].mutDesc);
+					cost = fishDef->vecMutation[mutationIndex].mutCost;
 				}
 				else
 				{
-					NameInfo = S2W(itemDef.ItemName);
-					DescInfo = S2W(itemDef.ItemDesc);
-					cost = FishDef->Cost;
+					NameInfo = S2W(itemDef.itemName);
+					DescInfo = S2W(itemDef.itemDesc);
+					cost = fishDef->cost;
 				}
 			}
 
-			LeftInfo = L"≈©±‚:\nªÛ≈¬:\n¿Ø«¸:";
-			RightInfo = format(L"{:.2f}cm\n{}\n{}", FishInst->size, freshToWstr(FishInst->freshness), OcceanToWstr(FishDef->SeaType_Mask));
+			LeftInfo = L"ÌÅ¨Í∏∞:\nÏÉÅÌÉú:\nÏú†Ìòï:";
+			RightInfo = format(L"{:.2f}cm\n{}\n{}", fishInst->size, freshToWstr(fishInst->freshness), OcceanToWstr(fishDef->seaTypeMask));
 		}
 		if (isHold == true)
 			break;
@@ -80,50 +80,50 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 	case ITEM_TYPE::EQUIP:
 	{
 
-		Equip_Inst* EquipInst = get_if<Equip_Inst>(&itemInst.TypeDef);
-		Equip_Def* EquipDef = get_if<Equip_Def>(&itemDef.TypeDef);
+		EquipInst* equipInst = get_if<EquipInst>(&itemInst.typeDef);
+		EquipDef* equipDef = get_if<EquipDef>(&itemDef.typeDef);
 
-		NameInfo = S2W(itemDef.ItemName);
+		NameInfo = S2W(itemDef.itemName);
 
-		DescInfo = S2W(itemDef.ItemDesc);
-		cost = EquipDef->Cost;
+		DescInfo = S2W(itemDef.itemDesc);
+		cost = equipDef->cost;
 
 		if (isHold == true)
 			break;
 
-		if (Equip_Engine* EquipEngine = get_if<Equip_Engine>(&EquipDef->EquipType_Effect))
+		if (EquipEngine* equipEngine = get_if<EquipEngine>(&equipDef->equipTypeEffect))
 		{
-			LeftInfo = L"º≥ƒ° Ω√∞£:\nªÛ≈¬:\nº”µµ:";
-			RightInfo = format(L"{}h\n{}\n+{}kn", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipEngine->Speed_Kn);
+			LeftInfo = L"ÏÑ§Ïπò ÏãúÍ∞Ñ:\nÏÉÅÌÉú:\nÏÜçÎèÑ:";
+			RightInfo = format(L"{}h\n{}\n+{}kn", equipDef->installTime, GetBroken(equipInst->isBroken), equipEngine->speedKn);
 		}
-		else if (Equip_Light* EquipLight = get_if<Equip_Light>(&EquipDef->EquipType_Effect))
+		else if (EquipLight* equipLight = get_if<EquipLight>(&equipDef->equipTypeEffect))
 		{
-			LeftInfo = L"º≥ƒ° Ω√∞£:\nªÛ≈¬:\n∑Á∏‡:\nπ¸¿ß";
-			RightInfo = format(L"{}h\n{}\n+{}lm\n{}m", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipLight->Lumen, EquipLight->Range);
+			LeftInfo = L"ÏÑ§Ïπò ÏãúÍ∞Ñ:\nÏÉÅÌÉú:\nÎ£®Î©ò:\nÎ≤îÏúÑ";
+			RightInfo = format(L"{}h\n{}\n+{}lm\n{}m", equipDef->installTime, GetBroken(equipInst->isBroken), equipLight->lumen, equipLight->range);
 		}
-		else if (Equip_Rod* EquipRod = get_if<Equip_Rod>(&EquipDef->EquipType_Effect))
+		else if (EquipRod* equipRod = get_if<EquipRod>(&equipDef->equipTypeEffect))
 		{
-			LeftInfo = L"º≥ƒ° Ω√∞£:\nªÛ≈¬:\n≥¨Ω√ º”µµ:\næÓ¡æ";
-			RightInfo = format(L"{}h\n{}\n+{}%\n{}", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipRod->Speed_Per, OcceanToWstr(EquipRod->SeaType_Mask));
+			LeftInfo = L"ÏÑ§Ïπò ÏãúÍ∞Ñ:\nÏÉÅÌÉú:\nÎÇöÏãú ÏÜçÎèÑ:\nÏñ¥Ï¢Ö";
+			RightInfo = format(L"{}h\n{}\n+{}%\n{}", equipDef->installTime, GetBroken(equipInst->isBroken), equipRod->speedPer, OcceanToWstr(equipRod->seaTypeMask));
 		}
 		else
 		{
-			//≥›∆Æ∂˚ ∞‘≈Îπﬂ¿∫ ∆–Ω∫ ±◊∞≈ ±Ó¡ˆ «“Ω√∞£ æ¯¿ªµÌ »ƒø° Ω√∞£ ≥≤¿∏∏È √ﬂ∞°
+			//ÎÑ∑Ìä∏Îûë Í≤åÌÜµÎ∞úÏùÄ Ìå®Ïä§ Í∑∏Í±∞ ÍπåÏßÄ Ìï†ÏãúÍ∞Ñ ÏóÜÏùÑÎìØ ÌõÑÏóê ÏãúÍ∞Ñ ÎÇ®ÏúºÎ©¥ Ï∂îÍ∞Ä
 		}
 
 		break;
 	}
 	case ITEM_TYPE::MATERIAL:
 	{
-		Material_Def* MatDef = get_if<Material_Def>(&itemDef.TypeDef);
-		NameInfo = S2W(itemDef.ItemName);
-		DescInfo = S2W(itemDef.ItemDesc);
-		cost = MatDef->Cost;
+		MaterialDef* matDef = get_if<MaterialDef>(&itemDef.typeDef);
+		NameInfo = S2W(itemDef.itemName);
+		DescInfo = S2W(itemDef.itemDesc);
+		cost = matDef->cost;
 		break;
 
 	}
 	}
-	m_NameText->Set_Text(NameInfo); //¿ßƒ°¡∂¡§ « ø‰ æ¯¿Ω
+	m_NameText->Set_Text(NameInfo); //ÏúÑÏπòÏ°∞Ï†ï ÌïÑÏöî ÏóÜÏùå
 	if (m_NameText->Get_UIState() != UI_STATE::ACTIVE)
 		m_NameText->UI_Active();
 	m_NameText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
@@ -167,7 +167,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 		{
 		case E_PLAYERSTATE::FISHING:
 		case E_PLAYERSTATE::SEA:
-			// ≥ı±‚ »∏¿¸ πˆ∏Æ±‚
+			// ÎÜìÍ∏∞ ÌöåÏ†Ñ Î≤ÑÎ¶¨Í∏∞
 			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
 
@@ -180,7 +180,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 			break;
 		case E_PLAYERSTATE::REPAIR_SHOP:
 		{
-			//º≥ƒ° »∏¿¸ √¢∞Ì∑Œ∫∏≥ª±‚ »Ø∫“
+			//ÏÑ§Ïπò ÌöåÏ†Ñ Ï∞ΩÍ≥†Î°úÎ≥¥ÎÇ¥Í∏∞ ÌôòÎ∂à
 
 
 			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
@@ -191,7 +191,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 
 			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 40.f, fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
-			if (itemInst.ItemType == ITEM_TYPE::EQUIP)
+			if (itemInst.itemType == ITEM_TYPE::EQUIP)
 			{
 				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 40.f, fCurrentY }, cost*.5f);
 				fCurrentY -= (sizeY + m_PaddingY);
@@ -203,7 +203,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 		{
 
 
-			//º≥ƒ° »∏¿¸ √¢∞Ì∑Œ∫∏≥ª±‚ »Ø∫“
+			//ÏÑ§Ïπò ÌöåÏ†Ñ Ï∞ΩÍ≥†Î°úÎ≥¥ÎÇ¥Í∏∞ ÌôòÎ∂à
 
 			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
@@ -214,7 +214,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 
 			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 40.f, fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
-			if (itemInst.ItemType == ITEM_TYPE::FISH)
+			if (itemInst.itemType == ITEM_TYPE::FISH)
 			{
 				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 40.f, fCurrentY }, cost);
 				fCurrentY -= (sizeY + m_PaddingY);
@@ -233,15 +233,15 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 		{
 		case E_PLAYERSTATE::FISHING:
 		case E_PLAYERSTATE::SEA:
-			//¡˝±‚ πˆ∏Æ±‚
+			//ÏßëÍ∏∞ Î≤ÑÎ¶¨Í∏∞
 			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
 
 			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
 			break;
-			//case E_PLAYERSTATE::REPAIR_SHOP: // ¿Ã∞≈ ±∏∏≈ √¯
-			//	//±∏∏≈
+			//case E_PLAYERSTATE::REPAIR_SHOP: // Ïù¥Í±∞ Íµ¨Îß§ Ï∏°
+			//	//Íµ¨Îß§
 			//	sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f ,fCurrentY }, cost);
 			//	fCurrentY -= (sizeY + m_PaddingY);
 
@@ -256,7 +256,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 				fCurrentY -= (sizeY + m_PaddingY);
 				sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
 				fCurrentY -= (sizeY + m_PaddingY);
-				if (itemInst.ItemType == ITEM_TYPE::EQUIP)
+				if (itemInst.itemType == ITEM_TYPE::EQUIP)
 				{
 					sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost * 0.5f);
 					fCurrentY -= (sizeY + m_PaddingY);
@@ -270,13 +270,13 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 				sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f, fCurrentY }, cost);
 				fCurrentY -= (sizeY + m_PaddingY);
 			}
-			//¡˝±‚ πˆ∏Æ±‚ √¢∞Ì∑Œ∫∏≥ª±‚ ∆«∏≈
+			//ÏßëÍ∏∞ Î≤ÑÎ¶¨Í∏∞ Ï∞ΩÍ≥†Î°úÎ≥¥ÎÇ¥Í∏∞ ÌåêÎß§
 
 			break;
 
 
 		case E_PLAYERSTATE::FISH_SHOP:
-			//¡˝±‚ πˆ∏Æ±‚ √¢∞Ì∑Œ∫∏≥ª±‚ ∆«∏≈
+			//ÏßëÍ∏∞ Î≤ÑÎ¶¨Í∏∞ Ï∞ΩÍ≥†Î°úÎ≥¥ÎÇ¥Í∏∞ ÌåêÎß§
 			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
 
@@ -284,7 +284,7 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 			fCurrentY -= (sizeY + m_PaddingY);
 			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
 			fCurrentY -= (sizeY + m_PaddingY);
-			if (itemInst.ItemType == ITEM_TYPE::FISH)
+			if (itemInst.itemType == ITEM_TYPE::FISH)
 			{
 				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost);
 				fCurrentY -= (sizeY + m_PaddingY);
@@ -338,11 +338,11 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	hr = CUIPanel::OnInit(INFODesc);
 
 
-	//¿Ã∏ß - ∞Ì¡§
+	//Ïù¥Î¶Ñ - Í≥†Ï†ï
 	CUIText::TEXT_DESC ItemNameDesc = {};
 	ItemNameDesc.fontaline = CUIText::FONTALINE::LEFT;
 	ItemNameDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
-	ItemNameDesc.strText = L"¿Ã∏ß";
+	ItemNameDesc.strText = L"Ïù¥Î¶Ñ";
 	ItemNameDesc.vPivot = (_float2{ 0.f,1.f });
 	ItemNameDesc.vAnchorPoint = (_float2{ 0.f,1.f });
 
@@ -351,7 +351,7 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	Add_Child(ItemNameText, L"ItemNameText", false);
 	m_NameText = ItemNameText;
 
-	// º± - ∞Ì¡§
+	// ÏÑ† - Í≥†Ï†ï
 	CUIImage::UIIMAGE_DESC LineDesc = {};
 	LineDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 	LineDesc.TextureProtoName = L"Prototype_Component_Texture_TabDivider";
@@ -364,11 +364,11 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	m_LineImg = Line;
 
 
-	//ø¿∏•¬  øﬁ¬  - ∫Øµø
+	//Ïò§Î•∏Ï™Ω ÏôºÏ™Ω - Î≥ÄÎèô
 	CUIText::TEXT_DESC ItemLeftDesc = {};
 	ItemLeftDesc.fontaline = CUIText::FONTALINE::LEFT;
 	ItemLeftDesc.strFontTag = L"Noto_Sans_CJK_SC";
-	ItemLeftDesc.strText = L"øﬁ¬ ";
+	ItemLeftDesc.strText = L"ÏôºÏ™Ω";
 	ItemLeftDesc.vPivot = (_float2{ 0.f,1.f });
 	ItemLeftDesc.vAnchorPoint = _float2{ 0.f,1.f };
 	shared_ptr<CUIText> ItemLeftText = CUIText::Create(m_pDevice, m_pContext);
@@ -379,7 +379,7 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	CUIText::TEXT_DESC ItemRightDesc = {};
 	ItemRightDesc.fontaline = CUIText::FONTALINE::RIGHT;
 	ItemRightDesc.strFontTag = L"Noto_Sans_CJK_SC";
-	ItemRightDesc.strText = L"ø¿∏•¬ ";
+	ItemRightDesc.strText = L"Ïò§Î•∏Ï™Ω";
 	ItemRightDesc.vPivot = (_float2{ 1.f,1.f });
 	ItemRightDesc.vAnchorPoint = _float2{ 1.f,1.f };
 	shared_ptr<CUIText> ItemRightText = CUIText::Create(m_pDevice, m_pContext);
@@ -387,12 +387,12 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	Add_Child(ItemRightText, L"ItemRightText", false);
 	m_RightText = ItemRightText;
 
-	// ªÛºº º≥∏Ì - ∫Øµø 
+	// ÏÉÅÏÑ∏ ÏÑ§Î™Ö - Î≥ÄÎèô 
 
 	CUIText::TEXT_DESC ItemDetailDesc = {};
 	ItemDetailDesc.fontaline = CUIText::FONTALINE::CENTER;
 	ItemDetailDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-	ItemDetailDesc.strText = L"ªÛºº º≥∏Ì";
+	ItemDetailDesc.strText = L"ÏÉÅÏÑ∏ ÏÑ§Î™Ö";
 	ItemDetailDesc.TextColor = _float4{ 0.6f,0.6f,0.6f,1.f };
 	ItemDetailDesc.vPivot = (_float2{ 0.5f,1.f });
 	ItemDetailDesc.vAnchorPoint = (_float2{ 0.5f,1.f });
@@ -415,7 +415,7 @@ HRESULT CItemInfo::OnInit(void* pArg)
 			string viewName = string(magic_enum::enum_name(currentBtn));
 			wstring wName = S2W(viewName);
 
-			//πˆ∆∞¿Œ∆˜ æ∆¿Ãƒ‹ - ∫Øµø
+			//Î≤ÑÌäºÏù∏Ìè¨ ÏïÑÏù¥ÏΩò - Î≥ÄÎèô
 			CUIImage::UIIMAGE_DESC ButtonIconDesc = {};
 			ButtonIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 			ButtonIconDesc.TextureProtoName = L"Prototype_Component_Texture_KEY";
@@ -430,11 +430,11 @@ HRESULT CItemInfo::OnInit(void* pArg)
 			Add_Child(icon, L"icon" + wName, false);
 			icon->UI_InActive();
 
-			// πˆ∆∞ ¿Œ∆˜
+			// Î≤ÑÌäº Ïù∏Ìè¨
 			CUIText::TEXT_DESC ButtonInfoDesc = {};
 			ButtonInfoDesc.fontaline = CUIText::FONTALINE::RIGHT;
 			ButtonInfoDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			ButtonInfoDesc.strText = L"πˆ∆∞¿Œ∆˜";
+			ButtonInfoDesc.strText = L"Î≤ÑÌäºÏù∏Ìè¨";
 			ButtonInfoDesc.vPivot = _float2{ 1.f,0.5f };
 			ButtonInfoDesc.vAnchorPoint = _float2{ 1.f,0.5f };
 			ButtonInfoDesc.vAnchoredPos = _float2{ -(icon->GetUITransform()->Get_FinalSize().x + 5.f),0.f };
@@ -455,36 +455,36 @@ HRESULT CItemInfo::OnInit(void* pArg)
 }
 void CItemInfo::GetButtonInfo(_uint buttonInfo, _uint& Texindex, wstring& str, _float extraInfo)
 {
-	// 119 - ¡˝±‚ / 213- z / 123 - √¢∞Ì / 53 - ∆«∏≈ /119 ≥ı±‚/ 121 »∏¿¸
+	// 119 - ÏßëÍ∏∞ / 213- z / 123 - Ï∞ΩÍ≥† / 53 - ÌåêÎß§ /119 ÎÜìÍ∏∞/ 121 ÌöåÏ†Ñ
 	switch (buttonInfo)
 	{
 	case ETOI(CItemInfo::BUTTONINFO::STORAGE):
 		Texindex = 123;
-		str = L"√¢∞Ì∑Œ ∫∏≥ª±‚";
+		str = L"Ï∞ΩÍ≥†Î°ú Î≥¥ÎÇ¥Í∏∞";
 		return;
 	case ETOI(CItemInfo::BUTTONINFO::BUY):
 		Texindex = 123;
-		str = format(L"±∏∏≈ [${:.2f}]", extraInfo);
+		str = format(L"Íµ¨Îß§ [${:.2f}]", extraInfo);
 		return;
 	case ETOI(CItemInfo::BUTTONINFO::PICK):
 		Texindex = 119;
-		str = L"¡˝±‚";
+		str = L"ÏßëÍ∏∞";
 		return;
 	case ETOI(CItemInfo::BUTTONINFO::RELEASE):
 		Texindex = 119;
-		str = L"≥ı±‚";
+		str = L"ÎÜìÍ∏∞";
 		return;
 	case ETOI(CItemInfo::BUTTONINFO::ROTATION):
 		Texindex = 121;
-		str = L"»∏¿¸";
+		str = L"ÌöåÏ†Ñ";
 		return;
 	case ETOI(CItemInfo::BUTTONINFO::SELL):
 		Texindex = 53;
-		str = format(L"∆«∏≈ [${:.2f}]", extraInfo);
+		str = format(L"ÌåêÎß§ [${:.2f}]", extraInfo);
 		return;
 	case ETOI(CItemInfo::BUTTONINFO::THROWUP):
 		Texindex = 213;
-		str = L"πˆ∏Æ±‚";
+		str = L"Î≤ÑÎ¶¨Í∏∞";
 		return;
 
 	}
@@ -563,7 +563,7 @@ _float CItemInfo::Active_ButtonInfo(BUTTONINFO btnInfo, _float2 AnchoredPos, _fl
 
 
 
-	return m_vecIcon[ETOI(btnInfo)]->GetUITransform()->Get_FinalSize().y;// ªÁ¿Ã¡Ó
+	return m_vecIcon[ETOI(btnInfo)]->GetUITransform()->Get_FinalSize().y;// ÏÇ¨Ïù¥Ï¶à
 }
 
 shared_ptr<CItemInfo> CItemInfo::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)

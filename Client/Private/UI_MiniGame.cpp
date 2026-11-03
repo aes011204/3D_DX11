@@ -1,4 +1,4 @@
-#include "UI_MiniGame.h"
+ï»¿#include "UI_MiniGame.h"
 
 
 #include <UIButton.h>
@@ -38,8 +38,8 @@ void CUI_MiniGame::UI_PanelActive()
 
 	////m_Children.clear();
 	//_uint numPanel = {};
-	//// ÀÏ´Ü ±âº»ÀûÀ¸·Î ÆÐ³Î Àº ´Ù inactive, ¹öÆ°Àº iTabfig ¿¡ µû¶ó active
-	////::OnActive() ¿¡¼­ Å¬¸¯ÇÑ °Å¸¸ È°¼ºÈ­
+	//// ì¼ë‹¨ ê¸°ë³¸ì ìœ¼ë¡œ íŒ¨ë„ ì€ ë‹¤ inactive, ë²„íŠ¼ì€ iTabfig ì— ë”°ë¼ active
+	////::OnActive() ì—ì„œ í´ë¦­í•œ ê±°ë§Œ í™œì„±í™”
 
 
 
@@ -62,15 +62,15 @@ void CUI_MiniGame::UI_PanelActive()
 
 	}
 
-	Item_Def def = CItemDB::GetInstance()->GetItemByID(m_DefID);
+	ItemDef def = CItemDB::GetInstance()->GetItemByID(m_DefID);
 
 	m_nameTex->UI_Active();
-	m_nameTex->Set_Text(S2W(def.ItemName));
+	m_nameTex->Set_Text(S2W(def.itemName));
 	m_amountTex->UI_Active();
 	m_locationTex->UI_Active();
 
 	m_pCircleEff->UI_Active();
-	m_FishIcon->Change_Texture(def.pTexture);
+	m_FishIcon->Change_Texture(def.texture);
 	m_FishIcon->UI_Active();
 	m_Depth->UI_Active();
 	//m_PrograssIcon->UI_Active();
@@ -87,7 +87,7 @@ void CUI_MiniGame::UI_PanelActive()
 	//m_bInteractable = true;
 	OnActive();
 
-	// ÀÏ´Ü ÀÌ°Ç ÀÓ½Ã
+	// ì¼ë‹¨ ì´ê±´ ìž„ì‹œ
 //	for (auto& it : m_Children)
 //	{
 //		it->UI_Active();
@@ -247,7 +247,7 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 
 
-	/// ¹öÆ°
+	/// ë²„íŠ¼
 	CUIButton::UIBUTTON_DESC ButDesc = {};
 	ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
 	ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
@@ -275,7 +275,7 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	{
 		CUIText::TEXT_DESC text_Desc = {};
 		text_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
-		text_Desc.strText = L"´ç±â±â";
+		text_Desc.strText = L"ë‹¹ê¸°ê¸°";
 		shared_ptr<CUIText> Text_storage = CUIText::Create(m_pDevice, m_pContext);
 		Text_storage->Initialize(&text_Desc);
 		button->Add_Child(Text_storage, L"Text_Pull", false);
@@ -290,7 +290,7 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 
 
-	///µ·///
+	///ëˆ///
 
 	{
 
@@ -495,7 +495,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		auto result = m_Logic->ConsumeInputResult();
 		if (result == INPUT_RESULT::SUCCESS)
 		{
-			// ÃÊ·Ï È¿°ú
+			// ì´ˆë¡ íš¨ê³¼
 			m_prograssBar01 += 0.2;
 			//m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
 
@@ -512,7 +512,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 			m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
 			m_changeColor = true;
 			colortime = .5f;
-			// »¡°­ È¿°ú
+			// ë¹¨ê°• íš¨ê³¼
 		}
 
 		m_Spinner->GetUITransform()->SetRotation(-(m_Logic->GetAngle()));
@@ -560,7 +560,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 
 		if (result == INPUT_RESULT::SUCCESS)
 		{
-			// ÃÊ·Ï È¿°ú
+			// ì´ˆë¡ íš¨ê³¼
 			m_prograssBar01 += 0.2;
 			m_pSizeCircle->m_behavior.clear();
 			m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, true));
@@ -579,7 +579,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
 			m_changeColor = true;
 			colortime = .5f;
-			// »¡°­ È¿°ú
+			// ë¹¨ê°• íš¨ê³¼
 		}
 
 		if (m_changeColor == true)
@@ -602,7 +602,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		auto result = m_Logic->ConsumeInputResult();
 		if (result == INPUT_RESULT::SUCCESS)
 		{
-			// ÃÊ·Ï È¿°ú
+			// ì´ˆë¡ íš¨ê³¼
 			m_prograssBar01 += 0.2;
 
 			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
@@ -616,7 +616,7 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 			m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
 			m_changeColor = true;
 			colortime = .5f;
-			// »¡°­ È¿°ú
+			// ë¹¨ê°• íš¨ê³¼
 		}
 		break;
 	}

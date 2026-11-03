@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Define.h"
 #include "Client_Enum.h"
 #include "Base.h"
@@ -49,7 +49,7 @@ private:
         _bool bValid = false;
         _bool isHold = false;
         _bool IsPlayer = false;
-        Item_Inst itemInst = {};
+        ItemInst itemInst = {};
     };
 private:
     void RestoreToolTip();

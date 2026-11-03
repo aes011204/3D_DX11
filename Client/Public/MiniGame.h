@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 #include "Client_Enum.h"
 
@@ -36,8 +36,8 @@ public:
 	virtual HRESULT Initialize(void* pArg);
 	virtual HRESULT Render(_uint iMeshIndex);
 	virtual void Update(const _float& timeDelta);
-	_uint SelectMutationRandom(const Fish_Def& fishDef);
-	_uint SelectMutationNoRepeat(const Fish_Def& fishDef);
+	_uint SelectMutationRandom(const FishDef& fishDef);
+	_uint SelectMutationNoRepeat(const FishDef& fishDef);
 
 	INPUT_RESULT ConsumeInputResult() {
 		INPUT_RESULT result = m_LastInputResult;

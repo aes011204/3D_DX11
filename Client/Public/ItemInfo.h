@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "UIPanel.h"
 #include "Client_Define.h"
@@ -28,8 +28,8 @@ public:
 	~CItemInfo() = default;
 
 public:
-	void UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE PlayerState, _bool IsPlayer);
-	virtual void UI_Active() override; //  UI È°¼ºÈ°½Ã È£ÃâµÇ´Â ÇÔ¼ö// ÀÌ ÆĞ³ÎÀº ´Ù ÄÑÁö¸é ¾ÈµÇ±â‹š¹®¿¡ ¿À¹ö¶óÀÌµùÀ¸·Î È£Ãâ–P°í ¿©±â¼­ Ã³¸®
+	void UI_PanelActive(_bool isHold, ItemInst itemInst, E_PLAYERSTATE PlayerState, _bool IsPlayer);
+	virtual void UI_Active() override; //  UI í™œì„±í™œì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜// ì´ íŒ¨ë„ì€ ë‹¤ ì¼œì§€ë©´ ì•ˆë˜ê¸°ë–„ë¬¸ì— ì˜¤ë²„ë¼ì´ë”©ìœ¼ë¡œ í˜¸ì¶œë»‡ê³  ì—¬ê¸°ì„œ ì²˜ë¦¬
 	HRESULT OnInit(void* pArg) override;
 	void OnActive()override;
 	void OnInActive()override;

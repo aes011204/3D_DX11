@@ -1,4 +1,4 @@
-#include "Player_Storage.h"
+﻿#include "Player_Storage.h"
 #include <UI.h>
 
 #include "DialogueDB.h"
@@ -21,20 +21,20 @@ void CPlayer_Storage::Enter()
 	CDialogueDB::GetInstance()->Set_PendingDialogue(list<string> {});
 
 	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CAM_LERP_DESC>();
+	auto pLerp = make_shared<CamLerpDesc>();
 	pLerp->eMode = CAM_MODE::LERP;
 	pLerp->vTargetPos = _float3(3.016f, 2.944f, 0.87f);
 	pLerp->vTargetRot = _float3(33.84f, -55.60f, 0.f);
 	pLerp->fDuration = 2.0f;
 	pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
-		Evt_Cam_Arrived e = {};
+		Evt_CamArrived e = {};
 		e.playerstate = E_PLAYERSTATE::STORAGE;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 	};
 	event.commands.push_back(pLerp);
 
-	auto pStop = make_shared<CAM_DESC>();
+	auto pStop = make_shared<CamDesc>();
 	pStop->eMode = CAM_MODE::STOP;
 	event.commands.push_back(pStop);
 

@@ -1,4 +1,4 @@
-#include "Player_MiniGame.h"
+﻿#include "Player_MiniGame.h"
 #include "DInput_Manager.h"
 #include "PlayerBoat.h"
 #include "EventBus.h"
@@ -22,7 +22,7 @@ void CPlayer_MiniGame::Enter()
 
 
 	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CAM_LERP_DESC>();
+	auto pLerp = make_shared<CamLerpDesc>();
 	pLerp->eMode = CAM_MODE::LERP;
 
 	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
@@ -32,7 +32,7 @@ void CPlayer_MiniGame::Enter()
 	pLerp->m_Target = m_Owner;
 	pLerp->fDuration = 1.5f;
 	pLerp->OnComplete = [this]() {
-		Evt_Cam_Arrived e = {};
+		Evt_CamArrived e = {};
 		e.playerstate = E_PLAYERSTATE::FISHING;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 		
@@ -40,7 +40,7 @@ void CPlayer_MiniGame::Enter()
 	event.commands.push_back(pLerp);
 
 
-	auto pStop = make_shared<CAM_DESC>();
+	auto pStop = make_shared<CamDesc>();
 	pStop->eMode = CAM_MODE::STOP;
 	event.commands.push_back(pStop);
 

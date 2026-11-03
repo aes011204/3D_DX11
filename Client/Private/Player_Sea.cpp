@@ -24,7 +24,7 @@ void CPlayer_Sea::Enter()
 	// 留뚯??移�?�??湲곕???꾩튂?? ?꾩젣 ?꾩튂媛 ??�Ⅴ??�㈃ ??�봽
 	Evt_ChangeCam event = {};
 	
-	auto pLerp = make_shared<CAM_LERP_DESC>();
+	auto pLerp = make_shared<CamLerpDesc>();
 	pLerp->eMode = LERP;
 	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
 	pLerp->IsLerpTarget = true;
@@ -33,7 +33,7 @@ void CPlayer_Sea::Enter()
 	pLerp->fDuration = 1.f;
 	event.commands.push_back(pLerp);
 
-	auto pFow = make_shared<CAM_FOLLOW_DESC>();
+	auto pFow = make_shared<CamFollowDesc>();
 	pFow->eMode = CAM_MODE::FOLLOW;
 	pFow->fPitch = 0.f;
 	pFow->fYaw = 0.f;
@@ -95,9 +95,9 @@ int CPlayer_Sea::Update_State(const _float& timeDelta)
 		m_LightObj.lock()->Set_Active(On_Light);
 
 		{
-			Evt_Boat_Light e = {};
+			Evt_BoatLight e = {};
 			e.Light = On_Light;
-			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_Boat_Light>(e);
+			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_BoatLight>(e);
 		}
 
 
@@ -210,7 +210,7 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 
 
 		Evt_ChangeCam event = {};
-		auto pLerp = make_shared<CAM_DESC>();
+		auto pLerp = make_shared<CamDesc>();
 		pLerp->eMode = CAM_MODE::STOP;
 		
 		event.commands.push_back(pLerp);
@@ -224,7 +224,7 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 	if(m_Input_Manager->KeyUp(DIK_F))
 	{
 		Evt_ChangeCam event = {};
-		auto pfollow = make_shared<CAM_DESC>();
+		auto pfollow = make_shared<CamDesc>();
 		pfollow->eMode = CAM_MODE::FOLLOW;
 
 		event.commands.push_back(pfollow);
@@ -380,7 +380,7 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 		if (m_pOwnerTransformCom.lock()->GetIsLerp() == false)
 		{
 			/*Evt_ChangeCam event = {};
-					auto pLerp = make_shared<CAM_LERP_DESC>();
+					auto pLerp = make_shared<CamLerpDesc>();
 					pLerp->eMode = CAM_MODE::LERP ;
 					pLerp->vTargetPos = _float3(8.2f, 3.f, 7.6f);
 					pLerp->vTargetRot = _float3(5.f, -130.f, 0.f);

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include  "Engine_Define.h"
 #include  "Client_Define.h"
 
@@ -17,7 +17,7 @@ namespace Client
 	class CFish;
 	enum class LOCATIONSTATE;
 
-	// ¾ÆÀÌÅÛ °ü·Ã 
+	// ì•„ì´í…œ ê´€ë ¨ 
 	enum class ITEM_TYPE { FISH, EQUIP, MATERIAL, PURSUIT, TRINKET, END };
 	enum class TIME { DAY, NIGHT, END };
     enum class FRESHNESS { FRESH, STALE, ROTTING, INFECTED, END };
@@ -25,10 +25,10 @@ namespace Client
     enum class EQUIP_TYPE { ROD,  ENGINE, NET , LIGHT, POT, CRAP, END };
 
 	enum class SEA_TYPE : _ubyte { COASTAL, SHALLOW, OCEANIC, ABYSSAL, HADAL, MANGROVE, VOLCANIC, ICE, CRAB, END };
-	// ºñÆ® ÇÃ·¹±×·Î¾µ°ÅÀÓ //uint8_t : ¡°ÇÏ³ª ¼±ÅÃ¡± ¡æ 8ºñÆ®·Î ÃæºĞ
-    using SEA_MASK = _uint; // uint16_t (_ushort) : 16°³ ±îÁö °¡´É // ¿©·¯ °³ ON/OFF ÁıÇÕ¡± ¡æ 16ºñÆ®·Î ³Ë³ËÇÏ°Ô // _uint 32 ºñÆ®·Î ÇØµµµÊ 
+	// ë¹„íŠ¸ í”Œë ˆê·¸ë¡œì“¸ê±°ì„ //uint8_t : â€œí•˜ë‚˜ ì„ íƒâ€ â†’ 8ë¹„íŠ¸ë¡œ ì¶©ë¶„
+    using SEA_MASK = _uint; // uint16_t (_ushort) : 16ê°œ ê¹Œì§€ ê°€ëŠ¥ // ì—¬ëŸ¬ ê°œ ON/OFF ì§‘í•©â€ â†’ 16ë¹„íŠ¸ë¡œ ë„‰ë„‰í•˜ê²Œ // _uint 32 ë¹„íŠ¸ë¡œ í•´ë„ë¨ 
     constexpr SEA_MASK Set_SeaType_Mask(SEA_TYPE SeaType) { return SEA_MASK{ 1u } << static_cast<uint32_t>(SeaType);
-    } // 1u = unsigned 1 // << ºñÆ® ¿¬»ê ¿ŞÂÊÀ¸·Î ÇÑÄ­¾¿ ÀÌµ¿
+    } // 1u = unsigned 1 // << ë¹„íŠ¸ ì—°ì‚° ì™¼ìª½ìœ¼ë¡œ í•œì¹¸ì”© ì´ë™
 
 }
 
@@ -40,96 +40,96 @@ namespace Client
     
     static constexpr ID_uint ID_Absence = 0;
 
-	// ¾ÆÀÌÅÛ °ü·Ã
+	// ì•„ì´í…œ ê´€ë ¨
 
     struct OccCell { _uint dx, dy; };
 
     struct Shape
     {
-        _uint Width , Height = { 0 };
-        vector<_ubyte> Shape_Mask = {}; // 0,1 ·Î¸¸ ÇÒ°Çµ¥ bool ¹®Á¦»ı±æ¼öÀÖÀ½ // ex) [ 111, 101 ] 
-        vector<OccCell> Occ[4] = {}; // uint16_t //Shape_Mask ÀÇ ÁÂÇ¥ Ä³½Ì // È¸Àüµµ °°ÀÌ Ä³½Ì // ex) {(0,0),(1,0),(2,0),(0,1),(0,2)}
+        _uint width , height = { 0 };
+        vector<_ubyte> shapeMask = {}; // 0,1 ë¡œë§Œ í• ê±´ë° bool ë¬¸ì œìƒê¸¸ìˆ˜ìˆìŒ // ex) [ 111, 101 ] 
+        vector<OccCell> occ[4] = {}; // uint16_t //Shape_Mask ì˜ ì¢Œí‘œ ìºì‹± // íšŒì „ë„ ê°™ì´ ìºì‹± // ex) {(0,0),(1,0),(2,0),(0,1),(0,2)}
         
     };
 
      struct Mutation
      {
-         ID_uint Species_ID = { ID_Absence }; ID_uint Mutation_ID = { ID_Absence };
-         _string MutName = {}; _string MutDesc = {}; _string MutTexturePath = {};
-         _float MutCost = { 0 };
-         shared_ptr<Engine::CTexture> pTexture = { nullptr };
+         ID_uint speciesId = { ID_Absence }; ID_uint mutationId = { ID_Absence };
+         _string mutName = {}; _string mutDesc = {}; _string mutTexturePath = {};
+         _float mutCost = { 0 };
+         shared_ptr<Engine::CTexture> texture = { nullptr };
      };
 
-    struct Fish_Def
+    struct FishDef
     {
-        float Cost = { 0 }; TIME FishTime = TIME::END; SEA_MASK SeaType_Mask = { 0 };
-        _bool IsRod = false; _bool IsTrawl = false; _bool  IsPot = false;
+        float cost = { 0 }; TIME fishTime = TIME::END; SEA_MASK seaTypeMask = { 0 };
+        _bool isRod = false; _bool isTrawl = false; _bool  isPot = false;
 
-        vector<Mutation> vec_Mutation = {}; // array ´Â ÇöÁ¦ ¸î°³°¡ ÀÖ´ÂÁö Ä«¿îÆ®ÇÏ´Â±â´ÉÀÌ ¾ø¾î¼­ struct·Î ¸¸µé¾î¼­ / ±Ùµ¥ ³­ ±ÍÂù
+        vector<Mutation> vecMutation = {}; // array ëŠ” í˜„ì œ ëª‡ê°œê°€ ìˆëŠ”ì§€ ì¹´ìš´íŠ¸í•˜ëŠ”ê¸°ëŠ¥ì´ ì—†ì–´ì„œ structë¡œ ë§Œë“¤ì–´ì„œ / ê·¼ë° ë‚œ ê·€ì°¬
     };
 
-		struct Equip_Engine { _uint Research_Lv = { 0 }; _uint Speed_Kn = { 0 }; };
-        struct Equip_Light { _uint Lumen = { 0 }; _uint Range = { 0 }; };
-        struct Equip_Rod {_uint Research_Lv = { 0 }; SEA_MASK SeaType_Mask = { 0 }; _uint Speed_Per = { 0 }; };
-        struct Equip_Net {_uint Research_Lv = { 0 }; SEA_MASK SeaType_Mask = { 0 }; _uint Cap_SizeX, Cap_SizeY = { 0 };
-        	_uint Yield = { 0 }; _uint LastFor = { 0 }; };
-        struct Equip_CrapPot { _uint Research_Lv = { 0 }; _uint Cap_SizeX, Cap_SizeY = { 0 };
-        	_uint Yield = { 0 }; _uint LastFor = { 0 };
+		struct EquipEngine { _uint researchLv = { 0 }; _uint speedKn = { 0 }; };
+        struct EquipLight { _uint lumen = { 0 }; _uint range = { 0 }; };
+        struct EquipRod {_uint researchLv = { 0 }; SEA_MASK seaTypeMask = { 0 }; _uint speedPer = { 0 }; };
+        struct EquipNet {_uint researchLv = { 0 }; SEA_MASK seaTypeMask = { 0 }; _uint capSizeX, capSizeY = { 0 };
+        	_uint yield = { 0 }; _uint lastFor = { 0 }; };
+        struct EquipCrabPot { _uint researchLv = { 0 }; _uint capSizeX, capSizeY = { 0 };
+        	_uint yield = { 0 }; _uint lastFor = { 0 };
         };
 
-    struct Equip_Def
+    struct EquipDef
     {
-        float Cost = { 0 }; _uint InstallTime = { 0 }; EQUIP_TYPE EquipType = EQUIP_TYPE::END;
-        variant<Equip_Engine, Equip_Light, Equip_Rod, Equip_Net, Equip_CrapPot> EquipType_Effect;
+        float cost = { 0 }; _uint installTime = { 0 }; EQUIP_TYPE equipType = EQUIP_TYPE::END;
+        variant<EquipEngine, EquipLight, EquipRod, EquipNet, EquipCrabPot> equipTypeEffect;
     };
 
 
-    struct Material_Def { float Cost = { 0 }; };
-    struct Trinket_Def { float Cost = { 0 }; };
+    struct MaterialDef { float cost = { 0 }; };
+    struct TrinketDef { float cost = { 0 }; };
 
 
-    struct Fish_Inst { FRESHNESS freshness = FRESHNESS::FRESH; ID_uint mutation_ID = { ID_Absence }; _float size = {}; };
-    struct Equip_Inst { bool IsBroken = false; };
+    struct FishInst { FRESHNESS freshness = FRESHNESS::FRESH; ID_uint mutationId = { ID_Absence }; _float size = {}; };
+    struct EquipInst { bool isBroken = false; };
 
-    /// ¾ÆÀÌÅÛ ÀÎ½ºÅÏ½º 
-    struct Item_Inst
+    /// ì•„ì´í…œ ì¸ìŠ¤í„´ìŠ¤ 
+    struct ItemInst
     {
-        ID_uint ItemDef_ID = { ID_Absence }; 
-        ID_uint ItemInst_ID = { ID_Absence };
-        ITEM_TYPE ItemType = ITEM_TYPE::END; // ÀÌ°Ç ±×³É Ä³½Ì¿ëÀ¸·Î µÎÀÚ
+        ID_uint itemDefId = { ID_Absence }; 
+        ID_uint itemInstId = { ID_Absence };
+        ITEM_TYPE itemType = ITEM_TYPE::END; // ì´ê±´ ê·¸ëƒ¥ ìºì‹±ìš©ìœ¼ë¡œ ë‘ì
 
-        bool IsMutaion = { false };
-        Mutation MutaionCashing = {};
-
-
-        shared_ptr<Engine::CTexture> pCashingTexture = nullptr;
+        bool isMutation = { false };
+        Mutation mutationCaching = {};
 
 
-        _float2 BaseXY = {};
+        shared_ptr<Engine::CTexture> cachingTexture = nullptr;
 
-        vector<OccCell> CurBase = {};
-        _uint Rotation = { 0 };
 
-        variant<monostate, Fish_Inst, Equip_Inst>  TypeDef;
+        _float2 baseXY = {};
+
+        vector<OccCell> curBase = {};
+        _uint rotation = { 0 };
+
+        variant<monostate, FishInst, EquipInst>  typeDef;
 
     };
 
 
-    /// ¾ÆÀÌÅÛ Á¤ÀÇ
-    struct Item_Def
+    /// ì•„ì´í…œ ì •ì˜
+    struct ItemDef
 	{
-		ID_uint ItemID = { ID_Absence }; // ÀÌÁ¦ id ´Â 0 À» ¾Æ¹«°Íµµ ¾ø´Â °¡Â¥ »óÅÂ·Î
-		ITEM_TYPE ItemType = ITEM_TYPE::END;
-		_string ItemName = {};
-		_string ItemDesc = {};
-        _string TexturePath = {};
+		ID_uint itemId = { ID_Absence }; // ì´ì œ id ëŠ” 0 ì„ ì•„ë¬´ê²ƒë„ ì—†ëŠ” ê°€ì§œ ìƒíƒœë¡œ
+		ITEM_TYPE itemType = ITEM_TYPE::END;
+		_string itemName = {};
+		_string itemDesc = {};
+        _string texturePath = {};
         
-    	shared_ptr<Engine:: CTexture> pTexture = nullptr;
+    	shared_ptr<Engine:: CTexture> texture = nullptr;
 
-        Shape ItemShape = {};
-        _uint SizeNum = { 0 };
+        Shape itemShape = {};
+        _uint sizeNum = { 0 };
 
-        variant<monostate, Fish_Def, Equip_Def, Material_Def, Trinket_Def>  TypeDef;
+        variant<monostate, FishDef, EquipDef, MaterialDef, TrinketDef>  typeDef;
 
 	};
     
@@ -137,9 +137,9 @@ namespace Client
     {
 
         switch (freshness) {
-        case FRESHNESS::FRESH: return L"½Å¼±ÇÑ";
-        case FRESHNESS::ROTTING: return L"ÄûÄûÇÔ";
-        case FRESHNESS::INFECTED: return  L"°¨¿°µÈ";
+        case FRESHNESS::FRESH: return L"ì‹ ì„ í•œ";
+        case FRESHNESS::ROTTING: return L"í€´í€´í•¨";
+        case FRESHNESS::INFECTED: return  L"ê°ì—¼ëœ";
         default: return L"UNKNOWN";
         }
     }
@@ -196,8 +196,8 @@ namespace Client
 
         switch (IsBroken)
     	{
-        case true: return L"»ç¿ë ºÒ°¡";
-        case false: return L"»ç¿ë°¡´É";
+        case true: return L"ì‚¬ìš© ë¶ˆê°€";
+        case false: return L"ì‚¬ìš©ê°€ëŠ¥";
        
         }
     }
@@ -207,14 +207,14 @@ namespace Client
 namespace Client
 {
     enum class PLACE_COLOR { RED, ORANGE, GREEN ,END};
-    /// ½½·Ô
+    /// ìŠ¬ë¡¯
     struct Slot
     {
-        ID_uint ItemInst_ID = { ID_Absence };
+        ID_uint itemInstId = { ID_Absence };
         SLOT_TYPE slotType = SLOT_TYPE::ANY;
-        _bool IsLock = { false };
-        _bool IsBroken = { false };
-        PLACE_COLOR Slot_Color = PLACE_COLOR::END;
+        _bool isLock = { false };
+        _bool isBroken = { false };
+        PLACE_COLOR slotColor = PLACE_COLOR::END;
     };
 
 }
@@ -222,41 +222,41 @@ namespace Client
 
 namespace Client
 {
-    // ´ÙÀÌ¾î·Î±×
+    // ë‹¤ì´ì–´ë¡œê·¸
 
- // ¼±ÅÃÁö ±¸Á¶Ã¼
+ // ì„ íƒì§€ êµ¬ì¡°ì²´
     struct DialogueChoice
     {
-        wstring leftText;           // ¿ŞÂÊ ¼±ÅÃÁö ("»ìÇØ")
-        wstring rightText;          // ¿À¸¥ÂÊ ¼±ÅÃÁö ("³ë¿¹ ¤¡¤¡")
+        wstring leftText;           // ì™¼ìª½ ì„ íƒì§€ ("ì‚´í•´")
+        wstring rightText;          // ì˜¤ë¥¸ìª½ ì„ íƒì§€ ("ë…¸ì˜ˆ ã„±ã„±")
         _int leftNextId;
         _int rightNextId;
     };
 
-    // ´ë»ç ÇÑ ÁÙ
+    // ëŒ€ì‚¬ í•œ ì¤„
     struct DialogueLine
     {
-        _int   lineIndex;           // ¶óÀÎ ¼ø¼­ (0, 1, 2...)
-        wstring speaker;             // ¸»ÇÏ´Â ³ğ ("º¸½º", "ÇÃ·¹ÀÌ¾î", "")
-        wstring text;                // ´ë»ç ³»¿ë
-        _bool  hasChoices;          // ¼±ÅÃÁö°¡ ÀÖ´Â ¶óÀÎÀÎÁö
-        _int  NextID;          // ¼±ÅÃÁö°¡ ÀÖ´Â ¶óÀÎÀÎÁö
+        _int   lineIndex;           // ë¼ì¸ ìˆœì„œ (0, 1, 2...)
+        wstring speaker;             // ë§í•˜ëŠ” ë†ˆ ("ë³´ìŠ¤", "í”Œë ˆì´ì–´", "")
+        wstring text;                // ëŒ€ì‚¬ ë‚´ìš©
+        _bool  hasChoices;          // ì„ íƒì§€ê°€ ìˆëŠ” ë¼ì¸ì¸ì§€
+        _int  NextID;          // ì„ íƒì§€ê°€ ìˆëŠ” ë¼ì¸ì¸ì§€
 
-        DialogueChoice choice;           // ¼±ÅÃÁö°¡ ÀÖÀ» ¶§
+        DialogueChoice choice;           // ì„ íƒì§€ê°€ ìˆì„ ë•Œ
 
         _float leftPadding = 0.f;
 
         string voicePath;
     };
 
-    // ´ëÈ­ ¹­À½ (ÇÏ³ªÀÇ ´ëÈ­ ½ÃÄö½º)
+    // ëŒ€í™” ë¬¶ìŒ (í•˜ë‚˜ì˜ ëŒ€í™” ì‹œí€€ìŠ¤)
     struct Dialogue
     {
-        string dialogueId;               // ´ëÈ­ ID ("boss1_intro", "boss1_battle")
-        wstring speaker;                  // ¸»ÇÏ´Â ³ğ
+        string dialogueId;               // ëŒ€í™” ID ("boss1_intro", "boss1_battle")
+        wstring speaker;                  // ë§í•˜ëŠ” ë†ˆ
         shared_ptr<Engine::CTexture> Texture_Back_Path = nullptr;
         shared_ptr<Engine::CTexture> Texture_Char_Path = nullptr;
-        vector<DialogueLine> lines;      // ´ë»ç ¶óÀÎµé
+        vector<DialogueLine> lines;      // ëŒ€ì‚¬ ë¼ì¸ë“¤
     };
 
 }
@@ -273,27 +273,27 @@ namespace Client
     enum class INVENTYPE { PLAYER, CHEST, SHOP,STORAGE, END, NONE };
 
 
-    struct Evt_InvenPlayerInit_Data
+    struct Evt_InvenPlayerInitData
     {
-        weak_ptr<class CInventory> Inven_ptr = {};
+        weak_ptr<class CInventory> invenPtr = {};
     };
 
     enum class SHOPTAB { ROT, ENGINE, NET, LIGHT, END , NONE};
-    struct Evt_InvenStrageInit_Data
+    struct Evt_InvenStorageInitData
     {
-        INVENTYPE inventype = { INVENTYPE ::NONE};
-        SHOPTAB ShopTabType = {  };
-        weak_ptr<class CInventory> Inven_ptr = {};
+        INVENTYPE invenType = { INVENTYPE ::NONE};
+        SHOPTAB shopTabType = {  };
+        weak_ptr<class CInventory> invenPtr = {};
     };
 
 
 
-    struct Evt_InvenShopInit_Data
+    struct Evt_InvenShopInitData
     {
-        SHOPTAB m_ShopTabTYpe = {  };
-        weak_ptr<class CInventory> Inven_ptr = {};
+        SHOPTAB shopTabType = {  };
+        weak_ptr<class CInventory> invenPtr = {};
     };
-    struct  Evt_MouseToIndex_Data
+    struct  Evt_MouseToIndexData
     {
         _bool IsOnSlot = { false };
         _uint x = {};
@@ -319,7 +319,7 @@ namespace Client
     struct Evt_GetFish
     {
         _uint DefID = { ID_Absence };
-        Fish_Inst fishInst = {};
+        FishInst fishInst = {};
     };
 
     struct Evt_ItemSold
@@ -330,7 +330,7 @@ namespace Client
     struct Evt_ItemHovered
     {
         _bool isHold = {false};
-        Item_Inst itemInst = {};
+        ItemInst itemInst = {};
         LOCATIONSTATE locationState = {};
         _bool IsPlayer = {};
     };
@@ -346,14 +346,14 @@ namespace Client
 
 
 
-    struct Wave_Desc
+    struct WaveDesc
     {
         _float2 dir = {};
         float waveHeight = {};
         float waveLength = {};
         float speed = {};
 
-        _float3 Padding = {}; // 4ÀÇ ¹è¼ö·Î 
+        _float3 padding = {}; // 4ì˜ ë°°ìˆ˜ë¡œ 
     };
 
     struct Zone
@@ -369,17 +369,17 @@ namespace Client
 
 
     enum CAM_MODE { FOLLOW, LERP, STOP, SHACK, END };
-    struct CAM_DESC
+    struct CamDesc
     {
-        virtual ~CAM_DESC() = default;
+        virtual ~CamDesc() = default;
         CAM_MODE eMode;
         function<void()> OnComplete = nullptr;
     };
 
 
-    struct CAM_LERP_DESC : public CAM_DESC
+    struct CamLerpDesc : public CamDesc
     {
-        CAM_LERP_DESC() = default;
+        CamLerpDesc() = default;
 
         _float3 vTargetPos;
         _float3 vTargetRot;
@@ -391,9 +391,9 @@ namespace Client
     };
 
 
-    struct CAM_FOLLOW_DESC : public CAM_DESC
+    struct CamFollowDesc : public CamDesc
     {
-        CAM_FOLLOW_DESC() = default;
+        CamFollowDesc() = default;
 
         _float fDistance;
         _float fPitch;
@@ -402,7 +402,7 @@ namespace Client
     };
 
 
-    struct CAM_SHAKE_DESC : public CAM_DESC
+    struct CamShakeDesc : public CamDesc
     {
         _float fIntensity;
         _float fDuration;
@@ -411,35 +411,35 @@ namespace Client
 
     struct Evt_ChangeCam
     {
-        deque<shared_ptr<CAM_DESC>> commands;
+        deque<shared_ptr<CamDesc>> commands;
     };
 
     struct Evt_ShipStat
     {
-        _uint EngineSpeed = {};
-        _uint LightIntensity = {};
-        _uint FishingSpeed = {};
-        SEA_MASK SeaMask = {};
-        _float InvenMoney = {};
+        _uint engineSpeed = {};
+        _uint lightIntensity = {};
+        _uint fishingSpeed = {};
+        SEA_MASK seaMask = {};
+        _float invenMoney = {};
     };
 
 
-    struct Evt_Demage
+    struct Evt_Damage
     {
-        float ShakeTime = {};
-        float ShakePower = {};
-        float DeAc = {};
+        float shakeTime = {};
+        float shakePower = {};
+        float deAc = {};
 
-        int DemageCount = {};
+        int damageCount = {};
     };
 
-    struct Evt_Cam_Arrived
+    struct Evt_CamArrived
     {
         E_PLAYERSTATE playerstate = {};
 
     };
 
-    struct Evt_Dialogue_Finish
+    struct Evt_DialogueFinish
     {
 
     };
@@ -482,20 +482,20 @@ namespace Client
     struct Evt_CloseInventory
     {
     };
-    struct Evt_MoveTo_Storage
+    struct Evt_MoveToStorage
     {
     };
-    struct Evt_Village_Btn
+    struct Evt_VillageBtn
     {
         _uint type={};
     };
     struct Evt_FixAll
     {
     };
-    struct Evt_FixAll_Done
+    struct Evt_FixAllDone
     {
     };
-    struct Evt_RepairCoat
+    struct Evt_RepairCost
     {
         _uint cost = {};
     };
@@ -504,7 +504,7 @@ namespace Client
         _bool IsChange = false;
         _uint level = {};
     };
-    struct Evt_Boat_Light
+    struct Evt_BoatLight
     {
         _bool Light = false;
     };

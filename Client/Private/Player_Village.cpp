@@ -1,4 +1,4 @@
-#include "Player_Village.h"
+﻿#include "Player_Village.h"
 
 #include <UI.h>
 
@@ -71,7 +71,7 @@ void CPlayer_Village::Enter()
 
 
 	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CAM_LERP_DESC>();
+	auto pLerp = make_shared<CamLerpDesc>();
 	pLerp->eMode = CAM_MODE::LERP;
 	pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
 	pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
@@ -79,7 +79,7 @@ void CPlayer_Village::Enter()
 	pLerp->fFov = 30.f;
 	pLerp->OnComplete = [this]() {
 
-		Evt_Cam_Arrived e = {};
+		Evt_CamArrived e = {};
 		e.playerstate = E_PLAYERSTATE::VILLAGE;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 	//		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
@@ -87,7 +87,7 @@ void CPlayer_Village::Enter()
 	};
 	event.commands.push_back(pLerp);
 
-	auto pStop = make_shared<CAM_DESC>();
+	auto pStop = make_shared<CamDesc>();
 	pStop->eMode = CAM_MODE::STOP;
 	event.commands.push_back(pStop);
 
@@ -130,7 +130,7 @@ HRESULT CPlayer_Village::Init_State()
 		});
 
 
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe < Evt_Village_Btn>([this](const Evt_Village_Btn& e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe < Evt_VillageBtn>([this](const Evt_VillageBtn& e)
 	{
 		if(e.type ==0)
 		{
@@ -170,7 +170,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 
 
 			Evt_ChangeCam event = {};
-			auto pLerp = make_shared<CAM_LERP_DESC>();
+			auto pLerp = make_shared<CamLerpDesc>();
 			pLerp->eMode = CAM_MODE::LERP;
 			pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
 			pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
@@ -178,7 +178,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 			pLerp->fFov = 30.f;
 			pLerp->OnComplete = [this]() {
 
-				Evt_Cam_Arrived e = {};
+				Evt_CamArrived e = {};
 				e.playerstate = E_PLAYERSTATE::VILLAGE;
 				CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 				//		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
@@ -186,7 +186,7 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 				};
 			event.commands.push_back(pLerp);
 
-			auto pStop = make_shared<CAM_DESC>();
+			auto pStop = make_shared<CamDesc>();
 			pStop->eMode = CAM_MODE::STOP;
 			event.commands.push_back(pStop);
 

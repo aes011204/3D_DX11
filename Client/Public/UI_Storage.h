@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 
@@ -40,7 +40,7 @@ public:
     HRESULT OnRender()override;
     void OnClear()override;
     _bool MousePosToSlot();
-    _float2 Calculate_RenderPos(const Item_Inst& item);
+    _float2 Calculate_RenderPos(const ItemInst& item);
     void Render_Item();
 
     void Set_SlotNum(_uint col, _uint row);

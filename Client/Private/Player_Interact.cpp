@@ -1,4 +1,4 @@
-#include "Player_Interact.h"
+﻿#include "Player_Interact.h"
 #include <UI.h>
 
 #include "DialogueDB.h"
@@ -34,13 +34,13 @@ void CPlayer_Interact::Enter()
 	//};
 	//event.commands.push_back(pLerp);
 
-	auto pStop = make_shared<CAM_DESC>();
+	auto pStop = make_shared<CamDesc>();
 	pStop->eMode = CAM_MODE::STOP;
 	event.commands.push_back(pStop);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-	Evt_Cam_Arrived e = {};
+	Evt_CamArrived e = {};
 		e.playerstate = E_PLAYERSTATE::INTERACT;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 

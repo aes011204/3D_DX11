@@ -1,4 +1,4 @@
-#include "Sea_Manager.h"
+﻿#include "Sea_Manager.h"
 #include <numbers>
 #include "VIBuffer_Terrain.h"
 IMPLEMENT_SINGLETON(CSea_Manager)
@@ -17,7 +17,7 @@ HRESULT CSea_Manager::Initialize(/*ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 {
 
 
-	m_WaveCount = 3;
+	m_waveCount = 3;
 
 	m_waveDesc[0].dir = _float2(.67f, .98f);
 	m_waveDesc[0].waveHeight = .43f;
@@ -39,38 +39,38 @@ HRESULT CSea_Manager::Initialize(/*ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 }
 
-void CSea_Manager::Update(float TimeDelta)
+void CSea_Manager::Update(float timeDelta)
 {
-	m_AccTime += TimeDelta;
+	m_accTime += timeDelta;
 
 }
-_float3 CSea_Manager::Calculate_GerstnerWavePosition(_float3 Pos)
+_float3 CSea_Manager::Calculate_GerstnerWavePosition(_float3 pos)
 {
   
 
     //float relativePosX = Pos.x - TerrainPos.x;
     //float relativePosZ = Pos.z - TerrainPos.z;
 
-    _float2 UV;
-    UV.x = (Pos.x - TerrainPos.x) / TerrainSize;
-    UV.y = 1.0f - ((Pos.z - TerrainPos.z) / TerrainSize);
-    UV.x = max(0.0f, min(1.0f, UV.x));
-    UV.y = max(0.0f, min(1.0f, UV.y));
-    float fX = UV.x * (terrain_buffer.lock()->Get_NumVerticeX() - 1);
-    float fZ = UV.y * (terrain_buffer.lock()->Get_NumVerticeZ() - 1);
+    _float2 uv;
+    uv.x = (pos.x - m_terrainPos.x) / m_terrainSize;
+    uv.y = 1.0f - ((pos.z - m_terrainPos.z) / m_terrainSize);
+    uv.x = max(0.0f, min(1.0f, uv.x));
+    uv.y = max(0.0f, min(1.0f, uv.y));
+    float gridX = uv.x * (m_terrainBuffer.lock()->Get_NumVerticeX() - 1);
+    float gridZ = uv.y * (m_terrainBuffer.lock()->Get_NumVerticeZ() - 1);
     
-    int iX = (int)fX;
-    int iZ = (int)fZ;
+    int cellX = (int)gridX;
+    int cellZ = (int)gridZ;
 
     
-    int iIndex = (iZ * terrain_buffer.lock()->Get_NumVerticeX()) + iX;
-    const vector<float>& vec01 = terrain_buffer.lock()->Get_HeightData();
-    float height01 = max(1.f- vec01[iIndex],0.1f);
+    int heightIndex = (cellZ * m_terrainBuffer.lock()->Get_NumVerticeX()) + cellX;
+    const vector<float>& vec01 = m_terrainBuffer.lock()->Get_HeightData();
+    float height01 = max(1.f- vec01[heightIndex],0.1f);
    
 
 
-	_float3 wavePosition = Pos;
-	for (_uint i = 0; i < m_WaveCount; i++)
+	_float3 wavePosition = pos;
+	for (_uint i = 0; i < m_waveCount; i++)
 	{
 		_float2 waveDir = m_waveDesc[i].dir;
 		const float dirLength = sqrtf(waveDir.x * waveDir.x + waveDir.y * waveDir.y);
@@ -80,9 +80,9 @@ _float3 CSea_Manager::Calculate_GerstnerWavePosition(_float3 Pos)
 		waveDir.x /= dirLength;
 		waveDir.y /= dirLength;
 
-		float RadianWaveLength = (numbers::pi * 2) / m_waveDesc[i].waveLength;
-		_float dotXZ = (waveDir.x * Pos.x) + (waveDir.y * Pos.z);
-		float angle = dotXZ * RadianWaveLength - (m_waveDesc[i].speed * m_AccTime);
+		float radianWaveLength = (numbers::pi * 2) / m_waveDesc[i].waveLength;
+		_float dotXZ = (waveDir.x * pos.x) + (waveDir.y * pos.z);
+		float angle = dotXZ * radianWaveLength - (m_waveDesc[i].speed * m_accTime);
 		float amplitude = m_waveDesc[i].waveHeight* height01;
 
 
@@ -98,27 +98,27 @@ _float3 CSea_Manager::Calculate_GerstnerWavePosition(_float3 Pos)
 
 void CSea_Manager::OnGui()
 {
-    ImGui::DragFloat("Global Sea Pos(Y)", &m_GlobalY, 0.1f);
+    ImGui::DragFloat("Global Sea Pos(Y)", &m_globalY, 0.1f);
 
     //ImGui::SliderFloat("Depth Mask (0~1)", &m_depthMask01, 0.0f, 1.0f);
 
-    ImGui::DragFloat("AccTime", &m_AccTime, 0.01f);
+    ImGui::DragFloat("AccTime", &m_accTime, 0.01f);
 
-	ImGui::ColorEdit3("Deep Sea Color", (float*)&deepColor);
-	ImGui::ColorEdit3("Shallow Sea Color", (float*)&shallowColor);
+	ImGui::ColorEdit3("Deep Sea Color", (float*)&m_deepColor);
+	ImGui::ColorEdit3("Shallow Sea Color", (float*)&m_shallowColor);
 
 
     ImGui::Separator();
 
   
-    ImGui::SliderInt("Wave Count", &m_WaveCount, 0, 10);
+    ImGui::SliderInt("Wave Count", &m_waveCount, 0, 10);
 
     ImGui::Separator();
 
     ImGui::Text("[ Wave Details ]");
 
 
-    for (int i = 0; i < m_WaveCount; ++i)
+    for (int i = 0; i < m_waveCount; ++i)
     {
 
         ImGui::PushID(i);
