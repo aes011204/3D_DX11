@@ -20,7 +20,7 @@ public:
         
     };
 private:
-    CUI_Item(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_Item(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_Item(const CUI_Item& prototype);
 public:
     ~CUI_Item() = default;
@@ -28,7 +28,7 @@ public:
 public:
     void Set_Rotation(_uint rot) { m_holdItem.rotation = rot; };
 
-    void HoldItem(ItemInst HoldItemInst);
+    void HoldItem(ItemInst holdItemInst);
 
     void ReleaseItem();
 
@@ -36,7 +36,7 @@ public:
 
     void Set_HoldItem(const ItemInst& _item) { m_holdItem = _item; }
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -51,7 +51,7 @@ private:
     bool m_isHold = {};
     ItemInst m_holdItem = {};
 public:
-    static shared_ptr<CUI_Item> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_Item> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     virtual void Free() override;
 };
 

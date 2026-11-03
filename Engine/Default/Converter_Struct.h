@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include <cstdint>
 
 struct Cvt_Header
 {
-    uint32_t magic = {}; // 'TAD' (³» ¸¾´ë·Î Á¤ÇÑ °íÀ¯¹øÈ£)
-    uint32_t iType = {};
-    uint32_t iNumMeshes = {};
+    uint32_t magic = {}; // 'TAD' (ë‚´ ë§˜ëŒ€ë¡œ ì •í•œ ê³ ìœ ë²ˆí˜¸)
+    uint32_t type = {};
+    uint32_t numMeshes = {};
 };

@@ -10,8 +10,8 @@
 #include "EventBus.h"
 
 
-CUI_RepairShop::CUI_RepairShop(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_RepairShop::CUI_RepairShop(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -84,18 +84,18 @@ void CUI_RepairShop::UI_PanelActive()
 
 }
 
-HRESULT CUI_RepairShop::OnInit(void* pArg)
+HRESULT CUI_RepairShop::OnInit(void* arg)
 {
 	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_RepairCost>([this](const Evt_RepairCost& e)
 		{
-			_wstring strTag = format(L"모두 수리[${}]", e.cost);
-			m_fixButtonTex->Set_Text(strTag);
+			_wstring tag = format(L"모두 수리[${}]", e.cost);
+			m_fixButtonTex->Set_Text(tag);
 			m_repairPrice = e.cost;
 		});
 
 
 	HRESULT hr = E_FAIL;
-	RepairDesc* TABpDesc = static_cast<RepairDesc*>(pArg);
+	RepairDesc* TABpDesc = static_cast<RepairDesc*>(arg);
 	//TABCONTAINER_DESC pDesc = {};
 	TABpDesc->isFullScreen = false;
 	TABpDesc->isTransparent = false;
@@ -124,45 +124,45 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	img2.textureComLevel = ETOI(ELevel::STATIC);
 	img2.textureProtoName = L"Prototype_Component_Texture_TabDivider";
 	img2.useNineSlice = true;
-	shared_ptr<CUIImage> Line2 = CUIImage::Create(m_device, m_context);
-	Line2->Initialize(&img2);
-	Line2->Set_Zorder(1);
+	shared_ptr<CUIImage> line2 = CUIImage::Create(m_device, m_context);
+	line2->Initialize(&img2);
+	line2->Set_Zorder(1);
 
-	Add_Child(Line2, L"Line2", false);
-	m_line2 = Line2;
+	Add_Child(line2, L"Line2", false);
+	m_line2 = line2;
 
 	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
-		EShopTab eTab = static_cast<EShopTab>(i);
+		EShopTab tab = static_cast<EShopTab>(i);
 
 		/// 버튼
-		CUIButton::UIButtonDesc ButDesc = {};
-		ButDesc.textureComLevel = ETOI(ELevel::STATIC);
-		ButDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
+		CUIButton::UIButtonDesc butDesc = {};
+		butDesc.textureComLevel = ETOI(ELevel::STATIC);
+		butDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 
-		ButDesc.scale = Vector2{ 3.28f, 1.25f };
-		ButDesc.typeIndex = ETOI(eTab);
-		ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
+		butDesc.scale = Vector2{ 3.28f, 1.25f };
+		butDesc.typeIndex = ETOI(tab);
+		butDesc.OverlapStartEvent = [this](CUIButton* self)
 		{
 				m_gameInstance.lock()->Play_Once(L"Hover");
 
 		};
-		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
-		ButDesc.ClickEvent = [this,i](CUIButton* pThis)
+		butDesc.OverlapEndEvent = [](CUIButton* self) {};
+		butDesc.ClickEvent = [this,i](CUIButton* self)
 			{
 				SetActiveTab(i);
 				m_gameInstance.lock()->Play_Once(L"Click");
 
 			};
 		shared_ptr<CUIButton> button = CUIButton::Create(m_device, m_context);
-		button->Initialize(&ButDesc);
+		button->Initialize(&butDesc);
 		button->Set_Zorder(2);
 		button->UI_InActive();
 
 		{
 		
 			wstring texKey = {};
-			switch (eTab)
+			switch (tab)
 			{
 			case EShopTab::ROT:
 			
@@ -188,40 +188,40 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 			shared_ptr<CUIImage> iconImg = CUIImage::Create(m_device, m_context);
 			iconImg->Initialize(&icon);
 
-			wstring NameTag = L"iconImg" + S2W(string(magic_enum::enum_name(eTab)));
-			button->Add_Child(iconImg, NameTag, false);
+			wstring nameTag = L"iconImg" + S2W(string(magic_enum::enum_name(tab)));
+			button->Add_Child(iconImg, nameTag, false);
 			
 		}
 
 		//Add_Child(pChild, NameTag, false);
-		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
-		Add_Layout_Child(button, NameTag, false);
-		m_buttonContents[ETOI(eTab)] = button;
+		wstring nameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(tab)));
+		Add_Layout_Child(button, nameTag, false);
+		m_buttonContents[ETOI(tab)] = button;
 
 	}
 
 	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
 		{
-			EShopTab eTab = static_cast<EShopTab>(i);
+			EShopTab tab = static_cast<EShopTab>(i);
 			// 일단 테스트 인벤 3개
 			CUI_Storage::StorageDesc storageDesc = {};
 			storageDesc.isFullScreen = false;
 			storageDesc.isTransparent = true;
 			storageDesc.isSetParentSize = true;
-			storageDesc.Inventype = EInvenType::SHOP;
-			storageDesc.shopTab = eTab;
+			storageDesc.invenType = EInvenType::SHOP;
+			storageDesc.shopTab = tab;
 			
 
-			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_device, m_context);
-			pStorage->Initialize(&storageDesc);
+			shared_ptr<CUI_Storage> storage = CUI_Storage::Create(m_device, m_context);
+			storage->Initialize(&storageDesc);
 
 
 
-			wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-			Add_Child(pStorage, NameTag, false);
-			m_tabContents[ETOI(eTab)] = pStorage;
-			pStorage->UI_InActive();
+			wstring nameTag = S2W(string(magic_enum::enum_name(tab)));
+			Add_Child(storage, nameTag, false);
+			m_tabContents[ETOI(tab)] = storage;
+			storage->UI_InActive();
 
 
 			Change_LayoutRawCol(8,8);
@@ -232,13 +232,13 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 		///돈///
 
 	{
-			CUIButton::UIButtonDesc ButDesc = {};
-			ButDesc.textureComLevel = ETOI(ELevel::STATIC);
-			ButDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
+			CUIButton::UIButtonDesc butDesc = {};
+			butDesc.textureComLevel = ETOI(ELevel::STATIC);
+			butDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 			//ButDesc.TypeIndex = ETOI(eTab);
-			ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
-			ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
-			ButDesc.ClickEvent = [this](CUIButton* pThis)
+			butDesc.OverlapStartEvent = [](CUIButton* self) {};
+			butDesc.OverlapEndEvent = [](CUIButton* self) {};
+			butDesc.ClickEvent = [this](CUIButton* self)
 				{
 					// 전체수리
 
@@ -247,7 +247,7 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 				};
 			shared_ptr<CUIButton> button = CUIButton::Create(m_device, m_context);
-			button->Initialize(&ButDesc);
+			button->Initialize(&butDesc);
 			button->Set_Zorder(2);
 			button->UI_InActive();
 			button->Set_SelectState(false);
@@ -255,18 +255,18 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 			{
 			
 
-				CUIText::TextDesc text_Desc = {};
-				text_Desc.fontTag = L"Noto_Sans_CJK_SC_24";
-				text_Desc.text = L"테스트";
-				shared_ptr<CUIText> Text_storage = CUIText::Create(m_device, m_context);
-				Text_storage->Initialize(&text_Desc);
-				button->Add_Child(Text_storage, L"Text_repairPrice", false);
-				m_fixButtonTex = Text_storage;
+				CUIText::TextDesc textDesc = {};
+				textDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+				textDesc.text = L"테스트";
+				shared_ptr<CUIText> textStorage = CUIText::Create(m_device, m_context);
+				textStorage->Initialize(&textDesc);
+				button->Add_Child(textStorage, L"Text_repairPrice", false);
+				m_fixButtonTex = textStorage;
 			}
 
 			//Add_Child(pChild, NameTag, false);
-			wstring NameTag = L"BUTTON_repair";
-			Add_Child(button, NameTag, false);
+			wstring nameTag = L"BUTTON_repair";
+			Add_Child(button, nameTag, false);
 			m_btnFix = button;
 	}
 
@@ -369,17 +369,17 @@ void CUI_RepairShop::SetActiveTab(_uint btnIndex)
 		m_buttonContents[ETOI(btnIndex)]->ChangeState(EButtonState::SELECT); // 셀렉트
 }
 
-shared_ptr<CUI_RepairShop> CUI_RepairShop::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_RepairShop> CUI_RepairShop::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_RepairShop> pInstance(new CUI_RepairShop(pDevice, pContext), [](CUI_RepairShop* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_RepairShop> instance(new CUI_RepairShop(device, context), [](CUI_RepairShop* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_RepairShop::Free()

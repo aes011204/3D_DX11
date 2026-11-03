@@ -12,9 +12,9 @@ public:
     virtual ~CAssimp_Animation() = default;
 
 public:
-    HRESULT Initialize(const aiAnimation* pAIAnimation, shared_ptr<class CAssimp_Model> pModel);
+    HRESULT Initialize(const aiAnimation* srcAIAnimation, shared_ptr<class CAssimp_Model> model);
 
-    _bool Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<class CAssimp_Bone>>& Bones, _bool isLoop);
+    _bool Update_TransformationMatrices(_float timeDelta, const vector<shared_ptr<class CAssimp_Bone>>& Bones, _bool isLoop);
     //_bool Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<class CAssimp_Bone>>& Bones, _bool isLoop)
 
 public:
@@ -28,7 +28,7 @@ public:
     vector<shared_ptr<class CAssimp_Channel>> m_channels;
 
 public:
-    static shared_ptr<CAssimp_Animation> Create(const aiAnimation* pAIAnimation, shared_ptr<class CAssimp_Model> pModel);
+    static shared_ptr<CAssimp_Animation> Create(const aiAnimation* srcAIAnimation, shared_ptr<class CAssimp_Model> model);
     void Free() override;
 
 

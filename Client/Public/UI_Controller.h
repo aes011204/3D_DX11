@@ -24,9 +24,9 @@ public:
     virtual ~CUI_Controller();
 
 public:
-    HRESULT Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    HRESULT Initialize(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void StateUI();
-    void Update(float TimeDelta);
+    void Update(float timeDelta);
     HRESULT Ready_UI();
 
     shared_ptr<CUI> Get_LoadingUI() { return m_loading; };
@@ -46,9 +46,9 @@ public:
 private:
     struct ToolTipRestoreDesc
     {
-        _bool bValid = false;
+        _bool isValid = false;
         _bool isHold = false;
-        _bool IsPlayer = false;
+        _bool isPlayer = false;
         ItemInst itemInst = {};
     };
 private:
@@ -62,7 +62,7 @@ private:
 
     shared_ptr<class CUI_MiniGame> m_miniGame = { nullptr };
 
-    Client::EPlayerState m_pendingUiState;
+    Client::EPlayerState m_pendingUIState;
 private:
     ComPtr<ID3D11Device> m_device = { nullptr };
     ComPtr<ID3D11DeviceContext> m_context = { nullptr };

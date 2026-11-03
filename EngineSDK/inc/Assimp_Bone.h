@@ -10,13 +10,13 @@ public:
     virtual ~CAssimp_Bone() = default;
 
 public:
-    HRESULT Initialize(const aiNode* pAINode, _int iParentBoneIndex);
+    HRESULT Initialize(const aiNode* srcAINode, _int parentBoneIndex);
 
-    void Update_CombinedTransformMatrix(const vector<shared_ptr<CAssimp_Bone>> Bones, _fmatrix PreTransformMatrix);
-    void Update_TransformationMatrix(_fmatrix TransformMatrix);
+    void Update_CombinedTransformMatrix(const vector<shared_ptr<CAssimp_Bone>> Bones, _fmatrix preTransformMatrix);
+    void Update_TransformationMatrix(_fmatrix transformMatrix);
 public:
-    _bool isCompare(const _char* pBoneName) {return !strcmp(pBoneName, m_name);}
-    const _float4x4* Get_m_CombinedTransformationMatrixPtr() const { return &m_combinedTransformationMatrix; }
+    _bool isCompare(const _char* boneName) {return !strcmp(boneName, m_name);}
+    const _float4x4* Get_CombinedTransformationMatrixPtr() const { return &m_combinedTransformationMatrix; }
 private:
 
     _char m_name[MAX_PATH] = {};
@@ -25,7 +25,7 @@ private:
     _int m_parentBoneIndex = { -1 }; // -1 이면  root bone 임
 
 public:
-    static shared_ptr<CAssimp_Bone> Create(const aiNode* pAINode, _int iParentBoneIndex);
+    static shared_ptr<CAssimp_Bone> Create(const aiNode* srcAINode, _int parentBoneIndex);
     void Free() override;
 
 

@@ -29,7 +29,7 @@ public:
         bool useDark = true;
     };
 protected:
-    CUIRenderable(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUIRenderable(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUIRenderable(const CUIRenderable& prototype);
 public:
     virtual ~CUIRenderable() = default;
@@ -53,13 +53,13 @@ public:
 
     ////////////////////////
     const _float4& Get_BaseColor() const { return m_baseColor; }
-    void Set_BaseColor(const _float4& vBaseColor) { m_baseColor = vBaseColor; }
+    void Set_BaseColor(const _float4& baseColor) { m_baseColor = baseColor; }
     const _float4& Get_ZoneColor() const { return m_zoneColor; }
-    void Set_ZoneColor(const _float4& vZoneColor) { m_zoneColor = vZoneColor; }
+    void Set_ZoneColor(const _float4& zoneColor) { m_zoneColor = zoneColor; }
 
 
     //이건
-    HRESULT Change_Texture(shared_ptr<CTexture> texture, _uint TexIndex = 0);
+    HRESULT Change_Texture(shared_ptr<CTexture> texture, _uint texIndex = 0);
    
     HRESULT Set_TextureIndex(_uint index);
 
@@ -67,7 +67,7 @@ public:
 
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
-    HRESULT OnInit(void* pArg)override;
+    HRESULT OnInit(void* arg)override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -130,7 +130,7 @@ private:
     shared_ptr<class CTexture> m_textureCom = { nullptr };
 
 public:
-    static shared_ptr<CUIRenderable> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUIRenderable> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     //virtual shared_ptr<CUI> Clone(void* pArg);
     void Free()override;
 

@@ -15,27 +15,27 @@ CConsoleWin::~CConsoleWin()
 void CConsoleWin::Render()
 {
 
-    auto pLogMgr = CLog_Manager::GetInstance();
-    if (nullptr == pLogMgr) return;
+    auto logMgr = CLog_Manager::GetInstance();
+    if (nullptr == logMgr) return;
 
     if (ImGui::Begin("Console Log"))
     {
-        if (ImGui::Button("Clear")) pLogMgr->Clear();
+        if (ImGui::Button("Clear")) logMgr->Clear();
         ImGui::Separator();
 
         ImGui::BeginChild("LogScrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-        auto& vecLogs = pLogMgr->Get_Logs();
+        auto& vecLogs = logMgr->Get_Logs();
         for (const auto& log : vecLogs)
         {
-            ImVec4 vColor = { 1.f, 1.f, 1.f, 1.f }; // INFO
+            ImVec4 color = { 1.f, 1.f, 1.f, 1.f }; // INFO
 
             if (log.level ==ELogLevel::WARNING)
-                vColor = { 1.f, 1.f, 0.f, 1.f }; // WARNING (노란색)
+                color = { 1.f, 1.f, 0.f, 1.f }; // WARNING (노란색)
             else if (log.level == ELogLevel::ERR)
-                vColor = { 1.f, 0.f, 0.f, 1.f }; // ERR (빨간색)
+                color = { 1.f, 0.f, 0.f, 1.f }; // ERR (빨간색)
 
-            ImGui::PushStyleColor(ImGuiCol_Text, vColor);
+            ImGui::PushStyleColor(ImGuiCol_Text, color);
             ImGui::TextUnformatted(log.message.c_str());
             ImGui::PopStyleColor();
         }

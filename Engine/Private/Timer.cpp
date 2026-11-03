@@ -40,16 +40,16 @@ _float CTimer::Update_Timer()
 
 shared_ptr<CTimer> CTimer::Create()
 {
-    shared_ptr<CTimer> pInstance(new CTimer());
+    shared_ptr<CTimer> instance(new CTimer());
 
-    if (FAILED(pInstance->Ready_Timer()))
+    if (FAILED(instance->Ready_Timer()))
     {
         MSG_BOX("Timer Create Failed");
 
         return nullptr;
     }
 
-    return pInstance;
+    return instance;
 }
 
 void CTimer::Free()

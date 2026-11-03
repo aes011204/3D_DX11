@@ -23,9 +23,9 @@ HRESULT CItemDB::Initialize()
 	return S_OK;
 }
 
-const ItemDef& CItemDB::GetItemByID(_uint itemId)
+const ItemDef& CItemDB::GetItemByID(_uint itemID)
 {
-	return m_vecItemDefs[GetIndexByID(itemId)];
+	return m_vecItemDefs[GetIndexByID(itemID)];
 }
 
 HRESULT CItemDB::Load_ItemData(const string& fileName)
@@ -74,7 +74,7 @@ HRESULT CItemDB::Load_ItemData(const string& fileName)
 	{
 		ItemDef itemDef; // 구조체 지역으로 생성
 
-		itemDef.itemId = node.value("ItemID", 0);//node["ItemID"].get<int> 이렇게 해도되긴 함
+		itemDef.itemID = node.value("ItemID", 0);//node["ItemID"].get<int> 이렇게 해도되긴 함
 
 		{
 			string str = node.value("ItemType", "END");
@@ -169,7 +169,7 @@ HRESULT CItemDB::Load_ItemData(const string& fileName)
 
 		// 마지막 vec에 넣기
 		m_vecItemDefs.push_back(itemDef);
-		m_mapItemId.emplace(itemDef.itemId, m_vecItemDefs.size() - 1);
+		m_mapItemID.emplace(itemDef.itemID, m_vecItemDefs.size() - 1);
 
 	}
 
@@ -207,8 +207,8 @@ void CItemDB::Parse_Fish_Def(FishDef& fishDef, const nlohmann::json& node)
 		for (int i = 0; i < node["Mutation"].size(); i++)
 		{
 			auto& mut = node["Mutation"][i];
-			fishDef.vecMutation[i].mutationId = i + 1;
-			fishDef.vecMutation[i].speciesId = node.value("ItemID", 0);
+			fishDef.vecMutation[i].mutationID = i + 1;
+			fishDef.vecMutation[i].speciesID = node.value("ItemID", 0);
 
 			fishDef.vecMutation[i].mutName = mut.value("MutName", "a");
 			fishDef.vecMutation[i].mutDesc = mut.value("MutDesc", "a");
@@ -329,8 +329,8 @@ void CItemDB::Compute_Occ(Shape& shape, _uint w, _uint h)
 	shape.occ[2].clear();
 	shape.occ[3].clear();
 
-	_uint _w = { w };
-	_uint _h = { h };
+	_uint width = { w };
+	_uint height = { h };
 	for (_uint y = 0; y < shape.height; y++)
 	{
 		for (_uint x = 0; x < shape.width; x++)
@@ -345,7 +345,7 @@ void CItemDB::Compute_Occ(Shape& shape, _uint w, _uint h)
 
 	// 공식 90도 회전 = [x,y]->[h-1-y,x]
 	//Rotation 90
-	_w = h; _h = w;
+	width = h; height = w;
 
 	// 90도 회전: (x, y) -> (h-1-y, x) 
 	for (auto& pos : shape.occ[0])
@@ -381,8 +381,8 @@ wstring CItemDB::Utf8ToWstring(const string& str)
 
 _uint CItemDB::GetIndexByID(_uint id)
 {
-	auto it = m_mapItemId.find(id);
-	assert(it != m_mapItemId.end());
+	auto it = m_mapItemID.find(id);
+	assert(it != m_mapItemID.end());
 	return it->second;
 }
 

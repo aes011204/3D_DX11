@@ -1,7 +1,7 @@
 ﻿#include "UIText.h"
 
-CUIText::CUIText(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CUI(pDevice, pContext)
+CUIText::CUIText(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CUI(device, context)
 {
 }
 
@@ -10,19 +10,19 @@ CUIText::CUIText(const CUIText& prototype)
 {
 }
 
-HRESULT CUIText::OnInit(void* pArg)
+HRESULT CUIText::OnInit(void* arg)
 {
-	auto* pDesc = static_cast<TextDesc*>(pArg);
-	m_textColor = pDesc->textColor;
-	m_fontTag = pDesc->fontTag;
-	m_text = pDesc->text;
-	m_fontAline = pDesc->fontAlign;
+	auto* desc = static_cast<TextDesc*>(arg);
+	m_textColor = desc->textColor;
+	m_fontTag = desc->fontTag;
+	m_text = desc->text;
+	m_fontAline = desc->fontAlign;
 
 
 
 	m_isInteractable = false;
 
-	return CUI::OnInit(pDesc);
+	return CUI::OnInit(desc);
 
 }
 
@@ -92,18 +92,18 @@ HRESULT CUIText::OnRender()
 
 		Rect rc = m_UITransformCom->Get_WorldRect();
 
-		float CenterY = rc.Top() + (rc.Bottom() - rc.Top()) * 0.5f;
+		float centerY = rc.Top() + (rc.Bottom() - rc.Top()) * 0.5f;
 
 		float screenHeight = m_gameInstance.lock()->Get_WinSize().Bottom();
 
-		_float2 DrawPos;
-		DrawPos.x = rc.Left(); 
-		DrawPos.y = screenHeight - CenterY - (m_textSize.y * 0.5f);
+		_float2 drawPos;
+		drawPos.x = rc.Left(); 
+		drawPos.y = screenHeight - centerY - (m_textSize.y * 0.5f);
 
 		m_gameInstance.lock()->Font_Draw(
 			m_fontTag,
 			m_text.c_str(),
-			DrawPos,
+			drawPos,
 			XMLoadFloat4(&m_textColor)
 		);
 		/*switch (m_FontAline)
@@ -157,15 +157,15 @@ void CUIText::OnGui()
 }
 
 
-shared_ptr<CUIText> CUIText::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUIText> CUIText::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUIText> pInstance(new CUIText(pDevice, pContext), [](CUIText* p) {p->Free(); delete(p); });
+	shared_ptr<CUIText> instance(new CUIText(device, context), [](CUIText* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIText");
 	}
-	return pInstance;
+	return instance;
 
 }
 

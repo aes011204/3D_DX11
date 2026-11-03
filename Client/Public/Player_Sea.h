@@ -15,7 +15,7 @@ class CPlayer_Sea :
     public CPlayerState
 {
 private:
-    explicit CPlayer_Sea(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> pStateMachine);
+    explicit CPlayer_Sea(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> stateMachine);
     virtual ~CPlayer_Sea();
 
 public:
@@ -39,9 +39,9 @@ public:
 
 
 
-    void Location_Sea(_float fTimeDelta);
+    void Location_Sea(_float timeDelta);
    // bool Docking(_float fTimeDelta,_float3 targetPos);
-    _uint Move(_float fTimeDelta);
+    _uint Move(_float timeDelta);
 
 private:
 
@@ -66,12 +66,12 @@ private:
     _float3 m_targetPos = {};
     weak_ptr<CLight> m_lightObj = {  };
     bool m_isOnTab = false;
-    bool On_Light = false;
-    bool bPlaying = false;
+    bool m_isLightOn = false;
+    bool m_isPlaying = false;
 
-    weak_ptr<class CUI_TabContainer> m_tabUi={};
+    weak_ptr<class CUI_TabContainer> m_tabUI={};
 public:
-    static shared_ptr<CPlayer_Sea> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
+    static shared_ptr<CPlayer_Sea> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine);
 
 private:
     virtual void Free();

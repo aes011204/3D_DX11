@@ -21,15 +21,15 @@
 
 //
 
-CLevel_Loading::CLevel_Loading(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CLevel{ pDevice, pContext }
+CLevel_Loading::CLevel_Loading(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CLevel{ device, context }
 {
 }
 
-HRESULT CLevel_Loading::Initialize(ELevel eNextLevelID)
+HRESULT CLevel_Loading::Initialize(ELevel nextLevelID)
 {
 	m_gameInstance.lock()->Stop_All();
-	m_nextLevelId = eNextLevelID;
+	m_nextLevelID = nextLevelID;
 	
 	// 로딩 화면을 구성해주기 위한 객체들을 생성한다
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
@@ -38,7 +38,7 @@ HRESULT CLevel_Loading::Initialize(ELevel eNextLevelID)
 		return E_FAIL;
 
 	// 저 객체들이 로딩화면을 구성하고 유저에게 보여주는 동안 자원을 로드해줄수 있는 (Cloader)스레드 객체를 생성헤준다
-	m_loader = CLoader::Create(m_device, m_context, eNextLevelID);
+	m_loader = CLoader::Create(m_device, m_context, nextLevelID);
 	if(m_loader == nullptr)
 		return E_FAIL;
 
@@ -63,7 +63,7 @@ HRESULT CLevel_Loading::Post_Initialize()
 	return S_OK;
 }
 
-void CLevel_Loading::Update(_float fTimeDelta)
+void CLevel_Loading::Update(_float timeDelta)
 {
 	//
 	//m_LoadingUI->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT))
@@ -73,33 +73,33 @@ void CLevel_Loading::Update(_float fTimeDelta)
 	{
 
 
-		shared_ptr<CLevel> pNextLevel = { nullptr };
+		shared_ptr<CLevel> nextLevel = { nullptr };
 
 
 		
-		switch (m_nextLevelId)
+		switch (m_nextLevelID)
 		{
 		case ELevel::LOGO:
-			pNextLevel = CLevel_Logo::Create(m_device, m_context);
+			nextLevel = CLevel_Logo::Create(m_device, m_context);
 			break;
 
 		case ELevel::GAMEPLAY:
-			pNextLevel = CLevel_GamePlay::Create(m_device, m_context);
+			nextLevel = CLevel_GamePlay::Create(m_device, m_context);
 			break;
 		case ELevel::EDITOR:
-			pNextLevel = CLevel_Editor::Create(m_device, m_context);
+			nextLevel = CLevel_Editor::Create(m_device, m_context);
 			break;
 		default:
 			break;
 		}
 
-		if(pNextLevel==nullptr)
+		if(nextLevel==nullptr)
 		{
 			MSG_BOX("Failed to Created : NextLevel");
 			return;
 		}
 
-		if(FAILED(m_gameInstance.lock()->Change_Level(ETOI(m_nextLevelId),pNextLevel)))
+		if(FAILED(m_gameInstance.lock()->Change_Level(ETOI(m_nextLevelID),nextLevel)))
 		{
 			MSG_BOX("Failed to Change : NextLevel");
 			return;
@@ -121,14 +121,14 @@ HRESULT CLevel_Loading::Render()
 	return S_OK;
 }
 
-HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar* pLayerTag)
+HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar* layerTag)
 {
 
 
 	return S_OK;
 }
 
-HRESULT CLevel_Loading::Ready_Layer_UI(const _tchar* LayerTag)
+HRESULT CLevel_Loading::Ready_Layer_UI(const _tchar* layerTag)
 {
 	//CUITransform::UITRANSFORM_DESC desc ;
 	//// 임시로 UI매니져에 ui 등록
@@ -147,15 +147,15 @@ HRESULT CLevel_Loading::Ready_Layer_UI(const _tchar* LayerTag)
 	return S_OK;
 }
 
-shared_ptr<CLevel_Loading> CLevel_Loading::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, ELevel eNextLevelID)
+shared_ptr<CLevel_Loading> CLevel_Loading::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, ELevel nextLevelID)
 {
-	shared_ptr<CLevel_Loading> pInstance ( new CLevel_Loading(pDevice, pContext));
+	shared_ptr<CLevel_Loading> instance ( new CLevel_Loading(device, context));
 
-	if (FAILED(pInstance->Initialize(eNextLevelID)))
+	if (FAILED(instance->Initialize(nextLevelID)))
 	{
 		MSG_BOX("Failed to Created : CLevel_Loading");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CLevel_Loading::Free()

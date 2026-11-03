@@ -3,8 +3,8 @@
 #include "GameInstance.h"
 #include "Engine_Helper.h"
 
-CEntity::CEntity(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_device{ pDevice }, m_context{ pContext },
+CEntity::CEntity(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: m_device{ device }, m_context{ context },
 	m_gameInstance{ CGameInstance::GetInstance() }
 {
 
@@ -19,9 +19,9 @@ CEntity::CEntity(const CEntity& prototype)
 	//  레퍼런스 관리를 위해 디폴트 복사생성자가 아니라 만드거임
 }
 
-shared_ptr<CComponent> CEntity::Get_Component(const _wstring& strComponentTag)
+shared_ptr<CComponent> CEntity::Get_Component(const _wstring& componentTag)
 {
-	auto it = m_components.find(strComponentTag);
+	auto it = m_components.find(componentTag);
 	if (it == m_components.end())
 		return nullptr;
 
@@ -37,9 +37,9 @@ shared_ptr<CComponent> CEntity::Get_Component(const _wstring& strComponentTag)
 
 //}
 
-HRESULT CEntity::Remove_Component(const _wstring& strComponentTag)
+HRESULT CEntity::Remove_Component(const _wstring& componentTag)
 {
-	auto com = m_components.find(strComponentTag);
+	auto com = m_components.find(componentTag);
 	if (com != m_components.end()) // 찾았을 때만 지우기
 	{
 		m_components.erase(com);

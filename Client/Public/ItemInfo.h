@@ -22,15 +22,15 @@ public:
 
 	};
 protected:
-	CItemInfo(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CItemInfo(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CItemInfo(const CUIPanel& prototype);
 public:
 	~CItemInfo() = default;
 
 public:
-	void UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState PlayerState, _bool IsPlayer);
+	void UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState playerState, _bool isPlayer);
 	virtual void UI_Active() override; //  UI 활성활시 호출되는 함수// 이 패널은 다 켜지면 안되기떄문에 오버라이딩으로 호출뻇고 여기서 처리
-	HRESULT OnInit(void* pArg) override;
+	HRESULT OnInit(void* arg) override;
 	void OnActive()override;
 	void OnInActive()override;
 	void OnDisabled()override;
@@ -42,8 +42,8 @@ public:
 
 	void SetPlayerState(EPlayerState state){m_playerState = state;}
 public:
-	_float Active_ButtonInfo(EButtonInfo btnInfo, _float2 AnchoredPos, _float cost = 0.f, _float2 Pivot = {0.5f, 0.5f});
-	void GetButtonInfo(_uint buttonInfo, _uint& Texindex, wstring& str, _float extraInfo);
+	_float Active_ButtonInfo(EButtonInfo btnInfo, _float2 anchoredPos, _float cost = 0.f, _float2 pivot = {0.5f, 0.5f});
+	void GetButtonInfo(_uint buttonInfo, _uint& texIndex, wstring& str, _float extraInfo);
 private:
 	shared_ptr<CUIText> m_nameText = {};
 	shared_ptr<CUIText> m_leftText = {};
@@ -63,7 +63,7 @@ private:
 	EPlayerState m_playerState = {};
 
 public:
-	static shared_ptr<CItemInfo> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CItemInfo> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	void Free() override;
 };
 

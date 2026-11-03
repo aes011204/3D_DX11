@@ -1,8 +1,8 @@
 ﻿#include "UIObject.h"
 #include "Shader.h"
 
-CUIObject::CUIObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject { pDevice, pContext }
+CUIObject::CUIObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject { device, context }
 {
 }
 
@@ -16,25 +16,25 @@ HRESULT CUIObject::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUIObject::Initialize(void* pArg)
+HRESULT CUIObject::Initialize(void* arg)
 {
-	UIDesc* pDesc = static_cast<UIDesc*>(pArg);
+	UIDesc* desc = static_cast<UIDesc*>(arg);
 
-	m_x = pDesc->x;
-	m_y = pDesc->y;
-	m_sizeX = pDesc->sizeX;
-	m_sizeY = pDesc->sizeY;
+	m_x = desc->x;
+	m_y = desc->y;
+	m_sizeX = desc->sizeX;
+	m_sizeY = desc->sizeY;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	/* 직교투영 */
-	D3D11_VIEWPORT			ViewPortDesc{};
-	_uint					iNumViewports = { 1 };
-	m_context->RSGetViewports(&iNumViewports, &ViewPortDesc);
+	D3D11_VIEWPORT			viewPortDesc{};
+	_uint					numViewports = { 1 };
+	m_context->RSGetViewports(&numViewports, &viewPortDesc);
 
-	m_viewportWidth = ViewPortDesc.Width;
-	m_viewportHeight = ViewPortDesc.Height;
+	m_viewportWidth = viewPortDesc.Width;
+	m_viewportHeight = viewPortDesc.Height;
 
 	/* 트랜스폼이 들고 있는 월드행렬에 위의 네개상태를 표현할 수 있도록 볂형한다. */	
 	Update_Transform();
@@ -48,15 +48,15 @@ HRESULT CUIObject::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CUIObject::Priority_Update(_float fTimeDelta)
+void CUIObject::Priority_Update(_float timeDelta)
 {
 }
 
-void CUIObject::Update(_float fTimeDelta)
+void CUIObject::Update(_float timeDelta)
 {
 }
 
-void CUIObject::Late_Update(_float fTimeDelta)
+void CUIObject::Late_Update(_float timeDelta)
 {
 
 }
@@ -74,9 +74,9 @@ void CUIObject::Update_Transform()
 		XMVectorSet(m_x - m_viewportWidth * 0.5f, -m_y + m_viewportHeight * 0.5f, 0.f, 1.f));
 }
 
-HRESULT CUIObject::Bind_ShaderResource(shared_ptr<class CShader> pShader, const _char* pConstantName, ED3DTS eTransformState)
+HRESULT CUIObject::Bind_ShaderResource(shared_ptr<class CShader> shader, const _char* constantName, ED3DTS transformState)
 {
-	return pShader->Bind_Matrix(pConstantName, &m_transformationMatrices[ETOI(eTransformState)]);	
+	return shader->Bind_Matrix(constantName, &m_transformationMatrices[ETOI(transformState)]);	
 }
 
 void CUIObject::Free()

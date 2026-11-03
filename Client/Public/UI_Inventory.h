@@ -23,7 +23,7 @@ public:
        
     };
 private:
-    CUI_Inventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_Inventory(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_Inventory(const CUIPanel& prototype);
 public:
     ~CUI_Inventory() = default;
@@ -31,10 +31,10 @@ public:
 public:
     HRESULT Initialize_Prototype() override;
 
-    _bool Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& inven_slot);
+    _bool Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& invenSlot);
 
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -56,12 +56,12 @@ private:
     shared_ptr<CUIText>m_textInfo1 = {};
 
     shared_ptr<CUIPanel> m_invenPanel = { nullptr };
-    vector<shared_ptr<CUIImage>> m_itemUi = {};
+    vector<shared_ptr<CUIImage>> m_itemUI = {};
     vector<shared_ptr<CUISlot>> m_slot = {};
     vector<shared_ptr<CUISlot>> m_damageSlot = {};
 
 public:
-    static shared_ptr<CUI_Inventory> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_Inventory> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

@@ -11,7 +11,7 @@ HRESULT CEditor_Win::Initialize()
 	return S_OK;
 }
 
-void CEditor_Win::Update(float fTimeDelta)
+void CEditor_Win::Update(float timeDelta)
 {
 }
 

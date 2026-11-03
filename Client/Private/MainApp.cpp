@@ -95,11 +95,11 @@ HRESULT CMainApp::Initialize()
 
 	// UI Pool 채우기 / ready_UI 역할
 	CUI_Controller::GetInstance()->Initialize(m_device, m_context);
-	auto SeaManager = CSea_Manager::GetInstance();
-	if (SeaManager != nullptr)
+	auto seaManager = CSea_Manager::GetInstance();
+	if (seaManager != nullptr)
 	{
-		SeaManager->Initialize();
-		m_gameInstance.lock()->Push_ManagerClass(L"Sea_Manager", SeaManager.get());
+		seaManager->Initialize();
+		m_gameInstance.lock()->Push_ManagerClass(L"Sea_Manager", seaManager.get());
 	}
 
 	if (FAILED((Ready_Fonts())))
@@ -120,12 +120,12 @@ HRESULT CMainApp::Initialize()
 	return S_OK;
 }
 
-int CMainApp::Update(_float fTimeDelta)
+int CMainApp::Update(_float timeDelta)
 {
 
-	m_gameInstance.lock()->Update_Engine(fTimeDelta);
-	CSea_Manager::GetInstance()->Update(fTimeDelta);
-	m_editorInstance.lock()->Update_Editor(fTimeDelta);
+	m_gameInstance.lock()->Update_Engine(timeDelta);
+	CSea_Manager::GetInstance()->Update(timeDelta);
+	m_editorInstance.lock()->Update_Editor(timeDelta);
 
 
 
@@ -138,8 +138,8 @@ HRESULT CMainApp::Render()
 	if (FAILED(m_gameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd))) // 이거 Clear_Buffers() 내부로 넣을수 있지만 일단 이렇게
 		return E_FAIL;
 
-	_float4 vClearColor = { 0.f,0.f, 1.f,1.f };
-	if (FAILED(m_gameInstance.lock()->Clear_Buffers(&vClearColor)))
+	_float4 clearColor = { 0.f,0.f, 1.f,1.f };
+	if (FAILED(m_gameInstance.lock()->Clear_Buffers(&clearColor)))
 		return E_FAIL;
 
 	m_gameInstance.lock()->Bind_BackBufferRenderTarget(g_hWnd);
@@ -190,11 +190,11 @@ Importing Noto Sans CJK SC*/
 
 	return S_OK;
 }
-HRESULT CMainApp::Ready_StartLevel(ELevel eStartLevelID)
+HRESULT CMainApp::Ready_StartLevel(ELevel startLevelID)
 {
-	if (eStartLevelID == ELevel::LOADING)
+	if (startLevelID == ELevel::LOADING)
 		return E_FAIL;
-	if (FAILED((m_gameInstance.lock()->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, eStartLevelID)))))
+	if (FAILED((m_gameInstance.lock()->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, startLevelID)))))
 		return E_FAIL;
 
 	return S_OK;
@@ -1144,20 +1144,20 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 	}
 
 
-	_matrix PreLocalTransformMatrix = { XMMatrixIdentity() };
+	_matrix preLocalTransformMatrix = { XMMatrixIdentity() };
 	/* Prototype_Component_Model_Island */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_Island"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/island.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/island.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Model_Island_Side */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_Island_Side"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/island_Side.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/island_Side.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1171,60 +1171,60 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 	//	return E_FAIL;
 	//}
 	/* Prototype_Component_Model_Rock0 */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_Rock0"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock0.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock0.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_Rock1 */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_Rock1"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock1.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock1.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 	/* Prototype_Component_Model_Rock2 */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_Rock2"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock2.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Rock/GM_Rock2.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 
 	/*Prototype_Component_Model_PineTree*/
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_PineTree"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Tree_Pine.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Tree_Pine.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 	/*Prototype_Component_Model_BirchTree*/
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_BirchTree"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Tree_Birch.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Tree_Birch.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 	/*Prototype_Component_Model_Bush*/
 
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f), XMMatrixRotationY(XMConvertToRadians(180.f));
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_Bush"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Bush.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Tree/Bush.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
 	}
 
 	/* Prototype_Component_Model_Island_Collector */
-	PreLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) /** XMMatrixRotationY(XMConvertToRadians(180.f))*/;
+	preLocalTransformMatrix = XMMatrixScaling(0.01f, 0.01f, 0.01f) /** XMMatrixRotationY(XMConvertToRadians(180.f))*/;
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_Island_Collector"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/Island_collector.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/Island/Island_collector.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1232,7 +1232,7 @@ HRESULT CMainApp::Ready_Menu_Prototype_For_Static_Level()
 
 
 	if (FAILED(m_gameInstance.lock()->Add_Prototype(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Model_LightHouse"),
-		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/LightHouse/LightHouse_tex.dat", EModelType::NONANIM, PreLocalTransformMatrix))))
+		CModel::Create(m_device, m_context, "../Bin/Resources/BinaryModels/LightHouse/LightHouse_tex.dat", EModelType::NONANIM, preLocalTransformMatrix))))
 	{
 		MSG_BOX("Faild to Add_Prototype : GM_Town");
 		return E_FAIL;
@@ -1815,13 +1815,13 @@ ESoundLoadMode::STATIC,
 
 unique_ptr<CMainApp> CMainApp::Create()
 {
-	unique_ptr<CMainApp> pInstance(new CMainApp());
+	unique_ptr<CMainApp> instance(new CMainApp());
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CMainApp");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMainApp::Free()

@@ -11,31 +11,31 @@ CChannel::CChannel()
 HRESULT CChannel::Initialize(ifstream& InFile)
 {
 
-    Cvt_Channel ChannelDesc = {};
-    InFile.read((char*)&ChannelDesc, sizeof(Cvt_Channel));
+    Cvt_Channel channelDesc = {};
+    InFile.read((char*)&channelDesc, sizeof(Cvt_Channel));
 
 
 
 
-    m_boneIndex = ChannelDesc.boneIndex;
+    m_boneIndex = channelDesc.boneIndex;
 
-    m_numKeyFrames = ChannelDesc.numKeyframes;
+    m_numKeyFrames = channelDesc.numKeyframes;
 
     m_keyFrames.reserve(m_numKeyFrames); // 미리 공간 확보
 
     for (size_t i = 0; i < m_numKeyFrames; i++)
     {
-        Cvt_Keyframe KeyFrameDesc = {};
-        InFile.read((char*)&KeyFrameDesc, sizeof(Cvt_Keyframe));
+        Cvt_Keyframe keyFrameDesc = {};
+        InFile.read((char*)&keyFrameDesc, sizeof(Cvt_Keyframe));
 
         KeyFrame keyFrame = {};
         // 실제 컨버터에서 저장한 시간을 트랙 포지션으로 사용
-        keyFrame.trackPosition = (float)KeyFrameDesc.trackPosition;
+        keyFrame.trackPosition = (float)keyFrameDesc.trackPosition;
 
         // 데이터 복사 (Cvt_Keyframe -> KEYFRAME)
-        memcpy(&keyFrame.scale, KeyFrameDesc.scale, sizeof(_float3));
-        memcpy(&keyFrame.rotation, KeyFrameDesc.rotation, sizeof(_float4)); // qRot 사용
-        memcpy(&keyFrame.translation, KeyFrameDesc.pos, sizeof(_float3)); // vPos 사용
+        memcpy(&keyFrame.scale, keyFrameDesc.scale, sizeof(_float3));
+        memcpy(&keyFrame.rotation, keyFrameDesc.rotation, sizeof(_float4)); // qRot 사용
+        memcpy(&keyFrame.translation, keyFrameDesc.pos, sizeof(_float3)); // vPos 사용
 
         m_keyFrames.push_back(keyFrame);
     }
@@ -81,115 +81,115 @@ HRESULT CChannel::Initialize(ifstream& InFile)
     return S_OK;
 }
 
-void CChannel::Update_TransformationMatrix(_uint* pCurrentKeyFrameIndex, _float fCurrentTrackPosition, const vector<shared_ptr<CBone>>& Bones)
+void CChannel::Update_TransformationMatrix(_uint* currentKeyFrameIndex, _float currentTrackPosition, const vector<shared_ptr<CBone>>& Bones)
 {
-    if (0.f == fCurrentTrackPosition)
-        (*pCurrentKeyFrameIndex) = 0;
+    if (0.f == currentTrackPosition)
+        (*currentKeyFrameIndex) = 0;
 
-    KeyFrame LastKeyFrame = m_keyFrames.back();
+    KeyFrame lastKeyFrame = m_keyFrames.back();
 
-    _vector vScale, vRotation, vTranslation;
+    _vector scale, rotation, translation;
 
-    if (fCurrentTrackPosition >= LastKeyFrame.trackPosition)// 마지막 프레임 이후 그 자세 그대로 유지
+    if (currentTrackPosition >= lastKeyFrame.trackPosition)// 마지막 프레임 이후 그 자세 그대로 유지
     {
-        vScale = XMLoadFloat3(&LastKeyFrame.scale);
-        vRotation = XMLoadFloat4(&LastKeyFrame.rotation);
-        vTranslation = XMVectorSetW(XMLoadFloat3(&LastKeyFrame.translation), 1.f);
+        scale = XMLoadFloat3(&lastKeyFrame.scale);
+        rotation = XMLoadFloat4(&lastKeyFrame.rotation);
+        translation = XMVectorSetW(XMLoadFloat3(&lastKeyFrame.translation), 1.f);
     }
     else // 사이보간
     {
-        while (fCurrentTrackPosition >= m_keyFrames[(*pCurrentKeyFrameIndex) + 1].trackPosition)
-            ++(*pCurrentKeyFrameIndex);
+        while (currentTrackPosition >= m_keyFrames[(*currentKeyFrameIndex) + 1].trackPosition)
+            ++(*currentKeyFrameIndex);
 
-        _float fRatio = (fCurrentTrackPosition - m_keyFrames[(*pCurrentKeyFrameIndex)].trackPosition) /
-            (m_keyFrames[(*pCurrentKeyFrameIndex) + 1].trackPosition - m_keyFrames[(*pCurrentKeyFrameIndex)].trackPosition);
+        _float ratio = (currentTrackPosition - m_keyFrames[(*currentKeyFrameIndex)].trackPosition) /
+            (m_keyFrames[(*currentKeyFrameIndex) + 1].trackPosition - m_keyFrames[(*currentKeyFrameIndex)].trackPosition);
 
-        _vector vLeftScale, vRightScale;
-        _vector	vLeftRotation, vRightRotation;
-        _vector	vLeftTranslation, vRightTranslation;
+        _vector leftScale, rightScale;
+        _vector	leftRotation, rightRotation;
+        _vector	leftTranslation, rightTranslation;
 
-        vLeftScale = XMLoadFloat3(&m_keyFrames[(*pCurrentKeyFrameIndex)].scale);
-        vRightScale = XMLoadFloat3(&m_keyFrames[(*pCurrentKeyFrameIndex)+1].scale);
-        vScale = XMVectorLerp(vLeftScale, vRightScale, fRatio);
+        leftScale = XMLoadFloat3(&m_keyFrames[(*currentKeyFrameIndex)].scale);
+        rightScale = XMLoadFloat3(&m_keyFrames[(*currentKeyFrameIndex)+1].scale);
+        scale = XMVectorLerp(leftScale, rightScale, ratio);
 
-        vLeftRotation = XMLoadFloat4(&m_keyFrames[(*pCurrentKeyFrameIndex)].rotation);
-        vRightRotation = XMLoadFloat4(&m_keyFrames[(*pCurrentKeyFrameIndex) + 1].rotation);
-        vRotation = XMQuaternionSlerp(vLeftRotation, vRightRotation, fRatio);
-        vRotation = XMQuaternionNormalize(vRotation);
+        leftRotation = XMLoadFloat4(&m_keyFrames[(*currentKeyFrameIndex)].rotation);
+        rightRotation = XMLoadFloat4(&m_keyFrames[(*currentKeyFrameIndex) + 1].rotation);
+        rotation = XMQuaternionSlerp(leftRotation, rightRotation, ratio);
+        rotation = XMQuaternionNormalize(rotation);
 
-        vLeftTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[(*pCurrentKeyFrameIndex)].translation), 1.f);
-        vRightTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[(*pCurrentKeyFrameIndex) + 1].translation), 1.f);
-        vTranslation = XMVectorLerp(vLeftTranslation, vRightTranslation, fRatio);
+        leftTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[(*currentKeyFrameIndex)].translation), 1.f);
+        rightTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[(*currentKeyFrameIndex) + 1].translation), 1.f);
+        translation = XMVectorLerp(leftTranslation, rightTranslation, ratio);
     }
 
-    _matrix		BoneTransformationMatrix = XMMatrixAffineTransformation(
-        vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
+    _matrix		boneTransformationMatrix = XMMatrixAffineTransformation(
+        scale, XMVectorSet(0.f, 0.f, 0.f, 1.f), rotation, translation);
 
-    Bones[m_boneIndex]->Update_TransformationMatrix(BoneTransformationMatrix);
+    Bones[m_boneIndex]->Update_TransformationMatrix(boneTransformationMatrix);
 }
 void CChannel::Update_ToMatrix(
-    _uint* pCurrentKeyFrameIndex,
-    _float fCurrentTrackPosition,
-    vector<_matrix>& OutMatrices)
+    _uint* currentKeyFrameIndex,
+    _float currentTrackPosition,
+    vector<_matrix>& outMatrices)
 {
-    if (0.f == fCurrentTrackPosition)
-        (*pCurrentKeyFrameIndex) = 0;
+    if (0.f == currentTrackPosition)
+        (*currentKeyFrameIndex) = 0;
 
-    KeyFrame LastKeyFrame = m_keyFrames.back();
+    KeyFrame lastKeyFrame = m_keyFrames.back();
 
-    _vector vScale, vRotation, vTranslation;
+    _vector scale, rotation, translation;
 
-    if (fCurrentTrackPosition >= LastKeyFrame.trackPosition)
+    if (currentTrackPosition >= lastKeyFrame.trackPosition)
     {
-        vScale = XMLoadFloat3(&LastKeyFrame.scale);
-        vRotation = XMLoadFloat4(&LastKeyFrame.rotation);
-        vTranslation = XMVectorSetW(XMLoadFloat3(&LastKeyFrame.translation), 1.f);
+        scale = XMLoadFloat3(&lastKeyFrame.scale);
+        rotation = XMLoadFloat4(&lastKeyFrame.rotation);
+        translation = XMVectorSetW(XMLoadFloat3(&lastKeyFrame.translation), 1.f);
     }
     else
     {
-        while ((*pCurrentKeyFrameIndex + 1) < m_numKeyFrames &&
-            fCurrentTrackPosition >= m_keyFrames[(*pCurrentKeyFrameIndex) + 1].trackPosition)
+        while ((*currentKeyFrameIndex + 1) < m_numKeyFrames &&
+            currentTrackPosition >= m_keyFrames[(*currentKeyFrameIndex) + 1].trackPosition)
         {
-            ++(*pCurrentKeyFrameIndex);
+            ++(*currentKeyFrameIndex);
         }
 
-        float t0 = m_keyFrames[*pCurrentKeyFrameIndex].trackPosition;
-        float t1 = m_keyFrames[*pCurrentKeyFrameIndex + 1].trackPosition;
+        float t0 = m_keyFrames[*currentKeyFrameIndex].trackPosition;
+        float t1 = m_keyFrames[*currentKeyFrameIndex + 1].trackPosition;
 
-        float ratio = (t1 > t0) ? (fCurrentTrackPosition - t0) / (t1 - t0) : 0.f;
+        float ratio = (t1 > t0) ? (currentTrackPosition - t0) / (t1 - t0) : 0.f;
 
-        _vector s0 = XMLoadFloat3(&m_keyFrames[*pCurrentKeyFrameIndex].scale);
-        _vector s1 = XMLoadFloat3(&m_keyFrames[*pCurrentKeyFrameIndex + 1].scale);
-        vScale = XMVectorLerp(s0, s1, ratio);
+        _vector s0 = XMLoadFloat3(&m_keyFrames[*currentKeyFrameIndex].scale);
+        _vector s1 = XMLoadFloat3(&m_keyFrames[*currentKeyFrameIndex + 1].scale);
+        scale = XMVectorLerp(s0, s1, ratio);
 
-        _vector r0 = XMLoadFloat4(&m_keyFrames[*pCurrentKeyFrameIndex].rotation);
-        _vector r1 = XMLoadFloat4(&m_keyFrames[*pCurrentKeyFrameIndex + 1].rotation);
-        vRotation = XMQuaternionNormalize(XMQuaternionSlerp(r0, r1, ratio));
+        _vector r0 = XMLoadFloat4(&m_keyFrames[*currentKeyFrameIndex].rotation);
+        _vector r1 = XMLoadFloat4(&m_keyFrames[*currentKeyFrameIndex + 1].rotation);
+        rotation = XMQuaternionNormalize(XMQuaternionSlerp(r0, r1, ratio));
 
-        _vector p0 = XMVectorSetW(XMLoadFloat3(&m_keyFrames[*pCurrentKeyFrameIndex].translation), 1.f);
-        _vector p1 = XMVectorSetW(XMLoadFloat3(&m_keyFrames[*pCurrentKeyFrameIndex + 1].translation), 1.f);
-        vTranslation = XMVectorLerp(p0, p1, ratio);
+        _vector p0 = XMVectorSetW(XMLoadFloat3(&m_keyFrames[*currentKeyFrameIndex].translation), 1.f);
+        _vector p1 = XMVectorSetW(XMLoadFloat3(&m_keyFrames[*currentKeyFrameIndex + 1].translation), 1.f);
+        translation = XMVectorLerp(p0, p1, ratio);
     }
 
     _matrix mat = XMMatrixAffineTransformation(
-        vScale,
+        scale,
         XMVectorZero(),
-        vRotation,
-        vTranslation
+        rotation,
+        translation
     );
 
-    OutMatrices[m_boneIndex] = mat;
+    outMatrices[m_boneIndex] = mat;
 }
 
 shared_ptr<CChannel> CChannel::Create(ifstream& InFile)
 {
-    shared_ptr<CChannel> pInstance(new CChannel(), [](CChannel* p) {p->Free(); delete p; });
+    shared_ptr<CChannel> instance(new CChannel(), [](CChannel* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(InFile)))
+    if (FAILED(instance->Initialize(InFile)))
     {
         MSG_BOX("Failed to Created : CChannel");
     }
-    return pInstance;
+    return instance;
 }
 
 

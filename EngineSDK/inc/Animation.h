@@ -10,7 +10,7 @@ class CAnimation :
 {
 private:
     CAnimation();
-    CAnimation(const CAnimation& Prototype);
+    CAnimation(const CAnimation& prototype);
 public:
     virtual ~CAnimation() = default;
 
@@ -18,14 +18,14 @@ public:
     HRESULT Initialize(ifstream& InFile);
     //HRESULT Initialize(const aiAnimation* pAIAnimation, class CModel* pModel);
 
-    _bool Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<class CBone>>& Bones, _bool isLoop);
+    _bool Update_TransformationMatrices(_float timeDelta, const vector<shared_ptr<class CBone>>& Bones, _bool isLoop);
     _bool Blend_TransformationMatrices(_float timeDelta, const shared_ptr<CAnimation>& nextAnim, _float blendRatio, const vector<shared_ptr<CBone>>& bones, _bool isCurLoop, _bool isNextLoop/*, int32 rootNodeIndex = -1*/);
-    void Update_ToBuffer(_float fTimeDelta, vector<_matrix>& OutMatrices, _bool isLoop, _uint boneCount);
+    void Update_ToBuffer(_float timeDelta, vector<_matrix>& outMatrices, _bool isLoop, _uint boneCount);
 
     void ReStart() { m_currentTrackPosition = 0.f;
-    	for (auto& iIndex : m_currentKeyFrameIndices)
+    	for (auto& index : m_currentKeyFrameIndices)
     {
-        iIndex = 0;
+        index = 0;
     }
     }
     _int Get_CurrentFrame() const

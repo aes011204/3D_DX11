@@ -10,17 +10,17 @@ class CSnow :
     public CGameObject
 {
 private:
-    CSnow(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CSnow(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CSnow(const CSnow& prototype);
 public:
     virtual ~CSnow() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnGui() override;
@@ -45,8 +45,8 @@ private:
 
 public:
 
-    static shared_ptr<CSnow> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CSnow> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

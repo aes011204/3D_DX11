@@ -41,10 +41,10 @@ public:
     }
 
     // 현재 마우스의 특정 축 좌표를 반환
-    _long	Get_DIMouseMove(EMouseMove eMouseState)
+    _long	Get_DIMouseMove(EMouseMove mouseState)
     {
         return *((reinterpret_cast<_long*>(&m_mouseState))
-            + static_cast<_uint>(eMouseState));
+            + static_cast<_uint>(mouseState));
     }
 
     // ---------- 키보드 ----------

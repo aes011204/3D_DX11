@@ -4,8 +4,8 @@
 #include "Shader.h"
 
 
-CUIImage::CUIImage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    : CUIRenderable{pDevice, pContext}
+CUIImage::CUIImage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    : CUIRenderable{device, context}
 {
 }
 
@@ -14,13 +14,13 @@ CUIImage::CUIImage(const CUIImage& prototype)
 {
 }
 
-HRESULT CUIImage::OnInit(void* pArg)
+HRESULT CUIImage::OnInit(void* arg)
 {
 
     m_isInteractable = false;
 
 
-    UIImageDesc* pDesc = static_cast<UIImageDesc*>(pArg);
+    UIImageDesc* desc = static_cast<UIImageDesc*>(arg);
 
   /*  if (FAILED(Ready_Components(pDesc->TextureComLevel, pDesc->TextureProtoName)))
         return E_FAIL;*/
@@ -48,7 +48,7 @@ HRESULT CUIImage::OnInit(void* pArg)
 
     //m_SliceDesc.TileScale = max(1.f, pDesc->TileScale);
     
-    return __super::OnInit(pDesc);;
+    return __super::OnInit(desc);;
 }
 
 void CUIImage::OnActive()
@@ -189,15 +189,15 @@ void CUIImage::OnGui()
     __super::OnGui();
 }
 
-shared_ptr<CUIImage> CUIImage::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUIImage> CUIImage::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-    shared_ptr<CUIImage> pInstance(new CUIImage(pDevice, pContext), [](CUIImage* p) {p->Free();delete(p);});
+    shared_ptr<CUIImage> instance(new CUIImage(device, context), [](CUIImage* p) {p->Free();delete(p);});
 
-    if (FAILED(pInstance->Initialize_Prototype()))
+    if (FAILED(instance->Initialize_Prototype()))
     {
         MSG_BOX("Failed to Created : CUIImage");
     }
-    return pInstance;
+    return instance;
 }
 
 void CUIImage::Free()

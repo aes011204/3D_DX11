@@ -2,8 +2,8 @@
 #include "GameInstance.h"
 #include "Model.h"
 
-CEmptyGObject::CEmptyGObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CEmptyGObject::CEmptyGObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -17,12 +17,12 @@ HRESULT CEmptyGObject::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CEmptyGObject::Initialize(void* pArg)
+HRESULT CEmptyGObject::Initialize(void* arg)
 {
 
 	m_isSavableClass = true;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -31,11 +31,11 @@ HRESULT CEmptyGObject::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CEmptyGObject::Priority_Update(_float fTimeDelta)
+void CEmptyGObject::Priority_Update(_float timeDelta)
 {
 }
 
-void CEmptyGObject::Update(_float fTimeDelta)
+void CEmptyGObject::Update(_float timeDelta)
 {
 	if (m_isDirtyCom) {
 		RebindCom();      // "바뀐 것"만 한 번 갱신
@@ -46,7 +46,7 @@ void CEmptyGObject::Update(_float fTimeDelta)
 	//m_pModelCom->Play_Animation(fTimeDelta);
 }
 
-void CEmptyGObject::Late_Update(_float fTimeDelta)
+void CEmptyGObject::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -56,9 +56,9 @@ HRESULT CEmptyGObject::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
 		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
@@ -181,8 +181,8 @@ HRESULT CEmptyGObject::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far",&fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far",&farZ, sizeof(_float))))
 		return E_FAIL;
 
 
@@ -231,27 +231,27 @@ HRESULT CEmptyGObject::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CEmptyGObject> CEmptyGObject::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CEmptyGObject> CEmptyGObject::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CEmptyGObject> pInstance(new CEmptyGObject(pDevice, pContext), [](CEmptyGObject* p) {p->Free(); delete p;});
+	shared_ptr<CEmptyGObject> instance(new CEmptyGObject(device, context), [](CEmptyGObject* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CEmptyGObject");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CEmptyGObject::Clone(void* pArg)
+shared_ptr<CGameObject> CEmptyGObject::Clone(void* arg)
 {
-	shared_ptr<CEmptyGObject> pInstance(new CEmptyGObject(*this), [](CEmptyGObject* p) {p->Free(); delete p;});
+	shared_ptr<CEmptyGObject> instance(new CEmptyGObject(*this), [](CEmptyGObject* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CEmptyGObject");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CEmptyGObject::Free()

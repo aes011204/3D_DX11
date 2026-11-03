@@ -8,8 +8,8 @@
 #include "Level_Loading.h"
 #include "Event_Struct.h"
 
-CLevel_Editor::CLevel_Editor(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CLevel(pDevice, pContext)
+CLevel_Editor::CLevel_Editor(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CLevel(device, context)
 {
 }
 
@@ -42,7 +42,7 @@ HRESULT CLevel_Editor::Initialize()
     return S_OK;
 }
 
-void CLevel_Editor::Update(_float fTimeDelta)
+void CLevel_Editor::Update(_float timeDelta)
 {
 	if (GetKeyState(VK_NUMPAD1) & 0x8000)
 	{
@@ -77,16 +77,16 @@ HRESULT CLevel_Editor::Ready_Lights()
 	return S_OK;
 }
 
-HRESULT CLevel_Editor::Ready_Layer_BackGround(const _wstring& strLayerTag)
+HRESULT CLevel_Editor::Ready_Layer_BackGround(const _wstring& layerTag)
 {
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag)))
+		ETOI(ELevel::GAMEPLAY), layerTag)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& strLayerTag)
+HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& layerTag)
 {
 
 	/*CCamera_Play::CAMERAPLAY_DESC CLCamDesc = {};
@@ -121,7 +121,7 @@ HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& strLayerTag)
 	FRCamDesc.mouseSensor = 0.01f;
 
 	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
-		ETOI(ELevel::STATIC), strLayerTag, &FRCamDesc));
+		ETOI(ELevel::STATIC), layerTag, &FRCamDesc));
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
@@ -147,15 +147,15 @@ void CLevel_Editor::OnGui()
 
 }
 
-shared_ptr<CLevel_Editor> CLevel_Editor::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CLevel_Editor> CLevel_Editor::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CLevel_Editor> pInstance(new CLevel_Editor(pDevice, pContext), [](CLevel_Editor* p) {p->Free();delete p;});
+	shared_ptr<CLevel_Editor> instance(new CLevel_Editor(device, context), [](CLevel_Editor* p) {p->Free();delete p;});
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CLevel_Editor");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CLevel_Editor::Free()

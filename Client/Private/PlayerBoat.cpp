@@ -251,7 +251,7 @@ void CPlayerBoat::Add_Money(_float money)
 void CPlayerBoat::SetHPFull()
 {
 	{
-        m_hp = m_maxHp;
+        m_HP = m_maxHP;
         Evt_RepairCost e = {};
         e.cost = Get_DamageFixPrice();
         m_gameInstance.lock()->Get_EventBus()->Publish(e);
@@ -302,10 +302,10 @@ void CPlayerBoat::Get_Damage(_uint damage)
 	m_invincibleTime = 2.f;
 	
 
-	m_hp -= damage;
+	m_HP -= damage;
 
 	// 梨꾨젰 ?섎굹 以꾧퀬
-	if(m_hp <= 0)
+	if(m_HP <= 0)
 	{
 	//留뚯씪 梨꾨젰??0 ?대㈃ 二쎌쓬 ?곹깭
 		Dead();
@@ -324,7 +324,7 @@ void CPlayerBoat::Get_Damage(_uint damage)
 	e.shakePower = 0.3f;
 	e.shakeTime = 1.f;
 	//e.DeAc = 0.1f;
-	e.damageCount = m_maxHp - m_hp;
+	e.damageCount = m_maxHP - m_HP;
 	m_gameInstance.lock()->Get_EventBus()->Publish(e);
 	// ?몃객 ??移??뚮? ??젣
 

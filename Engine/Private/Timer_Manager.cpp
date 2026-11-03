@@ -48,8 +48,8 @@ shared_ptr<CTimer> CTimer_Manager::Find_Timer(const _wstring& timerTag)
 
 unique_ptr<CTimer_Manager> CTimer_Manager::Create()
 {
-    unique_ptr<CTimer_Manager> pInstance(new CTimer_Manager());
-   return pInstance;
+    unique_ptr<CTimer_Manager> instance(new CTimer_Manager());
+   return instance;
 }
 
 void CTimer_Manager::Free()

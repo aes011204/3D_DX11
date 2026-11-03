@@ -31,7 +31,7 @@ HRESULT CManagerWin::Initialize()
 	return S_OK;
 }
 
-void CManagerWin::Update(float fTimeDelta)
+void CManagerWin::Update(float timeDelta)
 {
 }
 
@@ -96,12 +96,12 @@ void CManagerWin::Render()
 	{
 		for (auto& pair : Manager)
 		{
-			_string strLayerTag = W2S(pair.first);
+			_string layerTag = W2S(pair.first);
 
 			if (!pair.second)
 				continue;
 
-			if (ImGui::TreeNodeEx(strLayerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNodeEx(layerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 			{
 
 
@@ -161,25 +161,25 @@ void CManagerWin::Render()
 	//}
 	if (m_isPickMode == true)
 	{
-		_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
+		_uint currentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
 
 		if (m_preview == nullptr)
 		{
 			m_preview = CGameInstance::GetInstance()->Add_GameObject(
 				m_selectedLevel,
 				m_selectedTag,
-				iCurrentLevel,
+				currentLevel,
 				L"Static"
 			);
 
 			if (m_isPickMode == true)
 			{
-				_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
+				_uint currentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
 
 				CGameInstance::GetInstance()->Add_GameObject(
 					m_selectedLevel,
 					m_selectedTag,
-					iCurrentLevel,
+					currentLevel,
 					L"Static"
 				);
 
@@ -196,12 +196,12 @@ void CManagerWin::Render()
 
 shared_ptr<CManagerWin> CManagerWin::Create()
 {
-	shared_ptr<CManagerWin> pInstance(new CManagerWin());
+	shared_ptr<CManagerWin> instance(new CManagerWin());
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Cloned : CManagerWin");
 	}
-	return pInstance;
+	return instance;
 }
 

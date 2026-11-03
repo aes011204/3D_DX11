@@ -15,18 +15,18 @@ NS_BEGIN(Client)
 
 {
 public:
-    struct UiTimeDesc : public CUIPanel::UIPanelDesc
+    struct UITimeDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:
-    CUI_Time(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_Time(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_Time(const CUIPanel& prototype);
 public:
     ~CUI_Time() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -35,7 +35,7 @@ public:
     HRESULT OnRender()override;
     void OnClear()override;
 
-    void UIPannelActive(_uint time, _bool IsSleep);
+    void UIPannelActive(_uint time, _bool isSleep);
 public:
 
 private:
@@ -52,7 +52,7 @@ private:
     float  m_targetAngle = {};
     
         float   m_acc = {};
-        _bool  result = false;
+        _bool  m_isRotationDone = false;
     float   m_seed = {};
 
     //
@@ -60,7 +60,7 @@ private:
     float m_startTod = {};
     float m_targetTod = {};
 public:
-    static shared_ptr<CUI_Time> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_Time> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

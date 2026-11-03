@@ -3,8 +3,8 @@
 #include "DInput_Manager.h"
 
 
-CUIButton::CUIButton(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CUIRenderable(pDevice, pContext)
+CUIButton::CUIButton(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CUIRenderable(device, context)
 {
 }
 
@@ -13,14 +13,14 @@ CUIButton::CUIButton(const CUIButton& prototype)
 {
 }
 
-HRESULT CUIButton::OnInit(void* pArg)
+HRESULT CUIButton::OnInit(void* arg)
 {
 
-    UIButtonDesc* pDesc = static_cast<UIButtonDesc*>(pArg);
-    m_clickEvent = pDesc->ClickEvent;
-    m_overlapStartEvent = pDesc->OverlapStartEvent;
-    m_overlapEndEvent = pDesc->OverlapEndEvent;
-    m_typeIndex = pDesc->typeIndex;
+    UIButtonDesc* desc = static_cast<UIButtonDesc*>(arg);
+    m_clickEvent = desc->ClickEvent;
+    m_overlapStartEvent = desc->OverlapStartEvent;
+    m_overlapEndEvent = desc->OverlapEndEvent;
+    m_typeIndex = desc->typeIndex;
    // m_TextureComLevel = pDesc->TextureComLevel;
 
 
@@ -35,7 +35,7 @@ HRESULT CUIButton::OnInit(void* pArg)
 
     
 
-    return __super::OnInit(pDesc);;
+    return __super::OnInit(desc);;
 
 }
 
@@ -71,7 +71,7 @@ void CUIButton::OnDisabled()
 
 void CUIButton::OnUpdate(const _float& timeDelta)
 {
-    _bool bUseDark = Get_IsDark();
+    _bool useDark = Get_IsDark();
 
     ProcessInput();
   /*  if(!m_bUseSelect)
@@ -88,23 +88,23 @@ void CUIButton::OnUpdate(const _float& timeDelta)
         switch (m_UIState)
         {
         case EButtonState::CLICK:
-            if (bUseDark)
+            if (useDark)
                 Set_Dark01(0.f);
 
             break;
 
         case EButtonState::SELECT:
-            if (bUseDark)
+            if (useDark)
                 Set_Dark01(0.f);
         
             break;
         case EButtonState::HOVER:
-            if (bUseDark)
+            if (useDark)
                 Set_Dark01(0.6f);
 
             break;
         case EButtonState::NORMAL:
-            if (bUseDark)
+            if (useDark)
                 Set_Dark01(0.8f);
             break;
         case EButtonState::DISABLE: // 상점등에서 보이는데 돈이 없어서 클릭 할수 없는 상태
@@ -299,15 +299,15 @@ _uint CUIButton::Get_TypeIndex()
 }
 
 
-shared_ptr<CUIButton> CUIButton::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUIButton> CUIButton::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-    shared_ptr<CUIButton> pInstance (new CUIButton(pDevice, pContext), [](CUIButton* p) {p->Free();delete(p);});
+    shared_ptr<CUIButton> instance (new CUIButton(device, context), [](CUIButton* p) {p->Free();delete(p);});
 
-    if (FAILED(pInstance->Initialize_Prototype()))
+    if (FAILED(instance->Initialize_Prototype()))
     {
         MSG_BOX("Failed to Created : CUIButton");
     }
-    return pInstance;
+    return instance;
 }
 
 void CUIButton::Free()

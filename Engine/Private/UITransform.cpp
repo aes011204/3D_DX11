@@ -1,8 +1,8 @@
 ﻿#include "UITransform.h"
 #include "GameInstance.h"
 
-CUITransform::CUITransform(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CComponent(pDevice, pContext)
+CUITransform::CUITransform(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CComponent(device, context)
 {
 }
 
@@ -20,17 +20,17 @@ HRESULT CUITransform::Initialize_Prototype()
 
 HRESULT CUITransform::Initialize(void* Arg)
 {
-    UITransformDesc* pDesc = static_cast<UITransformDesc*>(Arg);
+    UITransformDesc* desc = static_cast<UITransformDesc*>(Arg);
 
-    m_anchorPoint = pDesc->anchorPoint;
-    m_pivot = pDesc->pivot;
+    m_anchorPoint = desc->anchorPoint;
+    m_pivot = desc->pivot;
 
-    m_sizeDelta = pDesc->sizeDelta;
-    m_anchoredPos = pDesc->anchoredPos;
+    m_sizeDelta = desc->sizeDelta;
+    m_anchoredPos = desc->anchoredPos;
 
-    m_localScale = pDesc->scale;
+    m_localScale = desc->scale;
 
-    m_isSetParentSize = pDesc->isSetParentSize;
+    m_isSetParentSize = desc->isSetParentSize;
 
     MarkDirtyRecursive();
     
@@ -77,24 +77,24 @@ void CUITransform::SetParent(weak_ptr<CUITransform> newParent, bool keepWorldRec
     MarkDirtyRecursive();
 }
 
-_bool CUITransform::SetRotationTo(_float _fTargetDegree, _float fTimeDelta)
+_bool CUITransform::SetRotationTo(_float targetDegree, _float timeDelta)
 {
-    _float fRatio = 0.1f; // 보간 속도 (0.0 ~ 1.0)
+    _float ratio = 0.1f; // 보간 속도 (0.0 ~ 1.0)
     _float degree = XMConvertToDegrees(m_rotationRadian);
-    if (degree != _fTargetDegree)
+    if (degree != targetDegree)
     {
-        _float Diff = _fTargetDegree - degree;
+        _float Diff = targetDegree - degree;
 
        
         if (abs(Diff) < 0.1f)
         {
-            degree = _fTargetDegree;
+            degree = targetDegree;
         	SetRotation(degree);
             return true;
         }
         else
         {
-            degree += Diff * fRatio;
+            degree += Diff * ratio;
         }
     }
 
@@ -132,15 +132,15 @@ void CUITransform::OnGui()
 {
 
 
-        bool bChanged = false;
-        bool bPopPivotColor = false;
-        bool bPopColor = false;
+        bool isChanged = false;
+        bool isPopPivotColor = false;
+        bool isPopColor = false;
         if (m_isKeepSizeRatio)
         {
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.4f, 0.8f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.5f, 0.9f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.4f, 0.6f, 1.0f, 1.0f));
-            bPopColor = true;
+            isPopColor = true;
         }
 
         // 2. 토글 버튼
@@ -150,7 +150,7 @@ void CUITransform::OnGui()
         }
 
         // 3. 색상 복구 (Pop) - 반드시 Push한 만큼만 정확히!
-        if (bPopColor)
+        if (isPopColor)
         {
             ImGui::PopStyleColor(3);
         }
@@ -160,7 +160,7 @@ void CUITransform::OnGui()
             // 활성화 시 노란색이나 주황색 계열로 강조 (주의 표시)
             ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.4f, 0.1f, 1.0f));
             ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.5f, 0.2f, 1.0f));
-            bPopPivotColor = true;
+            isPopPivotColor = true;
         }
 
         if (ImGui::Button(m_isFreePivot ? "Pivot: Free (Unlocked)" : "Pivot: Standard (0-1)"))
@@ -168,35 +168,35 @@ void CUITransform::OnGui()
             m_isFreePivot = !m_isFreePivot;
         }
 
-        if (bPopPivotColor) ImGui::PopStyleColor(2);
+        if (isPopPivotColor) ImGui::PopStyleColor(2);
 
         // Anchored Position
         if (ImGui::DragFloat2("Pos (Anchored)", (float*)&m_anchoredPos, 0.1f))
-            bChanged = true;
+            isChanged = true;
 
         //// UI의 크기
         //if (ImGui::DragFloat2("Size", (float*)&m_SizeDelta, 0.1f))
         //    bChanged = true;
 
-        _float2 vPrevSize = m_sizeDelta; // 이전 사이즈 저장
+        _float2 prevSize = m_sizeDelta; // 이전 사이즈 저장
 
         if (ImGui::DragFloat2("Size", (float*)&m_sizeDelta, 0.1f))
         {
-            bChanged = true;
+            isChanged = true;
 
             // 비율 유지가 켜져 있고, 사이즈가 0이 아닐 때
-            if (m_isKeepSizeRatio && vPrevSize.x != 0.f && vPrevSize.y != 0.f)
+            if (m_isKeepSizeRatio && prevSize.x != 0.f && prevSize.y != 0.f)
             {
                 // 어느 축이 변했는지 확인하여 비율 계산
-                if (m_sizeDelta.x != vPrevSize.x) // X가 변했다면
+                if (m_sizeDelta.x != prevSize.x) // X가 변했다면
                 {
-                    float fRatio = vPrevSize.y / vPrevSize.x;
-                    m_sizeDelta.y = m_sizeDelta.x * fRatio;
+                    float ratio = prevSize.y / prevSize.x;
+                    m_sizeDelta.y = m_sizeDelta.x * ratio;
                 }
-                else if (m_sizeDelta.y != vPrevSize.y) // Y가 변했다면
+                else if (m_sizeDelta.y != prevSize.y) // Y가 변했다면
                 {
-                    float fRatio = vPrevSize.x / vPrevSize.y;
-                    m_sizeDelta.x = m_sizeDelta.y * fRatio;
+                    float ratio = prevSize.x / prevSize.y;
+                    m_sizeDelta.x = m_sizeDelta.y * ratio;
                 }
             }
         }
@@ -204,7 +204,7 @@ void CUITransform::OnGui()
 
         // 0.0 ~ 1.0 비율
         if (ImGui::SliderFloat2("Anchor", (float*)&m_anchorPoint, 0.0f, 1.0f))
-            bChanged = true;
+            isChanged = true;
 
         // 0.0 ~ 1.0 비율
         if (m_isFreePivot)
@@ -213,7 +213,7 @@ void CUITransform::OnGui()
             if (ImGui::DragFloat2("Pivot (Free)", (float*)&m_pivot, 0.01f))
             {
                 MarkDirtyRecursive();
-                bChanged = true;
+                isChanged = true;
             }
         }
         else
@@ -222,7 +222,7 @@ void CUITransform::OnGui()
             if (ImGui::SliderFloat2("Pivot (Fixed)", (float*)&m_pivot, 0.0f, 1.0f))
             {
                 MarkDirtyRecursive();
-                bChanged = true;
+                isChanged = true;
             }
         }
 
@@ -230,7 +230,7 @@ void CUITransform::OnGui()
 
         // Local Scale 
         if (ImGui::DragFloat2("Scale", (float*)&m_localScale, 0.01f, 0.0f, 10.0f))
-            bChanged = true;
+            isChanged = true;
       /*  ImGui::Separator();
         if (ImGui::DragFloat("Rotation (Rad)", &m_RotationRadian, 0.01f, -6.28f, 6.28f))
         {
@@ -246,7 +246,7 @@ void CUITransform::OnGui()
         {
             m_rotationRadian = XMConvertToRadians(m_rotationDegreeView);
             MarkDirtyRecursive();
-            bChanged = true;
+            isChanged = true;
         }
         
         ImGui::TextDisabled("World Rect Info");
@@ -255,7 +255,7 @@ void CUITransform::OnGui()
         ImGui::Text("Size: (%.1f, %.1f)", world.w - world.x, world.h - world.y);
 
 
-        if (bChanged)
+        if (isChanged)
         {
             MarkDirtyRecursive();
         }
@@ -456,33 +456,33 @@ void CUITransform::Load_FromJson(nlohmann::json& j)
     this->Computing_WorldRect();
 }
 
-HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> pShaderCom, const _char* pConstantName)
+HRESULT CUITransform::Bind_ShaderResource(shared_ptr<CShader> shaderCom, const _char* constantName)
 {
     UpdateLayoutIfDirty();
-    return 	pShaderCom->Bind_Matrix(pConstantName, &m_worldMatrix);;
+    return 	shaderCom->Bind_Matrix(constantName, &m_worldMatrix);;
 }
 
 
 
-shared_ptr<CUITransform> CUITransform::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUITransform> CUITransform::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-    shared_ptr<CUITransform> pInstance(new CUITransform(pDevice, pContext), [](CUITransform* p) {p->Free();delete(p);});
-    if (FAILED(pInstance->Initialize_Prototype()))
+    shared_ptr<CUITransform> instance(new CUITransform(device, context), [](CUITransform* p) {p->Free();delete(p);});
+    if (FAILED(instance->Initialize_Prototype()))
     {
         MSG_BOX("failed prototype: CUITransform");
     }
-    return pInstance;
+    return instance;
 
 }
 
-shared_ptr<CComponent> CUITransform::Clone(void* pArg)
+shared_ptr<CComponent> CUITransform::Clone(void* arg)
 {
-    shared_ptr<CUITransform> pInstance(new CUITransform(*this), [](CUITransform* p) {p->Free();delete(p);});
-    if (FAILED(pInstance->Initialize(pArg)))
+    shared_ptr<CUITransform> instance(new CUITransform(*this), [](CUITransform* p) {p->Free();delete(p);});
+    if (FAILED(instance->Initialize(arg)))
     {
         MSG_BOX("failed clone: CUITransform");
     }
-    return pInstance;
+    return instance;
 }
 
 

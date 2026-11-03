@@ -12,20 +12,20 @@ CGraphic_Device::~CGraphic_Device()
 	Free();
 }
 
-HRESULT CGraphic_Device::Initialize(HWND hWnd, EWinMode isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppContext)
+HRESULT CGraphic_Device::Initialize(HWND hWnd, EWinMode isWindowed, _uint winSizeX, _uint winSizeY, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppContext)
 {
-	_uint		iFlag = 0;
+	_uint		flag = 0;
 
 #ifdef _DEBUG
-	iFlag = D3D11_CREATE_DEVICE_DEBUG;
+	flag = D3D11_CREATE_DEVICE_DEBUG;
 #endif
-	D3D_FEATURE_LEVEL			FeatureLV;
+	D3D_FEATURE_LEVEL			featureLevel;
 
 	/* dx9 : 장치 초기화를 하기위한 설정을 쭈욱 하고나서 최종적으로 장치객체를 생성한다. */
 	/* dx11 : 우선적으로 장치 객체를 생성하고 장치객체를 통해서 기타 초기화작업 및 설정을 해나간다. */
 
 	/* 그래픽 장치를 초기화한다. */
-	if (FAILED(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, iFlag, nullptr, 0, D3D11_SDK_VERSION, &m_device, &FeatureLV, &m_deviceContext)))
+	if (FAILED(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, flag, nullptr, 0, D3D11_SDK_VERSION, &m_device, &featureLevel, &m_deviceContext)))
 		return E_FAIL;
 
 	/* SwapChain : 더블버퍼링. 전면과 후면버퍼를 번갈아가며 화면에 보여준다.(Present) */
@@ -33,41 +33,41 @@ HRESULT CGraphic_Device::Initialize(HWND hWnd, EWinMode isWindowed, _uint iWinSi
 
 	/* 스왑체인객체를 생성하였고 생성한 스왑체인 객체가 백버퍼를 내장한다. 백버퍼를 생성하기 위한 ID3D11Texture2D 만든거야. */
 	/* 스왑체인 객체를 만들면서 백버퍼에 해당하는 ID3D11Texture2D객체를 만들어 스왑체인 객체가 내장한다. */
-	if (FAILED(Ready_SwapChain(hWnd, isWindowed, iWinSizeX, iWinSizeY)))
+	if (FAILED(Ready_SwapChain(hWnd, isWindowed, winSizeX, winSizeY)))
 		return E_FAIL;
 
 	/* 스왑체인이 들고 있는 텍스쳐 2D를 가져와서 이를 바탕으로 백버퍼 렌더타겟 뷰를 만든다.*/
 	if (FAILED(Ready_BackBufferRenderTargetView()))
 		return E_FAIL;
 
-	if (FAILED(Ready_DepthStencilView(iWinSizeX, iWinSizeY)))
+	if (FAILED(Ready_DepthStencilView(winSizeX, winSizeY)))
 		return E_FAIL;
 
 	/* 장치에 바인드해놓을 렌더 타겟들과 뎁스스텐실뷰를 세팅한다. */
 	/* 장치는 동시에 최대 4->8개의 렌더타겟을 들고 있을 수 있다. */
-	ID3D11RenderTargetView* pRTVs[] = {
+	ID3D11RenderTargetView* RTVs[] = {
 		m_backBufferRTV.Get(),
 	};
 
 
 	/* 렌더타겟의 픽셀 수와 깊이스텐실버퍼의 픽셀수가 서로 다르다면 절대 렌더링이 불가능해진다. */
-	m_deviceContext->OMSetRenderTargets(1, pRTVs,
+	m_deviceContext->OMSetRenderTargets(1, RTVs,
 		m_depthStencilView.Get());
 	RECT rc;
 	GetClientRect(hWnd, &rc);
 
-	D3D11_VIEWPORT			ViewPortDesc;
-	ZeroMemory(&ViewPortDesc, sizeof(D3D11_VIEWPORT));
-	ViewPortDesc.TopLeftX = 0;
-	ViewPortDesc.TopLeftY = 0;
-	ViewPortDesc.Width = (_float)iWinSizeX;
-	ViewPortDesc.Height = (_float)iWinSizeY;
+	D3D11_VIEWPORT			viewPortDesc;
+	ZeroMemory(&viewPortDesc, sizeof(D3D11_VIEWPORT));
+	viewPortDesc.TopLeftX = 0;
+	viewPortDesc.TopLeftY = 0;
+	viewPortDesc.Width = (_float)winSizeX;
+	viewPortDesc.Height = (_float)winSizeY;
 	//ViewPortDesc.Width = (float)(rc.right - rc.left);   // 실제 창 너비로 확장
 	//ViewPortDesc.Height = (float)(rc.bottom - rc.top); // 실제 창 높이로 확장
-	ViewPortDesc.MinDepth = 0.f;
-	ViewPortDesc.MaxDepth = 1.f;
+	viewPortDesc.MinDepth = 0.f;
+	viewPortDesc.MaxDepth = 1.f;
 
-	m_deviceContext->RSSetViewports(1, &ViewPortDesc);
+	m_deviceContext->RSSetViewports(1, &viewPortDesc);
 
 	ppDevice = m_device;
 	ppContext = m_deviceContext;
@@ -78,7 +78,7 @@ HRESULT CGraphic_Device::Initialize(HWND hWnd, EWinMode isWindowed, _uint iWinSi
 	return S_OK;
 }
 
-HRESULT CGraphic_Device::Clear_BackBuffer_View(const _float4* pClearColor)
+HRESULT CGraphic_Device::Clear_BackBuffer_View(const _float4* clearColor)
 {
 	if (nullptr == m_deviceContext.Get() || nullptr == m_backBufferRTV.Get())
 		return E_FAIL;
@@ -87,7 +87,7 @@ HRESULT CGraphic_Device::Clear_BackBuffer_View(const _float4* pClearColor)
 	// m_pGraphic_Device->Clear(어떤 영역만큼 지울까, 어떤 것들을 지울까? , 뭘로 지울가. );	
 
 	/* 백버퍼를 초기화한다.  */
-	m_deviceContext->ClearRenderTargetView(m_backBufferRTV.Get(), reinterpret_cast<const _float*>(pClearColor));
+	m_deviceContext->ClearRenderTargetView(m_backBufferRTV.Get(), reinterpret_cast<const _float*>(clearColor));
 
 	return S_OK;
 }
@@ -173,55 +173,55 @@ HRESULT CGraphic_Device::Resize(_uint  g_RsizeWidth, _uint g_RsizeHeight)
 
 }
 
-HRESULT CGraphic_Device::Ready_SwapChain(HWND hWnd, EWinMode isWindowed, _uint iWinCX, _uint iWinCY)
+HRESULT CGraphic_Device::Ready_SwapChain(HWND hWnd, EWinMode isWindowed, _uint winCX, _uint winCY)
 {
-	ComPtr<IDXGIDevice>			pDevice = nullptr;
-	m_device->QueryInterface(__uuidof(IDXGIDevice), (void**)&pDevice);
+	ComPtr<IDXGIDevice>			device = nullptr;
+	m_device->QueryInterface(__uuidof(IDXGIDevice), (void**)&device);
 
-	ComPtr <IDXGIAdapter>			pAdapter = nullptr;
-	pDevice->GetParent(__uuidof(IDXGIAdapter), (void**)&pAdapter);
+	ComPtr <IDXGIAdapter>			adapter = nullptr;
+	device->GetParent(__uuidof(IDXGIAdapter), (void**)&adapter);
 
-	ComPtr <IDXGIFactory>			pFactory = nullptr;
-	pAdapter->GetParent(__uuidof(IDXGIFactory), (void**)&pFactory);
+	ComPtr <IDXGIFactory>			factory = nullptr;
+	adapter->GetParent(__uuidof(IDXGIFactory), (void**)&factory);
 
 	/* 스왑체인을 생성한다. = 텍스쳐를 생성하는 행위 + 스왑하는 형태  */
-	DXGI_SWAP_CHAIN_DESC		SwapChain;
-	ZeroMemory(&SwapChain, sizeof(DXGI_SWAP_CHAIN_DESC));
+	DXGI_SWAP_CHAIN_DESC		swapChain;
+	ZeroMemory(&swapChain, sizeof(DXGI_SWAP_CHAIN_DESC));
 
 	/* 백버퍼 == 텍스쳐 */
 	/*텍스처(백버퍼 == ID3D11Texture2D)를 생성하는 행위*/
-	SwapChain.BufferDesc.Width = iWinCX;	/* 가로 픽셀 수 */
-	SwapChain.BufferDesc.Height = iWinCY;	/* 세로 픽셀 수 */
+	swapChain.BufferDesc.Width = winCX;	/* 가로 픽셀 수 */
+	swapChain.BufferDesc.Height = winCY;	/* 세로 픽셀 수 */
 
 	/* float4(1.f, 1.f, 1.f, 1.f) */
 	/* float4(1.f, 0.f, 0.f, 1.f) */
 
-	SwapChain.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; /*D3DFMT_A8R8G8B8*/ /* 만든 픽셀하나의 데이터 정보 : 32BIT픽셀생성하되 부호가 없는 정규화된 수를 저장할께 */
-	SwapChain.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	SwapChain.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	swapChain.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; /*D3DFMT_A8R8G8B8*/ /* 만든 픽셀하나의 데이터 정보 : 32BIT픽셀생성하되 부호가 없는 정규화된 수를 저장할께 */
+	swapChain.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	swapChain.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
 	/* 스케치북에 사과를 그릴꺼야. */
 	/* RENDER_TARGET : 그림을 당하는 대상. 스케치북 */
-	SwapChain.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	SwapChain.BufferCount = 1;
+	swapChain.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChain.BufferCount = 1;
 
 	/*스왑하는 형태 : 모니터 주사율에 따라 조절해도 됨. */
-	SwapChain.BufferDesc.RefreshRate.Numerator = 60;
-	SwapChain.BufferDesc.RefreshRate.Denominator = 1;
+	swapChain.BufferDesc.RefreshRate.Numerator = 60;
+	swapChain.BufferDesc.RefreshRate.Denominator = 1;
 
 	/* 멀티샘플링 : 안티얼라이징 (계단현상방지) */
 	/* 나중에 후처리 렌더링 : 멀티샘플링 지원(x) */
-	SwapChain.SampleDesc.Quality = 0;
-	SwapChain.SampleDesc.Count = 1;
+	swapChain.SampleDesc.Quality = 0;
+	swapChain.SampleDesc.Count = 1;
 
-	SwapChain.OutputWindow = hWnd;
-	SwapChain.Windowed = static_cast<BOOL>(isWindowed);
-	SwapChain.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swapChain.OutputWindow = hWnd;
+	swapChain.Windowed = static_cast<BOOL>(isWindowed);
+	swapChain.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
 	/* 백버퍼라는 텍스처(ID3D11Texture2D)를 생성했다. */
 	//  &m_pSwapChain - 새로 생성할떄는 이걸로 (안에 있으명 있는거 지우고 주소 전달 )
 	//  m_pSwapChain.GetAddressOf() - (안에 객체가 있던 없던 그냥 주소 반환)
-	if (FAILED(pFactory->CreateSwapChain(m_device.Get(), &SwapChain, &m_swapChain)))
+	if (FAILED(factory->CreateSwapChain(m_device.Get(), &swapChain, &m_swapChain)))
 		return E_FAIL;
 
 	//Safe_Release(pFactory);
@@ -239,14 +239,14 @@ HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
 
 	/* 내가 앞으로 사용 하기위한 용도의 텍스쳐를 생성하기위한 베이스 데이터를 가지고 있는 객체이다. */
 	/* 내가 앞으로 사용 하기위한 용도의 텍스쳐 : ID3D11RenderTargetView, ID3D11ShaderResoureView, ID3D11DepthStencilView */
-	ComPtr<ID3D11Texture2D>		pBackBufferTexture = nullptr;
+	ComPtr<ID3D11Texture2D>		backBufferTexture = nullptr;
 
 	/* 스왑체인이 들고있던 텍스처를 가져와봐. */
-	if (FAILED(m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&pBackBufferTexture)))
+	if (FAILED(m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBufferTexture)))
 		return E_FAIL;
 
 	/* 실제 렌더타겟용도로 사용할 수 있는 텍스쳐 타입(ID3D11RenderTargetView)의 객체를 생성한다. */
-	if (FAILED(m_device->CreateRenderTargetView(pBackBufferTexture.Get(), nullptr, &m_backBufferRTV)))
+	if (FAILED(m_device->CreateRenderTargetView(backBufferTexture.Get(), nullptr, &m_backBufferRTV)))
 		return E_FAIL;
 
 	//Safe_Release(pBackBufferTexture);
@@ -254,60 +254,60 @@ HRESULT CGraphic_Device::Ready_BackBufferRenderTargetView()
 	return S_OK;
 }
 
-HRESULT CGraphic_Device::Ready_DepthStencilView(_uint iWinCX, _uint iWinCY)
+HRESULT CGraphic_Device::Ready_DepthStencilView(_uint winCX, _uint winCY)
 {
 	if (nullptr == m_device)
 		return E_FAIL;
 
-	ComPtr<ID3D11Texture2D> pDepthStencilTexture = { nullptr };
+	ComPtr<ID3D11Texture2D> depthStencilTexture = { nullptr };
 
-	D3D11_TEXTURE2D_DESC	TextureDesc{};
+	D3D11_TEXTURE2D_DESC	textureDesc{};
 
 	/* 깊이 버퍼의 픽셀은 백버퍼의 픽셀과 갯수가 동일해야만 깊이 테스트가 가능해진다. */
 	/* 픽셀의 수가 다르면 아에 렌더링을 못함. */
-	TextureDesc.Width = iWinCX;
-	TextureDesc.Height = iWinCY;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	textureDesc.Width = winCX;
+	textureDesc.Height = winCY;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-	TextureDesc.SampleDesc.Quality = 0;
-	TextureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.SampleDesc.Count = 1;
 
 	/* 동적? 정적?  */
-	TextureDesc.Usage = D3D11_USAGE_DEFAULT /* 정적 */;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT /* 정적 */;
 	/* 추후에 어떤 용도로 바인딩 될 수 있는 View타입의 텍스쳐를 만들기위한 Texture2D입니까? */
-	TextureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL
+	textureDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL
 		/*| D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE*/;
-	TextureDesc.CPUAccessFlags = 0;
-	TextureDesc.MiscFlags = 0;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
 
-	if (FAILED(m_device->CreateTexture2D(&TextureDesc, nullptr, &pDepthStencilTexture)))
+	if (FAILED(m_device->CreateTexture2D(&textureDesc, nullptr, &depthStencilTexture)))
 		return E_FAIL;
 
 	/* RenderTargetView */
 	/* ShaderResourceView */
 	/* DepthStencilView */
 
-	if (FAILED(m_device->CreateDepthStencilView(pDepthStencilTexture.Get(), nullptr, &m_depthStencilView)))
+	if (FAILED(m_device->CreateDepthStencilView(depthStencilTexture.Get(), nullptr, &m_depthStencilView)))
 		return E_FAIL;
 
-	pDepthStencilTexture.Reset();
+	depthStencilTexture.Reset();
 
 	return S_OK;
 }
 
-unique_ptr<CGraphic_Device> CGraphic_Device::Create(_In_ HWND hWnd, EWinMode isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppDeviceContextOut)
+unique_ptr<CGraphic_Device> CGraphic_Device::Create(_In_ HWND hWnd, EWinMode isWindowed, _uint winSizeX, _uint winSizeY, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppDeviceContextOut)
 {
-	unique_ptr<CGraphic_Device> pInstance(new CGraphic_Device);
+	unique_ptr<CGraphic_Device> instance(new CGraphic_Device);
 
-	if (FAILED(pInstance->Initialize(hWnd, isWindowed, iWinSizeX, iWinSizeY, ppDevice, ppDeviceContextOut)))
+	if (FAILED(instance->Initialize(hWnd, isWindowed, winSizeX, winSizeY, ppDevice, ppDeviceContextOut)))
 	{
 		MSG_BOX("Failed to Created : CGraphic_Device");
 		//Safe_Release(pInstance);
 	}
 
-	return pInstance;
+	return instance;
 }
 
 void CGraphic_Device::Free()

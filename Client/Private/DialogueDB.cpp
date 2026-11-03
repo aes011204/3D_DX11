@@ -61,7 +61,7 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
     for (auto& node : j["dialogues"])
     {
         Dialogue dialogue;
-        dialogue.dialogueId = node["dialogueId"];
+        dialogue.dialogueID = node["dialogueId"];
         dialogue.speaker = Utf8ToWstring(node.value("speaker", ""));
 
         // 라인 파싱
@@ -77,12 +77,12 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
             if (lineNode.contains("nextID"))
             {
                 // 2. 값도 lineNode에서 가져와야 함
-                line.NextID = lineNode["nextID"].get<_int>();
+                line.nextID = lineNode["nextID"].get<_int>();
             }
             else
             {
                 // 3. nextID가 없을 때만 안전하게 +1
-                line.NextID = line.lineIndex + 1;
+                line.nextID = line.lineIndex + 1;
             }
             // 선택지 파싱 (좌/우 2개)
             if (line.hasChoices && lineNode.contains("choice"))
@@ -91,8 +91,8 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
 
                 line.choice.leftText = Utf8ToWstring(choiceNode["leftText"]);
                 line.choice.rightText = Utf8ToWstring(choiceNode["rightText"]);
-                line.choice.leftNextId = choiceNode.value("leftNextId", 0);
-                line.choice.rightNextId = choiceNode.value("rightNextId", 0);
+                line.choice.leftNextID = choiceNode.value("leftNextId", 0);
+                line.choice.rightNextID = choiceNode.value("rightNextId", 0);
 
             }
 
@@ -104,14 +104,14 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
 
 
         // 일단 이러면 복사된 택스쳐의 얕은 복사인데 일단 문제는 없을듯 문제 생기면 수정
-        string strBack = node.value("texture_Back", "");
-        if (strBack != "")
+        string back = node.value("texture_Back", "");
+        if (back != "")
         {
             // 2. Utf8ToWstring(이미 만들어두신 함수)를 써서 변환하세요.
-            wstring wstrBack = Utf8ToWstring(strBack);
+            wstring wstrBack = Utf8ToWstring(back);
 
             // 3. Clone 후 캐스팅
-            dialogue.Texture_Back_Path = dynamic_pointer_cast<CTexture>(
+            dialogue.backTexture = dynamic_pointer_cast<CTexture>(
                 m_gameInstance.lock()->Clone_Prototype(
                     EPrototype::COMPONENT,
                     ETOI(ELevel::STATIC),
@@ -120,11 +120,11 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
             );
         }
 
-        string strChar = node.value("texture_Char", "");
-        if (strChar != "")
+        string character = node.value("texture_Char", "");
+        if (character != "")
         {
-            wstring wstrChar = Utf8ToWstring(strChar);
-            dialogue.Texture_Char_Path = dynamic_pointer_cast<CTexture>(
+            wstring wstrChar = Utf8ToWstring(character);
+            dialogue.charTexture = dynamic_pointer_cast<CTexture>(
                 m_gameInstance.lock()->Clone_Prototype(
                     EPrototype::COMPONENT,
                     ETOI(ELevel::STATIC),
@@ -132,16 +132,16 @@ HRESULT CDialogueDB::Load_DialogueData(const string& fileName)
                 )
             );
         }
-        m_dialogueIndex[dialogue.dialogueId] = m_dialogues.size();
+        m_dialogueIndex[dialogue.dialogueID] = m_dialogues.size();
         m_dialogues.push_back(make_shared<Dialogue>(dialogue));
     }
 
     return S_OK;
 }
 
-shared_ptr<Dialogue> CDialogueDB::GetDialogueById(const string& dialogueId)
+shared_ptr<Dialogue> CDialogueDB::GetDialogueByID(const string& dialogueID)
 {
-    auto it = m_dialogueIndex.find(dialogueId);
+    auto it = m_dialogueIndex.find(dialogueID);
     if (it == m_dialogueIndex.end())
         return nullptr;
 
@@ -153,11 +153,11 @@ wstring CDialogueDB::Utf8ToWstring(const string& str)
     if (str.empty())
         return wstring();
 
-    _int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+    _int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
 
-    wstring result(size_needed, 0);
+    wstring result(sizeNeeded, 0);
 
-    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &result[0], size_needed);
+    MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &result[0], sizeNeeded);
 
     if (!result.empty() && result.back() == L'\0')
         result.pop_back();

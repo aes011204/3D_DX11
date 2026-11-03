@@ -10,14 +10,14 @@ private:
 public:
 	virtual ~CLayer() = default;
 public:
-	HRESULT Add_GameObject(shared_ptr<class CGameObject> pGameObject);
-	void Priority_Update(_float fTimeDelta);
-	void Update(_float fTimeDelta);
-	void Late_Update(_float fTimeDelta);
+	HRESULT Add_GameObject(shared_ptr<class CGameObject> gameObject);
+	void Priority_Update(_float timeDelta);
+	void Update(_float timeDelta);
+	void Late_Update(_float timeDelta);
 
 	void Update_Gui();
 
-	shared_ptr<CGameObject> Get_GameObject(_uint GObjIndex);
+	shared_ptr<CGameObject> Get_GameObject(_uint gameObjIndex);
 
 /// <IMGUI>
 	list <shared_ptr<class CGameObject>> Get_GameObject();

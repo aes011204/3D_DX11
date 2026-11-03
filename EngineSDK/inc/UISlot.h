@@ -13,16 +13,16 @@ public:
         _uint index = {};
     };
 private:
-    explicit CUISlot(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    explicit CUISlot(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     explicit CUISlot(const CUISlot& prototype);
 public:
     virtual ~CUISlot()= default;
 
 public:
-   void Change_Color(_fvector color, bool bUseDark, bool bUseColorMix, bool bUseColorFlat);
+   void Change_Color(_fvector color, bool useDark, bool useColorMix, bool useColorFlat);
 
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
-    HRESULT OnInit(void* pArg)override;
+    HRESULT OnInit(void* arg)override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -32,7 +32,7 @@ public:
     void OnClear()override;
 
     //void SetGridIndex(_float2 _GridIndex) { m_GridIndex = _GridIndex; }
-    void SetGridIndex(_uint _GridIndex) { m_gridIndex = _GridIndex; }
+    void SetGridIndex(_uint gridIndex) { m_gridIndex = gridIndex; }
     //_float2 GetGridIndex() { return m_GridIndex; }
     _uint GetGridIndex() { return m_gridIndex; }
 
@@ -57,7 +57,7 @@ private:
 
 
 public:
-    static shared_ptr<CUISlot> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUISlot> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free()override;
 
 

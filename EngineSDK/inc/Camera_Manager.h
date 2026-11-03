@@ -12,9 +12,9 @@ public:
  
 public:
 
-    HRESULT Initialize(_uint iNumLevels);
+    HRESULT Initialize(_uint numLevels);
     void Apply_To_PipeLine();
-    void Update_AfterTarget(_float fTimeDelta);
+    void Update_AfterTarget(_float timeDelta);
     float Get_Far();
 public:
 
@@ -41,7 +41,7 @@ private:
     weak_ptr<class CGameInstance> m_gameInstance = {};
 public:
 
-    static unique_ptr<CCamera_Manager> Create(_uint iNumLevels);
+    static unique_ptr<CCamera_Manager> Create(_uint numLevels);
     void Free() override;
 };
 

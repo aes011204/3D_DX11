@@ -6,8 +6,8 @@
 #include "Entity.h"
 
 
-CRenderer::CRenderer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_context)
-	: m_device(pDevice), m_context(m_context),
+CRenderer::CRenderer(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> m_context)
+	: m_device(device), m_context(m_context),
 	m_gameInstance(CGameInstance::GetInstance())
 {
 
@@ -18,35 +18,35 @@ CRenderer::~CRenderer() { Free(); };
 
 HRESULT CRenderer::Initialize()
 {
-	_uint			iNumViewports = { 1 };
-	D3D11_VIEWPORT	ViewportDesc{};
+	_uint			numViewports = { 1 };
+	D3D11_VIEWPORT	viewportDesc{};
 
-	m_context->RSGetViewports(&iNumViewports, &ViewportDesc);
+	m_context->RSGetViewports(&numViewports, &viewportDesc);
 
-	m_winSize = { ViewportDesc.Width, ViewportDesc.Height };
+	m_winSize = { viewportDesc.Width, viewportDesc.Height };
 
 	/* For.RenderTargets */
-	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Diffuse"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Diffuse"), viewportDesc.Width, viewportDesc.Height, DXGI_FORMAT_R8G8B8A8_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
-	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Normal"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Normal"), viewportDesc.Width, viewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
-	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Shade"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Shade"), viewportDesc.Width, viewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
-	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Depth"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Depth"), viewportDesc.Width, viewportDesc.Height, DXGI_FORMAT_R32G32B32A32_FLOAT, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
-	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Emissive"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+	if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Emissive"), viewportDesc.Width, viewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 		return E_FAIL;
 
 	{
 
-		if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Blur1"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Blur1"), viewportDesc.Width, viewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 			return E_FAIL;
 
-		if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Blur2"), ViewportDesc.Width, ViewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
+		if (FAILED(m_gameInstance.lock()->Add_RenderTarget(TEXT("Target_Blur2"), viewportDesc.Width, viewportDesc.Height, DXGI_FORMAT_R16G16B16A16_UNORM, _float4(0.f, 0.f, 0.f, 0.f))))
 			return E_FAIL;
 	}
 
@@ -78,10 +78,10 @@ HRESULT CRenderer::Initialize()
 	if (nullptr == m_shader)
 		return E_FAIL;
 
-	XMStoreFloat4x4(&m_worldMatrix, XMMatrixScaling(ViewportDesc.Width, ViewportDesc.Height, 1.f));
+	XMStoreFloat4x4(&m_worldMatrix, XMMatrixScaling(viewportDesc.Width, viewportDesc.Height, 1.f));
 
 	XMStoreFloat4x4(&m_viewMatrix, XMMatrixIdentity());
-	XMStoreFloat4x4(&m_projMatrix, XMMatrixOrthographicLH(ViewportDesc.Width, ViewportDesc.Height, 0.f, 1.f));
+	XMStoreFloat4x4(&m_projMatrix, XMMatrixOrthographicLH(viewportDesc.Width, viewportDesc.Height, 0.f, 1.f));
 
 
 #ifdef _DEBUG
@@ -99,14 +99,14 @@ HRESULT CRenderer::Initialize()
 	return S_OK;
 }
 
-void CRenderer::Add_RenderGroup(ERenderGroup eRenderGroup, shared_ptr<CEntity> pGameObject)
+void CRenderer::Add_RenderGroup(ERenderGroup renderGroup, shared_ptr<CEntity> gameObject)
 {
-	if(eRenderGroup == ERenderGroup::END|| pGameObject == nullptr)
+	if(renderGroup == ERenderGroup::END|| gameObject == nullptr)
 	{
 		MSG_BOX("Failed to Add : Renderer");
 		return;
 	}
-	m_renderObject[ETOI(eRenderGroup)].push_back(pGameObject);
+	m_renderObject[ETOI(renderGroup)].push_back(gameObject);
 
 }
 
@@ -148,9 +148,9 @@ void CRenderer::Draw()
 
 	if (m_showColliders)
 	{
-		for (auto& pDebugComponent : m_debugComponents)
+		for (auto& debugComponent : m_debugComponents)
 		{
-			pDebugComponent->Render();
+			debugComponent->Render();
 		}
 	}
 	m_debugComponents.clear();
@@ -251,10 +251,10 @@ void CRenderer::End_GpuTiming(int index)
 
 void CRenderer::Render_Priority()
 {
-	for (auto& pRenderObject : m_renderObject[ETOI(ERenderGroup::PRIORITY)])
+	for (auto& renderObject : m_renderObject[ETOI(ERenderGroup::PRIORITY)])
 	{
-		if (pRenderObject != nullptr)
-			pRenderObject->Render();
+		if (renderObject != nullptr)
+			renderObject->Render();
 	}
 
 	m_renderObject[ETOI(ERenderGroup::PRIORITY)].clear();
@@ -270,10 +270,10 @@ void CRenderer::Render_NonBlend()
 
 
 
-	for (auto& pRenderObject : m_renderObject[ETOI(ERenderGroup::NONBLEND)])
+	for (auto& renderObject : m_renderObject[ETOI(ERenderGroup::NONBLEND)])
 	{
-		if (pRenderObject != nullptr)
-			pRenderObject->Render();
+		if (renderObject != nullptr)
+			renderObject->Render();
 	}
 
 	m_renderObject[ETOI(ERenderGroup::NONBLEND)].clear();
@@ -287,7 +287,7 @@ void CRenderer::Render_Blend()
 
 	auto& vec = m_renderObject[ETOI(ERenderGroup::BLEND)];
 
-	_vector vCamPos = XMLoadFloat4(m_gameInstance.lock()->Get_CamPositon());
+	_vector camPos = XMLoadFloat4(m_gameInstance.lock()->Get_CamPositon());
 
 
 	sort(vec.begin(), vec.end(),
@@ -296,8 +296,8 @@ void CRenderer::Render_Blend()
 			_vector posA = a->Get_WorldPos();
 			_vector posB = b->Get_WorldPos();
 
-			float distA = XMVectorGetX(XMVector3LengthSq(posA - vCamPos));
-			float distB = XMVectorGetX(XMVector3LengthSq(posB - vCamPos));
+			float distA = XMVectorGetX(XMVector3LengthSq(posA - camPos));
+			float distB = XMVectorGetX(XMVector3LengthSq(posB - camPos));
 
 			return distA > distB; 
 		});
@@ -357,8 +357,8 @@ void CRenderer::Render_Lights()
 
 	if (FAILED(m_shader->Bind_RawValue("g_vCamPosition", m_gameInstance.lock()->Get_CamPositon(), sizeof(_float4))))
 		return;
-	auto fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shader->Bind_RawValue("g_Far",& fFar, sizeof(_float))))
+	auto farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shader->Bind_RawValue("g_Far",& farZ, sizeof(_float))))
 		return;
 
 	m_VIBuffer->Bind_Resources();
@@ -395,8 +395,8 @@ void CRenderer::Render_Combined()
 		return;
 	if (FAILED(m_shader->Bind_RawValue("g_vCamPosition", m_gameInstance.lock()->Get_CamPositon(), sizeof(_float4))))
 		return;
-	auto fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shader->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	auto farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shader->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return;
 	//float tod01 = m_pGameInstance.lock()->Get_TOD01();
 	//
@@ -428,10 +428,10 @@ void CRenderer::Render_Combined()
 }
 void CRenderer::Render_NonLight()
 {
-	for (auto& pRenderObject : m_renderObject[ETOI(ERenderGroup::NONLIGHT)])
+	for (auto& renderObject : m_renderObject[ETOI(ERenderGroup::NONLIGHT)])
 	{
-		if (nullptr != pRenderObject)
-			pRenderObject->Render();
+		if (nullptr != renderObject)
+			renderObject->Render();
 
 		
 	}
@@ -442,10 +442,10 @@ void CRenderer::Render_NonLight()
 void CRenderer::Render_Sea()
 {
 
-	for (auto& pRenderObject : m_renderObject[ETOI(ERenderGroup::SEA)])
+	for (auto& renderObject : m_renderObject[ETOI(ERenderGroup::SEA)])
 	{
-		if (pRenderObject != nullptr)
-			pRenderObject->Render();
+		if (renderObject != nullptr)
+			renderObject->Render();
 	}
 
 	m_renderObject[ETOI(ERenderGroup::SEA)].clear();
@@ -454,10 +454,10 @@ void CRenderer::Render_Sea()
 void CRenderer::Render_UI()
 {
 	
-	for (auto& pRenderObject : m_renderObject[ETOI(ERenderGroup::UI)])
+	for (auto& renderObject : m_renderObject[ETOI(ERenderGroup::UI)])
 	{
-		if(pRenderObject != nullptr)
-			pRenderObject->Render();
+		if(renderObject != nullptr)
+			renderObject->Render();
 	}
 
 
@@ -574,22 +574,22 @@ void CRenderer::Render_Debug()
 #endif
 
 #ifdef _DEBUG
-void CRenderer::Add_DebugenderGroup(shared_ptr<CComponent> pDebugComponent)
+void CRenderer::Add_DebugenderGroup(shared_ptr<CComponent> debugComponent)
 {
-	m_debugComponents.push_back(pDebugComponent);
+	m_debugComponents.push_back(debugComponent);
 
 }
 #endif
 
-unique_ptr<CRenderer> CRenderer::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_context)
+unique_ptr<CRenderer> CRenderer::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> m_context)
 {
-	unique_ptr<CRenderer> pInstance (new CRenderer(pDevice, m_context));
+	unique_ptr<CRenderer> instance (new CRenderer(device, m_context));
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CRenderer");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CRenderer::Free()

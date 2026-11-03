@@ -3,32 +3,32 @@
 #include "Shader.h"
 #include "VIBuffer_Rect.h"
 
-CRenderTarget::CRenderTarget(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_device(pDevice), m_context(pContext)
+CRenderTarget::CRenderTarget(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: m_device(device), m_context(context)
 {
 }
 
-CRenderTarget::CRenderTarget(const CRenderTarget& Prototype)
+CRenderTarget::CRenderTarget(const CRenderTarget& prototype)
 {
 }
 
-HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor)
+HRESULT CRenderTarget::Initialize(_uint sizeX, _uint sizeY, DXGI_FORMAT pixelFormat, const _float4& color)
 {
 
-	D3D11_TEXTURE2D_DESC TextureDesc = {};
-	TextureDesc.Width = iSizeX;
-	TextureDesc.Height = iSizeY;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = ePixelFormat;
-	TextureDesc.SampleDesc.Quality = 0;
-	TextureDesc.SampleDesc.Count = 1;
-	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	TextureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	TextureDesc.CPUAccessFlags = 0;
-	TextureDesc.MiscFlags = 0;
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Width = sizeX;
+	textureDesc.Height = sizeY;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = pixelFormat;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
 
-	if (FAILED(m_device->CreateTexture2D(&TextureDesc, nullptr, m_texture2D.GetAddressOf())))
+	if (FAILED(m_device->CreateTexture2D(&textureDesc, nullptr, m_texture2D.GetAddressOf())))
 		return E_FAIL;
 
 
@@ -42,10 +42,10 @@ HRESULT CRenderTarget::Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixel
 	return S_OK;
 }
 
-HRESULT CRenderTarget::Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName)
+HRESULT CRenderTarget::Bind_ShaderResource(shared_ptr<CShader> shader, const _char* constantName)
 {
 
-	return pShader->Bind_SRV(pConstantName, m_SRV);
+	return shader->Bind_SRV(constantName, m_SRV);
 }
 
 void CRenderTarget::Clear()
@@ -53,47 +53,47 @@ void CRenderTarget::Clear()
 	m_context->ClearRenderTargetView(m_RTV.Get(), reinterpret_cast<_float*>(&m_clearColor));
 }
 #ifdef _DEBUG
-HRESULT CRenderTarget::Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY)
+HRESULT CRenderTarget::Ready_Debug(_float x, _float y, _float sizeX, _float sizeY)
 {
-	_uint iNumViewPorts = { 1 };
-	D3D11_VIEWPORT ViewportDesc{};
-	m_context->RSGetViewports(&iNumViewPorts, &ViewportDesc);
+	_uint numViewPorts = { 1 };
+	D3D11_VIEWPORT viewportDesc{};
+	m_context->RSGetViewports(&numViewPorts, &viewportDesc);
 
 	XMStoreFloat4x4(&m_worldMatrix, XMMatrixIdentity());
-	m_worldMatrix._11 = fSizeX;
-	m_worldMatrix._22 = fSizeY;
+	m_worldMatrix._11 = sizeX;
+	m_worldMatrix._22 = sizeY;
 
-	m_worldMatrix._41 = fX - ViewportDesc.Width * 0.5f;
-	m_worldMatrix._42 = -fY + ViewportDesc.Height * 0.5f;
+	m_worldMatrix._41 = x - viewportDesc.Width * 0.5f;
+	m_worldMatrix._42 = -y + viewportDesc.Height * 0.5f;
 
 	return S_OK;
 }
 
-HRESULT CRenderTarget::Render(shared_ptr<CVIBuffer_Rect> pVIBuffer, shared_ptr < CShader> pShader)
+HRESULT CRenderTarget::Render(shared_ptr<CVIBuffer_Rect> VIBuffer, shared_ptr < CShader> shader)
 {
-	pShader->Bind_Matrix("g_WorldMatrix", &m_worldMatrix);
+	shader->Bind_Matrix("g_WorldMatrix", &m_worldMatrix);
 
-	pShader->Bind_SRV("g_Texture", m_SRV);
+	shader->Bind_SRV("g_Texture", m_SRV);
 
-	pShader->Begin(0);
+	shader->Begin(0);
 
-	pVIBuffer->Bind_Resources();
-	pVIBuffer->Render();
+	VIBuffer->Bind_Resources();
+	VIBuffer->Render();
 
 	return S_OK;
 }
 #endif
-shared_ptr<CRenderTarget> CRenderTarget::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext,
-                                                _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor)
+shared_ptr<CRenderTarget> CRenderTarget::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context,
+                                                _uint sizeX, _uint sizeY, DXGI_FORMAT pixelFormat, const _float4& color)
 {
-	shared_ptr<CRenderTarget> pInstance(new CRenderTarget(pDevice, pContext), [](CRenderTarget* p) {p->Free(); delete(p); });
+	shared_ptr<CRenderTarget> instance(new CRenderTarget(device, context), [](CRenderTarget* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize(iSizeX, iSizeY, ePixelFormat, vColor)))
+	if (FAILED(instance->Initialize(sizeX, sizeY, pixelFormat, color)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 
 }
 

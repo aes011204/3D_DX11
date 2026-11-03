@@ -11,14 +11,14 @@ class ENGINE_DLL CCollider :
 	public CComponent
 {
 private:
-	CCollider(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CCollider(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
-	CCollider(const CCollider& Prototype);
+	CCollider(const CCollider& prototype);
 	virtual ~CCollider() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(EColliderType eType);
-	virtual HRESULT Initialize(void* pArg) override;
+	virtual HRESULT Initialize_Prototype(EColliderType type);
+	virtual HRESULT Initialize(void* arg) override;
 	
 
 	void Set_MyLayer(CollisionMask myLayer) { m_myLayer = myLayer; }
@@ -30,15 +30,14 @@ public:
 
 	void Set_IsColl(bool isColl) { m_isColl = isColl; }
 
-	void Set_isOverlap(){};
 
 	void OnGui() override;
 	void Save_ToJson(nlohmann::json& j) override;
 	void Load_FromJson(nlohmann::json& j) override;
 
 public:
-	void Update(_fmatrix WorldMatrix);
-	_bool Intersect(shared_ptr<CCollider> pTarget);
+	void Update(_fmatrix worldMatrix);
+	_bool Intersect(shared_ptr<CCollider> target);
 
 	bool Is_Overlap(shared_ptr<CCollider> other);
 	void Add_Overlap(shared_ptr<CCollider> otherColl){m_overlapColl.insert(otherColl);};
@@ -64,7 +63,7 @@ private:
 	_bool m_isCollisionActive = { true };
 
 
-	_bool isOverlap = { false };
+	_bool m_isOverlap = { false };
 	set<weak_ptr<CCollider>, owner_less<>> m_overlapColl;
 
 #ifdef _DEBUG
@@ -75,8 +74,8 @@ private:
 
 #endif
 public:
-	static shared_ptr<CCollider> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, EColliderType eType);
-	virtual shared_ptr<CComponent> Clone(void* pArg);
+	static shared_ptr<CCollider> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, EColliderType type);
+	virtual shared_ptr<CComponent> Clone(void* arg);
 	virtual void Free() override;
 
 

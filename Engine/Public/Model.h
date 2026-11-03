@@ -11,26 +11,26 @@ class CShader;
     public CComponent
 {
 protected:
-	CModel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CModel(const CModel& Prototype);
+	CModel(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CModel(const CModel& prototype);
 public:
 	virtual ~CModel() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const _char* pModelFilePath, EModelType eType, _fmatrix PreLocalTransformMatrix);
-	virtual HRESULT Initialize(void* pArg);
-	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Initialize_Prototype(const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix);
+	virtual HRESULT Initialize(void* arg);
+	virtual HRESULT Render(_uint meshIndex);
 
-	HRESULT Ready_Meshes(EModelType eType, ifstream& InFile);
+	HRESULT Ready_Meshes(EModelType type, ifstream& InFile);
 
 	HRESULT Ready_Material(ifstream& InFile);
-	HRESULT Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex,
-		Cvt_TexType eMaterialType, _uint iTextureIndex);
+	HRESULT Bind_Material(shared_ptr<CShader> shader, const _char* constantName, _uint meshIndex,
+		Cvt_TexType materialType, _uint textureIndex);
 
 	HRESULT Ready_Bones(ifstream& InFile);
 
 	//HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
-	HRESULT Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex);
+	HRESULT Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* constantNamem, _uint meshIndex);
 
 	HRESULT Ready_Animations(ifstream& InFile);
 
@@ -38,13 +38,13 @@ public:
 	//HRESULT Ready_Animations(); // 각 뼈들이 시간에 따라서 어떤 상태를 띈다.
 
 
-	HRESULT Play_Animation(_float fTimeDelta);
+	HRESULT Play_Animation(_float timeDelta);
 
-	void Set_Animation(_uint iIndex, _bool isLoop);
+	void Set_Animation(_uint index, _bool isLoop);
 	public:
 	size_t Get_NumMeshes() { return m_meshes.size(); }
-	_int Get_BoneIndex(const _char* pBoneName);
-	const _float4x4* Get_BoneMatrixPtr(const _char* pBoneName);
+	_int Get_BoneIndex(const _char* boneName);
+	const _float4x4* Get_BoneMatrixPtr(const _char* boneName);
 	_bool Check_AnimFrame(_int targetFrame);
 private:
 	// 이두개는 내부에서 알아서 메모리 관리 해줌 shared_ptr이런거 필요 x
@@ -87,8 +87,8 @@ private:
 	_int m_prevFrame = 0;
 	
 public:
-	static shared_ptr<CModel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, EModelType eType, _fmatrix PreLocalTransformMatrix);
-	virtual shared_ptr<CComponent> Clone(void* pArg);
+	static shared_ptr<CModel> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix);
+	virtual shared_ptr<CComponent> Clone(void* arg);
 	virtual void Free() override;
 };
 

@@ -33,7 +33,7 @@ public:
 public:
     virtual HRESULT Initialize_Prototype();
     virtual HRESULT Initialize(void* arg);
-    ItemInst Create_ItemInstance(IdType itemDefId, variant<monostate, FishInst, EquipInst>  typeDefInst, int rot=0);
+    ItemInst Create_ItemInstance(IDType itemDefID, variant<monostate, FishInst, EquipInst>  typeDefInst, int rot=0);
 
     void Update(_float timeDelta);
 
@@ -64,7 +64,7 @@ public:// 아이템 넣고 뺴기
     void FixAll();
     void ThrowAwayFrom_Inven(_uint baseX, _uint baseY);// 이거는 칸으로 
     void ClearHighlightArea();
-    ItemInst RemoveFrom_Inven(int instId);// 이거는 아이디로
+    ItemInst RemoveFrom_Inven(int instID);// 이거는 아이디로
     ItemInst Peek_Item(_uint musX, _uint musY);
 
 

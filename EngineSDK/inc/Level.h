@@ -11,14 +11,14 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CLevel abstract : public CBase
 {
 protected:
-	CLevel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CLevel(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
 	virtual ~CLevel() = default;
 
 public:
 	virtual HRESULT Initialize();
 	virtual HRESULT Post_Initialize();
-	virtual void Update(_float fTimeDelta);
+	virtual void Update(_float timeDelta);
 	virtual HRESULT Render();
 
 protected:

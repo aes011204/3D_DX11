@@ -1,8 +1,8 @@
 ﻿#include "UICanvas.h"
 #include "GameInstance.h"
 
-CUICanvas::CUICanvas(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    : CUI{ pDevice, pContext }
+CUICanvas::CUICanvas(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    : CUI{ device, context }
 {
 }
 
@@ -11,34 +11,34 @@ CUICanvas::~CUICanvas()
     Free();
 }
 
-HRESULT CUICanvas::Initialize(void* pArg)
+HRESULT CUICanvas::Initialize(void* arg)
 {
     m_canvasSize = m_gameInstance.lock()->Get_WinSize();
 
-    UICanvasDesc* pDesc = {};
-    if (pArg != nullptr)
+    UICanvasDesc* desc = {};
+    if (arg != nullptr)
     {
-         pDesc = static_cast<UICanvasDesc*>(pArg);
+         desc = static_cast<UICanvasDesc*>(arg);
 
-         pDesc->anchorPoint = { 0.5f, 0.5f }; // 중앙 기준
-         pDesc->pivot = { 0.5f, 0.5f }; // 중앙 기준
-         pDesc->sizeDelta = { m_canvasSize.w, m_canvasSize.h };
-         pDesc->anchoredPos = { 0.f, 0.f };
-         pDesc->scale = { 1.f, 1.f };
+         desc->anchorPoint = { 0.5f, 0.5f }; // 중앙 기준
+         desc->pivot = { 0.5f, 0.5f }; // 중앙 기준
+         desc->sizeDelta = { m_canvasSize.w, m_canvasSize.h };
+         desc->anchoredPos = { 0.f, 0.f };
+         desc->scale = { 1.f, 1.f };
 
-         __super::Initialize(pArg);
+         __super::Initialize(arg);
     }
     else
     {
-    UICanvasDesc pDesc;
+    UICanvasDesc desc;
     // 이거 무조건 고정
-    pDesc.anchorPoint = { 0.5f, 0.5f }; // 중앙 기준
-    pDesc.pivot = { 0.5f, 0.5f }; // 중앙 기준
-    pDesc.sizeDelta = { m_canvasSize.w, m_canvasSize.h };
-    pDesc.anchoredPos = { 0.f, 0.f };
-    pDesc.scale = { 1.f, 1.f };
+    desc.anchorPoint = { 0.5f, 0.5f }; // 중앙 기준
+    desc.pivot = { 0.5f, 0.5f }; // 중앙 기준
+    desc.sizeDelta = { m_canvasSize.w, m_canvasSize.h };
+    desc.anchoredPos = { 0.f, 0.f };
+    desc.scale = { 1.f, 1.f };
 
-     __super::Initialize(&pDesc);
+     __super::Initialize(&desc);
 
 
     }
@@ -59,17 +59,17 @@ void CUICanvas::OnUpdate(const _float& timeDelta)
 //    m_CanvasSize = { 0,0,static_cast<float>(width),static_cast<float>(height) };
 //}
 
-shared_ptr<CUICanvas> CUICanvas::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUICanvas> CUICanvas::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
         
-    shared_ptr<CUICanvas> pInstance ( new CUICanvas(pDevice, pContext));
-    if (FAILED(pInstance->Initialize_Prototype()))
+    shared_ptr<CUICanvas> instance ( new CUICanvas(device, context));
+    if (FAILED(instance->Initialize_Prototype()))
     {
  
         return nullptr;
     }
 
-    return pInstance;
+    return instance;
 }
 
 void CUICanvas::Free()

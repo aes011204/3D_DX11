@@ -4,8 +4,8 @@
 #include "UICanvas.h"
 #include "GameInstance.h"
 
-CUIPanel::CUIPanel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    : CUIRenderable(pDevice, pContext)
+CUIPanel::CUIPanel(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    : CUIRenderable(device, context)
 {
  
 }
@@ -15,25 +15,25 @@ CUIPanel::CUIPanel(const CUIPanel& prototype)
 {
 }
 
-HRESULT CUIPanel::OnInit(void* pArg)
+HRESULT CUIPanel::OnInit(void* arg)
 {
 
     Set_Interactive(false);
 
     // 밖에서 Root Canvas 연결해주기
-    UIPanelDesc* pDesc = static_cast<UIPanelDesc*>(pArg);
+    UIPanelDesc* desc = static_cast<UIPanelDesc*>(arg);
 
-    m_layoutDesc = pDesc->layoutDesc;
+    m_layoutDesc = desc->layoutDesc;
     //m_IsTransparent = pDesc->IsTransparent;
-    m_isFullScreen = pDesc->isFullScreen;
-    m_isUseLayout = pDesc->isUseLayout;
+    m_isFullScreen = desc->isFullScreen;
+    m_isUseLayout = desc->isUseLayout;
 
-    __super::OnInit(pDesc);
+    __super::OnInit(desc);
 
    // m_IsUseLayout = pDesc->IsUseLayout;
 
 
-    if (pDesc->isFullScreen == true)
+    if (desc->isFullScreen == true)
     {
         Rect m_canvasSize = m_gameInstance.lock()->Get_WinSize();
 
@@ -268,16 +268,16 @@ void CUIPanel::OnGui()
     __super::OnGui();
 }
 
-shared_ptr<CUIPanel> CUIPanel::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUIPanel> CUIPanel::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-    shared_ptr<CUIPanel> pInstance(new CUIPanel(pDevice, pContext), [](CUIPanel* p) {p->Free(); delete(p); });
+    shared_ptr<CUIPanel> instance(new CUIPanel(device, context), [](CUIPanel* p) {p->Free(); delete(p); });
 
-    if (FAILED(pInstance->Initialize_Prototype()))
+    if (FAILED(instance->Initialize_Prototype()))
     {
         MSG_BOX("Failed to Created : CUIPanel");
         return nullptr;
     }
-    return pInstance;
+    return instance;
 
 }
 
@@ -335,11 +335,11 @@ void CUIPanel::Layout()
     _float2 startPos = { -(totalWidth / 2) + (slotSize.x / 2)+m_layoutDesc.offset.x, (totalHeight / 2) - (slotSize.y / 2)+ m_layoutDesc.offset.y };
 
 
-        int Col = index % m_layoutDesc.col;
-        int Raw = index / m_layoutDesc.col;
+        int col = index % m_layoutDesc.col;
+        int raw = index / m_layoutDesc.col;
 
-        float posX = startPos.x + (slotSize.x + m_layoutDesc.spacing.x) * Col;
-        float posY = startPos.y - (slotSize.y + m_layoutDesc.spacing.y) * Raw;
+        float posX = startPos.x + (slotSize.x + m_layoutDesc.spacing.x) * col;
+        float posY = startPos.y - (slotSize.y + m_layoutDesc.spacing.y) * raw;
 
         LOG_F(ELogLevel::INFO, "First Slot AnchoredPos: %f, %f", posX, posY); 
         child->GetUITransform()->SetAnchoredPos({ posX, posY });
@@ -355,10 +355,10 @@ void CUIPanel::Layout()
 
 }
 
-HRESULT CUIPanel::Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect/*, _uint Group*/)
+HRESULT CUIPanel::Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool keepWorldRect/*, _uint Group*/)
 {
     
-    Add_Child(child, UITag, KeepWorldRect);
+    Add_Child(child, UITag, keepWorldRect);
 
     child->Set_LayoutTarget(true);
 

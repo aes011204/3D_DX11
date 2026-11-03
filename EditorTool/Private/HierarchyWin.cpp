@@ -29,7 +29,7 @@ HRESULT CHierarchyWin::Initialize()
 	return S_OK;
 }
 
-void CHierarchyWin::Update(float fTimeDelta) {}
+void CHierarchyWin::Update(float timeDelta) {}
 
 void CHierarchyWin::Render()
 {
@@ -39,33 +39,33 @@ void CHierarchyWin::Render()
 	ImGui::InputTextWithHint("##HierarchyFilter", "Search...", m_filterBuf, sizeof(m_filterBuf));
 	ImGui::Separator();
 
-	UINT iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
-	auto pGameObjects = CGameInstance::GetInstance()->Get_GameObjects(iCurrentLevel);
+	UINT currentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
+	auto gameObjects = CGameInstance::GetInstance()->Get_GameObjects(currentLevel);
 
-	if (pGameObjects.empty())
+	if (gameObjects.empty())
 	{
 		ImGui::TextDisabled("(Empty)");
 
 	}
 	else
 	{
-		for (auto& pair : pGameObjects)
+		for (auto& pair : gameObjects)
 		{
-			_string strLayerTag = W2S(pair.first);
+			_string layerTag = W2S(pair.first);
 
-			if (ImGui::TreeNodeEx(strLayerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNodeEx(layerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				auto vecObjects = pair.second.get()->Get_GameObject();
 
-				for (auto& pObj : vecObjects)
+				for (auto& obj : vecObjects)
 				{
-					if (!pObj)
+					if (!obj)
 						continue;
 
-					if (!PassFilter(pObj))
+					if (!PassFilter(obj))
 						continue;
 
-					DrawObjectRow(pObj);
+					DrawObjectRow(obj);
 				}
 
 				ImGui::TreePop();
@@ -79,7 +79,7 @@ void CHierarchyWin::Render()
 	// 1. Active UI Layers (현재 화면에 배치된 UI)
 	if (ImGui::TreeNodeEx("Active UI Layers", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		auto pUIManager = CGameInstance::GetInstance()->Get_UI_Manager();
+		auto UIManager = CGameInstance::GetInstance()->Get_UI_Manager();
 
 		// UI_LAYER::END 만큼 반복하며 각 레이어 검사
 		for (int i = 0; i < (int)EUILayer::END; ++i)
@@ -90,23 +90,23 @@ void CHierarchyWin::Render()
 
 			if (ImGui::TreeNode(layerName.c_str()))
 			{
-				const auto& uiList = pUIManager->GetUIList((EUILayer)i); // 해당 레이어의 vector<shared_ptr<CUI>>
+				const auto& UIList = UIManager->GetUIList((EUILayer)i); // 해당 레이어의 vector<shared_ptr<CUI>>
 
-				if (uiList.empty()) {
+				if (UIList.empty()) {
 					ImGui::TextDisabled("(Empty)");
 				}
 				else {
-					for (auto& pUI : uiList)
+					for (auto& UI : UIList)
 					{
-						if (!pUI) continue;
+						if (!UI) continue;
 
 						// ImGui ID 충돌 방지를 위해 고유 주소 사용
-						string label = W2S(pUI->Get_Name()) + "##" + std::to_string((uint64_t)pUI.get());
+						string label = W2S(UI->Get_Name()) + "##" + std::to_string((uint64_t)UI.get());
 
 						ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-						if (m_selectedObject == pUI) flags |= ImGuiTreeNodeFlags_Selected;
+						if (m_selectedObject == UI) flags |= ImGuiTreeNodeFlags_Selected;
 
-						const auto& children = pUI->Get_mapChildren();
+						const auto& children = UI->Get_Children();
 						if (children.empty()) flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
 						bool opened = ImGui::TreeNodeEx(label.c_str(), flags);
@@ -114,9 +114,9 @@ void CHierarchyWin::Render()
 						// 클릭 시 선택 이벤트 발생
 						if (ImGui::IsItemClicked())
 						{
-							m_selectedObject = pUI;
+							m_selectedObject = UI;
 							EvtSelectEntity ev{};
-							ev.entity = static_pointer_cast<Engine::CEntity>(pUI);
+							ev.entity = static_pointer_cast<Engine::CEntity>(UI);
 							CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
 						}
 
@@ -154,7 +154,7 @@ void CHierarchyWin::Render()
 	ImGui::End();
 }
 
-void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiLabel)
+void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& UI, _string imguiLabel)
 {
 	/*if (!ui) return;
 
@@ -163,11 +163,11 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiL
 
 	_string imguiLabel = label + "##UI" + std::to_string((uint64_t)ui.get());*/
 
-	const auto& children = ui->Get_mapChildren();
+	const auto& children = UI->Get_Children();
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	if (m_selectedObject == ui) flags |= ImGuiTreeNodeFlags_Selected;
+	if (m_selectedObject == UI) flags |= ImGuiTreeNodeFlags_Selected;
 
 	//  Leaf면 push 안 하게
 	if (children.empty())
@@ -177,9 +177,9 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiL
 
 	if (ImGui::IsItemClicked())
 	{
-		m_selectedObject = ui;
+		m_selectedObject = UI;
 		EvtSelectEntity ev{};
-		ev.entity = std::static_pointer_cast<Engine::CEntity>(ui);
+		ev.entity = std::static_pointer_cast<Engine::CEntity>(UI);
 
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
 
@@ -205,7 +205,7 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiL
 		ImGui::TreePop();
 	}
 }
-bool CHierarchyWin::PassFilter(const shared_ptr<Engine::CGameObject>& pObj) const
+bool CHierarchyWin::PassFilter(const shared_ptr<Engine::CGameObject>& obj) const
 {
 	if (m_filterBuf[0] == '\0')
 		return true;
@@ -218,13 +218,13 @@ bool CHierarchyWin::PassFilter(const shared_ptr<Engine::CGameObject>& pObj) cons
 	return true; // PassFilter는 DrawObjectRow에서 처리해도 됨.
 }
 
-void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
+void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& obj)
 {
-	const bool is_selected = (m_selectedObject == pObj);
-	const uint64_t id = PtrID(pObj);
+	const bool isSelected = (m_selectedObject == obj);
+	const uint64_t id = PtrID(obj);
 
 	// 이름
-	_string label = W2S(pObj->Get_Name());
+	_string label = W2S(obj->Get_Name());
 
 	//  Filter 처리(여기서 하는 버전 - PassFilter const 문제 회피)
 	if (m_filterBuf[0] != '\0')
@@ -265,7 +265,7 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
 		// Enter로 확정
 		if (enter)
 		{
-			CommitRename(pObj, m_renameBuf);
+			CommitRename(obj, m_renameBuf);
 			m_renameTargetPtr = 0;
 			m_renameBuf[0] = '\0';
 		}
@@ -287,32 +287,32 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
 	else
 	{
 		//  ImGui ID 충돌 방지: "##id" 붙이기 (화면에는 label만 보임)
-		_string imguiLabel = label + "##" + std::to_string((uint64_t)pObj.get());
+		_string imguiLabel = label + "##" + std::to_string((uint64_t)obj.get());
 
 		//if (ImGui::Selectable(imguiLabel.c_str(), is_selected))
 		//    m_pSelectedObject = pObj;
 
-		if (ImGui::Selectable(imguiLabel.c_str(), is_selected))
+		if (ImGui::Selectable(imguiLabel.c_str(), isSelected))
 		{
-			m_selectedObject = pObj; // Hierarchy 하이라이트 유지용(유지해도 됨)
+			m_selectedObject = obj; // Hierarchy 하이라이트 유지용(유지해도 됨)
 
 
 			EvtSelectEntity ev{};
-			ev.entity = std::static_pointer_cast<Engine::CEntity>(pObj);
+			ev.entity = std::static_pointer_cast<Engine::CEntity>(obj);
 
 			CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
 
 		}
 
 		// 더블클릭 → rename
-		if (is_selected && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+		if (isSelected && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 		{
 			m_renameTargetPtr = id;
 			m_renameBuf[0] = '\0';
 		}
 
 		// F2 → rename
-		if (is_selected && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+		if (isSelected && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
 		{
 			if (ImGui::IsKeyPressed(ImGuiKey_F2))
 			{
@@ -337,13 +337,13 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
 		{
 			if (ImGui::MenuItem("Delete"))
 			{
-				if (m_selectedObject == pObj)
+				if (m_selectedObject == obj)
 					m_selectedObject.reset();
 
 				//  Inspector 선택도 해제
 				CGameInstance::GetInstance()->Get_EventBus()->Publish(EvtClearSelection{});
 
-				Engine_DeleteObject(pObj);
+				Engine_DeleteObject(obj);
 
 				if (m_renameTargetPtr == id)
 				{
@@ -359,15 +359,15 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
 	// ImGui::PopID();
 }
 
-uint64_t CHierarchyWin::PtrID(const shared_ptr<Engine::CGameObject>& pObj) const
+uint64_t CHierarchyWin::PtrID(const shared_ptr<Engine::CGameObject>& obj) const
 {
-	return (uint64_t)pObj.get(); // 임시: 포인터
+	return (uint64_t)obj.get(); // 임시: 포인터
 }
 
 
-void CHierarchyWin::CommitRename(const shared_ptr<Engine::CGameObject>& pObj, const char* newNameUtf8)
+void CHierarchyWin::CommitRename(const shared_ptr<Engine::CGameObject>& obj, const char* newNameUtf8)
 {
-	if (!pObj || !newNameUtf8)
+	if (!obj || !newNameUtf8)
 		return;
 
 	// 빈 문자열 방지(원하면 정책 변경)
@@ -379,7 +379,7 @@ void CHierarchyWin::CommitRename(const shared_ptr<Engine::CGameObject>& pObj, co
 
 
 
-	pObj->Set_Name(w);
+	obj->Set_Name(w);
 }
 
 

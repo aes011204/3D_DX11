@@ -11,16 +11,16 @@ public:
 
 public:
     HRESULT Initialize();
-    void Update(_float fDeltaTime);
+    void Update(_float deltaTime);
 
     void Set_TimeScale(_float timeScale);
 
-    void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
+    void ComputeTime(_uint& day, _float& hour, _float& minute, _float& second);
 
     _float Get_TOD01() { return m_TOD01; }
 
     void Set_TOD01(_float tod);
-    _bool Get_IsNight() { return IsNight; };
+    _bool Get_IsNight() { return m_isNight; };
    
     void OnGui() override;
 private:
@@ -36,7 +36,7 @@ private:
     _float m_sunrise01 = 0.30f; // 원래는 0.25
     _float m_sunset01 = 0.75f;
 
-    _bool IsNight = { false };
+    _bool m_isNight = { false };
 
 public:
     static unique_ptr<CTimeOfDay> Create();

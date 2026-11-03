@@ -2,8 +2,8 @@
 
 #include "GameInstance.h"
 
-CCollider::CCollider(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CComponent(pDevice, pContext)
+CCollider::CCollider(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CComponent(device, context)
 {
 }
 
@@ -18,21 +18,21 @@ CCollider::CCollider(const CCollider& Prototype)
 {
 }
 
-HRESULT CCollider::Initialize_Prototype(EColliderType eType)
+HRESULT CCollider::Initialize_Prototype(EColliderType type)
 {
-	m_type = eType;
+	m_type = type;
 #ifdef _DEBUG
 
 	m_batch = new PrimitiveBatch<VertexPositionColor>(m_context.Get());
 	m_effect = new BasicEffect(m_device.Get());
 	m_effect->SetVertexColorEnabled(true);
 
-	const void* pShaderByteCode = { nullptr };
-	size_t iShaderByteCodeLength = {};
+	const void* shaderByteCode = { nullptr };
+	size_t shaderByteCodeLength = {};
 
-	m_effect->GetVertexShaderBytecode(&pShaderByteCode, &iShaderByteCodeLength);
+	m_effect->GetVertexShaderBytecode(&shaderByteCode, &shaderByteCodeLength);
 
-	if(FAILED(m_device->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, pShaderByteCode, iShaderByteCodeLength, &m_inputLayout)))
+	if(FAILED(m_device->CreateInputLayout(VertexPositionColor::InputElements, VertexPositionColor::InputElementCount, shaderByteCode, shaderByteCodeLength, &m_inputLayout)))
 	{
 		return E_FAIL;
 	}
@@ -40,28 +40,28 @@ HRESULT CCollider::Initialize_Prototype(EColliderType eType)
 	return S_OK;
 }
 
-HRESULT CCollider::Initialize(void* pArg)
+HRESULT CCollider::Initialize(void* arg)
 {
 
-	auto pDesc = static_cast<CBounding::BoundingDesc*>(pArg);
+	auto desc = static_cast<CBounding::BoundingDesc*>(arg);
 
 	switch(m_type)
 	{
 	case EColliderType::AABB:
-		m_bounding = CBounding_AABB::Create(m_device, m_context, pDesc);
+		m_bounding = CBounding_AABB::Create(m_device, m_context, desc);
 		break;
 
 	case EColliderType::OBB:
-		m_bounding = CBounding_OBB::Create(m_device, m_context, pDesc);
+		m_bounding = CBounding_OBB::Create(m_device, m_context, desc);
 		break;
 	
 	case EColliderType::SPHERE:
-		m_bounding = CBounding_Sphere::Create(m_device, m_context, pDesc);
+		m_bounding = CBounding_Sphere::Create(m_device, m_context, desc);
 		break;
 	}
 
-	m_myLayer = pDesc->myLayer;
-	m_otherMask = pDesc->otherMask;
+	m_myLayer = desc->myLayer;
+	m_otherMask = desc->otherMask;
 	//if (m_MyLayer != 0)
 	//	m_pGameInstance.lock()->Add_Collider(static_pointer_cast<CCollider>(shared_from_this()));
 
@@ -87,33 +87,33 @@ void CCollider::OnGui()
 			switch (m_type)
 			{
 			case EColliderType::AABB:
-				if (auto pAABB = dynamic_pointer_cast<CBounding_AABB>(m_bounding))
+				if (auto AABB = dynamic_pointer_cast<CBounding_AABB>(m_bounding))
 				{
-					auto pDesc = pAABB->Get_OriginalDesc();
+					auto desc = AABB->Get_OriginalDesc();
 					ImGui::Text("[AABB]");
-					ImGui::DragFloat3("Center", (float*)&pDesc->Center, 0.01f);
-					ImGui::DragFloat3("Extents", (float*)&pDesc->Extents, 0.01f);
+					ImGui::DragFloat3("Center", (float*)&desc->Center, 0.01f);
+					ImGui::DragFloat3("Extents", (float*)&desc->Extents, 0.01f);
 				}
 				break;
 
 			case EColliderType::OBB:
-				if (auto pOBB = dynamic_pointer_cast<CBounding_OBB>(m_bounding))
+				if (auto OBB = dynamic_pointer_cast<CBounding_OBB>(m_bounding))
 				{
-					auto pDesc = pOBB->Get_OriginalDesc();
+					auto desc = OBB->Get_OriginalDesc();
 					ImGui::Text("[OBB]");
-					ImGui::DragFloat3("Center", (float*)&pDesc->Center, 0.01f);
-					ImGui::DragFloat3("Extents", (float*)&pDesc->Extents, 0.01f);
+					ImGui::DragFloat3("Center", (float*)&desc->Center, 0.01f);
+					ImGui::DragFloat3("Extents", (float*)&desc->Extents, 0.01f);
 					//ImGui::DragFloat3("Degree", (float*)&pDesc->Orientation, 0.1f);
 				}
 				break;
 
 			case EColliderType::SPHERE:
-				if (auto pSphere = dynamic_pointer_cast<CBounding_Sphere>(m_bounding))
+				if (auto sphere = dynamic_pointer_cast<CBounding_Sphere>(m_bounding))
 				{
-					auto pDesc = pSphere->Get_OriginalDesc();
+					auto desc = sphere->Get_OriginalDesc();
 					ImGui::Text("[Sphere]");
-					ImGui::DragFloat3("Center", (float*)&pDesc->Center, 0.01f);
-					ImGui::DragFloat("Radius", &pDesc->Radius, 0.01f);
+					ImGui::DragFloat3("Center", (float*)&desc->Center, 0.01f);
+					ImGui::DragFloat("Radius", &desc->Radius, 0.01f);
 				}
 				break;
 			}
@@ -131,27 +131,27 @@ void CCollider::Save_ToJson(nlohmann::json& j)
 		switch (m_type)
 		{
 		case EColliderType::AABB:
-			if (auto pAABB = dynamic_pointer_cast<CBounding_AABB>(m_bounding)) {
-				auto pDesc = pAABB->Get_OriginalDesc();
-				j["Center"] = { pDesc->Center.x, pDesc->Center.y, pDesc->Center.z };
-				j["Extents"] = { pDesc->Extents.x, pDesc->Extents.y, pDesc->Extents.z };
+			if (auto AABB = dynamic_pointer_cast<CBounding_AABB>(m_bounding)) {
+				auto desc = AABB->Get_OriginalDesc();
+				j["Center"] = { desc->Center.x, desc->Center.y, desc->Center.z };
+				j["Extents"] = { desc->Extents.x, desc->Extents.y, desc->Extents.z };
 			}
 			break;
 	
 		case EColliderType::OBB:
-			if (auto pOBB = dynamic_pointer_cast<CBounding_OBB>(m_bounding)) {
-				auto pDesc = pOBB->Get_OriginalDesc();
-				j["Center"] = { pDesc->Center.x, pDesc->Center.y, pDesc->Center.z };
-				j["Extents"] = { pDesc->Extents.x, pDesc->Extents.y, pDesc->Extents.z };
+			if (auto OBB = dynamic_pointer_cast<CBounding_OBB>(m_bounding)) {
+				auto desc = OBB->Get_OriginalDesc();
+				j["Center"] = { desc->Center.x, desc->Center.y, desc->Center.z };
+				j["Extents"] = { desc->Extents.x, desc->Extents.y, desc->Extents.z };
 				//j["Orientation"] = { pDesc->Orientation.x, pDesc->Orientation.y, pDesc->Orientation.z, pDesc->Orientation.w };
 			}
 			break;
 	
 		case EColliderType::SPHERE:
-			if (auto pSphere = dynamic_pointer_cast<CBounding_Sphere>(m_bounding)) {
-				auto pDesc = pSphere->Get_OriginalDesc();
-				j["Center"] = { pDesc->Center.x, pDesc->Center.y, pDesc->Center.z };
-				j["Radius"] = pDesc->Radius;
+			if (auto sphere = dynamic_pointer_cast<CBounding_Sphere>(m_bounding)) {
+				auto desc = sphere->Get_OriginalDesc();
+				j["Center"] = { desc->Center.x, desc->Center.y, desc->Center.z };
+				j["Radius"] = desc->Radius;
 			}
 			break;
 		}
@@ -170,42 +170,42 @@ void CCollider::Load_FromJson(nlohmann::json& j)
 		switch (m_type)
 		{
 		case EColliderType::AABB:
-			if (auto pAABB = dynamic_pointer_cast<CBounding_AABB>(m_bounding)) {
-				auto pDesc = pAABB->Get_OriginalDesc();
-				pDesc->Center = { j["Center"][0], j["Center"][1], j["Center"][2] };
-				pDesc->Extents = { j["Extents"][0], j["Extents"][1], j["Extents"][2] };
+			if (auto AABB = dynamic_pointer_cast<CBounding_AABB>(m_bounding)) {
+				auto desc = AABB->Get_OriginalDesc();
+				desc->Center = { j["Center"][0], j["Center"][1], j["Center"][2] };
+				desc->Extents = { j["Extents"][0], j["Extents"][1], j["Extents"][2] };
 			}
 			break;
 	
 		case EColliderType::OBB:
-			if (auto pOBB = dynamic_pointer_cast<CBounding_OBB>(m_bounding)) {
-				auto pDesc = pOBB->Get_OriginalDesc();
-				pDesc->Center = { j["Center"][0], j["Center"][1], j["Center"][2] };
-				pDesc->Extents = { j["Extents"][0], j["Extents"][1], j["Extents"][2] };
+			if (auto OBB = dynamic_pointer_cast<CBounding_OBB>(m_bounding)) {
+				auto desc = OBB->Get_OriginalDesc();
+				desc->Center = { j["Center"][0], j["Center"][1], j["Center"][2] };
+				desc->Extents = { j["Extents"][0], j["Extents"][1], j["Extents"][2] };
 				//pDesc->Orientation = { j["Orientation"][0], j["Orientation"][1], j["Orientation"][2], j["Orientation"][3] };
 			}
 			break;
 	
 		case EColliderType::SPHERE:
-			if (auto pSphere = dynamic_pointer_cast<CBounding_Sphere>(m_bounding)) {
-				auto pDesc = pSphere->Get_OriginalDesc();
-				pDesc->Center = { j["Center"][0], j["Center"][1], j["Center"][2] };
-				pDesc->Radius = j["Radius"];
+			if (auto sphere = dynamic_pointer_cast<CBounding_Sphere>(m_bounding)) {
+				auto desc = sphere->Get_OriginalDesc();
+				desc->Center = { j["Center"][0], j["Center"][1], j["Center"][2] };
+				desc->Radius = j["Radius"];
 			}
 			break;
 		}
 	}
 }
 
-void CCollider::Update(_fmatrix WorldMatrix)
+void CCollider::Update(_fmatrix worldMatrix)
 {
-	m_bounding->Update(WorldMatrix);
+	m_bounding->Update(worldMatrix);
 }
 
-_bool CCollider::Intersect(shared_ptr<CCollider> pTarget)
+_bool CCollider::Intersect(shared_ptr<CCollider> target)
 {
 	
-	return m_bounding->Intersect(pTarget->m_bounding);
+	return m_bounding->Intersect(target->m_bounding);
 
 }
 bool CCollider::Is_Overlap(shared_ptr<CCollider> other) 
@@ -218,23 +218,23 @@ _float3 CCollider::Get_WorldCenter()
 	switch (m_type)
 	{
 	case EColliderType::AABB:
-		if (auto pAABB = dynamic_pointer_cast<CBounding_AABB>(m_bounding))
+		if (auto AABB = dynamic_pointer_cast<CBounding_AABB>(m_bounding))
 		{
-			return pAABB->Get_Desc()->Center;
+			return AABB->Get_Desc()->Center;
 		}
 		break;
 
 	case EColliderType::OBB:
-		if (auto pOBB = dynamic_pointer_cast<CBounding_OBB>(m_bounding))
+		if (auto OBB = dynamic_pointer_cast<CBounding_OBB>(m_bounding))
 		{
-			return pOBB->Get_Desc()->Center;
+			return OBB->Get_Desc()->Center;
 		}
 		break;
 
 	case EColliderType::SPHERE:
-		if (auto pSphere = dynamic_pointer_cast<CBounding_Sphere>(m_bounding))
+		if (auto sphere = dynamic_pointer_cast<CBounding_Sphere>(m_bounding))
 		{
-			return pSphere->Get_Desc()->Center;
+			return sphere->Get_Desc()->Center;
 		}
 		break;
 	}
@@ -244,14 +244,14 @@ _float3 CCollider::Get_WorldCenter()
 
 HRESULT CCollider::Render()
 {
-	auto GInst = m_gameInstance.lock();
+	auto gameInst = m_gameInstance.lock();
 
-	if (GInst->Get_IsDebug() == false)
+	if (gameInst->Get_IsDebug() == false)
 		return S_OK;
 
 	m_effect->SetWorld(XMMatrixIdentity());
-	m_effect->SetView(XMLoadFloat4x4(GInst->Get_Transform(ED3DTS::VIEW)));
-	m_effect->SetProjection(XMLoadFloat4x4(GInst->Get_Transform(ED3DTS::PROJ)));
+	m_effect->SetView(XMLoadFloat4x4(gameInst->Get_Transform(ED3DTS::VIEW)));
+	m_effect->SetProjection(XMLoadFloat4x4(gameInst->Get_Transform(ED3DTS::PROJ)));
 
 	m_context->IASetInputLayout(m_inputLayout.Get());
 
@@ -267,26 +267,26 @@ HRESULT CCollider::Render()
 
 }
 #endif
-shared_ptr<CCollider> CCollider::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, EColliderType eType)
+shared_ptr<CCollider> CCollider::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, EColliderType type)
 {
-	shared_ptr<CCollider> pInstance(new CCollider(pDevice, pContext), [](CCollider* p) {p->Free(); delete p; });
+	shared_ptr<CCollider> instance(new CCollider(device, context), [](CCollider* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype(eType)))
+	if (FAILED(instance->Initialize_Prototype(type)))
 	{
 		MSG_BOX("Failed to Created : CCollider");
 	}
-	return pInstance;
+	return instance;
 }
 
-shared_ptr<CComponent> CCollider::Clone(void* pArg)
+shared_ptr<CComponent> CCollider::Clone(void* arg)
 {
-	shared_ptr<CCollider> pInstance(new CCollider(*this), [](CCollider* p) {p->Free(); delete p; });
+	shared_ptr<CCollider> instance(new CCollider(*this), [](CCollider* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CCollider");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CCollider::Free()

@@ -6,8 +6,8 @@
 #include "IModifier.h"
 #include "Engine_Helper.h"
 
-CUI::CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CEntity(pDevice, pContext)
+CUI::CUI(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CEntity(device, context)
 {
 }
 
@@ -25,13 +25,13 @@ HRESULT CUI::Initialize_Prototype()
 }
 
 // UI는 프로토 타입으로 아니셜라이 프로토타입으로 호출하고 직접Initalize 하니까 
-HRESULT CUI::Initialize(void* pArg)
+HRESULT CUI::Initialize(void* arg)
 {
 
-	UIDesc* pDesc = static_cast<UIDesc*>(pArg);
+	UIDesc* desc = static_cast<UIDesc*>(arg);
 
-	Set_Zorder(pDesc->ZOrder);
-	m_noDetach = pDesc->isNoDetach;
+	Set_Zorder(desc->ZOrder);
+	m_noDetach = desc->isNoDetach;
 
 	if (m_isInitialized == true)
 		return S_OK;
@@ -43,7 +43,7 @@ HRESULT CUI::Initialize(void* pArg)
 		if (nullptr == m_UITransformCom)
 			return E_FAIL;
 
-		if (FAILED(m_UITransformCom->Initialize(pArg)))
+		if (FAILED(m_UITransformCom->Initialize(arg)))
 			return E_FAIL;
 
 		m_UITransformCom->SetDefaultNameFromThisType();
@@ -56,7 +56,7 @@ HRESULT CUI::Initialize(void* pArg)
 	}
 
 
-	OnInit(pArg);
+	OnInit(arg);
 
 
 	// 최하위fianl 자식의 OnInit 호출 -> 
@@ -85,16 +85,16 @@ HRESULT CUI::Initialize(void* pArg)
 	//m_bUseNineSlice = pDesc->bUseNineSlice;
 
 	//// 행렬  //////////////////////////////////////
-	D3D11_VIEWPORT ViewPortDesc{};
-	_uint iNumViewPort = { 1 };
-	m_context->RSGetViewports(&iNumViewPort, &ViewPortDesc);
+	D3D11_VIEWPORT viewPortDesc{};
+	_uint numViewPort = { 1 };
+	m_context->RSGetViewports(&numViewPort, &viewPortDesc);
 
-	float ViewportWidth = ViewPortDesc.Width;
-	float ViewportHeight = ViewPortDesc.Height;
+	float viewportWidth = viewPortDesc.Width;
+	float viewportHeight = viewPortDesc.Height;
 
 	XMStoreFloat4x4(&m_transformationMatrices[ETOI(ED3DTS::VIEW)], XMMatrixIdentity());
-	XMStoreFloat4x4(&m_transformationMatrices[ETOI(ED3DTS::PROJ)], XMMatrixOrthographicOffCenterLH(0.f, ViewportWidth,
-		0.f, ViewportHeight,
+	XMStoreFloat4x4(&m_transformationMatrices[ETOI(ED3DTS::PROJ)], XMMatrixOrthographicOffCenterLH(0.f, viewportWidth,
+		0.f, viewportHeight,
 		0.f, 1.f));
 
 	//XMMatrixOrthographicOffCenterLH(0.f, ViewportWidth, ViewportHeight, 0.f, 0.f, 1.f);
@@ -112,14 +112,14 @@ HRESULT CUI::Initialize(void* pArg)
 	return S_OK;
 }
 
-HRESULT CUI::Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, ED3DTS eTransformState)
+HRESULT CUI::Bind_ShaderResource(shared_ptr<CShader> shader, const _char* constantName, ED3DTS transformState)
 {
-	return pShader->Bind_Matrix(pConstantName, &m_transformationMatrices[ETOI(eTransformState)]);
+	return shader->Bind_Matrix(constantName, &m_transformationMatrices[ETOI(transformState)]);
 }
 
-weak_ptr<CUI> CUI::Find_Children(_wstring strTag)
+weak_ptr<CUI> CUI::Find_Children(_wstring tag)
 {
-	auto it = m_mapChildren.find(strTag);
+	auto it = m_mapChildren.find(tag);
 	if (it == m_mapChildren.end())
 		return weak_ptr<CUI>(); // 빈 weak_ptr -> 널체크는 lock() 하면 주인 shared ptr 없으면 널 됨
 
@@ -159,8 +159,8 @@ void CUI::Save_ToJson(nlohmann::json& j)
 	nlohmann::json jChildrenArray = nlohmann::json::array();
 	for (auto& pair : m_mapChildren)
 	{
-		auto pChild = pair.second.lock();
-		if (nullptr == pChild) continue;
+		auto child = pair.second.lock();
+		if (nullptr == child) continue;
 
 		nlohmann::json jChild;
 
@@ -201,11 +201,11 @@ void CUI::Load_FromJson(nlohmann::json& j)
 			auto it = m_mapChildren.find(childTagW);
 			if (it != m_mapChildren.end())
 			{
-				auto pChild = it->second.lock();
-				if (pChild)
+				auto child = it->second.lock();
+				if (child)
 				{
 					// 자식도 똑같이 이 함수를 타게 함
-					pChild->Load_FromJson(jChild);
+					child->Load_FromJson(jChild);
 				}
 			}
 		}
@@ -220,7 +220,7 @@ void CUI::OnGui()
 
 }
 
-void CUI::Update(_float fTimeDelta, bool& bMouseHold)
+void CUI::Update(_float timeDelta, bool& isMouseHold)
 {
 
 	
@@ -232,17 +232,17 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 
 		for (auto& it : m_children)
 		{
-			it->Update(fTimeDelta, bMouseHold);
+			it->Update(timeDelta, isMouseHold);
 		}
 
 
-		if (bMouseHold == false && m_isInteractable == true)
+		if (isMouseHold == false && m_isInteractable == true)
 		{
 			Vector2 mousePos = m_gameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
 			if (true == m_UITransformCom->Get_WorldRect().Contains(mousePos.x, mousePos.y))
 			{
 				m_isHovered = true;
-				bMouseHold = true;
+				isMouseHold = true;
 			}
 			else
 				m_isHovered = false;
@@ -251,7 +251,7 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 			m_isHovered = false;
 
 
-		OnUpdate(fTimeDelta);
+		OnUpdate(timeDelta);
 
 
 	
@@ -267,7 +267,7 @@ void CUI::Update(_float fTimeDelta, bool& bMouseHold)
 
 }
 
-void CUI::Late_Update(_float fTimeDelta)
+void CUI::Late_Update(_float timeDelta)
 {
 	if (m_isEnabled)
 	{
@@ -282,7 +282,7 @@ void CUI::Late_Update(_float fTimeDelta)
 			for (auto it = m_children.begin(); it != m_children.end(); )
 			{
 				if (nullptr != *it)
-					(*it)->Late_Update(fTimeDelta);
+					(*it)->Late_Update(timeDelta);
 
 				if ((*it)->Is_PendingDestroy() == true)
 				{
@@ -297,7 +297,7 @@ void CUI::Late_Update(_float fTimeDelta)
 
 		for (auto it = m_behavior.begin(); it != m_behavior.end(); )
 		{
-			(*it)->Tick(fTimeDelta, this);
+			(*it)->Tick(timeDelta, this);
 
 			
 			if ((*it)->IsFinished() == true)
@@ -446,7 +446,7 @@ void CUI::UI_Clear() // 이건 삭제
 
 }
 
-HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect)
+HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool keepWorldRect)
 {
 	if (child == nullptr)
 		return E_FAIL;
@@ -463,7 +463,7 @@ HRESULT CUI::Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRec
 	// 트렌스폼 연결 (안에서 부모 자식 연결 다함)
 	if (m_UITransformCom && child->GetUITransform())
 	{
-		child->GetUITransform()->SetParent(m_UITransformCom, KeepWorldRect);
+		child->GetUITransform()->SetParent(m_UITransformCom, keepWorldRect);
 	}
 
 	return S_OK;

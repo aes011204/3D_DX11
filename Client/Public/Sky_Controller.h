@@ -21,9 +21,9 @@ public:
     virtual ~CSky_Controller();
 
 public:
-    HRESULT Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    HRESULT Initialize(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
-    void Update(float TimeDelta);
+    void Update(float timeDelta);
 
  virtual void OnGui() override;
  const _float4& Get_Direction() const { return m_direction; }
@@ -53,19 +53,19 @@ private:
     //_float2 SunsetT = _float2(0.65f, 0.85);	//0.65 ~0.80 : 노을(낮 → 노을)
     //_float2 AfterSunsetT = _float2(0.80f, .95f);	//0.80 ~1.00 : 밤(노을 → 밤)
     //_float2 NightT2 = _float2(0.85f, 1.0f);
-    _float2 NightT = _float2(0.00f, 0.25f);
-    _float2 MidNightT = _float2(0.15f, 0.40f);
-    _float2 DayT = _float2(0.35f, 0.70f);
-    _float2 SunsetT = _float2(0.60f, 0.80f);
-    _float2 AfterSunsetT = _float2(0.75f, 0.92f);
-    _float2 NightT2 = _float2(0.85f, 1.00f);
+    _float2 m_nightRange = _float2(0.00f, 0.25f);
+    _float2 m_midNightRange = _float2(0.15f, 0.40f);
+    _float2 m_dayRange = _float2(0.35f, 0.70f);
+    _float2 m_sunsetRange = _float2(0.60f, 0.80f);
+    _float2 m_afterSunsetRange = _float2(0.75f, 0.92f);
+    _float2 m_nightRange2 = _float2(0.85f, 1.00f);
 
 
-    _float3 Night = _float3(0.05, 0.08, 0.15);
-    _float3 MidNight = _float3(0.25, 0.45, 0.65);
-    _float3 Day = _float3(0.45, 0.70, 0.90);
-    _float3 Sunset = _float3(1.0, 0.55, 0.25);
-    _float3 AfterSunset = _float3(0.35, 0.25, 0.45);
+    _float3 m_nightColor = _float3(0.05, 0.08, 0.15);
+    _float3 m_midNightColor = _float3(0.25, 0.45, 0.65);
+    _float3 m_dayColor = _float3(0.45, 0.70, 0.90);
+    _float3 m_sunsetColor = _float3(1.0, 0.55, 0.25);
+    _float3 m_afterSunsetColor = _float3(0.35, 0.25, 0.45);
 private:
     ComPtr<ID3D11Device> m_device = { nullptr };
     ComPtr<ID3D11DeviceContext> m_context = { nullptr };

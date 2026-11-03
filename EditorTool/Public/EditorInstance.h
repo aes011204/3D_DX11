@@ -33,9 +33,9 @@ public:
 	virtual ~CEditorInstance() =default;
 
 public:
-	HRESULT Initialize_Editor(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice,
-		ComPtr<ID3D11DeviceContext> pContext);
-	void Update_Editor(float fTimeDelta);
+	HRESULT Initialize_Editor(const EngineDesc& engineDesc, ComPtr<ID3D11Device> device,
+		ComPtr<ID3D11DeviceContext> context);
+	void Update_Editor(float timeDelta);
 	void Render_Editor();
     bool Get_ImGuiGpuMs(double& milliseconds) const;
     const EditorCpuTimings& Get_EditorCpuTimings() const { return m_editorCpuTimings; }
@@ -57,7 +57,7 @@ private:
 
 	unique_ptr<class CImguiManager> m_imguiManager = { nullptr };
 
-	unique_ptr < class CWin_Mananger> m_winManager = {};
+	unique_ptr < class CWin_Manager> m_winManager = {};
 	unique_ptr<class CGameView> m_gameView = {};
 
 	shared_ptr<class CSelection> m_selection;

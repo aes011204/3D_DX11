@@ -13,8 +13,8 @@
 #include "Level_Loading.h"
 #include "EventBus.h"
 
-CLevel_Logo::CLevel_Logo(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CLevel{ pDevice, pContext }
+CLevel_Logo::CLevel_Logo(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CLevel{ device, context }
 {
 }
 
@@ -34,8 +34,8 @@ HRESULT CLevel_Logo::Initialize()
 	if (FAILED(Ready_Lights()))
 		return E_FAIL;
 	
-	auto name_view = magic_enum::enum_name(EUiType::Test);
-	_wstring Wname = S2W(string(name_view));
+	auto nameView = magic_enum::enum_name(EUiType::Test);
+	_wstring wName = S2W(string(nameView));
 
 
 	m_gameInstance.lock()->Load(ESaveType::UI, "MINI_GAME_5.json");
@@ -51,7 +51,7 @@ HRESULT CLevel_Logo::Initialize()
 			shared_ptr<CFadeModifier> eff = make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_IN, .2f, false, _float4{ 0.f,0.f,0.f,0.f });
 			pLoadingUI->m_behavior.push_back(eff);*/
 
-		ChangeNextLevel = e.IsChange;
+		m_isChangeNextLevel = e.isChange;
 			m_nextLevel = static_cast<ELevel>(e.level);
 
 			m_acc = 0.f;
@@ -69,11 +69,11 @@ HRESULT CLevel_Logo::Post_Initialize()
 	return S_OK;
 }
 
-void CLevel_Logo::Update(_float fTimeDelta)
+void CLevel_Logo::Update(_float timeDelta)
 {
 
 
-	m_acc += fTimeDelta;
+	m_acc += timeDelta;
 	if (m_isFlag == false)
 	{
 		CGameInstance::GetInstance()->Change_Camera(L"STOP_CAM");
@@ -102,10 +102,10 @@ void CLevel_Logo::Update(_float fTimeDelta)
 			return;
 	}
 
-	if (ChangeNextLevel == true&& m_acc >= 1.f)
+	if (m_isChangeNextLevel == true&& m_acc >= 1.f)
 	{
 		m_gameInstance.lock()->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, m_nextLevel));
-		ChangeNextLevel = false;
+		m_isChangeNextLevel = false;
 		m_acc = 0;
 	}
 
@@ -183,10 +183,10 @@ HRESULT CLevel_Logo::Render()
 	return S_OK;
 }
 
-HRESULT CLevel_Logo::Ready_Layer_BackGround(const _wstring& strLayerTag)
+HRESULT CLevel_Logo::Ready_Layer_BackGround(const _wstring& layerTag)
 {
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Terrain"),
-		ETOI(ELevel::LOGO), strLayerTag)))
+		ETOI(ELevel::LOGO), layerTag)))
 		return E_FAIL;
 
 
@@ -194,7 +194,7 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const _wstring& strLayerTag)
 
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Sky"),
-		ETOI(ELevel::LOGO), strLayerTag)))
+		ETOI(ELevel::LOGO), layerTag)))
 		return E_FAIL;
 
 
@@ -202,15 +202,15 @@ HRESULT CLevel_Logo::Ready_Layer_BackGround(const _wstring& strLayerTag)
 
 }
 
-shared_ptr<CLevel_Logo> CLevel_Logo::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CLevel_Logo> CLevel_Logo::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CLevel_Logo> pInstance ( new CLevel_Logo(pDevice, pContext));
+	shared_ptr<CLevel_Logo> instance ( new CLevel_Logo(device, context));
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CLevel_Loading");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CLevel_Logo::Free()

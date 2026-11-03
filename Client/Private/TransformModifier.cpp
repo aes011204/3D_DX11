@@ -11,37 +11,37 @@ CTransformModifier::~CTransformModifier()
 {
 }
 
-void CTransformModifier::Tick(float fDeltaTime, CUI* pOwner)
+void CTransformModifier::Tick(float deltaTime, CUI* owner)
 {
 	if (nullptr == m_ownerTransform)
 	{
-		m_ownerTransform = dynamic_cast<CUITransform*>(pOwner->Get_Component(g_strUITransformTag).get());
+		m_ownerTransform = dynamic_cast<CUITransform*>(owner->Get_Component(g_strUITransformTag).get());
 		//m_pOwnerTransform->SetAnchoredPos(m_startPos);
 	}
-	m_accTime += fDeltaTime;
+	m_accTime += deltaTime;
 
-	_float fRatio = m_accTime / m_duration;
+	_float ratio = m_accTime / m_duration;
 
 
 	_float2 result = {};
-	result.x = lerp(m_startPos.x, m_endPos.x, fRatio);
-	result.y = lerp(m_startPos.y, m_endPos.y, fRatio);
+	result.x = lerp(m_startPos.x, m_endPos.x, ratio);
+	result.y = lerp(m_startPos.y, m_endPos.y, ratio);
 
 	m_ownerTransform->SetAnchoredPos(result);
 
 
-	if (fRatio >= 1) 
+	if (ratio >= 1) 
 	{
-		fRatio = 1.f;
+		ratio = 1.f;
 		m_isFinish = true;
 	}
 
 }
 
-void CTransformModifier::OnAppear(float fDeltaTime, CUI* pOwner)
+void CTransformModifier::OnAppear(float deltaTime, CUI* owner)
 {
 }
 
-void CTransformModifier::OnDisappear(float fDeltaTime, CUI* pOwner)
+void CTransformModifier::OnDisappear(float deltaTime, CUI* owner)
 {
 }

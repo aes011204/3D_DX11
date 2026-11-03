@@ -17,21 +17,21 @@ public:
     enum class EDistState { ATTACK_RANGE, E_NEAR, E_FAR, END };
 
 private:
-    CMon_MonkFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CMon_MonkFish(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CMon_MonkFish(const CMon_MonkFish& prototype);
 public:
     virtual ~CMon_MonkFish() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
     void ChangeState(EState newState);
     void EnterState(EState newState);
     EDistState GetDistanceState(_float dist) const;
-    void UpdateBlendByDistanceState(EDistState distState, _float fTimeDelta);
-    virtual void Late_Update(_float fTimeDelta) override;
+    void UpdateBlendByDistanceState(EDistState distState, _float timeDelta);
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
@@ -53,9 +53,9 @@ protected:
     const _float4x4* m_socketMatrixLight = { nullptr };
     //const _float4x4* m_pSocketMatrix_LefttHand = { nullptr };
 
-    XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
+    XMMATRIX CombinedWorldMatrix(_fmatrix childrenMatrix)
     {
-        return ChildrenMatrix * XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
+        return childrenMatrix * XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
     }
 
 private:
@@ -70,7 +70,7 @@ private:
     _float3 m_dir = {};
 
 
-    _bool IsColl = {false};
+    _bool m_isColl = {false};
 private:
 
     shared_ptr<CShader> m_shaderCom = { nullptr };
@@ -89,8 +89,8 @@ private:
 
 public:
 
-    static shared_ptr<CMon_MonkFish> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CMon_MonkFish> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

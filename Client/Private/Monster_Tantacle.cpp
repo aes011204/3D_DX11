@@ -4,8 +4,8 @@
 #include "Collider.h"
 
 
-CMonster_Tantacle::CMonster_Tantacle(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CMonster_Tantacle::CMonster_Tantacle(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -19,9 +19,9 @@ HRESULT CMonster_Tantacle::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMonster_Tantacle::Initialize(void* pArg)
+HRESULT CMonster_Tantacle::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -39,13 +39,13 @@ HRESULT CMonster_Tantacle::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CMonster_Tantacle::Priority_Update(_float fTimeDelta)
+void CMonster_Tantacle::Priority_Update(_float timeDelta)
 {
 }
 
-void CMonster_Tantacle::Update(_float fTimeDelta)
+void CMonster_Tantacle::Update(_float timeDelta)
 {
-	m_modelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(timeDelta);
 
 
 	if(m_modelCom->Get_IsFinishAnim() == true)
@@ -74,7 +74,7 @@ void CMonster_Tantacle::Update(_float fTimeDelta)
 	
 }
 
-void CMonster_Tantacle::Late_Update(_float fTimeDelta)
+void CMonster_Tantacle::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -88,9 +88,9 @@ HRESULT CMonster_Tantacle::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
 		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
@@ -190,8 +190,8 @@ HRESULT CMonster_Tantacle::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 
 	return S_OK;
 }
@@ -234,27 +234,27 @@ HRESULT CMonster_Tantacle::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CMonster_Tantacle> CMonster_Tantacle::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CMonster_Tantacle> CMonster_Tantacle::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CMonster_Tantacle> pInstance(new CMonster_Tantacle(pDevice, pContext), [](CMonster_Tantacle* p) {p->Free(); delete p;});
+	shared_ptr<CMonster_Tantacle> instance(new CMonster_Tantacle(device, context), [](CMonster_Tantacle* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CMonster_Tantacle");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CMonster_Tantacle::Clone(void* pArg)
+shared_ptr<CGameObject> CMonster_Tantacle::Clone(void* arg)
 {
-	shared_ptr<CMonster_Tantacle> pInstance(new CMonster_Tantacle(*this), [](CMonster_Tantacle* p) {p->Free(); delete p;});
+	shared_ptr<CMonster_Tantacle> instance(new CMonster_Tantacle(*this), [](CMonster_Tantacle* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CMonster_Tantacle");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMonster_Tantacle::Free()

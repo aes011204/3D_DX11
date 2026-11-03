@@ -13,8 +13,8 @@
 #include "Engine_Helper.h"
 #include "EventBus.h"
 
-CUI_Village::CUI_Village(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_Village::CUI_Village(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -35,20 +35,20 @@ void CUI_Village::UI_Active()
 
 	}
 }
-HRESULT CUI_Village::OnInit(void* pArg)
+HRESULT CUI_Village::OnInit(void* arg)
 {
 	//if(pArg==nullptr)
 
-	VillageDesc* pDesc = static_cast<VillageDesc*>(pArg);
+	VillageDesc* desc = static_cast<VillageDesc*>(arg);
 	HRESULT hr = {};
-	hr = __super::OnInit(pDesc);
+	hr = __super::OnInit(desc);
 
 
 	// 람다 제외 전부 데이터로 수정 가능
 
 	wstring name = {};
-	EVillageLocation eLevel = {};
-	EPlayerState ePlayerState = {};
+	EVillageLocation level = {};
+	EPlayerState playerState = {};
 	wstring tex = {};
 	wstring sound = {};
 	for (_uint i = 0; i < 3; i++)
@@ -56,26 +56,26 @@ HRESULT CUI_Village::OnInit(void* pArg)
 		switch (i)
 		{
 		case 0:
-			eLevel = EVillageLocation::REPAIR;
+			level = EVillageLocation::REPAIR;
 			name = L"조선공";
 			tex = L"Prototype_Component_Texture_MerchantIcon";
-			ePlayerState = EPlayerState::REPAIR_SHOP;
+			playerState = EPlayerState::REPAIR_SHOP;
 			sound = L"Repair_Visit";
 			break;
 		case 1:
-			eLevel = EVillageLocation::FISH;
+			level = EVillageLocation::FISH;
 			name = L"생선장수";
 			tex = L"Prototype_Component_Texture_FishIconVill";
-			ePlayerState = EPlayerState::FISH_SHOP;
+			playerState = EPlayerState::FISH_SHOP;
 			sound = L"Fishmonger_Visit";
 
 			break;
 		case 2:
-			eLevel = EVillageLocation::STORAGE;
+			level = EVillageLocation::STORAGE;
 			name = L"내창고";
 
 			tex = L"Prototype_Component_Texture_StorageIcon";
-			ePlayerState = EPlayerState::STORAGE;
+			playerState = EPlayerState::STORAGE;
 			sound = L"Storage_Visit";
 
 			break;
@@ -86,53 +86,53 @@ HRESULT CUI_Village::OnInit(void* pArg)
 						break*/;
 		}
 
-		CUIImage::UIImageDesc underBar_desc{};
-		underBar_desc.textureComLevel = ETOI(ELevel::STATIC);
-		underBar_desc.textureProtoName = L"Prototype_Component_Texture_VillageUnderBar";
+		CUIImage::UIImageDesc underBarDesc{};
+		underBarDesc.textureComLevel = ETOI(ELevel::STATIC);
+		underBarDesc.textureProtoName = L"Prototype_Component_Texture_VillageUnderBar";
 		shared_ptr<CUIImage> underBar = CUIImage::Create(m_device, m_context);
-		underBar->Initialize(&underBar_desc);
+		underBar->Initialize(&underBarDesc);
 
-		wstring NameTag = L"UnderBar_" + S2W(string(magic_enum::enum_name(eLevel)));
-		Add_Child(underBar, NameTag, false);
+		wstring nameTag = L"UnderBar_" + S2W(string(magic_enum::enum_name(level)));
+		Add_Child(underBar, nameTag, false);
 
 
 		{
 
 
-			CUIButton::UIButtonDesc pDesc = {};
-			pDesc.textureComLevel = ETOI(ELevel::STATIC);
-			pDesc.textureProtoName = L"Prototype_Component_Texture_Button";
-			pDesc.typeIndex = i;
-			pDesc.OverlapStartEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
-				m_select[pThis->Get_TypeIndex()]->UI_Active();
+			CUIButton::UIButtonDesc desc = {};
+			desc.textureComLevel = ETOI(ELevel::STATIC);
+			desc.textureProtoName = L"Prototype_Component_Texture_Button";
+			desc.typeIndex = i;
+			desc.OverlapStartEvent = [&](CUIButton* self) {auto& ch = self->GetChildren();
+				m_select[self->Get_TypeIndex()]->UI_Active();
 				_float2 tmp = { 4.f, 2.f };
-				m_select[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
+				m_select[self->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
 
 				m_gameInstance.lock()->Play_Once(L"Hover");
 				};
-			pDesc.OverlapEndEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+			desc.OverlapEndEvent = [&](CUIButton* self) {auto& ch = self->GetChildren();
 			
-				m_select[pThis->Get_TypeIndex()]->UI_InActive();
-				m_select[pThis->Get_TypeIndex()]->m_behavior.clear();
+				m_select[self->Get_TypeIndex()]->UI_InActive();
+				m_select[self->Get_TypeIndex()]->m_behavior.clear();
 		
 				};
 
-			pDesc.ClickEvent = [this, ePlayerState,sound](CUIButton* pThis)
+			desc.ClickEvent = [this, playerState,sound](CUIButton* self)
 				{
 
 					/*m_Select[pThis->Get_TypeIndex()]->UI_InActive();
 					m_Select[pThis->Get_TypeIndex()]->m_behavior.clear();*/
 					Evt_ChangeState event{};
-					event.playerstate = ePlayerState;
+					event.playerstate = playerState;
 
 					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
 					m_gameInstance.lock()->Play_Once(sound);
 
 				};
-			shared_ptr<CUIButton> pBut = CUIButton::Create(m_device, m_context);
-			pBut->Initialize(&pDesc);
-			pBut->Set_SelectState(false);
+			shared_ptr<CUIButton> but = CUIButton::Create(m_device, m_context);
+			but->Initialize(&desc);
+			but->Set_SelectState(false);
 
 			//
 			{
@@ -144,20 +144,20 @@ HRESULT CUI_Village::OnInit(void* pArg)
 				shared_ptr<CUIImage> Select = CUIImage::Create(m_device, m_context);
 				Select->Initialize(&selectImage);
 				Select->UI_InActive();
-				wstring NameTag1 = L"Select_" + S2W(string(magic_enum::enum_name(eLevel)));
-				pBut->Add_Child(Select, NameTag1, false);
+				wstring nameTag1 = L"Select_" + S2W(string(magic_enum::enum_name(level)));
+				but->Add_Child(Select, nameTag1, false);
 				m_select[i] = Select;
 
 
 
 
-				CUIText::TextDesc text_Name = {};
-				text_Name.fontTag = L"Noto_Sans_CJK_SC";
-				text_Name.text = name;
-				shared_ptr<CUIText> Text_Name = CUIText::Create(m_device, m_context);
-				Text_Name->Initialize(&text_Name);
+				CUIText::TextDesc nameTextDesc = {};
+				nameTextDesc.fontTag = L"Noto_Sans_CJK_SC";
+				nameTextDesc.text = name;
+				shared_ptr<CUIText> nameText = CUIText::Create(m_device, m_context);
+				nameText->Initialize(&nameTextDesc);
 
-				pBut->Add_Child(Text_Name, L"text_" + S2W(string(magic_enum::enum_name(eLevel))), false);
+				but->Add_Child(nameText, L"text_" + S2W(string(magic_enum::enum_name(level))), false);
 
 
 				CUIImage::UIImageDesc iconImage{};
@@ -166,23 +166,23 @@ HRESULT CUI_Village::OnInit(void* pArg)
 				shared_ptr<CUIImage> icon = CUIImage::Create(m_device, m_context);
 				icon->Initialize(&iconImage);
 
-				wstring NameTag2 = L"icon_" + S2W(string(magic_enum::enum_name(eLevel)));
-				pBut->Add_Child(icon, NameTag2, false);
+				wstring nameTag2 = L"icon_" + S2W(string(magic_enum::enum_name(level)));
+				but->Add_Child(icon, nameTag2, false);
 
 			}
 
-		NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eLevel)));
-		underBar->Add_Child(pBut, NameTag, false);
+		nameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(level)));
+		underBar->Add_Child(but, nameTag, false);
 		}
 
 
 	}
 
-	CUIImage::UIImageDesc underBar_desc{};
-	underBar_desc.textureComLevel = ETOI(ELevel::STATIC);
-	underBar_desc.textureProtoName = L"Prototype_Component_Texture_VillageUnderBar";
+	CUIImage::UIImageDesc underBarDesc{};
+	underBarDesc.textureComLevel = ETOI(ELevel::STATIC);
+	underBarDesc.textureProtoName = L"Prototype_Component_Texture_VillageUnderBar";
 	shared_ptr<CUIImage> underBar = CUIImage::Create(m_device, m_context);
-	underBar->Initialize(&underBar_desc);
+	underBar->Initialize(&underBarDesc);
 
 	Add_Child(underBar, L"UnderBar_Boat", false);
 
@@ -212,40 +212,40 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			break;
 		}
 
-		CUIButton::UIButtonDesc pDesc = {};
-		pDesc.textureComLevel = ETOI(ELevel::STATIC);
-		pDesc.textureProtoName = L"Prototype_Component_Texture_Button";
-		pDesc.typeIndex =i;
-		pDesc.OverlapStartEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+		CUIButton::UIButtonDesc desc = {};
+		desc.textureComLevel = ETOI(ELevel::STATIC);
+		desc.textureProtoName = L"Prototype_Component_Texture_Button";
+		desc.typeIndex =i;
+		desc.OverlapStartEvent = [&](CUIButton* self) {auto& ch = self->GetChildren();
 		
-			m_selectBoat[pThis->Get_TypeIndex()]->UI_Active();
+			m_selectBoat[self->Get_TypeIndex()]->UI_Active();
 			
 			_float2 tmp = { 1.3f, 3.6f };
 			
-			m_selectBoat[pThis->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
-			m_selectBoat[pThis->Get_TypeIndex()]->Set_Zorder(4);
+			m_selectBoat[self->Get_TypeIndex()]->m_behavior.push_back((make_shared<CScaleModifier>(0.05f, 4.f, 0.f, tmp)));
+			m_selectBoat[self->Get_TypeIndex()]->Set_Zorder(4);
 			m_gameInstance.lock()->Play_Once(L"Hover");
 
 			};
-		pDesc.OverlapEndEvent = [&](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+		desc.OverlapEndEvent = [&](CUIButton* self) {auto& ch = self->GetChildren();
 		
-			m_selectBoat[pThis->Get_TypeIndex()]->UI_InActive();
-			m_selectBoat[pThis->Get_TypeIndex()]->m_behavior.clear();
-			m_selectBoat[pThis->Get_TypeIndex()]->Set_Zorder(2);
+			m_selectBoat[self->Get_TypeIndex()]->UI_InActive();
+			m_selectBoat[self->Get_TypeIndex()]->m_behavior.clear();
+			m_selectBoat[self->Get_TypeIndex()]->Set_Zorder(2);
 	
 			};
-		pDesc.ClickEvent = [this,i,sound](CUIButton* pThis) {
+		desc.ClickEvent = [this,i,sound](CUIButton* self) {
 			Evt_VillageBtn e = {};
 			e.type = i;
 				m_gameInstance.lock()->Get_EventBus()->Publish(e);
 				m_gameInstance.lock()->Play_Once(sound);
 
 			};
-		shared_ptr<CUIButton> BoatOP = CUIButton::Create(m_device, m_context);
-		BoatOP->Initialize(&pDesc);
-		BoatOP->Set_ColorFlat(_float4{0.f,0.f,0.f,1.f});
-		underBar->Add_Child(BoatOP, L"BoatOP" + to_wstring(i), false);
-		BoatOP->Set_SelectState(false);
+		shared_ptr<CUIButton> boatOP = CUIButton::Create(m_device, m_context);
+		boatOP->Initialize(&desc);
+		boatOP->Set_ColorFlat(_float4{0.f,0.f,0.f,1.f});
+		underBar->Add_Child(boatOP, L"BoatOP" + to_wstring(i), false);
+		boatOP->Set_SelectState(false);
 
 
 		{
@@ -258,8 +258,8 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			Select->Initialize(&selectImage);
 			Select->UI_InActive();
 			Select->Set_Zorder(4);
-			wstring NameTag1 = L"select_" + to_wstring(i);
-			/*BoatOP->*/underBar->Add_Child(Select, NameTag1, false);
+			wstring nameTag1 = L"select_" + to_wstring(i);
+			/*BoatOP->*/underBar->Add_Child(Select, nameTag1, false);
 			m_selectBoat[i] = Select;
 
 
@@ -269,27 +269,27 @@ HRESULT CUI_Village::OnInit(void* pArg)
 			shared_ptr<CUIImage> icon = CUIImage::Create(m_device, m_context);
 			icon->Initialize(&iconImage);
 			
-			wstring NameTag2 = L"icon_" + to_wstring(i);
-			BoatOP->Add_Child(icon, NameTag2, false);
+			wstring nameTag2 = L"icon_" + to_wstring(i);
+			boatOP->Add_Child(icon, nameTag2, false);
 		}
 	}
 
 
 
-	CUIImage::UIImageDesc Title_desc{};
-	Title_desc.textureComLevel = ETOI(ELevel::STATIC);
-	Title_desc.textureProtoName = L"Prototype_Component_Texture_TitleBackground";
+	CUIImage::UIImageDesc titleDesc{};
+	titleDesc.textureComLevel = ETOI(ELevel::STATIC);
+	titleDesc.textureProtoName = L"Prototype_Component_Texture_TitleBackground";
 	shared_ptr<CUIImage> Title = CUIImage::Create(m_device, m_context);
-	Title->Initialize(&Title_desc);
+	Title->Initialize(&titleDesc);
 	Add_Child(Title, L"Title", false);
 
-	CUIText::TextDesc textVill_Name = {};
-	textVill_Name.fontTag = L"Noto_Sans_CJK_SC_32";
-	textVill_Name.text = L"큰골마을";
-	shared_ptr<CUIText> TextVill = CUIText::Create(m_device, m_context);
-	TextVill->Initialize(&textVill_Name);
+	CUIText::TextDesc textVillName = {};
+	textVillName.fontTag = L"Noto_Sans_CJK_SC_32";
+	textVillName.text = L"큰골마을";
+	shared_ptr<CUIText> textVill = CUIText::Create(m_device, m_context);
+	textVill->Initialize(&textVillName);
 
-	Title->Add_Child(TextVill, L"text_Vill", false);
+	Title->Add_Child(textVill, L"text_Vill", false);
 
 
 
@@ -345,16 +345,16 @@ void CUI_Village::OnClear()
 
 
 
-shared_ptr<CUI_Village> CUI_Village::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Village> CUI_Village::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Village> pInstance(new CUI_Village(pDevice, pContext), [](CUI_Village* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_Village> instance(new CUI_Village(device, context), [](CUI_Village* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Village::Free()

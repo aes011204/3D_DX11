@@ -31,11 +31,11 @@ CUI_Controller::~CUI_Controller()
 	//Free();
 }
 
-HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
 	m_gameInstance = CGameInstance::GetInstance();
-	m_device = pDevice;
-	m_context = pContext;
+	m_device = device;
+	m_context = context;
 
 	Ready_UI();
 
@@ -44,13 +44,13 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 	{
 		if(!CDialogueDB::GetInstance()->Get_PendingDialogue().empty())
 		{
-			auto m_Npc = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
-			dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_NPCActive(CDialogueDB::GetInstance()->Get_PendingDialogue().front(), CDialogueDB::GetInstance()->Get_PendingDialogue());
-			m_pendingUiState = e.playerstate;
+			auto m_NPC = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
+			dynamic_pointer_cast<CUI_NPC>(m_NPC)->UI_NPCActive(CDialogueDB::GetInstance()->Get_PendingDialogue().front(), CDialogueDB::GetInstance()->Get_PendingDialogue());
+			m_pendingUIState = e.playerstate;
 		}
 		else
 		{
-			m_pendingUiState = e.playerstate;
+			m_pendingUIState = e.playerstate;
 			StateUI();
 			
 		}
@@ -59,10 +59,10 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 	
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_DialogueFinish>([this](const Evt_DialogueFinish e)
 		{
-		if(m_pendingUiState ==EPlayerState::VILLAGE)
+		if(m_pendingUIState ==EPlayerState::VILLAGE)
 		{
-			auto m_Npc = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
-			dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+			auto m_NPC = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
+			dynamic_pointer_cast<CUI_NPC>(m_NPC)->UI_InActive();
 			
 		}
 			StateUI();
@@ -77,11 +77,11 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_BindMiniGameLogic>([this](const Evt_BindMiniGameLogic& e)
 		{
-			auto MiniGame = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"MiniGame");
-			auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
-			if (ui)
+			auto miniGame = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"MiniGame");
+			auto UI = dynamic_pointer_cast<CUI_MiniGame>(miniGame);
+			if (UI)
 			{
-				ui->SetMiniGameLogic(e.logic);
+				UI->SetMiniGameLogic(e.logic);
 			}
 		});
 
@@ -89,18 +89,18 @@ HRESULT CUI_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11De
 	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_ItemHovered>([this](const Evt_ItemHovered& e)
 		{
 			
-			auto ToolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
-			auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
+			auto toolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
+			auto UI = dynamic_pointer_cast<CItemInfo>(toolTip);
 
 			CacheToolTip(e);
 
-			if (e.locationState == ELocationState::END || e.itemInst.itemInstId == kIdAbsence)
+			if (e.locationState == ELocationState::END || e.itemInst.itemInstID == kIDAbsence)
 			{
-				ui->UI_InActive();
+				UI->UI_InActive();
 				return;
 			}
 
-			ui->UI_PanelActive(e.isHold, e.itemInst, m_pendingUiState, e.IsPlayer);
+			UI->UI_PanelActive(e.isHold, e.itemInst, m_pendingUIState, e.isPlayer);
 			
 
 
@@ -113,16 +113,16 @@ void CUI_Controller::End_StateUI()
 {
 
 
-	if (m_pendingUiState == EPlayerState::VILLAGE)
+	if (m_pendingUIState == EPlayerState::VILLAGE)
 	{
 		auto m_Village = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"Village");
 		m_Village->UI_InActive();
 
-		auto m_Npc = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
-		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+		auto m_NPC = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_NPC)->UI_InActive();
 	}
 
-	if (m_pendingUiState == EPlayerState::FISHING)
+	if (m_pendingUIState == EPlayerState::FISHING)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -130,12 +130,12 @@ void CUI_Controller::End_StateUI()
 		auto m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
 		m_holdItem->UI_InActive();
 
-		auto MiniGame = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"MiniGame");
-		auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
-		ui->UI_InActive();
+		auto miniGame = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"MiniGame");
+		auto UI = dynamic_pointer_cast<CUI_MiniGame>(miniGame);
+		UI->UI_InActive();
 	}
 
-	if (m_pendingUiState == EPlayerState::FISH_SHOP)
+	if (m_pendingUIState == EPlayerState::FISH_SHOP)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -143,11 +143,11 @@ void CUI_Controller::End_StateUI()
 		auto m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
 		m_holdItem->UI_InActive();
 
-		auto m_Npc = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
-		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+		auto m_NPC = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_NPC)->UI_InActive();
 	}
 
-	if (m_pendingUiState == EPlayerState::REPAIR_SHOP)
+	if (m_pendingUIState == EPlayerState::REPAIR_SHOP)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -155,15 +155,15 @@ void CUI_Controller::End_StateUI()
 		auto m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
 		m_holdItem->UI_InActive();
 
-		auto m_Npc = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
-		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+		auto m_NPC = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_NPC)->UI_InActive();
 
 
 		auto m_repair = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"repairShop");
 		dynamic_pointer_cast<CUI_RepairShop>(m_repair)->UI_InActive();
 	}
 
-	if (m_pendingUiState == EPlayerState::STORAGE)
+	if (m_pendingUIState == EPlayerState::STORAGE)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -171,13 +171,13 @@ void CUI_Controller::End_StateUI()
 		auto m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
 		m_holdItem->UI_InActive();
 
-		auto m_Npc = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
-		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+		auto m_NPC = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_NPC)->UI_InActive();
 
 		auto Box = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"Box");
 		dynamic_pointer_cast<CUI_Box>(Box)->UI_InActive();
 	}
-	if (m_pendingUiState == EPlayerState::INTERACT)
+	if (m_pendingUIState == EPlayerState::INTERACT)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		(Tab)->UI_InActive();
@@ -185,8 +185,8 @@ void CUI_Controller::End_StateUI()
 		auto m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
 		m_holdItem->UI_InActive();
 
-		auto m_Npc = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
-		dynamic_pointer_cast<CUI_NPC>(m_Npc)->UI_InActive();
+		auto m_NPC = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
+		dynamic_pointer_cast<CUI_NPC>(m_NPC)->UI_InActive();
 
 		auto Box = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"Box");
 		dynamic_pointer_cast<CUI_Box>(Box)->UI_InActive();
@@ -195,13 +195,13 @@ void CUI_Controller::End_StateUI()
 
 void CUI_Controller::StateUI()
 {
-	if (m_pendingUiState == EPlayerState::VILLAGE)
+	if (m_pendingUIState == EPlayerState::VILLAGE)
 	{
 		auto m_Village = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"Village");
 		m_Village->UI_Active();
 	}
 
-	if (m_pendingUiState == EPlayerState::FISHING)
+	if (m_pendingUIState == EPlayerState::FISHING)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(ETab::INVEN), ETab::INVEN);
@@ -209,9 +209,9 @@ void CUI_Controller::StateUI()
 		auto m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
 		m_holdItem->UI_Active();
 
-		auto MiniGame = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"MiniGame");
-		auto ui = dynamic_pointer_cast<CUI_MiniGame>(MiniGame);
-		ui->UI_PanelActive();
+		auto miniGame = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"MiniGame");
+		auto UI = dynamic_pointer_cast<CUI_MiniGame>(miniGame);
+		UI->UI_PanelActive();
 
 
 		
@@ -220,7 +220,7 @@ void CUI_Controller::StateUI()
 
 	}
 
-	if (m_pendingUiState == EPlayerState::FISH_SHOP)
+	if (m_pendingUIState == EPlayerState::FISH_SHOP)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(ETab::INVEN) | ETOI(ETab::STORAGE), ETab::INVEN);
@@ -229,7 +229,7 @@ void CUI_Controller::StateUI()
 		m_holdItem->UI_Active();
 	}
 
-	if (m_pendingUiState == EPlayerState::REPAIR_SHOP)
+	if (m_pendingUIState == EPlayerState::REPAIR_SHOP)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(ETab::INVEN) | ETOI(ETab::STORAGE), ETab::INVEN);
@@ -241,7 +241,7 @@ void CUI_Controller::StateUI()
 		dynamic_pointer_cast<CUI_RepairShop>(m_repair)->UI_PanelActive();
 	}
 
-	if (m_pendingUiState == EPlayerState::STORAGE)
+	if (m_pendingUIState == EPlayerState::STORAGE)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(ETab::INVEN), ETab::INVEN);
@@ -252,7 +252,7 @@ void CUI_Controller::StateUI()
 		auto Box = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"Box");
 		dynamic_pointer_cast<CUI_Box>(Box)->UI_PanelActive(true);
 	}
-	if (m_pendingUiState == EPlayerState::INTERACT)
+	if (m_pendingUIState == EPlayerState::INTERACT)
 	{
 		auto Tab = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 		dynamic_pointer_cast<CUI_TabContainer>(Tab)->UI_PanelActive(ETOI(ETab::INVEN), ETab::INVEN);
@@ -266,7 +266,7 @@ void CUI_Controller::StateUI()
 }
 
 
-void CUI_Controller::Update(float TimeDelta)
+void CUI_Controller::Update(float timeDelta)
 {
 }
 
@@ -276,26 +276,26 @@ HRESULT CUI_Controller::Ready_UI()
 
 	{
 
-		CUIPanel::UIPanelDesc LoadingDesc;
-		LoadingDesc.isFullScreen = true;
-		LoadingDesc.textureProtoName = L"Prototype_Component_Texture_Black";
-		LoadingDesc.textureComLevel = ETOI(ELevel::STATIC);
-		LoadingDesc.isFullScreen = true;
-		LoadingDesc.isNoDetach = true;
-		shared_ptr<CUIPanel> pInstance = CUIPanel::Create(m_device, m_context);
-		pInstance->Initialize(&LoadingDesc);
+		CUIPanel::UIPanelDesc loadingDesc;
+		loadingDesc.isFullScreen = true;
+		loadingDesc.textureProtoName = L"Prototype_Component_Texture_Black";
+		loadingDesc.textureComLevel = ETOI(ELevel::STATIC);
+		loadingDesc.isFullScreen = true;
+		loadingDesc.isNoDetach = true;
+		shared_ptr<CUIPanel> instance = CUIPanel::Create(m_device, m_context);
+		instance->Initialize(&loadingDesc);
 
-		CUIImage::UIImageDesc LoadingIconDesc;
-		LoadingIconDesc.pivot = _float2{ 1.f,0.f };
-		LoadingIconDesc.anchorPoint = _float2{ 1.f,0.f };
-		LoadingIconDesc.anchoredPos = _float2{ -40.f,40.f };
-		LoadingIconDesc.textureComLevel = ETOI(ELevel::STATIC);
-		LoadingIconDesc.textureComLevel = ETOI(ELevel::STATIC);
-		LoadingIconDesc.textureProtoName = L"Prototype_Component_Texture_LoadingIcon";
-		shared_ptr<CUIImage> pIcon = CUIImage::Create(m_device, m_context);
-		pIcon->Initialize(&LoadingIconDesc);
-		pIcon->m_behavior.push_back(make_shared<CRotationModifier>(200.f));
-		pInstance->Add_Child(pIcon, L"ICON_LOADING", false);
+		CUIImage::UIImageDesc loadingIconDesc;
+		loadingIconDesc.pivot = _float2{ 1.f,0.f };
+		loadingIconDesc.anchorPoint = _float2{ 1.f,0.f };
+		loadingIconDesc.anchoredPos = _float2{ -40.f,40.f };
+		loadingIconDesc.textureComLevel = ETOI(ELevel::STATIC);
+		loadingIconDesc.textureComLevel = ETOI(ELevel::STATIC);
+		loadingIconDesc.textureProtoName = L"Prototype_Component_Texture_LoadingIcon";
+		shared_ptr<CUIImage> icon = CUIImage::Create(m_device, m_context);
+		icon->Initialize(&loadingIconDesc);
+		icon->m_behavior.push_back(make_shared<CRotationModifier>(200.f));
+		instance->Add_Child(icon, L"ICON_LOADING", false);
 
 
 		CUIText::TextDesc textDesc;
@@ -306,124 +306,124 @@ HRESULT CUI_Controller::Ready_UI()
 
 		shared_ptr<CUIText> text = CUIText::Create(m_device, m_context);
 		text->Initialize(&textDesc);
-		pInstance->Add_Child(text, L"text", false);
+		instance->Add_Child(text, L"text", false);
 
 
-		m_gameInstance.lock()->UI_InsertToPool(L"Loading", pInstance);
+		m_gameInstance.lock()->UI_InsertToPool(L"Loading", instance);
 
 		/// 저장 해 두기 모든 레벨에서 필요 할예정
 		
-		m_loading = pInstance;
+		m_loading = instance;
 
 	}
 
 
-	CUI_MainMenu::MainMenuDesc pDescPanel;
-	pDescPanel.isFullScreen = true;
-	pDescPanel.isTransparent = true;
+	CUI_MainMenu::MainMenuDesc descPanel;
+	descPanel.isFullScreen = true;
+	descPanel.isTransparent = true;
 
-	shared_ptr<CUI_MainMenu> pInstance = CUI_MainMenu::Create(m_device, m_context);
-	pInstance->Initialize(&pDescPanel);
-	m_gameInstance.lock()->UI_InsertToPool(L"MainMenu", pInstance);
+	shared_ptr<CUI_MainMenu> instance = CUI_MainMenu::Create(m_device, m_context);
+	instance->Initialize(&descPanel);
+	m_gameInstance.lock()->UI_InsertToPool(L"MainMenu", instance);
 	///
 	///
 	///
-	CUI_TabContainer::TabContainerDesc pDescTap = {};
-	shared_ptr<CUI_TabContainer> TabContainer = CUI_TabContainer::Create(m_device, m_context);
-	if (TabContainer == nullptr)
+	CUI_TabContainer::TabContainerDesc descTap = {};
+	shared_ptr<CUI_TabContainer> tabContainer = CUI_TabContainer::Create(m_device, m_context);
+	if (tabContainer == nullptr)
 		return E_FAIL;
-	TabContainer->Initialize(&pDescTap);
-	m_gameInstance.lock()->UI_InsertToPool(L"TabContainer", TabContainer);
+	tabContainer->Initialize(&descTap);
+	m_gameInstance.lock()->UI_InsertToPool(L"TabContainer", tabContainer);
 
 
 
-	CUI_Item::ItemDesc pDescitem = {};
+	CUI_Item::ItemDesc descitem = {};
 	//CUI_Item::ITEM_DESC pDescitem = {};
 	shared_ptr<CUI_Item>  holdItem = CUI_Item::Create(m_device, m_context);
 	if (holdItem == nullptr)
 		return E_FAIL;
-	holdItem->Initialize(&pDescitem);
+	holdItem->Initialize(&descitem);
 	m_gameInstance.lock()->UI_InsertToPool(L"HoldItem", holdItem);
 
 	////////////HUD///////////////
-	CUI_HUD::HudDesc pDescHUD;
-	pDescHUD.isFullScreen = true;
-	pDescHUD.isTransparent = true;
+	CUI_HUD::HUDDesc descHUD;
+	descHUD.isFullScreen = true;
+	descHUD.isTransparent = true;
 
 	shared_ptr<CUI_HUD> HUD = CUI_HUD::Create(m_device, m_context);
-	HUD->Initialize(&pDescHUD);
+	HUD->Initialize(&descHUD);
 	m_gameInstance.lock()->UI_InsertToPool(L"HUD", HUD);
 
 
 	/////////////NPC//////////////
 	
-	CUI_NPC::NpcDesc pNPCDesc;
-	pNPCDesc.isFullScreen = true;
-	pNPCDesc.isTransparent = true;
+	CUI_NPC::NPCDesc NPCDesc;
+	NPCDesc.isFullScreen = true;
+	NPCDesc.isTransparent = true;
 
 	shared_ptr<CUI_NPC> NPC = CUI_NPC::Create(m_device, m_context);
-	NPC->Initialize(&pNPCDesc);
+	NPC->Initialize(&NPCDesc);
 	m_gameInstance.lock()->UI_InsertToPool(L"NPC_Panel", NPC);
 
 
 	/////////////tooltip//////////////
 
-	CItemInfo::ItemInfoDesc pInfoDesc;
+	CItemInfo::ItemInfoDesc infoDesc;
 
 	shared_ptr<CItemInfo> tooltip = CItemInfo::Create(m_device, m_context);
-	tooltip->Initialize(&pInfoDesc);
+	tooltip->Initialize(&infoDesc);
 	m_gameInstance.lock()->UI_InsertToPool(L"ToolTip", tooltip);
 	
 
 	/////////////MiniGame//////////////
 
-	CUI_MiniGame::MiniGamePanelDesc pMiniGameDesc;
+	CUI_MiniGame::MiniGamePanelDesc miniGameDesc;
 
 
-	shared_ptr<CUI_MiniGame> MiniGame = CUI_MiniGame::Create(m_device, m_context);
-	MiniGame->Initialize(&pMiniGameDesc);
-	m_gameInstance.lock()->UI_InsertToPool(L"MiniGame", MiniGame);
-	m_miniGame = MiniGame;
+	shared_ptr<CUI_MiniGame> miniGame = CUI_MiniGame::Create(m_device, m_context);
+	miniGame->Initialize(&miniGameDesc);
+	m_gameInstance.lock()->UI_InsertToPool(L"MiniGame", miniGame);
+	m_miniGame = miniGame;
 
 	/////////////Village//////////////
 
-	CUI_MainMenu::MainMenuDesc VillagePanel;
-	VillagePanel.isFullScreen = true;
-	VillagePanel.isTransparent = true;
+	CUI_MainMenu::MainMenuDesc villagePanel;
+	villagePanel.isFullScreen = true;
+	villagePanel.isTransparent = true;
 
-	shared_ptr<CUI_Village> Village = CUI_Village::Create(m_device, m_context);
-	Village->Initialize(&VillagePanel);
-	m_gameInstance.lock()->UI_InsertToPool(L"Village", Village);
+	shared_ptr<CUI_Village> village = CUI_Village::Create(m_device, m_context);
+	village->Initialize(&villagePanel);
+	m_gameInstance.lock()->UI_InsertToPool(L"Village", village);
 
 	/////////////BOX//////////////
 
-	CUI_Box::BoxDesc pDescBox = {};
+	CUI_Box::BoxDesc descBox = {};
 	shared_ptr<CUI_Box> Box = CUI_Box::Create(m_device, m_context);
-	if (TabContainer == nullptr)
+	if (tabContainer == nullptr)
 		return E_FAIL;
-	Box->Initialize(&pDescBox);
+	Box->Initialize(&descBox);
 	m_gameInstance.lock()->UI_InsertToPool(L"Box", Box);
 
 	/////////////shop//////////////
 
-	CUI_RepairShop::RepairDesc pRepairDesc= {};
+	CUI_RepairShop::RepairDesc repairDesc= {};
 	shared_ptr<CUI_RepairShop> repair = CUI_RepairShop::Create(m_device, m_context);
 	if (repair == nullptr)
 		return E_FAIL;
 
-	repair->Initialize(&pRepairDesc);
+	repair->Initialize(&repairDesc);
 	m_gameInstance.lock()->UI_InsertToPool(L"repairShop", repair);
 
 
 
 	/////////////Time//////////////
 
-	CUI_Time::UiTimeDesc pTimeDesc = {};
+	CUI_Time::UITimeDesc timeDesc = {};
 	shared_ptr<CUI_Time> time = CUI_Time::Create(m_device, m_context);
 	if (time == nullptr)
 		return E_FAIL;
 
-	time->Initialize(&pTimeDesc);
+	time->Initialize(&timeDesc);
 	m_gameInstance.lock()->UI_InsertToPool(L"Time", time);
 	m_time = time;
 
@@ -442,36 +442,36 @@ void CUI_Controller::InActiveTime()
 }
 void CUI_Controller::CacheToolTip(const Evt_ItemHovered& e)
 {
-	if (e.locationState == ELocationState::END || e.itemInst.itemInstId == kIdAbsence)
+	if (e.locationState == ELocationState::END || e.itemInst.itemInstID == kIDAbsence)
 	{
 		m_toolTipRestore = {};
 		return;
 	}
 
-	m_toolTipRestore.bValid = true;
+	m_toolTipRestore.isValid = true;
 	m_toolTipRestore.isHold = e.isHold;
-	m_toolTipRestore.IsPlayer = e.IsPlayer;
+	m_toolTipRestore.isPlayer = e.isPlayer;
 	m_toolTipRestore.itemInst = e.itemInst;
 }
 
 void CUI_Controller::RestoreToolTip()
 {
-	if (m_toolTipRestore.bValid == false)
+	if (m_toolTipRestore.isValid == false)
 		return;
 
-	if (m_toolTipRestore.itemInst.itemInstId == kIdAbsence)
+	if (m_toolTipRestore.itemInst.itemInstID == kIDAbsence)
 		return;
 
-	auto ToolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
-	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
-	if (ui == nullptr)
+	auto toolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
+	auto UI = dynamic_pointer_cast<CItemInfo>(toolTip);
+	if (UI == nullptr)
 		return;
 	//ui->UI_Active();
-	ui->UI_PanelActive(
+	UI->UI_PanelActive(
 		m_toolTipRestore.isHold,
 		m_toolTipRestore.itemInst,
-		m_pendingUiState,
-		m_toolTipRestore.IsPlayer
+		m_pendingUIState,
+		m_toolTipRestore.isPlayer
 	);
 }
 void CUI_Controller::ActiveHover()
@@ -488,9 +488,9 @@ void CUI_Controller::InActiveHover()
 	auto m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
 	m_holdItem->UI_InActive();
 
-	auto ToolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
-	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
-	ui->UI_InActive();
+	auto toolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
+	auto UI = dynamic_pointer_cast<CItemInfo>(toolTip);
+	UI->UI_InActive();
 
 }
 
@@ -498,10 +498,10 @@ void CUI_Controller::CloseToolTip()
 {
 	m_toolTipRestore = {};
 
-	auto ToolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
-	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
-	if (ui)
-		ui->UI_InActive();
+	auto toolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
+	auto UI = dynamic_pointer_cast<CItemInfo>(toolTip);
+	if (UI)
+		UI->UI_InActive();
 }
 
 //void CUI_Controller::Set_InvenCtrl(shared_ptr<CInventory_Controller> invenCtrl)

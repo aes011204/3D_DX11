@@ -5,8 +5,8 @@
 #include "PlayerBoat.h"
 
 
-CMon_R::CMon_R(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CMon_R::CMon_R(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -20,9 +20,9 @@ HRESULT CMon_R::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMon_R::Initialize(void* pArg)
+HRESULT CMon_R::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -39,10 +39,10 @@ HRESULT CMon_R::Initialize(void* pArg)
 	if (m_player.lock())
 	{
 	_float3 newPos = {};
-	_vector TargetPos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::LOOK) * 100.f;
+	_vector targetPos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::LOOK) * 100.f;
 
 		//XMVectorSet(targetPos.x, targetPos.y, targetPos.z + 20.f, 1.f)
-	m_transformCom->Set_Position(m_player.lock()->Get_TransformCom()->Get_Position() + TargetPos);
+	m_transformCom->Set_Position(m_player.lock()->Get_TransformCom()->Get_Position() + targetPos);
 
 
 	m_transformCom->SetUp_Scale(2.f, 2.f, 2.f);
@@ -66,17 +66,17 @@ HRESULT CMon_R::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CMon_R::Priority_Update(_float fTimeDelta)
+void CMon_R::Priority_Update(_float timeDelta)
 {
 }
 
-void CMon_R::Update(_float fTimeDelta)
+void CMon_R::Update(_float timeDelta)
 {
-	m_modelComOne->Play_Animation(fTimeDelta);
+	m_modelComOne->Play_Animation(timeDelta);
 
 
 
-		m_modelComEtc->Play_Animation(fTimeDelta);
+		m_modelComEtc->Play_Animation(timeDelta);
 
 	
 	if(m_modelComOne->Get_IsFinishAnim() == true)
@@ -118,7 +118,7 @@ void CMon_R::Update(_float fTimeDelta)
 	
 }
 
-void CMon_R::Late_Update(_float fTimeDelta)
+void CMon_R::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -129,9 +129,9 @@ HRESULT CMon_R::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 	{
-		size_t iNumMesh = m_modelComOne->Get_NumMeshes();
+		size_t numMesh = m_modelComOne->Get_NumMeshes();
 
-		for (size_t i = 0; i < iNumMesh; i++)
+		for (size_t i = 0; i < numMesh; i++)
 		{
 			m_modelComOne->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
@@ -149,7 +149,7 @@ HRESULT CMon_R::Render()
 	{
 		/*for (int j =8; j < 11; j++)
 		{*/
-			size_t iNumMesh = m_modelComEtc->Get_NumMeshes();
+			size_t numMesh = m_modelComEtc->Get_NumMeshes();
 		
 			//for (size_t i = 0; i < iNumMesh; i++)
 			//{
@@ -303,8 +303,8 @@ HRESULT CMon_R::Bind_ShaderResources()
 		return E_FAIL;*/
 
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return E_FAIL;
 	return S_OK;
 }
@@ -330,27 +330,27 @@ HRESULT CMon_R::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CMon_R> CMon_R::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CMon_R> CMon_R::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CMon_R> pInstance(new CMon_R(pDevice, pContext), [](CMon_R* p) {p->Free(); delete p;});
+	shared_ptr<CMon_R> instance(new CMon_R(device, context), [](CMon_R* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CMon_R");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CMon_R::Clone(void* pArg)
+shared_ptr<CGameObject> CMon_R::Clone(void* arg)
 {
-	shared_ptr<CMon_R> pInstance(new CMon_R(*this), [](CMon_R* p) {p->Free(); delete p;});
+	shared_ptr<CMon_R> instance(new CMon_R(*this), [](CMon_R* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CMon_R");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMon_R::Free()

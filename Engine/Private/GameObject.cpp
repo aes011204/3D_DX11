@@ -3,8 +3,8 @@
 #include "Shader.h"
 
 
-CGameObject::CGameObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CEntity( pDevice ,pContext )
+CGameObject::CGameObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CEntity( device ,context )
 {
 	
 }
@@ -21,7 +21,7 @@ HRESULT CGameObject::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CGameObject::Initialize(void* pArg)
+HRESULT CGameObject::Initialize(void* arg)
 {
 	//m_fX = pDesc->fX;
 	//m_fY = pDesc->fY;
@@ -36,7 +36,7 @@ HRESULT CGameObject::Initialize(void* pArg)
 	if (nullptr == m_transformCom)
 		return E_FAIL;
 
-	if (FAILED(m_transformCom->Initialize(pArg)))
+	if (FAILED(m_transformCom->Initialize(arg)))
 		return E_FAIL;
 
 	m_transformCom->SetDefaultNameFromThisType();
@@ -47,23 +47,23 @@ HRESULT CGameObject::Initialize(void* pArg)
 		
 	}
 
-	if (nullptr != pArg)
+	if (nullptr != arg)
 	{
-		GameObjectDesc* pDesc = static_cast<GameObjectDesc*> (pArg);
+		GameObjectDesc* desc = static_cast<GameObjectDesc*> (arg);
 	}
 
 	return S_OK;
 }
 
-void CGameObject::Priority_Update(_float fTimeDelta)
+void CGameObject::Priority_Update(_float timeDelta)
 {
 }
 
-void CGameObject::Update(_float fTimeDelta)
+void CGameObject::Update(_float timeDelta)
 {
 }
 
-void CGameObject::Late_Update(_float fTimeDelta)
+void CGameObject::Late_Update(_float timeDelta)
 {
 }
 

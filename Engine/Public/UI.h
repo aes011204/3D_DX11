@@ -20,7 +20,7 @@ public:
             _bool isNoDetach = false;
     };
 protected:
-    CUI(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI(const CUI& prototype);
 public:
     virtual ~CUI() = default;
@@ -28,10 +28,10 @@ public:
 public:
     // 이건 자식에서 구현 X
     virtual HRESULT Initialize_Prototype();
-    virtual HRESULT Initialize(void* pArg);
+    virtual HRESULT Initialize(void* arg);
     //virtual void Priority_Update(_float fTimeDelta);
-    virtual void Update(_float fTimeDelta,bool& bMouseHold);
-    virtual void Late_Update(_float fTimeDelta);
+    virtual void Update(_float timeDelta,bool& isMouseHold);
+    virtual void Late_Update(_float timeDelta);
     virtual HRESULT Render();
     void Prepare_Render();
 
@@ -41,14 +41,14 @@ public:
 
     void UI_Clear();
 
-    HRESULT Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect);
+    HRESULT Add_Child(shared_ptr<CUI> child, _wstring UITag, _bool keepWorldRect);
 
-    HRESULT Bind_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, ED3DTS eTransformState);
+    HRESULT Bind_ShaderResource(shared_ptr<CShader> shader, const _char* constantName, ED3DTS transformState);
 
     void Set_Zorder(_uint Z);
 
-    weak_ptr<CUI> Find_Children(_wstring strTag);
-    const map<_wstring, weak_ptr<CUI>>& Get_mapChildren() const { return m_mapChildren; }
+    weak_ptr<CUI> Find_Children(_wstring tag);
+    const map<_wstring, weak_ptr<CUI>>& Get_Children() const { return m_mapChildren; }
 
     _bool Get_NO_DETACH() { return m_noDetach; }
 
@@ -66,7 +66,7 @@ public:
 
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
-    virtual HRESULT OnInit(void* pArg) { return S_OK; }; // 생성 될떄
+    virtual HRESULT OnInit(void* arg) { return S_OK; }; // 생성 될떄
     virtual void OnActive() {}; // 불러 올떄마다 해야하는 일 여기서 (정보 새로 셋팅 등) 
     virtual void OnInActive() {}; // 비활 될떄 
     virtual void OnDisabled() {}; //클릭은 가능하고 근대 활성환ㄴ 안된상태           // 보이는데 클릭 안되는거 //돈 없을떄 //  이거는 슬랏에 넣자

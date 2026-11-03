@@ -16,7 +16,7 @@ HRESULT CMapTool::Initialize()
 	return S_OK;
 }
 
-void CMapTool::Update(float fTimeDelta)
+void CMapTool::Update(float timeDelta)
 {
 }
 
@@ -75,14 +75,14 @@ static vector<string> ListJsonFiles(const string& folderPath)
 	return out;
 }
 
-void  CMapTool::Render_SaveLoadPanel(ESaveType eType, const string& folderPath)
+void  CMapTool::Render_SaveLoadPanel(ESaveType type, const string& folderPath)
 {
-	_uint iIdx = ETOI(eType);
+	_uint idx = ETOI(type);
 
 
 	// 최초 1회 로딩
-	if (s_files[iIdx].empty())
-		s_files[iIdx] = ListJsonFiles(folderPath);
+	if (s_files[idx].empty())
+		s_files[idx] = ListJsonFiles(folderPath);
 
 	ImGui::Text("MapData Folder:");
 	ImGui::TextDisabled("%s", folderPath.c_str());
@@ -90,8 +90,8 @@ void  CMapTool::Render_SaveLoadPanel(ESaveType eType, const string& folderPath)
 	// 상단 버튼들
 	if (ImGui::Button("Refresh"))
 	{
-		s_files[iIdx] = ListJsonFiles(folderPath);
-		if (s_selected[iIdx] >= (int)s_files[iIdx].size()) s_selected[iIdx] = -1;
+		s_files[idx] = ListJsonFiles(folderPath);
+		if (s_selected[idx] >= (int)s_files[idx].size()) s_selected[idx] = -1;
 	}
 
 
@@ -103,11 +103,11 @@ void  CMapTool::Render_SaveLoadPanel(ESaveType eType, const string& folderPath)
 
 	if (ImGui::BeginListBox("##MapDataFiles", listSize))
 	{
-		for (int i = 0; i < (int)s_files[iIdx].size(); ++i)
+		for (int i = 0; i < (int)s_files[idx].size(); ++i)
 		{
-			const bool isSelected = (s_selected[iIdx] == i);
-			if (ImGui::Selectable(s_files[iIdx][i].c_str(), isSelected))
-				s_selected[iIdx] = i;
+			const bool isSelected = (s_selected[idx] == i);
+			if (ImGui::Selectable(s_files[idx][i].c_str(), isSelected))
+				s_selected[idx] = i;
 
 			if (isSelected)
 				ImGui::SetItemDefaultFocus();
@@ -116,8 +116,8 @@ void  CMapTool::Render_SaveLoadPanel(ESaveType eType, const string& folderPath)
 	}
 
 	// 선택된 파일 표시
-	string selectedFile = (s_selected[iIdx] >= 0 && s_selected[iIdx] < (int)s_files[iIdx].size())
-		? s_files[iIdx][s_selected[iIdx]] : "";
+	string selectedFile = (s_selected[idx] >= 0 && s_selected[idx] < (int)s_files[idx].size())
+		? s_files[idx][s_selected[idx]] : "";
 	string selectedFullPath = selectedFile.empty() ? "" : (folderPath + selectedFile);
 
 	ImGui::Separator();
@@ -132,10 +132,10 @@ void  CMapTool::Render_SaveLoadPanel(ESaveType eType, const string& folderPath)
 			if (canLoad)
 			{
 				// 2. 기존 맵/UI 데이터 청소
-				CGameInstance::GetInstance()->ClearMap(eType);
+				CGameInstance::GetInstance()->ClearMap(type);
 
 				// 3. 데이터 로드 (이제 Load 함수로 진입합니다!)
-				CGameInstance::GetInstance()->Load(eType, selectedFile);
+				CGameInstance::GetInstance()->Load(type, selectedFile);
 			}
 			else
 			{
@@ -168,15 +168,15 @@ void  CMapTool::Render_SaveLoadPanel(ESaveType eType, const string& folderPath)
 		string fn = EnsureJsonExt(s_newFileName);
 
 		// Save_ObjData는 내부에서 folderPath + fileName 붙이니까 "파일명만" 넘김
-		if (true == (CGameInstance::GetInstance()->Save(eType, fn)))
+		if (true == (CGameInstance::GetInstance()->Save(type, fn)))
 		{
 			// 저장 후 리스트 갱신
-			s_files[iIdx] = ListJsonFiles(folderPath);
+			s_files[idx] = ListJsonFiles(folderPath);
 
 			// 저장한 파일 선택해주기(편의)
-			auto it = find(s_files[iIdx].begin(), s_files[iIdx].end(), fn);
-			if (it != s_files[iIdx].end())
-				s_selected[iIdx] = (int)distance(s_files[iIdx].begin(), it);
+			auto it = find(s_files[idx].begin(), s_files[idx].end(), fn);
+			if (it != s_files[idx].end())
+				s_selected[idx] = (int)distance(s_files[idx].begin(), it);
 		}
 
 	}
@@ -191,9 +191,9 @@ void  CMapTool::Render_SaveLoadPanel(ESaveType eType, const string& folderPath)
 		if (ImGui::Button("Overwrite Selected"))
 		{
 			// 선택된 파일명으로 저장(덮어쓰기)
-			CGameInstance::GetInstance()->Save(eType, selectedFile);
+			CGameInstance::GetInstance()->Save(type, selectedFile);
 			
-			s_files[iIdx] = ListJsonFiles(folderPath);
+			s_files[idx] = ListJsonFiles(folderPath);
 		}
 
 		if (!canOverwrite) ImGui::EndDisabled();

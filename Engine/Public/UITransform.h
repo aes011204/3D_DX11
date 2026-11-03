@@ -23,7 +23,7 @@ public:
         
 
 private:
-    CUITransform(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUITransform(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUITransform(const CUITransform& prototype);
 public:
     virtual ~CUITransform() = default;
@@ -40,15 +40,15 @@ public:
     void SetCanvas(class UICanvas* canvas) { m_canvas = canvas; MarkDirtyRecursive(); }
 
     //레이아웃 Set
-    void SetAnchorPoint(Vector2 _AnchorPoint) { m_anchorPoint = _AnchorPoint; MarkDirtyRecursive(); }
-    void SetPivot(Vector2 _Pivot) { m_pivot = _Pivot; MarkDirtyRecursive(); }
-    void SetSizeDelta(Vector2 _SizeDelta) { m_sizeDelta = _SizeDelta; MarkDirtyRecursive(); }
-    void SetAnchoredPos(Vector2 _AnchoredPos) { m_anchoredPos = _AnchoredPos; MarkDirtyRecursive(); }
-    void SetLocalScale(Vector2 _localScale) { m_localScale = _localScale; MarkDirtyRecursive(); }
-    void SetRotation(_float _fDegree) { m_rotationDegreeView = _fDegree; m_rotationRadian = XMConvertToRadians(_fDegree); MarkDirtyRecursive(); }
+    void SetAnchorPoint(Vector2 anchorPoint) { m_anchorPoint = anchorPoint; MarkDirtyRecursive(); }
+    void SetPivot(Vector2 pivot) { m_pivot = pivot; MarkDirtyRecursive(); }
+    void SetSizeDelta(Vector2 sizeDelta) { m_sizeDelta = sizeDelta; MarkDirtyRecursive(); }
+    void SetAnchoredPos(Vector2 anchoredPos) { m_anchoredPos = anchoredPos; MarkDirtyRecursive(); }
+    void SetLocalScale(Vector2 localScale) { m_localScale = localScale; MarkDirtyRecursive(); }
+    void SetRotation(_float degree) { m_rotationDegreeView = degree; m_rotationRadian = XMConvertToRadians(degree); MarkDirtyRecursive(); }
    // void SetTurn(_float fTimeDelta) { m_LocalScale = _localScale; MarkDirtyRecursive(); }
 
-    _bool SetRotationTo(_float _fTargetDegree, _float fTimeDelta);
+    _bool SetRotationTo(_float targetDegree, _float timeDelta);
 
 
     Rect Get_WorldRect() { UpdateLayoutIfDirty(); return m_worldRect; }
@@ -64,7 +64,7 @@ public:
 
     void OnGui()override;
 
-    HRESULT Bind_ShaderResource(shared_ptr<class CShader> pShaderCom, const _char* pConstantName);
+    HRESULT Bind_ShaderResource(shared_ptr<class CShader> shaderCom, const _char* constantName);
 private:
 
     void MarkDirtyRecursive(); // dirty 처리
@@ -110,8 +110,8 @@ private:
     Rect m_worldRect = {};
     bool m_isDirty = true;
 public:
-    static shared_ptr<CUITransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    virtual shared_ptr<CComponent> Clone(void* pArg) override;
+    static shared_ptr<CUITransform> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    virtual shared_ptr<CComponent> Clone(void* arg) override;
     void Free() override;
 };
 

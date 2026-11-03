@@ -6,43 +6,43 @@ CLayer::CLayer()
 {
 }
 
-HRESULT CLayer::Add_GameObject(shared_ptr<CGameObject> pGameObject)
+HRESULT CLayer::Add_GameObject(shared_ptr<CGameObject> gameObject)
 {
-	if (nullptr == pGameObject)
+	if (nullptr == gameObject)
 	{
 		MSG_BOX("Failed to Add to Layer : GameObject");
 		return E_FAIL;
 	}
 
-	m_gameObject.push_back(pGameObject);
+	m_gameObject.push_back(gameObject);
 
 	return S_OK;
 }
 
-void CLayer::Priority_Update(_float fTimeDelta)
+void CLayer::Priority_Update(_float timeDelta)
 {
-	for (auto& pGameObject : m_gameObject)
+	for (auto& gameObject : m_gameObject)
 	{
-		if (nullptr != pGameObject)
-			pGameObject->Priority_Update(fTimeDelta);
+		if (nullptr != gameObject)
+			gameObject->Priority_Update(timeDelta);
 	}
 }
 
-void CLayer::Update(_float fTimeDelta)
+void CLayer::Update(_float timeDelta)
 {
-	for (auto& pGameObject : m_gameObject)
+	for (auto& gameObject : m_gameObject)
 	{
-		if (nullptr != pGameObject)
-			pGameObject->Update(fTimeDelta);
+		if (nullptr != gameObject)
+			gameObject->Update(timeDelta);
 	}
 }
 
-void CLayer::Late_Update(_float fTimeDelta)
+void CLayer::Late_Update(_float timeDelta)
 {
 	for (auto it = m_gameObject.begin(); it != m_gameObject.end(); )
 	{
 		if(nullptr != *it)
-			(*it)->Late_Update(fTimeDelta);
+			(*it)->Late_Update(timeDelta);
 
 		if ((*it)->Is_PendingDestroy()==true)
 		{
@@ -56,19 +56,19 @@ void CLayer::Late_Update(_float fTimeDelta)
 
 void CLayer::Update_Gui()
 {
-	for (auto& pGameObject : m_gameObject)
+	for (auto& gameObject : m_gameObject)
 	{
-		if (nullptr != pGameObject)
-			pGameObject->OnGui();
+		if (nullptr != gameObject)
+			gameObject->OnGui();
 	}
 }
 
-shared_ptr<CGameObject> CLayer::Get_GameObject(_uint GObjIndex)
+shared_ptr<CGameObject> CLayer::Get_GameObject(_uint gameObjIndex)
 {
 	_uint index = {};
 	for (auto& obj : m_gameObject)
 	{
-		if (index == GObjIndex)
+		if (index == gameObjIndex)
 		{
 			
 			return obj;
@@ -85,8 +85,8 @@ list <shared_ptr<class CGameObject>> CLayer::Get_GameObject()
 
 shared_ptr<CLayer> CLayer::Create()
 {
-	shared_ptr<CLayer> pInstance(new CLayer());
-	return pInstance;
+	shared_ptr<CLayer> instance(new CLayer());
+	return instance;
 }
 
 void CLayer::Free()

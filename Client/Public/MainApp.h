@@ -23,7 +23,7 @@ public:
 
 public:
 	HRESULT Initialize();
-	int Update(_float fTimeDelta);
+	int Update(_float timeDelta);
 
 	HRESULT Render();
 
@@ -36,7 +36,7 @@ public:
 
 private:
 	HRESULT Ready_Fonts();
-	HRESULT Ready_StartLevel(ELevel eStartLevelID);
+	HRESULT Ready_StartLevel(ELevel startLevelID);
 	HRESULT Ready_Prototype_For_Static_Level();
 	HRESULT Ready_Menu_Prototype_For_Static_Level();
 	HRESULT Ready_Sound();

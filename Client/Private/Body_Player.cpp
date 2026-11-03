@@ -3,8 +3,8 @@
 #include "../../Engine/Public/EventBus.h"
 
 
-CBody_Player::CBody_Player(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CPartObject(pDevice, pContext)
+CBody_Player::CBody_Player(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CPartObject(device, context)
 {
 }
 
@@ -18,11 +18,11 @@ HRESULT CBody_Player::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CBody_Player::Initialize(void* pArg)
+HRESULT CBody_Player::Initialize(void* arg)
 {
-	auto pDesc = static_cast<BodyPlayerDesc*>(pArg);
+	auto desc = static_cast<BodyPlayerDesc*>(arg);
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -33,23 +33,23 @@ HRESULT CBody_Player::Initialize(void* pArg)
 
 	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_BoatLight>([this](const Evt_BoatLight& e)
 	{
-			if (e.Light == true) emissivePower = 1;
-			else  emissivePower = 0;
+			if (e.isLightOn == true) m_emissivePower = 1;
+			else  m_emissivePower = 0;
 	});
 
 
-	return CPartObject::Initialize(pArg);
+	return CPartObject::Initialize(arg);
 }
 
-void CBody_Player::Priority_Update(_float fTimeDelta)
+void CBody_Player::Priority_Update(_float timeDelta)
 {
 }
 
-void CBody_Player::Update(_float fTimeDelta)
+void CBody_Player::Update(_float timeDelta)
 {
 }
 
-void CBody_Player::Late_Update(_float fTimeDelta)
+void CBody_Player::Late_Update(_float timeDelta)
 {
 	
 	m_transformCom->Update_WorldMatrix();
@@ -63,9 +63,9 @@ HRESULT CBody_Player::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for (size_t i = 0; i < iNumMesh; i++)
+	for (size_t i = 0; i < numMesh; i++)
 	{
 		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
@@ -108,8 +108,8 @@ HRESULT CBody_Player::Bind_ShaderResources()
 	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return E_FAIL;
 
 
@@ -130,14 +130,14 @@ HRESULT CBody_Player::Bind_ShaderResources()
 	//	return E_FAIL;
 
 	
-	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &emissivePower, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &m_emissivePower, sizeof(_float))))
 		return E_FAIL;
 	return S_OK;
 }
 
-const _float4x4* CBody_Player::Get_SocketBoneMatrix(const _char* pBoneName)
+const _float4x4* CBody_Player::Get_SocketBoneMatrix(const _char* boneName)
 {
-	return m_modelCom->Get_BoneMatrixPtr(pBoneName);
+	return m_modelCom->Get_BoneMatrixPtr(boneName);
 }
 
 HRESULT CBody_Player::Ready_Components()
@@ -154,27 +154,27 @@ HRESULT CBody_Player::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CBody_Player> CBody_Player::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CBody_Player> CBody_Player::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CBody_Player> pInstance(new CBody_Player(pDevice, pContext), [](CBody_Player* p) {p->Free(); delete p; });
+	shared_ptr<CBody_Player> instance(new CBody_Player(device, context), [](CBody_Player* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CBody_Player");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CBody_Player::Clone(void* pArg)
+shared_ptr<CGameObject> CBody_Player::Clone(void* arg)
 {
-	shared_ptr<CBody_Player> pInstance(new CBody_Player(*this), [](CBody_Player* p) {p->Free(); delete p; });
+	shared_ptr<CBody_Player> instance(new CBody_Player(*this), [](CBody_Player* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CBody_Player");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CBody_Player::Free()

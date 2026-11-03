@@ -5,8 +5,8 @@
 #include "PlayerBoat.h"
 
 
-CMonster::CMonster(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CMonster::CMonster(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -20,9 +20,9 @@ HRESULT CMonster::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMonster::Initialize(void* pArg)
+HRESULT CMonster::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -49,13 +49,13 @@ HRESULT CMonster::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CMonster::Priority_Update(_float fTimeDelta)
+void CMonster::Priority_Update(_float timeDelta)
 {
 }
 
-void CMonster::Update(_float fTimeDelta)
+void CMonster::Update(_float timeDelta)
 {
-	m_modelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(timeDelta);
 
 
 	if(m_modelCom->Get_IsFinishAnim() == true)
@@ -112,7 +112,7 @@ void CMonster::Update(_float fTimeDelta)
 	
 }
 
-void CMonster::Late_Update(_float fTimeDelta)
+void CMonster::Late_Update(_float timeDelta)
 {
 
 
@@ -125,9 +125,9 @@ HRESULT CMonster::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
 		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
@@ -246,8 +246,8 @@ HRESULT CMonster::Bind_ShaderResources()
 		return E_FAIL;*/
 
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return E_FAIL;
 		
 	float emissive =0.f;
@@ -277,25 +277,25 @@ HRESULT CMonster::Ready_Components()
 		return E_FAIL;
 	m_gameInstance.lock()->Add_Collider(m_colliderCom);
 
-	CBounding_Sphere::BoundingSphereDesc		SPhereDesc{};
+	CBounding_Sphere::BoundingSphereDesc		sphereDesc{};
 	
-	SPhereDesc.radius = 2.f;
-	SPhereDesc.center = _float3(0.f, 2.f,0.f);
-	SPhereDesc.myLayer = ECollisionLayer::MONSTERATT;
-	SPhereDesc.otherMask = ECollisionLayer::PLAYER;
+	sphereDesc.radius = 2.f;
+	sphereDesc.center = _float3(0.f, 2.f,0.f);
+	sphereDesc.myLayer = ECollisionLayer::MONSTERATT;
+	sphereDesc.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Hand_Collider_1"), &m_handCollider1 , &SPhereDesc)))
+		TEXT("Com_Hand_Collider_1"), &m_handCollider1 , &sphereDesc)))
 		return E_FAIL;
 	m_gameInstance.lock()->Add_Collider(m_handCollider1);
 
 
-	CBounding_Sphere::BoundingSphereDesc		SPhereDesc1{};
-	SPhereDesc1.radius = 2.f;
-	SPhereDesc1.center = _float3(0.f, -2.f, 0.f);
-	SPhereDesc1.myLayer = ECollisionLayer::MONSTERATT;
-	SPhereDesc1.otherMask = ECollisionLayer::PLAYER;
+	CBounding_Sphere::BoundingSphereDesc		sphereDesc1{};
+	sphereDesc1.radius = 2.f;
+	sphereDesc1.center = _float3(0.f, -2.f, 0.f);
+	sphereDesc1.myLayer = ECollisionLayer::MONSTERATT;
+	sphereDesc1.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Hand_Collider_2"), &m_handCollider2, &SPhereDesc1)))
+		TEXT("Com_Hand_Collider_2"), &m_handCollider2, &sphereDesc1)))
 		return E_FAIL;
 	m_gameInstance.lock()->Add_Collider(m_handCollider2);
 
@@ -304,27 +304,27 @@ HRESULT CMonster::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CMonster> CMonster::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CMonster> CMonster::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CMonster> pInstance(new CMonster(pDevice, pContext), [](CMonster* p) {p->Free(); delete p;});
+	shared_ptr<CMonster> instance(new CMonster(device, context), [](CMonster* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CMonster");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CMonster::Clone(void* pArg)
+shared_ptr<CGameObject> CMonster::Clone(void* arg)
 {
-	shared_ptr<CMonster> pInstance(new CMonster(*this), [](CMonster* p) {p->Free(); delete p;});
+	shared_ptr<CMonster> instance(new CMonster(*this), [](CMonster* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CMonster");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMonster::Free()

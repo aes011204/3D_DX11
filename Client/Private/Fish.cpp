@@ -7,8 +7,8 @@
 #include "MiniGame_Logic.h"
 #include "WaterEff.h"
 
-CFish::CFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CFish::CFish(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -22,24 +22,24 @@ HRESULT CFish::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CFish::Initialize(void* pArg)
+HRESULT CFish::Initialize(void* arg)
 {
 
-	FishDesc* fishDesc = static_cast<FishDesc*>(pArg);
+	FishDesc* fishDesc = static_cast<FishDesc*>(arg);
 
-	fish_DefID = fishDesc->fish_DefID;
-	m_initFishCount = fishDesc->FishCount;
-	m_miniGameType = fishDesc->MiniGameType;
+	m_fishDefID = fishDesc->fishDefID;
+	m_initFishCount = fishDesc->fishCount;
+	m_miniGameType = fishDesc->miniGameType;
 
-	m_fishes.resize(fishDesc->FishCount);
-	for(int i=0; i < fishDesc->FishCount ; i++)
+	m_fishes.resize(fishDesc->fishCount);
+	for(int i=0; i < fishDesc->fishCount ; i++)
 	{
-		m_fishes[i].Height = m_gameInstance.lock()->Random(fishDesc->Height.x, fishDesc->Height.y);
-		m_fishes[i].Size = m_gameInstance.lock()->Random(fishDesc->Size.x, fishDesc->Size.y);
-		m_fishes[i].Speed = m_gameInstance.lock()->Random(fishDesc->Speed.x, fishDesc->Speed.y);
-		m_fishes[i].Radius = m_gameInstance.lock()->Random(fishDesc->Radius.x, fishDesc->Radius.y);
-		m_fishes[i].Alpha = m_gameInstance.lock()->Random(fishDesc->AlphaTime.x, fishDesc->AlphaTime.y);
-		m_fishes[i].InitPosRad = m_gameInstance.lock()->Random(XMConvertToRadians(0.f), XMConvertToRadians(179.f));
+		m_fishes[i].height = m_gameInstance.lock()->Random(fishDesc->height.x, fishDesc->height.y);
+		m_fishes[i].size = m_gameInstance.lock()->Random(fishDesc->size.x, fishDesc->size.y);
+		m_fishes[i].speed = m_gameInstance.lock()->Random(fishDesc->speed.x, fishDesc->speed.y);
+		m_fishes[i].radius = m_gameInstance.lock()->Random(fishDesc->radius.x, fishDesc->radius.y);
+		m_fishes[i].alpha = m_gameInstance.lock()->Random(fishDesc->alphaTime.x, fishDesc->alphaTime.y);
+		m_fishes[i].initPosRad = m_gameInstance.lock()->Random(XMConvertToRadians(0.f), XMConvertToRadians(179.f));
 
 	}
 
@@ -56,10 +56,10 @@ HRESULT CFish::Initialize(void* pArg)
 
 	CWaterEff::EffDesc eff = {};
 	eff.type = EEffType::FISH;
-	eff.Target = static_pointer_cast<CFish>(shared_from_this());
+	eff.target = static_pointer_cast<CFish>(shared_from_this());
 
-	auto Eff = ((m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(ELevel::GAMEPLAY), L"Layer_Effect", &eff)));
-	if (Eff == nullptr)
+	auto effObj = ((m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(ELevel::GAMEPLAY), L"Layer_Effect", &eff)));
+	if (effObj == nullptr)
 		return E_FAIL;
 
 
@@ -68,11 +68,11 @@ HRESULT CFish::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CFish::Priority_Update(_float fTimeDelta)
+void CFish::Priority_Update(_float timeDelta)
 {
 }
 
-void CFish::Update(_float fTimeDelta)
+void CFish::Update(_float timeDelta)
 {
 	 //TODO:: 물고기 갯수 줄어들어야 함
 
@@ -86,7 +86,7 @@ void CFish::Update(_float fTimeDelta)
 
 	_matrix pivot  = XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
 
-	m_acc += fTimeDelta;
+	m_acc += timeDelta;
 
 	for(int i =0; i < m_initFishCount; i++)
 	{
@@ -96,19 +96,19 @@ void CFish::Update(_float fTimeDelta)
 
 		_matrix mat = XMMatrixIdentity();
 
-		_matrix scale = XMMatrixScaling(1.f * m_fishes[i].Size, 1.f * m_fishes[i].Size, 1.f * m_fishes[i].Size);
+		_matrix scale = XMMatrixScaling(1.f * m_fishes[i].size, 1.f * m_fishes[i].size, 1.f * m_fishes[i].size);
 
 
-		_matrix RotY = XMMatrixRotationY((m_fishes[i].Speed * m_acc + m_fishes[i].InitPosRad)+XMConvertToRadians(90.f));
+		_matrix rotY = XMMatrixRotationY((m_fishes[i].speed * m_acc + m_fishes[i].initPosRad)+XMConvertToRadians(90.f));
 
 
 
-		float X = m_fishes[i].Radius * sin(m_fishes[i].Speed * m_acc + m_fishes[i].InitPosRad);
-		float Z = m_fishes[i].Radius * cos(m_fishes[i].Speed * m_acc + m_fishes[i].InitPosRad);
+		float X = m_fishes[i].radius * sin(m_fishes[i].speed * m_acc + m_fishes[i].initPosRad);
+		float Z = m_fishes[i].radius * cos(m_fishes[i].speed * m_acc + m_fishes[i].initPosRad);
 
-		_matrix Trans = XMMatrixTranslation(X, m_fishes[i].Height, Z);
+		_matrix trans = XMMatrixTranslation(X, m_fishes[i].height, Z);
 
-		XMStoreFloat4x4(&m_fishes[i].FishMatrices, scale * RotY * Trans * pivot);
+		XMStoreFloat4x4(&m_fishes[i].fishMatrices, scale * rotY * trans * pivot);
 	}
 
 
@@ -116,7 +116,7 @@ void CFish::Update(_float fTimeDelta)
 
 	if(m_miniGameLogic !=nullptr)
 	{
-		m_miniGameLogic->Update(fTimeDelta);
+		m_miniGameLogic->Update(timeDelta);
 
 		if (GetCurFishCount() == 0)
 			Mark_Destroy();
@@ -130,7 +130,7 @@ void CFish::Update(_float fTimeDelta)
 	m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
-void CFish::Late_Update(_float fTimeDelta)
+void CFish::Late_Update(_float timeDelta)
 {
 
 
@@ -153,11 +153,11 @@ HRESULT CFish::Render()
 
 		//if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
 		//return E_FAIL;
-		if (FAILED(m_shaderCom->Bind_Matrix("g_WorldMatrix", &m_fishes[i].FishMatrices)))
+		if (FAILED(m_shaderCom->Bind_Matrix("g_WorldMatrix", &m_fishes[i].fishMatrices)))
 			return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
-		for (size_t i = 0; i < iNumMesh; i++)
+	size_t numMesh = m_modelCom->Get_NumMeshes();
+		for (size_t i = 0; i < numMesh; i++)
 		{
 			m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 			////m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
@@ -297,8 +297,8 @@ HRESULT CFish::Bind_ShaderResources()
 
 	////
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 
 
 	return S_OK;
@@ -331,27 +331,27 @@ HRESULT CFish::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CFish> CFish::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CFish> CFish::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CFish> pInstance(new CFish(pDevice, pContext), [](CFish* p) {p->Free(); delete p; });
+	shared_ptr<CFish> instance(new CFish(device, context), [](CFish* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CFish");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CFish::Clone(void* pArg)
+shared_ptr<CGameObject> CFish::Clone(void* arg)
 {
-	shared_ptr<CFish> pInstance(new CFish(*this), [](CFish* p) {p->Free(); delete p; });
+	shared_ptr<CFish> instance(new CFish(*this), [](CFish* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CFish");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CFish::Free()

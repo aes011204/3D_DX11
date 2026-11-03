@@ -27,7 +27,7 @@ public:
     void Prepare_Render();
     void Render(); // 안쓸듯 이거는 렌더러에서 하니까
 
-    void Push(EUILayer layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);
+    void Push(EUILayer layer, wstring name, _bool isOnActive = true, void* arg = nullptr);
     void Pop(EUILayer layer,wstring type); // 레이어에서 넣얶다 뻇다하는건 안씀 
 
     shared_ptr<CUI> Find_UI_InCurLevel(EUILayer layer, wstring type);

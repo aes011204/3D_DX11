@@ -26,8 +26,8 @@
 #include "WaterEff.h"
 
 
-CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CLevel{ pDevice, pContext }
+CLevel_GamePlay::CLevel_GamePlay(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CLevel{ device, context }
 {
 }
 
@@ -36,11 +36,11 @@ HRESULT CLevel_GamePlay::Initialize()
 
 
 	CSky_Controller::GetInstance()->Initialize(m_device, m_context);
-	auto Sky = CSky_Controller::GetInstance();
-	if (Sky != nullptr)
+	auto sky = CSky_Controller::GetInstance();
+	if (sky != nullptr)
 	{
 		
-		m_gameInstance.lock()->Push_ManagerClass(L"SKY_CONTROLLER", Sky.get());
+		m_gameInstance.lock()->Push_ManagerClass(L"SKY_CONTROLLER", sky.get());
 	}
 
 	//CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "senechangedII");
@@ -89,7 +89,7 @@ HRESULT CLevel_GamePlay::Initialize()
 HRESULT CLevel_GamePlay::Post_Initialize()
 {
 	m_gameInstance.lock()->UI_Push(EUILayer::WINDOW, L"TabContainer", false , nullptr);
-	m_tabUi = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
+	m_tabUI = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer");
 
 	m_gameInstance.lock()->UI_Push(EUILayer::WINDOW, L"repairShop", false, nullptr);
 
@@ -100,12 +100,12 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 
 
 	m_gameInstance.lock()->UI_Push(EUILayer::WINDOW, L"NPC_Panel", false, nullptr);
-	m_npc = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
+	m_NPC = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"NPC_Panel");
 
 	m_gameInstance.lock()->UI_Push(EUILayer::OVERRIDE, L"ToolTip", false, nullptr);
-	auto ToolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
-	auto ui = dynamic_pointer_cast<CItemInfo>(ToolTip);
-	ui->UI_InActive();
+	auto toolTip = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"ToolTip");
+	auto UI = dynamic_pointer_cast<CItemInfo>(toolTip);
+	UI->UI_InActive();
 
 	m_gameInstance.lock()->UI_Push(EUILayer::OVERRIDE, L"HoldItem", false, nullptr);
 	m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
@@ -126,7 +126,7 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 
 	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>([this](const Evt_FishingData e)
 		{
-			m_miniGameController->Start_Fishing(e.Fish, m_invenCtrl, e.RodSpeed);
+			m_miniGameController->Start_Fishing(e.fish, m_invenCtrl, e.rodSpeed);
 		});
 
 
@@ -141,12 +141,12 @@ HRESULT CLevel_GamePlay::Post_Initialize()
 	return S_OK;
 }
 
-void CLevel_GamePlay::Update(_float fTimeDelta)
+void CLevel_GamePlay::Update(_float timeDelta)
 {
-	auto pGameInstance = m_gameInstance.lock();
+	auto gameInstance = m_gameInstance.lock();
 	if (GetKeyState(VK_NUMPAD1) & 0x8000)
 	{
-		if (FAILED(pGameInstance->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, ELevel::LOGO))))
+		if (FAILED(gameInstance->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, ELevel::LOGO))))
 			return;
 	}
 
@@ -159,7 +159,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		m_isFlag = true;
 	}
 
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
+	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_RETURN) == true)
 	{
 		CUI_Controller::GetInstance()->Get_LoadingUI()->m_behavior.push_back(
 			make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .5f, false, _float4{ 0.f,0.f,0.f,0.f }));
@@ -171,10 +171,10 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 		m_gameInstance.lock()->Play_Loop(L"GM_BGM_Theme");
 		m_gameInstance.lock()->Play_Loop(L"GM_BGM_Night");
 	}
-	_bool CurIsNight = m_gameInstance.lock()->Get_IsNight();
+	_bool curIsNight = m_gameInstance.lock()->Get_IsNight();
 	
 
-	if(m_prevIsNight != CurIsNight)
+	if(m_prevIsNight != curIsNight)
 	{
 		if(m_gameInstance.lock()->Get_IsNight() == true)
 		{
@@ -189,27 +189,27 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
 		}
 
-		m_prevIsNight = CurIsNight;
+		m_prevIsNight = curIsNight;
 	}
 	
 
 
 
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_I))
+	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_I))
 	{
-		if (nullptr == (pGameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_R"),
+		if (nullptr == (gameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_R"),
 			ETOI(ELevel::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_P))
+	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_P))
 	{
-		if (nullptr == (pGameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
+		if (nullptr == (gameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Tentacle"),
 			ETOI(ELevel::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_O))
+	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_O))
 	{
-		if (nullptr == (pGameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
+		if (nullptr == (gameInstance->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_MonkFish"),
 			ETOI(ELevel::GAMEPLAY), L"Layer_Moster")))
 			return ;
 	}
@@ -221,7 +221,7 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 	//		return;
 	//}
 
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_U))
+	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_U))
 	{
 		if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Snow"),
 			ETOI(ELevel::GAMEPLAY), L"Layer_Effect")))
@@ -235,17 +235,17 @@ void CLevel_GamePlay::Update(_float fTimeDelta)
 
 
 
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_M))
+	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_M))
 	{
 		dynamic_pointer_cast<CUI_Time>(m_time)->UI_Active();
 	}
-	if (pGameInstance->Get_DInput_Manger()->KeyDown(DIK_N))
+	if (gameInstance->Get_DInput_Manger()->KeyDown(DIK_N))
 	{
 		dynamic_pointer_cast<CUI_Time>(m_time)->UI_InActive();
 	}
 
-	m_invenCtrl->Update(fTimeDelta);
-	CSky_Controller::GetInstance()->Update(fTimeDelta);
+	m_invenCtrl->Update(timeDelta);
+	CSky_Controller::GetInstance()->Update(timeDelta);
 
 }
 
@@ -300,23 +300,23 @@ HRESULT CLevel_GamePlay::Ready_Lights()
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _wstring& strLayerTag)
+HRESULT CLevel_GamePlay::Ready_Layer_BackGround(const _wstring& layerTag)
 {
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Terrain"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag)))
+		ETOI(ELevel::GAMEPLAY), layerTag)))
 		return E_FAIL;
 
 
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Sky"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag )))
+		ETOI(ELevel::GAMEPLAY), layerTag )))
 		return E_FAIL;
 
 
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
+HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& layerTag)
 {
 
 	CCamera_Play::CameraPlayDesc CLCamDesc = {};
@@ -331,13 +331,13 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	CLCamDesc.mouseSensor = 0.05f;
 	CLCamDesc.target = m_player;
 
-	ClientCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Camera_Play"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &CLCamDesc));
+	m_clientCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Camera_Play"),
+		ETOI(ELevel::GAMEPLAY), layerTag, &CLCamDesc));
 
-	if (nullptr == ClientCamera)
+	if (nullptr == m_clientCamera)
 		return E_FAIL;
 	//ClientCamera->Get_TransformCom()->Set_RotationDegree(_float3{ -12.44f,-1.98f, 0.f });
-	m_gameInstance.lock()->Add_Camera(ETOI(ELevel::GAMEPLAY), L"Client_CAM", ClientCamera);
+	m_gameInstance.lock()->Add_Camera(ETOI(ELevel::GAMEPLAY), L"Client_CAM", m_clientCamera);
 
 
 
@@ -353,7 +353,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	FRCamDesc.mouseSensor = 0.01f;
 
 	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &FRCamDesc));
+		ETOI(ELevel::GAMEPLAY), layerTag, &FRCamDesc));
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
@@ -365,10 +365,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_Camera(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
+HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& layerTag)
 {
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Monster"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag)))
+		ETOI(ELevel::GAMEPLAY), layerTag)))
 		return E_FAIL;
 
 
@@ -378,7 +378,7 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
 
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Box"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag)))
+		ETOI(ELevel::GAMEPLAY), layerTag)))
 		return E_FAIL;
 
 
@@ -388,11 +388,11 @@ HRESULT CLevel_GamePlay::Ready_Layer_Monster(const _wstring& strLayerTag)
 	return S_OK;
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Player(const _wstring& strLayerTag)
+HRESULT CLevel_GamePlay::Ready_Layer_Player(const _wstring& layerTag)
 {
 
 	m_player = m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_PlayerBoat"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag);
+		ETOI(ELevel::GAMEPLAY), layerTag);
 	if (nullptr == m_player.lock())
 		return E_FAIL;
 
@@ -405,57 +405,57 @@ HRESULT CLevel_GamePlay::Ready_Layer_Player(const _wstring& strLayerTag)
 
 }
 
-HRESULT CLevel_GamePlay::Ready_Layer_Wave(const _wstring& strLayerTag)
+HRESULT CLevel_GamePlay::Ready_Layer_Wave(const _wstring& layerTag)
 {
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Sea"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag)))
+		ETOI(ELevel::GAMEPLAY), layerTag)))
 		return E_FAIL;
 	return S_OK;
 
 }
-HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
+HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& layerTag)
 {
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Village"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag)))
+		ETOI(ELevel::GAMEPLAY), layerTag)))
 		return E_FAIL;
 	
 
 
 	CFish::FishDesc fishDesc = {};
 
-	fishDesc.fish_DefID = 1001;
-	fishDesc.FishCount = 4;
-	fishDesc.Size = _float2(0.1f, .2f);
-	fishDesc.Height = _float2(-.1f, .1f);
-	fishDesc.Radius = _float2(1.f, 2.f);
-	fishDesc.AlphaTime = _float2(1.f, 2.f);
-	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = EMiniGameType::BASIC_CIRCLE;
+	fishDesc.fishDefID = 1001;
+	fishDesc.fishCount = 4;
+	fishDesc.size = _float2(0.1f, .2f);
+	fishDesc.height = _float2(-.1f, .1f);
+	fishDesc.radius = _float2(1.f, 2.f);
+	fishDesc.alphaTime = _float2(1.f, 2.f);
+	fishDesc.speed = _float2(1.f, 2.f);
+	fishDesc.miniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	fishDesc.position = _float3(30.f, -1.f, 5.f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc)))
 		return E_FAIL;
 
 
 	//
 	CFish::FishDesc fishDesc2 = {};
 
-	fishDesc2.fish_DefID = 1002;
-	fishDesc2.FishCount = 3;
-	fishDesc2.Size = _float2(0.1f, .2f);
-	fishDesc2.Height = _float2(-.1f, .1f);
-	fishDesc2.Radius = _float2(1.f, 2.f);
-	fishDesc2.AlphaTime = _float2(1.f, 2.f);
-	fishDesc2.Speed = _float2(1.f, 2.f);
-	fishDesc2.MiniGameType = EMiniGameType::DIAMOND;
+	fishDesc2.fishDefID = 1002;
+	fishDesc2.fishCount = 3;
+	fishDesc2.size = _float2(0.1f, .2f);
+	fishDesc2.height = _float2(-.1f, .1f);
+	fishDesc2.radius = _float2(1.f, 2.f);
+	fishDesc2.alphaTime = _float2(1.f, 2.f);
+	fishDesc2.speed = _float2(1.f, 2.f);
+	fishDesc2.miniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc2.position = _float3(40.f, -1.f, 5.f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc2)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc2)))
 		return E_FAIL;
 
 
@@ -463,19 +463,19 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 
      fishDesc = {};
 
-	fishDesc.fish_DefID = 1001;
-	fishDesc.FishCount = 2;
-	fishDesc.Size = _float2(0.1f, .2f);
-	fishDesc.Height = _float2(-.1f, .1f);
-	fishDesc.Radius = _float2(1.f, 2.f);
-	fishDesc.AlphaTime = _float2(1.f, 2.f);
-	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = EMiniGameType::BASIC_CIRCLE;
+	fishDesc.fishDefID = 1001;
+	fishDesc.fishCount = 2;
+	fishDesc.size = _float2(0.1f, .2f);
+	fishDesc.height = _float2(-.1f, .1f);
+	fishDesc.radius = _float2(1.f, 2.f);
+	fishDesc.alphaTime = _float2(1.f, 2.f);
+	fishDesc.speed = _float2(1.f, 2.f);
+	fishDesc.miniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	fishDesc.position = _float3(33.126f, -1.f, -2.6f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc)))
 		return E_FAIL;
 
 
@@ -483,74 +483,74 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 
 	fishDesc = {};
 
-	fishDesc.fish_DefID = 1002;
-	fishDesc.FishCount = 2;
-	fishDesc.Size = _float2(0.1f, .2f);
-	fishDesc.Height = _float2(-.1f, .1f);
-	fishDesc.Radius = _float2(1.f, 2.f);
-	fishDesc.AlphaTime = _float2(1.f, 2.f);
-	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = EMiniGameType::DIAMOND;
+	fishDesc.fishDefID = 1002;
+	fishDesc.fishCount = 2;
+	fishDesc.size = _float2(0.1f, .2f);
+	fishDesc.height = _float2(-.1f, .1f);
+	fishDesc.radius = _float2(1.f, 2.f);
+	fishDesc.alphaTime = _float2(1.f, 2.f);
+	fishDesc.speed = _float2(1.f, 2.f);
+	fishDesc.miniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc.position = _float3(54.6, -1.f, -3.9f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc)))
 		return E_FAIL;
 
 
 	fishDesc = {};
 
-	fishDesc.fish_DefID = 1002;
-	fishDesc.FishCount = 2;
-	fishDesc.Size = _float2(0.1f, .2f);
-	fishDesc.Height = _float2(-.1f, .1f);
-	fishDesc.Radius = _float2(1.f, 2.f);
-	fishDesc.AlphaTime = _float2(1.f, 2.f);
-	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = EMiniGameType::DIAMOND;
+	fishDesc.fishDefID = 1002;
+	fishDesc.fishCount = 2;
+	fishDesc.size = _float2(0.1f, .2f);
+	fishDesc.height = _float2(-.1f, .1f);
+	fishDesc.radius = _float2(1.f, 2.f);
+	fishDesc.alphaTime = _float2(1.f, 2.f);
+	fishDesc.speed = _float2(1.f, 2.f);
+	fishDesc.miniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc.position = _float3(70.6, -1.f, -12.9f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc)))
 		return E_FAIL;
 
 
 
 	CFish::FishDesc fishDesc3 = {};
 
-	fishDesc3.fish_DefID = 1003;
-	fishDesc3.FishCount = 2;
-	fishDesc3.Size = _float2(0.3f, .4f);
-	fishDesc3.Height = _float2(-.1f, .1f);
-	fishDesc3.Radius = _float2(1.5f, 2.f);
-	fishDesc3.AlphaTime = _float2(1.f, 2.f);
-	fishDesc3.Speed = _float2(1.f, 2.f);
-	fishDesc3.MiniGameType = EMiniGameType::BASIC_CIRCLE;
+	fishDesc3.fishDefID = 1003;
+	fishDesc3.fishCount = 2;
+	fishDesc3.size = _float2(0.3f, .4f);
+	fishDesc3.height = _float2(-.1f, .1f);
+	fishDesc3.radius = _float2(1.5f, 2.f);
+	fishDesc3.alphaTime = _float2(1.f, 2.f);
+	fishDesc3.speed = _float2(1.f, 2.f);
+	fishDesc3.miniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	fishDesc3.position = _float3(57.9f, -1.f, 9.5f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc3)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc3)))
 		return E_FAIL;
 
 
 	CFish::FishDesc fishDesc4 = {};
 
-	fishDesc4.fish_DefID = 1004;
-	fishDesc4.FishCount = 2;
-	fishDesc4.Size = _float2(0.3f, .5f);
-	fishDesc4.Height = _float2(-.1f, .1f);
-	fishDesc4.Radius = _float2(1.5f, 2.f);
-	fishDesc4.AlphaTime = _float2(1.f, 2.f);
-	fishDesc4.Speed = _float2(1.f, 2.f);
-	fishDesc4.MiniGameType = EMiniGameType::DIAMOND;
+	fishDesc4.fishDefID = 1004;
+	fishDesc4.fishCount = 2;
+	fishDesc4.size = _float2(0.3f, .5f);
+	fishDesc4.height = _float2(-.1f, .1f);
+	fishDesc4.radius = _float2(1.5f, 2.f);
+	fishDesc4.alphaTime = _float2(1.f, 2.f);
+	fishDesc4.speed = _float2(1.f, 2.f);
+	fishDesc4.miniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc4.position = _float3(79.f, -1.f, -3.f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc4)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc4)))
 		return E_FAIL;
 
 
@@ -559,37 +559,37 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 
 	fishDesc = {};
 
-	fishDesc.fish_DefID = 1003;
-	fishDesc.FishCount = 1;
-	fishDesc.Size = _float2(0.1f, .2f);
-	fishDesc.Height = _float2(-.1f, .1f);
-	fishDesc.Radius = _float2(1.f, 2.f);
-	fishDesc.AlphaTime = _float2(1.f, 2.f);
-	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = EMiniGameType::BASIC_CIRCLE;
+	fishDesc.fishDefID = 1003;
+	fishDesc.fishCount = 1;
+	fishDesc.size = _float2(0.1f, .2f);
+	fishDesc.height = _float2(-.1f, .1f);
+	fishDesc.radius = _float2(1.f, 2.f);
+	fishDesc.alphaTime = _float2(1.f, 2.f);
+	fishDesc.speed = _float2(1.f, 2.f);
+	fishDesc.miniGameType = EMiniGameType::BASIC_CIRCLE;
 
 	fishDesc.position = _float3(100.f, -1.f, -17.f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc)))
 		return E_FAIL;
 
 
 	fishDesc = {};
 
-	fishDesc.fish_DefID = 1004;
-	fishDesc.FishCount = 1;
-	fishDesc.Size = _float2(0.1f, .2f);
-	fishDesc.Height = _float2(-.1f, .1f);
-	fishDesc.Radius = _float2(1.f, 2.f);
-	fishDesc.AlphaTime = _float2(1.f, 2.f);
-	fishDesc.Speed = _float2(1.f, 2.f);
-	fishDesc.MiniGameType = EMiniGameType::DIAMOND;
+	fishDesc.fishDefID = 1004;
+	fishDesc.fishCount = 1;
+	fishDesc.size = _float2(0.1f, .2f);
+	fishDesc.height = _float2(-.1f, .1f);
+	fishDesc.radius = _float2(1.f, 2.f);
+	fishDesc.alphaTime = _float2(1.f, 2.f);
+	fishDesc.speed = _float2(1.f, 2.f);
+	fishDesc.miniGameType = EMiniGameType::DIAMOND;
 
 	fishDesc.position = _float3(121.5f, -1.f, 12.f);
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Fish"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag, &fishDesc)))
+		ETOI(ELevel::GAMEPLAY), layerTag, &fishDesc)))
 		return E_FAIL;
 
 
@@ -609,14 +609,14 @@ HRESULT CLevel_GamePlay::Ready_Layer_ETC(const _wstring& strLayerTag)
 
 
 	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_ColliderObject"),
-		ETOI(ELevel::GAMEPLAY), strLayerTag)))
+		ETOI(ELevel::GAMEPLAY), layerTag)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
 
-HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& strLayerTag)
+HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& layerTag)
 {
 
 	//if (nullptr == ((m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Explosion"),
@@ -625,10 +625,10 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& strLayerTag)
 
 	CWaterEff::EffDesc eff = {};
 	eff.type = EEffType::PLAYER;
-	eff.Target = dynamic_pointer_cast<CPlayerBoat>(m_player.lock());
+	eff.target = dynamic_pointer_cast<CPlayerBoat>(m_player.lock());
 
-	auto Eff = ((m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(ELevel::GAMEPLAY), strLayerTag,& eff)));
-	if (Eff==nullptr)
+	auto effObj = ((m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_WaterEff"), ETOI(ELevel::GAMEPLAY), layerTag,& eff)));
+	if (effObj==nullptr)
 		return E_FAIL;
 	
 	return  S_OK;
@@ -636,15 +636,15 @@ HRESULT CLevel_GamePlay::Ready_Layer_Effect(const _wstring& strLayerTag)
 
 
 
-shared_ptr<CLevel_GamePlay> CLevel_GamePlay::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CLevel_GamePlay> CLevel_GamePlay::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CLevel_GamePlay> pInstance(new CLevel_GamePlay(pDevice, pContext), [](CLevel_GamePlay* p) {p->Free();delete(p);});
+	shared_ptr<CLevel_GamePlay> instance(new CLevel_GamePlay(device, context), [](CLevel_GamePlay* p) {p->Free();delete(p);});
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CLevel_GamePlay");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CLevel_GamePlay::Free()

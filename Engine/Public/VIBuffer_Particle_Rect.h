@@ -16,18 +16,18 @@ public:
 	};
 
 protected:
-	CVIBuffer_Particle_Rect(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CVIBuffer_Particle_Rect(const CVIBuffer_Particle_Rect& Prototype);
+	CVIBuffer_Particle_Rect(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CVIBuffer_Particle_Rect(const CVIBuffer_Particle_Rect& prototype);
 public:
 	virtual ~CVIBuffer_Particle_Rect() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const CVIBuffer_Instance::InstanceDesc* pParticleDesc);
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize_Prototype(const CVIBuffer_Instance::InstanceDesc* particleDesc);
+	virtual HRESULT Initialize(void* arg);
 
 public:
-	void Drop(_float fTimeDelta);
-	void Spread(_float fTimeDelta);
+	void Drop(_float timeDelta);
+	void Spread(_float timeDelta);
 protected:
 
 protected:
@@ -36,8 +36,8 @@ protected:
 	_bool m_isLoop = { false };
 
 public:
-	static shared_ptr<CVIBuffer_Particle_Rect> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const CVIBuffer_Instance::InstanceDesc* pParticleDesc);
-	virtual shared_ptr<CComponent> Clone(void* pArg);
+	static shared_ptr<CVIBuffer_Particle_Rect> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, const CVIBuffer_Instance::InstanceDesc* particleDesc);
+	virtual shared_ptr<CComponent> Clone(void* arg);
 	virtual void Free() override;
 
 

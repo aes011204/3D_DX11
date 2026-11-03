@@ -20,14 +20,14 @@ public:
         EFontAlign fontAlign = EFontAlign::CENTER;
     };
 protected:
-    CUIText(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUIText(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUIText(const CUIText& prototype);
 public:
     ~CUIText() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -44,7 +44,7 @@ public:
 
     void Set_Text(const _wstring& text) {m_text = text; m_isChangeText = true; m_textSize = m_gameInstance.lock()->Measure_String(m_fontTag, m_text.c_str());
     }
-    void Set_TextColor(const _float4 TextColor) { m_textColor = TextColor; }
+    void Set_TextColor(const _float4 textColor) { m_textColor = textColor; }
     /// <IMGUI>
     virtual void OnGui() override;
 
@@ -62,7 +62,7 @@ private:
 protected:
 
 public:
-    static shared_ptr<CUIText> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUIText> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
     void Free() override;
 };

@@ -2,8 +2,8 @@
 #include "GameInstance.h"
 #include "Sky_Controller.h"
 
-CSky::CSky(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CGameObject(pDevice, pContext)
+CSky::CSky(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CGameObject(device, context)
 {
 }
 
@@ -17,9 +17,9 @@ HRESULT CSky::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CSky::Initialize(void* pArg)
+HRESULT CSky::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -28,18 +28,18 @@ HRESULT CSky::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CSky::Priority_Update(_float fTimeDelta)
+void CSky::Priority_Update(_float timeDelta)
 {
 }
 
-void CSky::Update(_float fTimeDelta)
+void CSky::Update(_float timeDelta)
 {
 
-	m_acc += fTimeDelta;
+	m_acc += timeDelta;
 
 }
 
-void CSky::Late_Update(_float fTimeDelta)
+void CSky::Late_Update(_float timeDelta)
 {
 	m_transformCom->Set_Position(
 		XMLoadFloat4(m_gameInstance.lock()->Get_CamPositon()));
@@ -114,9 +114,9 @@ HRESULT CSky::Bind_ShaderResources()
 	if (FAILED(m_shaderCom->Bind_RawValue("g_SkyColor", &diffuse, sizeof(_float3))))
 		return E_FAIL;
 
-		 auto SkyColor = CSky_Controller::GetInstance()->Get_SkyColor();
+		 auto skyColor = CSky_Controller::GetInstance()->Get_SkyColor();
 	 //
-	 if (FAILED(m_shaderCom->Bind_RawValue("g_SkyColorOrigin", &SkyColor, sizeof(_float3))))
+	 if (FAILED(m_shaderCom->Bind_RawValue("g_SkyColorOrigin", &skyColor, sizeof(_float3))))
 		 return E_FAIL;
 	//if (FAILED(m_pShaderCom->Bind_RawValue("g_NightT", &NightT, sizeof(_float2))))
 	//	return E_FAIL;
@@ -144,27 +144,27 @@ HRESULT CSky::Bind_ShaderResources()
 	return S_OK;
 }
 
-shared_ptr<CSky> CSky::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CSky> CSky::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CSky> pInstance(new CSky(pDevice, pContext), [](CSky* p) {p->Free(); delete p;});
+	shared_ptr<CSky> instance(new CSky(device, context), [](CSky* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : sky");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CSky::Clone(void* pArg)
+shared_ptr<CGameObject> CSky::Clone(void* arg)
 {
-	shared_ptr<CSky> pInstance(new CSky(*this), [](CSky* p) {p->Free(); delete p;});
+	shared_ptr<CSky> instance(new CSky(*this), [](CSky* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : sky");
 	}
-	return pInstance;
+	return instance;
 }
 
 

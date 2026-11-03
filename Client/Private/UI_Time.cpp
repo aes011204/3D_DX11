@@ -6,8 +6,8 @@
 #include "RotationModifier.h"
 #include "UI_Controller.h"
 
-CUI_Time::CUI_Time(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_Time::CUI_Time(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -16,14 +16,14 @@ CUI_Time::CUI_Time(const CUIPanel& prototype)
 {
 }
 
-void CUI_Time::UIPannelActive(_uint time ,_bool IsSleep)
+void CUI_Time::UIPannelActive(_uint time ,_bool isSleep)
 {
 
 	
 
 	m_gameInstance.lock()->Play_Loop(L"Hold_Active");
 
-	m_isSleep = IsSleep;
+	m_isSleep = isSleep;
 
 	
 
@@ -57,33 +57,33 @@ void CUI_Time::UIPannelActive(_uint time ,_bool IsSleep)
 
 }
 
-HRESULT CUI_Time::OnInit(void* pArg)
+HRESULT CUI_Time::OnInit(void* arg)
 {
 
 
 
-	UiTimeDesc* pDesc = static_cast<UiTimeDesc*>(pArg);
+	UITimeDesc* desc = static_cast<UITimeDesc*>(arg);
 
 
 	//CUIPanel::UIPANEL_DESC LoadingDesc;
-	pDesc->isFullScreen = true;
-	pDesc->textureProtoName = L"Prototype_Component_Texture_Black";
-	pDesc->textureComLevel = ETOI(ELevel::STATIC);
+	desc->isFullScreen = true;
+	desc->textureProtoName = L"Prototype_Component_Texture_Black";
+	desc->textureComLevel = ETOI(ELevel::STATIC);
 	Set_Alpha(0.7f);
 
 	//pDesc->NoDISTACH = true;
 
-	 CUIPanel::OnInit(pArg);
+	 CUIPanel::OnInit(arg);
 
 
-	CUIImage::UIImageDesc SandTimerDesc;
-	SandTimerDesc.textureComLevel = ETOI(ELevel::STATIC);
-	SandTimerDesc.textureProtoName = L"Prototype_Component_Texture_Timer";
-	shared_ptr<CUIImage> pIcon = CUIImage::Create(m_device, m_context);
-	pIcon->Initialize(&SandTimerDesc);
+	CUIImage::UIImageDesc sandTimerDesc;
+	sandTimerDesc.textureComLevel = ETOI(ELevel::STATIC);
+	sandTimerDesc.textureProtoName = L"Prototype_Component_Texture_Timer";
+	shared_ptr<CUIImage> icon = CUIImage::Create(m_device, m_context);
+	icon->Initialize(&sandTimerDesc);
 	//pIcon->m_behavior.push_back(make_shared<CRotationModifier>(200.f));
-	Add_Child(pIcon, L"ICON_TIME", false);
-	m_icon = pIcon;
+	Add_Child(icon, L"ICON_TIME", false);
+	m_icon = icon;
 
 	CUIText::TextDesc textDesc;
 	//TextDesc.TextColor = _float4{ 1.f,0.f };
@@ -96,25 +96,25 @@ HRESULT CUI_Time::OnInit(void* pArg)
 
 	m_text = text;
 
-	CUIText::TextDesc TextDesc1;
+	CUIText::TextDesc textDesc1;
 	//TextDesc.TextColor = _float4{ 1.f,0.f };
-	TextDesc1.fontTag = L"Noto_Sans_CJK_SC_24";
-	TextDesc1.text = L"X : 나가기";
-	TextDesc1.fontAlign = CUIText::EFontAlign::DEFAULT;
+	textDesc1.fontTag = L"Noto_Sans_CJK_SC_24";
+	textDesc1.text = L"X : 나가기";
+	textDesc1.fontAlign = CUIText::EFontAlign::DEFAULT;
 	shared_ptr<CUIText> text1 = CUIText::Create(m_device, m_context);
-	text1->Initialize(&TextDesc1);
+	text1->Initialize(&textDesc1);
 	Add_Child(text1, L"text_Exit", false);
 
 
 
 	//
 
-	CUIImage::UIImageDesc CircleDesc = {};
-	CircleDesc.textureComLevel = ETOI(ELevel::STATIC);
-	CircleDesc.textureProtoName = L"Prototype_Component_Texture_FishingUICircle";
-	CircleDesc.shaderType = CUIRenderable::UIShaderType::Radial;
+	CUIImage::UIImageDesc circleDesc = {};
+	circleDesc.textureComLevel = ETOI(ELevel::STATIC);
+	circleDesc.textureProtoName = L"Prototype_Component_Texture_FishingUICircle";
+	circleDesc.shaderType = CUIRenderable::UIShaderType::Radial;
 	shared_ptr<CUIImage> Circle = CUIImage::Create(m_device, m_context);
-	Circle->Initialize(&CircleDesc);
+	Circle->Initialize(&circleDesc);
 	Circle->Set_BaseColor(_float4{ 0.f,0.f,0.f, 1.f });
 	Circle->Set_ZoneColor(_float4{ 1.f,0.f,0.f, 1.f });
 
@@ -154,20 +154,20 @@ void CUI_Time::OnDisabled()
 void CUI_Time::OnUpdate(const _float& timeDelta)
 {
 	
-	if(result != true)
+	if(m_isRotationDone != true)
 	{
-	result = m_icon->GetUITransform()->SetRotationTo(m_targetAngle, timeDelta);
+	m_isRotationDone = m_icon->GetUITransform()->SetRotationTo(m_targetAngle, timeDelta);
 		
 	}
 
-	if(result==true)
+	if(m_isRotationDone==true)
 	{
 		m_acc += timeDelta;
 		if(m_acc > 0.5f)
 		{
 		m_targetAngle -= 180.f;
 		m_acc = 0.f;
-		result = false;
+		m_isRotationDone = false;
 		}
 	}
 
@@ -181,12 +181,12 @@ void CUI_Time::OnUpdate(const _float& timeDelta)
 	{
 		m_gameInstance.lock()->Set_TimeScale(20.f);
 		m_currentTod = m_gameInstance.lock()->Get_TOD01();
-		_float fRatio = (m_currentTod - m_startTod) / (m_targetTod - m_startTod);
-		m_zones[0].end = fRatio;
+		_float ratio = (m_currentTod - m_startTod) / (m_targetTod - m_startTod);
+		m_zones[0].end = ratio;
 		
-			if (fRatio >= 1.f)
+			if (ratio >= 1.f)
 			{
-				fRatio = 1.f;
+				ratio = 1.f;
 
 				UI_InActive();
 				
@@ -220,16 +220,16 @@ void CUI_Time::OnClear()
 
 
 
-shared_ptr<CUI_Time> CUI_Time::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Time> CUI_Time::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Time> pInstance(new CUI_Time(pDevice, pContext), [](CUI_Time* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_Time> instance(new CUI_Time(device, context), [](CUI_Time* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUI_Time");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Time::Free()

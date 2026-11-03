@@ -28,21 +28,21 @@ HRESULT CMiniGame_Logic::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMiniGame_Logic::Render(_uint iMeshIndex)
+HRESULT CMiniGame_Logic::Render(_uint meshIndex)
 {
 	return S_OK;
 
 }
 
-HRESULT CMiniGame_Logic::Initialize(void* pArg)
+HRESULT CMiniGame_Logic::Initialize(void* arg)
 {
 	m_miniGameType = EMiniGameType::BASIC_CIRCLE;
 
-	MiniGameLogicDesc* pDesc = static_cast<MiniGameLogicDesc*>(pArg);
+	MiniGameLogicDesc* desc = static_cast<MiniGameLogicDesc*>(arg);
 
 
-	m_initZoneCount = pDesc->zoneCount;
-	m_zoneCount = m_gameInstance.lock()->RandomInt(pDesc->zoneCount.x, pDesc->zoneCount.y);
+	m_initZoneCount = desc->zoneCount;
+	m_zoneCount = m_gameInstance.lock()->RandomInt(desc->zoneCount.x, desc->zoneCount.y);
 	
 	//m_zoneSize = m_pGameInstance.lock()->Random(pDesc->zoneSize.x, pDesc->zoneSize.y);
                                                                                                                                                                                         
@@ -101,7 +101,7 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 	}
 
 
-	__super::Initialize(pDesc);
+	__super::Initialize(desc);
 	return S_OK;
 
 }
@@ -188,7 +188,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 					m_lastInputResult = EInputResult::FAIL;
 
 					m_changeColor = true;
-					colortime = .5f;
+					m_colorTime = .5f;
 				}
 			}
 
@@ -254,12 +254,12 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 
 		
 		Evt_GetFish  e = {};
-		e.DefID = m_defId;
+		e.defID = m_defID;
 		e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
-		auto& item = CItemDB::GetInstance()->GetItemByID(m_defId);
+		auto& item = CItemDB::GetInstance()->GetItemByID(m_defID);
 		if (auto fish = std::get_if<FishDef>(&item.typeDef))
 		{
-			e.fishInst.mutationId = SelectMutationNoRepeat(*fish);
+			e.fishInst.mutationID = SelectMutationNoRepeat(*fish);
 		}
 		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
@@ -359,16 +359,16 @@ void CMiniGame_Logic::OnInput()
 }
 
 
-shared_ptr<CMiniGame_Logic> CMiniGame_Logic::Create(void* pArg)
+shared_ptr<CMiniGame_Logic> CMiniGame_Logic::Create(void* arg)
 {
-	shared_ptr<CMiniGame_Logic> pInstance(new CMiniGame_Logic(), [](CMiniGame_Logic* p) {p->Free(); delete(p); });
+	shared_ptr<CMiniGame_Logic> instance(new CMiniGame_Logic(), [](CMiniGame_Logic* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMiniGame_Logic::Free()

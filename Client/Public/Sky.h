@@ -17,16 +17,16 @@ public:
 
 	}SkyDesc;
 private:
-	CSky(ComPtr<ID3D11Device> pDevice, ComPtr< ID3D11DeviceContext> pContext);
-	CSky(const CSky& Prototype);
+	CSky(ComPtr<ID3D11Device> device, ComPtr< ID3D11DeviceContext> context);
+	CSky(const CSky& prototype);
 	virtual ~CSky() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
-	virtual HRESULT Initialize(void* pArg) override;
-	virtual void Priority_Update(_float fTimeDelta) override;
-	virtual void Update(_float fTimeDelta) override;
-	virtual void Late_Update(_float fTimeDelta) override;
+	virtual HRESULT Initialize(void* arg) override;
+	virtual void Priority_Update(_float timeDelta) override;
+	virtual void Update(_float timeDelta) override;
+	virtual void Late_Update(_float timeDelta) override;
 	virtual HRESULT Render() override;
 
 protected:
@@ -56,8 +56,8 @@ private:
 	//_float3 Sunset = _float3(1.0, 0.55, 0.25);
 	//_float3 AfterSunset = _float3(0.35, 0.25, 0.45);
 public:
-	static shared_ptr<CSky> Create(ComPtr<ID3D11Device> pDevice, ComPtr < ID3D11DeviceContext>);
-	virtual shared_ptr < CGameObject> Clone(void* pArg) override;
+	static shared_ptr<CSky> Create(ComPtr<ID3D11Device> device, ComPtr < ID3D11DeviceContext>);
+	virtual shared_ptr < CGameObject> Clone(void* arg) override;
 	virtual void Free() override;
 
 };

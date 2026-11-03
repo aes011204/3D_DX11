@@ -4,13 +4,13 @@ CAssimp_Bone::CAssimp_Bone()
 {
 }
 
-HRESULT CAssimp_Bone::Initialize(const aiNode* pAINode, _int iParentBoneIndex)
+HRESULT CAssimp_Bone::Initialize(const aiNode* srcAINode, _int parentBoneIndex)
 {
-    strcpy_s(m_name, pAINode->mName.data);
+    strcpy_s(m_name, srcAINode->mName.data);
 
-    m_parentBoneIndex = iParentBoneIndex;
+    m_parentBoneIndex = parentBoneIndex;
 
-    memcpy(&m_transformationMatrix, &pAINode->mTransformation, sizeof(_float4x4));
+    memcpy(&m_transformationMatrix, &srcAINode->mTransformation, sizeof(_float4x4));
     XMStoreFloat4x4(&m_transformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_transformationMatrix)));
     // 전치 필수
 
@@ -19,12 +19,12 @@ HRESULT CAssimp_Bone::Initialize(const aiNode* pAINode, _int iParentBoneIndex)
     return S_OK;
 }
 
-void CAssimp_Bone::Update_CombinedTransformMatrix(const vector<shared_ptr<CAssimp_Bone>> Bones, _fmatrix PreTransformMatrix)
+void CAssimp_Bone::Update_CombinedTransformMatrix(const vector<shared_ptr<CAssimp_Bone>> Bones, _fmatrix preTransformMatrix)
 {
     if(-1 == m_parentBoneIndex)
     {
         XMStoreFloat4x4(&m_combinedTransformationMatrix,
-            XMLoadFloat4x4(&m_transformationMatrix) * PreTransformMatrix);
+            XMLoadFloat4x4(&m_transformationMatrix) * preTransformMatrix);
     }
     else
     {
@@ -33,21 +33,21 @@ void CAssimp_Bone::Update_CombinedTransformMatrix(const vector<shared_ptr<CAssim
     }
 }
 
-void CAssimp_Bone::Update_TransformationMatrix(_fmatrix TransformMatrix)
+void CAssimp_Bone::Update_TransformationMatrix(_fmatrix transformMatrix)
 {
-    XMStoreFloat4x4(&m_transformationMatrix, TransformMatrix);
+    XMStoreFloat4x4(&m_transformationMatrix, transformMatrix);
 }
 
 
-shared_ptr<CAssimp_Bone> CAssimp_Bone::Create(const aiNode* pAINode, _int iParentBoneIndex)
+shared_ptr<CAssimp_Bone> CAssimp_Bone::Create(const aiNode* srcAINode, _int parentBoneIndex)
 {
-    shared_ptr<CAssimp_Bone> pInstance(new CAssimp_Bone(), [](CAssimp_Bone* p) {p->Free(); delete p; });
+    shared_ptr<CAssimp_Bone> instance(new CAssimp_Bone(), [](CAssimp_Bone* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pAINode, iParentBoneIndex)))
+    if (FAILED(instance->Initialize(srcAINode, parentBoneIndex)))
     {
         MSG_BOX("Failed to Created : CMesh");
     }
-    return pInstance;
+    return instance;
 
 }
 

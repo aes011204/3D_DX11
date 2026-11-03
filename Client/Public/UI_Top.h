@@ -20,14 +20,14 @@ public:
     {
     };
 protected:
-    CUI_Top(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_Top(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_Top(const CUIPanel& prototype);
 public:
     ~CUI_Top() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -43,10 +43,10 @@ private:
     shared_ptr<CUIText> m_timeText = {};
     shared_ptr<CUIImage> m_dayCircle = {};
 
-    _uint preDay = {};
-    _float preMin = {};
+    _uint m_preDay = {};
+    _float m_preMin = {};
 public:
-    static shared_ptr<CUI_Top> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_Top> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

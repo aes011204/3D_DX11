@@ -16,22 +16,22 @@ public:
 
 
 protected:
-	CBounding(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CBounding(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
 	virtual ~CBounding() = default;
 
 public:
 	
-	virtual HRESULT Initialize(BoundingDesc* pDesc);
-	virtual void Update(_fmatrix WorldMatrix)=0;
-	virtual _bool Intersect(shared_ptr<CBounding> pTarget)=0;
+	virtual HRESULT Initialize(BoundingDesc* desc);
+	virtual void Update(_fmatrix worldMatrix)=0;
+	virtual _bool Intersect(shared_ptr<CBounding> target)=0;
 
 
 
 
 #ifdef _DEBUG
 public:
-	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch, _fvector vColor)=0;
+	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* batch, _fvector color)=0;
 
 
 

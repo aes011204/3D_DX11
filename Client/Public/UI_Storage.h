@@ -16,11 +16,11 @@ NS_BEGIN(Client)
 public:
     struct StorageDesc : public CUIPanel::UIPanelDesc
     {
-        EInvenType Inventype = { EInvenType::NONE };
+        EInvenType invenType = { EInvenType::NONE };
         EShopTab shopTab = { EShopTab::NONE };
     };
 private:
-    CUI_Storage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_Storage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_Storage(const CUIPanel& prototype);
     HRESULT Initialize_Prototype();
 public:
@@ -30,7 +30,7 @@ public:
 
 
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -51,17 +51,17 @@ private:
     EInvenType m_inventype = { EInvenType::NONE };
     EShopTab m_shopTab = { EShopTab::NONE };
 
-    shared_ptr<class CInventory_Controller> Inven_Contrl = { nullptr };
+    shared_ptr<class CInventory_Controller> m_invenContr = { nullptr };
     shared_ptr<CUIPanel> m_invenPanel = { nullptr };
 
     weak_ptr<class CInventory> m_inven = {};
 
-    vector<shared_ptr<CUIImage>> m_itemUi = {};
+    vector<shared_ptr<CUIImage>> m_itemUI = {};
     vector<shared_ptr<CUISlot>> m_slot = {};
 public:
-    static shared_ptr<CUI_Storage> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_Storage> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
-    _bool Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& inven_slot);
+    _bool Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& invenSlot);
 };
 
 NS_END;

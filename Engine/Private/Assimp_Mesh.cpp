@@ -2,8 +2,8 @@
 #include "Assimp_Model.h"
 #include "Shader.h"
 
-CAssimp_Mesh::CAssimp_Mesh(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    :CVIBuffer(pDevice, pContext)
+CAssimp_Mesh::CAssimp_Mesh(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    :CVIBuffer(device, context)
 {
 }
 
@@ -12,69 +12,69 @@ CAssimp_Mesh::CAssimp_Mesh(const CAssimp_Mesh& Prototype)
 {
 }
 
-HRESULT CAssimp_Mesh::Initialize_Prototype(EModelType eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix)
+HRESULT CAssimp_Mesh::Initialize_Prototype(EModelType type, const aiMesh* srcAIMesh, shared_ptr<CAssimp_Model> model, _fmatrix preTransformMatrix)
 {
-	m_materialIndex = pAIMesh->mMaterialIndex;
+	m_materialIndex = srcAIMesh->mMaterialIndex;
 	
 	m_numVertexBuffers = 1; 
-	m_numVertices = pAIMesh->mNumVertices;
+	m_numVertices = srcAIMesh->mNumVertices;
 	//m_iVertexStride = sizeof(VTXMESH);
-	m_numIndices = pAIMesh->mNumFaces * 3;// mNumFaces 삼각현이든 사각형이든 한 면의갯수 우리는 삼각형이니까 *3 하면 인덱스 
+	m_numIndices = srcAIMesh->mNumFaces * 3;// mNumFaces 삼각현이든 사각형이든 한 면의갯수 우리는 삼각형이니까 *3 하면 인덱스 
 	m_indexStride = 4; // 크게 4바이트로 잡음
 	m_primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	//vertex Buffer
-	HRESULT hr = EModelType::NONANIM == eType ? Ready_VertexBuffer_For_NonAnim(pAIMesh, PreTransformMatrix)
-		: Ready_VertexBuffer_For_Anim(pAIMesh, pModel);
+	HRESULT hr = EModelType::NONANIM == type ? Ready_VertexBuffer_For_NonAnim(srcAIMesh, preTransformMatrix)
+		: Ready_VertexBuffer_For_Anim(srcAIMesh, model);
 
 	if (FAILED(hr))
 		return E_FAIL;
 
 	//Index Buffer
 
-	D3D11_BUFFER_DESC	IndexBufferDesc{};
-	IndexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
-	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.StructureByteStride = m_indexStride;
-	IndexBufferDesc.CPUAccessFlags = 0;
-	IndexBufferDesc.MiscFlags = 0;
+	D3D11_BUFFER_DESC	indexBufferDesc{};
+	indexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.StructureByteStride = m_indexStride;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
 
-	_uint	iNumIndices = { 0 };
+	_uint	numIndices = { 0 };
 
-	_uint* pIndices = new _uint[m_numIndices];
+	_uint* indices = new _uint[m_numIndices];
 
-	for (_uint i = 0; i < pAIMesh->mNumFaces; i++)
+	for (_uint i = 0; i < srcAIMesh->mNumFaces; i++)
 	{
 		
-		aiFace AIFace = pAIMesh->mFaces[i];
+		aiFace srcAIFace = srcAIMesh->mFaces[i];
 
-		pIndices[iNumIndices++] = AIFace.mIndices[0];
-		pIndices[iNumIndices++] = AIFace.mIndices[1];
-		pIndices[iNumIndices++] = AIFace.mIndices[2];
+		indices[numIndices++] = srcAIFace.mIndices[0];
+		indices[numIndices++] = srcAIFace.mIndices[1];
+		indices[numIndices++] = srcAIFace.mIndices[2];
 	}
 
 	
-	D3D11_SUBRESOURCE_DATA			IndexInitialData{};
-	IndexInitialData.pSysMem = pIndices;
+	D3D11_SUBRESOURCE_DATA			indexInitialData{};
+	indexInitialData.pSysMem = indices;
 
-	if (FAILED(m_device->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_IB)))
+	if (FAILED(m_device->CreateBuffer(&indexBufferDesc, &indexInitialData, &m_IB)))
 		return E_FAIL;
 
 
 
-	Safe_Delete_Array(pIndices);
+	Safe_Delete_Array(indices);
 
 
 	return S_OK;
 }
 
-HRESULT CAssimp_Mesh::Initialize(void* pArg)
+HRESULT CAssimp_Mesh::Initialize(void* arg)
 {
     return S_OK;
 }
 
-HRESULT CAssimp_Mesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* pConstantName,
+HRESULT CAssimp_Mesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* constantName,
 	const vector<shared_ptr<CAssimp_Bone>>& bones)
 {
 	ZeroMemory(m_boneMatrices, sizeof(_float4x4) * 512);
@@ -82,63 +82,63 @@ HRESULT CAssimp_Mesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char*
 	for(size_t i =0; i<m_numBones; i++)
 	{
 		XMStoreFloat4x4(&m_boneMatrices[i], XMLoadFloat4x4(&m_offsetMatrices[i] )*
-			XMLoadFloat4x4(bones[m_boneIndices[i]]->Get_m_CombinedTransformationMatrixPtr()));
+			XMLoadFloat4x4(bones[m_boneIndices[i]]->Get_CombinedTransformationMatrixPtr()));
 	}
 	
-		return shader->Bind_Matrices(pConstantName, m_boneMatrices, m_numBones);
+		return shader->Bind_Matrices(constantName, m_boneMatrices, m_numBones);
 }
 
 
-HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_NonAnim(const aiMesh* pAIMesh, _fmatrix PreTransformMatrix)
+HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_NonAnim(const aiMesh* srcAIMesh, _fmatrix preTransformMatrix)
 {
 	m_vertexStride = sizeof(VTXMESH);
 
 	// Vertex Buffer
 
-	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_vertexStride;
+	D3D11_BUFFER_DESC vertexBufferDesc{};
+	vertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
-	VertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
 
-	VTXMESH* pVertices = new VTXMESH[m_numVertices];
+	VTXMESH* vertices = new VTXMESH[m_numVertices];
 
 	for (size_t i = 0; i < m_numVertices; i++)
 	{
-		memcpy(&pVertices[i].position, &pAIMesh->mVertices[i], sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].position,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].position), PreTransformMatrix));
+		memcpy(&vertices[i].position, &srcAIMesh->mVertices[i], sizeof(_float3));
+		XMStoreFloat3(&vertices[i].position,
+			XMVector3TransformCoord(XMLoadFloat3(&vertices[i].position), preTransformMatrix));
 
-		memcpy(&pVertices[i].normal, &pAIMesh->mNormals[i], sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].normal,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].normal), PreTransformMatrix));
+		memcpy(&vertices[i].normal, &srcAIMesh->mNormals[i], sizeof(_float3));
+		XMStoreFloat3(&vertices[i].normal,
+			XMVector3TransformCoord(XMLoadFloat3(&vertices[i].normal), preTransformMatrix));
 
-		memcpy(&pVertices[i].tangent, &pAIMesh->mTangents[i], sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].tangent,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].tangent), PreTransformMatrix));
+		memcpy(&vertices[i].tangent, &srcAIMesh->mTangents[i], sizeof(_float3));
+		XMStoreFloat3(&vertices[i].tangent,
+			XMVector3TransformCoord(XMLoadFloat3(&vertices[i].tangent), preTransformMatrix));
 
-		memcpy(&pVertices[i].texcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+		memcpy(&vertices[i].texcoord, &srcAIMesh->mTextureCoords[0][i], sizeof(_float2));
 
 		
 		// 덱스쿠드는 여러개일수도 있으니 이차배열
 		// 하나의 세트인데 바디 에 디퓨즈 , 노말의 모양이 다르다면 , 텍스쿠드를더 선언해야함
 		// 큐브 라던지 그건 xyz 다있음 
 	}
-	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
-	VertexInitialData.pSysMem = pVertices;
+	D3D11_SUBRESOURCE_DATA			vertexInitialData{};
+	vertexInitialData.pSysMem = vertices;
 
-	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
+	if (FAILED(m_device->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_VB)))
 		return E_FAIL;
 
-	Safe_Delete_Array(pVertices);
+	Safe_Delete_Array(vertices);
 
 	return S_OK;
 }
 
-HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel)
+HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* srcAIMesh, shared_ptr<CAssimp_Model> model)
 {
 	/*struct WeightData
 	{
@@ -153,78 +153,78 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 
 	// Vertex Buffer
 
-	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_vertexStride;
+	D3D11_BUFFER_DESC vertexBufferDesc{};
+	vertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
-	VertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
 
-	VTXANIMMESH* pVertices = new VTXANIMMESH[m_numVertices];
-	ZeroMemory(pVertices, sizeof(VTXANIMMESH) * m_numVertices);
+	VTXANIMMESH* vertices = new VTXANIMMESH[m_numVertices];
+	ZeroMemory(vertices, sizeof(VTXANIMMESH) * m_numVertices);
 
 	for (size_t i = 0; i < m_numVertices; i++)
 	{
-		memcpy(&pVertices[i].position, &pAIMesh->mVertices[i], sizeof(_float3));
+		memcpy(&vertices[i].position, &srcAIMesh->mVertices[i], sizeof(_float3));
 		
-		memcpy(&pVertices[i].normal, &pAIMesh->mNormals[i], sizeof(_float3));
+		memcpy(&vertices[i].normal, &srcAIMesh->mNormals[i], sizeof(_float3));
 		
-		memcpy(&pVertices[i].tangent, &pAIMesh->mTangents[i], sizeof(_float3));
+		memcpy(&vertices[i].tangent, &srcAIMesh->mTangents[i], sizeof(_float3));
 
-		memcpy(&pVertices[i].texcoord, &pAIMesh->mTextureCoords[0][i], sizeof(_float2));
+		memcpy(&vertices[i].texcoord, &srcAIMesh->mTextureCoords[0][i], sizeof(_float2));
 
 		// 덱스쿠드는 여러개일수도 있으니 이차배열
 		// 하나의 세트인데 바디 에 디퓨즈 , 노말의 모양이 다르다면 , 텍스쿠드를더 선언해야함
 		// 큐브 라던지 그건 xyz 다있음 
 	}
 
-		m_numBones = pAIMesh->mNumBones;
+		m_numBones = srcAIMesh->mNumBones;
 
 	for (size_t i = 0; i < m_numBones; i++)
 	{
-		aiBone* pAIBone = pAIMesh->mBones[i];
+		aiBone* srcAIBone = srcAIMesh->mBones[i];
 
-		_int iBoneIndex = pModel->Get_BoneIndex(pAIBone->mName.data);//(이건 전체 기준 본 인덱스)
-		if (-1 == iBoneIndex)
+		_int boneIndex = model->Get_BoneIndex(srcAIBone->mName.data);//(이건 전체 기준 본 인덱스)
+		if (-1 == boneIndex)
 			return E_FAIL;
 
-		m_boneIndices.push_back(iBoneIndex); // 여기 넣은 순서가 메쉬기준 본 인댁스 임 
+		m_boneIndices.push_back(boneIndex); // 여기 넣은 순서가 메쉬기준 본 인댁스 임 
 
 		// set offset once in initialize 
-		_float4x4 OffsetMatrix = {};
+		_float4x4 offsetMatrix = {};
 
-		memcpy(&OffsetMatrix, &pAIBone->mOffsetMatrix, sizeof(_float4x4));
-		XMStoreFloat4x4(&OffsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&OffsetMatrix)));
+		memcpy(&offsetMatrix, &srcAIBone->mOffsetMatrix, sizeof(_float4x4));
+		XMStoreFloat4x4(&offsetMatrix, XMMatrixTranspose(XMLoadFloat4x4(&offsetMatrix)));
 
-		m_offsetMatrices.push_back(OffsetMatrix);
+		m_offsetMatrices.push_back(offsetMatrix);
 
 
 		//pAIBone->mNumWeights 이 뼈가 몇개의 정점에 영향을 주는가
-		for (size_t j = 0; j < pAIBone->mNumWeights; j++)
+		for (size_t j = 0; j < srcAIBone->mNumWeights; j++)
 		{
-			aiVertexWeight AIVertexWeight = pAIBone->mWeights[j];
+			aiVertexWeight srcAIVertexWeight = srcAIBone->mWeights[j];
 
-			if(0== pVertices[AIVertexWeight.mVertexId].blendWeight.x) //pVertices[AIVertexWeight.mVertexId] 에 이미적혀 있는지 없는지 확인용
+			if(0== vertices[srcAIVertexWeight.mVertexId].blendWeight.x) //pVertices[AIVertexWeight.mVertexId] 에 이미적혀 있는지 없는지 확인용
 			{
-				pVertices[AIVertexWeight.mVertexId].blendIndex.x = i;  // 뼈의 인댁스 (메쉬 기준)
-				pVertices[AIVertexWeight.mVertexId].blendWeight.x = AIVertexWeight.mWeight;
+				vertices[srcAIVertexWeight.mVertexId].blendIndex.x = i;  // 뼈의 인댁스 (메쉬 기준)
+				vertices[srcAIVertexWeight.mVertexId].blendWeight.x = srcAIVertexWeight.mWeight;
 			}
-			else if(0 == pVertices[AIVertexWeight.mVertexId].blendWeight.y)
+			else if(0 == vertices[srcAIVertexWeight.mVertexId].blendWeight.y)
 			{
-				pVertices[AIVertexWeight.mVertexId].blendIndex.y = i;
-				pVertices[AIVertexWeight.mVertexId].blendWeight.y = AIVertexWeight.mWeight;
+				vertices[srcAIVertexWeight.mVertexId].blendIndex.y = i;
+				vertices[srcAIVertexWeight.mVertexId].blendWeight.y = srcAIVertexWeight.mWeight;
 			}
-			else if (0 == pVertices[AIVertexWeight.mVertexId].blendWeight.z)
+			else if (0 == vertices[srcAIVertexWeight.mVertexId].blendWeight.z)
 			{
-				pVertices[AIVertexWeight.mVertexId].blendIndex.z = i;
-				pVertices[AIVertexWeight.mVertexId].blendWeight.z = AIVertexWeight.mWeight;
+				vertices[srcAIVertexWeight.mVertexId].blendIndex.z = i;
+				vertices[srcAIVertexWeight.mVertexId].blendWeight.z = srcAIVertexWeight.mWeight;
 			}
-			else if (0 == pVertices[AIVertexWeight.mVertexId].blendWeight.w)
+			else if (0 == vertices[srcAIVertexWeight.mVertexId].blendWeight.w)
 			{
-				pVertices[AIVertexWeight.mVertexId].blendIndex.w = i;
-				pVertices[AIVertexWeight.mVertexId].blendWeight.w = AIVertexWeight.mWeight;
+				vertices[srcAIVertexWeight.mVertexId].blendIndex.w = i;
+				vertices[srcAIVertexWeight.mVertexId].blendWeight.w = srcAIVertexWeight.mWeight;
 			}
 			//int vtxId = AIVertexWeight.mVertexId;
 
@@ -285,40 +285,40 @@ HRESULT CAssimp_Mesh::Ready_VertexBuffer_For_Anim(const aiMesh* pAIMesh, shared_
 	//}
 
 
-	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
-	VertexInitialData.pSysMem = pVertices;
+	D3D11_SUBRESOURCE_DATA			vertexInitialData{};
+	vertexInitialData.pSysMem = vertices;
 
-	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
+	if (FAILED(m_device->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_VB)))
 		return E_FAIL;
 
-	Safe_Delete_Array(pVertices);
+	Safe_Delete_Array(vertices);
 
 	return S_OK;
 
 }
 
-shared_ptr<CAssimp_Mesh> CAssimp_Mesh::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, EModelType eType, const aiMesh* pAIMesh, shared_ptr<CAssimp_Model> pModel, _fmatrix PreTransformMatrix)
+shared_ptr<CAssimp_Mesh> CAssimp_Mesh::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, EModelType type, const aiMesh* srcAIMesh, shared_ptr<CAssimp_Model> model, _fmatrix preTransformMatrix)
 {
-    shared_ptr<CAssimp_Mesh> pInstance(new CAssimp_Mesh(pDevice, pContext), [](CAssimp_Mesh* p) {p->Free(); delete p;});
+    shared_ptr<CAssimp_Mesh> instance(new CAssimp_Mesh(device, context), [](CAssimp_Mesh* p) {p->Free(); delete p;});
 
-    if (FAILED(pInstance->Initialize_Prototype(eType ,pAIMesh, pModel, PreTransformMatrix)))
+    if (FAILED(instance->Initialize_Prototype(type ,srcAIMesh, model, preTransformMatrix)))
     {
         MSG_BOX("Failed to Created : CAssimp_Mesh");
     }
-    return pInstance;
+    return instance;
 
 }
 
-shared_ptr<CComponent> CAssimp_Mesh::Clone(void* pArg)
+shared_ptr<CComponent> CAssimp_Mesh::Clone(void* arg)
 {
 
-    shared_ptr<CComponent> pInstance(new CAssimp_Mesh(*this), [](CAssimp_Mesh* p) {p->Free(); delete p;});
+    shared_ptr<CComponent> instance(new CAssimp_Mesh(*this), [](CAssimp_Mesh* p) {p->Free(); delete p;});
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(instance->Initialize(arg)))
     {
         MSG_BOX("Failed to Cloned : CAssimp_Mesh");
     }
-    return pInstance;
+    return instance;
 }
 
 

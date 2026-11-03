@@ -12,10 +12,10 @@ public:
     virtual ~CWin_Mananger() = default;
 public:
     HRESULT Initialize();
-    void Update(float fTimeDelta);
+    void Update(float timeDelta);
     void Render();
 
-    void Add_Window(shared_ptr<CEditor_Win> pWindow);
+    void Add_Window(shared_ptr<CEditor_Win> window);
     shared_ptr<CEditor_Win> Get_Window(string name);
 
 private:

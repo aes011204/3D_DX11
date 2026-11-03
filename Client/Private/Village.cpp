@@ -6,8 +6,8 @@
 #include "Client_Enum.h"
 #include "EventBus.h"
 
-CVillage::CVillage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CVillage::CVillage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -21,11 +21,11 @@ HRESULT CVillage::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CVillage::Initialize(void* pArg)
+HRESULT CVillage::Initialize(void* arg)
 {
 
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -68,11 +68,11 @@ HRESULT CVillage::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CVillage::Priority_Update(_float fTimeDelta)
+void CVillage::Priority_Update(_float timeDelta)
 {
 }
 
-void CVillage::Update(_float fTimeDelta)
+void CVillage::Update(_float timeDelta)
 {
 	if (m_isDirtyCom) {
 		RebindCom();      // "바뀐 것"만 한 번 갱신
@@ -85,7 +85,7 @@ void CVillage::Update(_float fTimeDelta)
 	m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
-void CVillage::Late_Update(_float fTimeDelta)
+void CVillage::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -99,9 +99,9 @@ HRESULT CVillage::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for (size_t i = 0; i < iNumMesh; i++)
+	for (size_t i = 0; i < numMesh; i++)
 	{
 		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
@@ -174,11 +174,11 @@ HRESULT CVillage::Bind_ShaderResources()
 		return E_FAIL;*/
 
 	////
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return E_FAIL;
-	bool IsNight = m_gameInstance.lock()->Get_IsNight();
-	_float emissivePower = IsNight ? 1.f : 0.f;
+	bool isNight = m_gameInstance.lock()->Get_IsNight();
+	_float emissivePower = isNight ? 1.f : 0.f;
 	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &emissivePower, sizeof(_float))))
 		return E_FAIL;
 
@@ -218,10 +218,10 @@ HRESULT CVillage::Ready_Components()
 
 	for(_uint i =0; i < ETOI(EShopTab::END) ; i++)
 	{
-		CInventory::InvenDesc storage_desc = {};
-		storage_desc.invenType = EInvenType::SHOP;
-		storage_desc.equipType = static_cast<EEquipType>(i);
-		if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_shopCom[i], &storage_desc)))
+		CInventory::InvenDesc storageDesc = {};
+		storageDesc.invenType = EInvenType::SHOP;
+		storageDesc.equipType = static_cast<EEquipType>(i);
+		if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_shopCom[i], &storageDesc)))
 			return E_FAIL;
 
 	}
@@ -232,27 +232,27 @@ HRESULT CVillage::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CVillage> CVillage::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CVillage> CVillage::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CVillage> pInstance(new CVillage(pDevice, pContext), [](CVillage* p) {p->Free(); delete p; });
+	shared_ptr<CVillage> instance(new CVillage(device, context), [](CVillage* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CVillage");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CVillage::Clone(void* pArg)
+shared_ptr<CGameObject> CVillage::Clone(void* arg)
 {
-	shared_ptr<CVillage> pInstance(new CVillage(*this), [](CVillage* p) {p->Free(); delete p; });
+	shared_ptr<CVillage> instance(new CVillage(*this), [](CVillage* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CVillage");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CVillage::Free()

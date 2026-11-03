@@ -20,10 +20,10 @@ public:
 
 public:
     virtual HRESULT Initialize() override;
-    virtual void Update(float fTimeDelta) override;
+    virtual void Update(float timeDelta) override;
     virtual void Render() override;
 
-    void DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiLabel);
+    void DrawUITree(const shared_ptr<Engine::CUI>& UI, _string imguiLabel);
 
 private:
     // ===== UI state =====
@@ -38,16 +38,16 @@ private:
 
 private:
     // ===== draw helpers =====
-    void DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj);
-    bool PassFilter(const shared_ptr<Engine::CGameObject>& pObj) const;
+    void DrawObjectRow(const shared_ptr<Engine::CGameObject>& obj);
+    bool PassFilter(const shared_ptr<Engine::CGameObject>& obj) const;
 
-    void Engine_DeleteObject(const shared_ptr<Engine::CGameObject>& pObj) {};
+    void Engine_DeleteObject(const shared_ptr<Engine::CGameObject>& obj) {};
 
     // Rename commit helper (중복 처리하고 싶으면 여기서 처리)
-    void CommitRename(const shared_ptr<Engine::CGameObject>& pObj, const char* newNameUtf8);
+    void CommitRename(const shared_ptr<Engine::CGameObject>& obj, const char* newNameUtf8);
 
     // util: ImGui 내부 ID(충돌 방지)
-    uint64_t PtrID(const shared_ptr<Engine::CGameObject>& pObj) const;
+    uint64_t PtrID(const shared_ptr<Engine::CGameObject>& obj) const;
 
 public:
     static shared_ptr<CHierarchyWin> Create();

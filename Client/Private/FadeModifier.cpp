@@ -19,11 +19,11 @@ CFadeModifier::~CFadeModifier()
 	//m_This->Set_Alpha(1);
 }
 
-void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
+void CFadeModifier::Tick(float deltaTime, CUI* owner)
 {
 	if(m_self == nullptr)
 	{
-		m_self = dynamic_cast<CUIRenderable*>(pOwner);
+		m_self = dynamic_cast<CUIRenderable*>(owner);
 
 
 
@@ -36,19 +36,19 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 	
 	}
 
-	m_accTime += fDeltaTime;
+	m_accTime += deltaTime;
 
 	if (m_fadeType == FADE_OUT)
 	{
 	
 	
 
-		_float fRatio = m_accTime / m_duration;
+		_float ratio = m_accTime / m_duration;
 		//LOG_F(LOG_LEVEL::INFO, "Time: %.4f / Duration: %.4f / Ratio: %.4f", m_AccTime, m_Duration, m_AccTime / m_Duration);
 
-		if (fRatio > 1) fRatio = 1.f;
+		if (ratio > 1) ratio = 1.f;
 
-		m_alpha = 1 - fRatio;
+		m_alpha = 1 - ratio;
 
 		if (m_useColor == true)
 		{
@@ -61,7 +61,7 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 		if (m_alpha <= 0.01f)
 		{
 			if(m_isInactive ==true)
-				pOwner->UI_InActive(); // UI 끄기
+				owner->UI_InActive(); // UI 끄기
 
 			m_isFinished = true;
 		}
@@ -72,11 +72,11 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 		
 	else if (m_fadeType == FADE_IN)
 	{
-		_float fRatio = m_accTime / m_duration;
+		_float ratio = m_accTime / m_duration;
 
-		if (fRatio > 1) fRatio = 1.f;
+		if (ratio > 1) ratio = 1.f;
 
-		m_alpha = fRatio;
+		m_alpha = ratio;
 
 		if (m_useColor == true)
 		{
@@ -88,7 +88,7 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 		m_self->Set_Alpha(m_alpha);
 
-		if (fRatio >= 1.f)
+		if (ratio >= 1.f)
 		{
 			m_self->Set_Alpha(1.f);
 			if(EndEvent != nullptr )
@@ -104,11 +104,11 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 
 }
 
-void CFadeModifier::OnAppear(float fDeltaTime, CUI* pOwner)
+void CFadeModifier::OnAppear(float deltaTime, CUI* owner)
 {
 }
 
-void CFadeModifier::OnDisappear(float fDeltaTime, CUI* pOwner)
+void CFadeModifier::OnDisappear(float deltaTime, CUI* owner)
 {
 	;
 }

@@ -14,10 +14,10 @@ public:
         bool isEatClick = {true};
     };
 private:
-    CUICanvas(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUICanvas(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
     virtual ~CUICanvas();
-    HRESULT Initialize(void* pArg);
+    HRESULT Initialize(void* arg);
     
     virtual void OnUpdate(const _float& timeDelta);
 
@@ -27,7 +27,7 @@ private:
 
     Rect m_canvasSize = {};
 public:
-    static shared_ptr<CUICanvas> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUICanvas> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

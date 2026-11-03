@@ -18,14 +18,14 @@ public:
         
     };
 protected:
-    CUIImage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUIImage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUIImage(const CUIImage& prototype);
 public:
     virtual ~CUIImage() = default;
 
 protected:
     // ui의 생명주기 정책에 따라 앤진 생명주기 안에서 호출 함
-    HRESULT OnInit(void* pArg)override;
+    HRESULT OnInit(void* arg)override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -62,7 +62,7 @@ protected:
 
 
 public:
-    static shared_ptr<CUIImage> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUIImage> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     //virtual shared_ptr<CUI> Clone(void* pArg);
     void Free()override;
 };

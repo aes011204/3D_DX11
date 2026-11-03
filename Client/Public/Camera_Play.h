@@ -15,30 +15,30 @@ public:
     {
         _float	mouseSensor = {};
     	weak_ptr<CGameObject> target = { };
-        _float3 vDir = {};
+        _float3 dir = {};
 
     };
 protected:
-    CCamera_Play(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CCamera_Play(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CCamera_Play(const CCamera& prototype);
 public:
     virtual ~CCamera_Play() = default;
 public:
     virtual HRESULT Initialize_Prototype();
-    virtual HRESULT Initialize(void* pArg);
-    virtual void Priority_Update(_float fTimeDelta);
-    void Update_AfterTarget(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg);
+    virtual void Priority_Update(_float timeDelta);
+    void Update_AfterTarget(_float timeDelta) override;
     void Change_CamMode(ECamMode m_changeMode, ECamMode m_nextMode);
     void SetTarget(weak_ptr<CGameObject> target, _float startPitchAngle, _float startYawAngle, _float startDistance,
-                   _float fTimeDelta);
-    virtual void Update(_float fTimeDelta);
-    virtual void Late_Update(_float fTimeDelta);
+                   _float timeDelta);
+    virtual void Update(_float timeDelta);
+    virtual void Late_Update(_float timeDelta);
     virtual HRESULT Render();
 
-    void Update_Follow(_float fTimeDelta, shared_ptr<CamDesc> pDesc);
-    bool Update_Lerp(_float fTimeDelta, shared_ptr<CamDesc> pDesc);
-    void Get_Target_PosLook(_float3& camPos, _float3& vTargetRot);
-    _float3 Shake_Cam(_float fTimeDelta);
+    void Update_Follow(_float timeDelta, shared_ptr<CamDesc> desc);
+    bool Update_Lerp(_float timeDelta, shared_ptr<CamDesc> desc);
+    void Get_Target_PosLook(_float3& camPos, _float3& targetRot);
+    _float3 Shake_Cam(_float timeDelta);
 private:
     void Start_Targetting(_float4 startPos, _float degree, _float distance);
 
@@ -55,7 +55,7 @@ private:
 
     //
 
-    float  m_startFovY = 0.f;
+    float  m_startFOVY = 0.f;
     float m_acc = 0.f;
 
     deque<shared_ptr<CamDesc>> m_camCommands;
@@ -87,8 +87,8 @@ private:
     _bool m_isFirstFlag = {false};
 public:
     //void* pArg : 사본객체의 추가적인 초기화가 필요 할수 있음 런타임 할당 되는 주소 같은거
-    static shared_ptr<CCamera_Play> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    virtual shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CCamera_Play> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    virtual shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

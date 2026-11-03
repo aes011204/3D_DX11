@@ -1,4 +1,4 @@
-//--------------------------------------------------------------------------------------
+﻿//--------------------------------------------------------------------------------------
 // File: DebugDraw.cpp
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -192,12 +192,12 @@ void XM_CALLCONV DX::DrawRing(PrimitiveBatch<VertexPositionColor>* batch,
 
     VertexPositionColor verts[c_ringSegments + 1];
 
-    FLOAT fAngleDelta = XM_2PI / float(c_ringSegments);
+    FLOAT angleDelta = XM_2PI / float(c_ringSegments);
     // Instead of calling cos/sin for each segment we calculate
     // the sign of the angle delta and then incrementally calculate sin
     // and cosine from then on.
-    XMVECTOR cosDelta = XMVectorReplicate(cosf(fAngleDelta));
-    XMVECTOR sinDelta = XMVectorReplicate(sinf(fAngleDelta));
+    XMVECTOR cosDelta = XMVectorReplicate(cosf(angleDelta));
+    XMVECTOR sinDelta = XMVectorReplicate(sinf(angleDelta));
     XMVECTOR incrementalSin = XMVectorZero();
     static const XMVECTORF32 s_initialCos =
     {

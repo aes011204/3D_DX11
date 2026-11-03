@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 #include"Base.h"
 
-//ÀÎÅÍÆäÀÌ½º Å¬·¡½ºÀÇ Æ¯Â¡? ±ÔÄ¢
-//¸â¹ö º¯¼ö´Â °¡±ŞÀû °®Áö ¾Ê´Â´Ù
-//°¡»ó ¼Ò¸êÀÚ´Â ÇÊ¼öÀÓ
-//¸ğµç ÇÔ¼ö´Â ¼ø¼ö °¡»ó ÇÔ¼ö·Î ¸¸µç´Ù
+//ì¸í„°í˜ì´ìŠ¤ í´ë˜ìŠ¤ì˜ íŠ¹ì§•? ê·œì¹™
+//ë©¤ë²„ ë³€ìˆ˜ëŠ” ê°€ê¸‰ì  ê°–ì§€ ì•ŠëŠ”ë‹¤
+//ê°€ìƒ ì†Œë©¸ìëŠ” í•„ìˆ˜ì„
+//ëª¨ë“  í•¨ìˆ˜ëŠ” ìˆœìˆ˜ ê°€ìƒ í•¨ìˆ˜ë¡œ ë§Œë“ ë‹¤
 
-// ÇÔ¼öÀÇ pOwner Àº ¸É¹öº¯¼ö°¡ ¾Æ´ÑÀÌ»ó ±×³É  row pointer°¡ ³ªÀ½ 
-// ÀÏ´Ü ÇØ´ç ÇÔ¼ö°¡ È£ÃâµÇ¾ú´Â°ÍÀÌ ºÎ¸ğ°¡ »ì¾ÆÀÖ´Ù´Â°Å¶ó´Â°Í
+// í•¨ìˆ˜ì˜ pOwner ì€ ë§´ë²„ë³€ìˆ˜ê°€ ì•„ë‹Œì´ìƒ ê·¸ëƒ¥  row pointerê°€ ë‚˜ìŒ 
+// ì¼ë‹¨ í•´ë‹¹ í•¨ìˆ˜ê°€ í˜¸ì¶œë˜ì—ˆëŠ”ê²ƒì´ ë¶€ëª¨ê°€ ì‚´ì•„ìˆë‹¤ëŠ”ê±°ë¼ëŠ”ê²ƒ
 
 NS_BEGIN(Engine)
 
@@ -16,9 +16,9 @@ class ENGINE_DLL IModifier
 public:
 	virtual ~IModifier() = default;
 public:
-	virtual void Tick(float fDeltaTime, class CUI* pOwner) = 0;
-	virtual void OnAppear(float fDeltaTime, class CUI* pOwner) = 0;
-	virtual void OnDisappear(float fDeltaTime, class CUI* pOwner) = 0;
+	virtual void Tick(float deltaTime, class CUI* owner) = 0;
+	virtual void OnAppear(float deltaTime, class CUI* owner) = 0;
+	virtual void OnDisappear(float deltaTime, class CUI* owner) = 0;
 
 	virtual bool IsFinished() = 0;
 };

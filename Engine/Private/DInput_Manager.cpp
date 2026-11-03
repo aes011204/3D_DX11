@@ -90,12 +90,12 @@ void CDInput_Manager::OnGui()
 
 unique_ptr<CDInput_Manager> CDInput_Manager::Create(HINSTANCE hInst, HWND hWnd)
 {
-    unique_ptr<CDInput_Manager> pInstance(new CDInput_Manager());
-    if (FAILED(pInstance->Initialize(hInst, hWnd)))
+    unique_ptr<CDInput_Manager> instance(new CDInput_Manager());
+    if (FAILED(instance->Initialize(hInst, hWnd)))
     {
         MSG_BOX("failed prototype: CDInput_Manager");
     }
-    return pInstance;
+    return instance;
 }
 
 void CDInput_Manager::Free()

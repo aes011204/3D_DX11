@@ -10,12 +10,12 @@ public:
     virtual ~CBone() = default;
 
 public:
-    HRESULT Initialize(const Cvt_Bone& BoneDesc);
+    HRESULT Initialize(const Cvt_Bone& boneDesc);
 
-    void Update_CombinedTransformMatrix(const vector<shared_ptr<CBone>> Bones, _fmatrix PreTransformMatrix);
-    void Update_TransformationMatrix(_fmatrix TransformMatrix);
+    void Update_CombinedTransformMatrix(const vector<shared_ptr<CBone>> Bones, _fmatrix preTransformMatrix);
+    void Update_TransformationMatrix(_fmatrix transformMatrix);
 public:
-    _bool isCompare(const _char* pBoneName) {return !strcmp(pBoneName, m_name);}
+    _bool isCompare(const _char* boneName) {return !strcmp(boneName, m_name);}
     const _float4x4* Get_CombinedTransformationMatrixPtr() const { return &m_combinedTransformationMatrix; }
 private:
 
@@ -26,7 +26,7 @@ private:
 
 public:
    
-    static shared_ptr<CBone> Create(const Cvt_Bone& BoneDesc);
+    static shared_ptr<CBone> Create(const Cvt_Bone& boneDesc);
 	shared_ptr<CBone> Clone();
     void Free() override;
 

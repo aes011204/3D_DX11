@@ -10,19 +10,19 @@ CPipeLine::~CPipeLine()
 	Free();
 }
 
-HRESULT CPipeLine::Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName)
+HRESULT CPipeLine::Bind_CamPosition(shared_ptr<class CShader> shader, const _char* constantName)
 {
-	return pShader->Bind_RawValue(pConstantName, Get_CamPosition(), sizeof(_float4));
+	return shader->Bind_RawValue(constantName, Get_CamPosition(), sizeof(_float4));
 }
 
-HRESULT CPipeLine::Bind_TransformMatrix(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
+HRESULT CPipeLine::Bind_TransformMatrix(ED3DTS transformState, shared_ptr<class CShader> shader, const _char* constantName)
 {
-	return pShader->Bind_Matrix(pConstantName,&m_transformStateMatrices[ETOI(eTransformState)]);
+	return shader->Bind_Matrix(constantName,&m_transformStateMatrices[ETOI(transformState)]);
 }
 
-HRESULT CPipeLine::Bind_TransformMatrix_Inverse(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
+HRESULT CPipeLine::Bind_TransformMatrix_Inverse(ED3DTS transformState, shared_ptr<class CShader> shader, const _char* constantName)
 {
-	return pShader->Bind_Matrix(pConstantName, &m_transformInverseStateMatrices[ETOI(eTransformState)]);
+	return shader->Bind_Matrix(constantName, &m_transformInverseStateMatrices[ETOI(transformState)]);
 }
 
 void CPipeLine::Update()
@@ -42,13 +42,13 @@ void CPipeLine::OnGui()
 
 unique_ptr<CPipeLine> CPipeLine::Create()
 {
-	unique_ptr<CPipeLine> pInstance(new CPipeLine());
+	unique_ptr<CPipeLine> instance(new CPipeLine());
 
 	/*if (FAILED(pInstance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CPipeLine");
 	}*/
-	return pInstance;
+	return instance;
 }
 
 void CPipeLine::Free()

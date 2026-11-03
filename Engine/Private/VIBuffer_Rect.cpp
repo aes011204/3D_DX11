@@ -1,7 +1,7 @@
 ﻿#include "VIBuffer_Rect.h"
 
-CVIBuffer_Rect::CVIBuffer_Rect(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CVIBuffer(pDevice, pContext)
+CVIBuffer_Rect::CVIBuffer_Rect(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CVIBuffer(device, context)
 {
 }
 
@@ -24,98 +24,98 @@ HRESULT CVIBuffer_Rect::Initialize_Prototype()
 
 	// Vertex Buffer
 
-	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_vertexStride;
+	D3D11_BUFFER_DESC vertexBufferDesc{};
+	vertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
-	VertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
 
-	VTXTEX* pVertices = new VTXTEX[m_numVertices];
-	pVertices[0].position = _float3(-0.5f, 0.5f, 0.f);
-	pVertices[0].texcoord = _float2(0.f, 0.f);
+	VTXTEX* vertices = new VTXTEX[m_numVertices];
+	vertices[0].position = _float3(-0.5f, 0.5f, 0.f);
+	vertices[0].texcoord = _float2(0.f, 0.f);
 
-	pVertices[1].position = _float3(0.5f, 0.5f, 0.f);
-	pVertices[1].texcoord = _float2(1.f, 0.f);
+	vertices[1].position = _float3(0.5f, 0.5f, 0.f);
+	vertices[1].texcoord = _float2(1.f, 0.f);
 
-	pVertices[2].position = _float3(0.5f, -0.5f, 0.f);
-	pVertices[2].texcoord = _float2(1.f, 1.f);
+	vertices[2].position = _float3(0.5f, -0.5f, 0.f);
+	vertices[2].texcoord = _float2(1.f, 1.f);
 
-	pVertices[3].position = _float3(-0.5f, -0.5f, 0.f);
-	pVertices[3].texcoord = _float2(0.f, 1.f);
+	vertices[3].position = _float3(-0.5f, -0.5f, 0.f);
+	vertices[3].texcoord = _float2(0.f, 1.f);
 
 
-	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
-	VertexInitialData.pSysMem = pVertices;
+	D3D11_SUBRESOURCE_DATA			vertexInitialData{};
+	vertexInitialData.pSysMem = vertices;
 
-	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
+	if (FAILED(m_device->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_VB)))
 		return E_FAIL;
 
 
 	//Index Buffer
 
-	D3D11_BUFFER_DESC	IndexBufferDesc{};
-	IndexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
-	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.StructureByteStride = m_indexStride;
-	IndexBufferDesc.CPUAccessFlags = 0;
-	IndexBufferDesc.MiscFlags = 0;
+	D3D11_BUFFER_DESC	indexBufferDesc{};
+	indexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.StructureByteStride = m_indexStride;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
 
-	_ushort* pIndices = new _ushort[m_numIndices];
+	_ushort* indices = new _ushort[m_numIndices];
 
-	pIndices[0] = 0;
-	pIndices[1] = 1;
-	pIndices[2] = 2;
+	indices[0] = 0;
+	indices[1] = 1;
+	indices[2] = 2;
 
-	pIndices[3] = 0;
-	pIndices[4] = 2;
-	pIndices[5] = 3;
+	indices[3] = 0;
+	indices[4] = 2;
+	indices[5] = 3;
 
-	D3D11_SUBRESOURCE_DATA			IndexInitialData{};
-	IndexInitialData.pSysMem = pIndices;
+	D3D11_SUBRESOURCE_DATA			indexInitialData{};
+	indexInitialData.pSysMem = indices;
 
 
-	if (FAILED(m_device->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_IB)))
+	if (FAILED(m_device->CreateBuffer(&indexBufferDesc, &indexInitialData, &m_IB)))
 		return E_FAIL;
 
 
-	Safe_Delete_Array(pVertices);
-	Safe_Delete_Array(pIndices);
+	Safe_Delete_Array(vertices);
+	Safe_Delete_Array(indices);
 
 
 	return S_OK;
 
 }
 
-HRESULT CVIBuffer_Rect::Initialize(void* pArg)
+HRESULT CVIBuffer_Rect::Initialize(void* arg)
 {
 	return S_OK;
 
 }
 
-shared_ptr<CVIBuffer_Rect> CVIBuffer_Rect::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CVIBuffer_Rect> CVIBuffer_Rect::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CVIBuffer_Rect> pInstance(new CVIBuffer_Rect(pDevice, pContext), [](CVIBuffer_Rect* p) {p->Free(); delete p;});
+	shared_ptr<CVIBuffer_Rect> instance(new CVIBuffer_Rect(device, context), [](CVIBuffer_Rect* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CVIBuffer_Rect");
 	}
-	return pInstance;
+	return instance;
 }
 
-shared_ptr<CComponent> CVIBuffer_Rect::Clone(void* pArg)
+shared_ptr<CComponent> CVIBuffer_Rect::Clone(void* arg)
 {
-	shared_ptr<CVIBuffer_Rect> pInstance ( new CVIBuffer_Rect(*this), [](CVIBuffer_Rect* p) {p->Free(); delete p;});
+	shared_ptr<CVIBuffer_Rect> instance ( new CVIBuffer_Rect(*this), [](CVIBuffer_Rect* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CVIBuffer_Rect");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CVIBuffer_Rect::Free()

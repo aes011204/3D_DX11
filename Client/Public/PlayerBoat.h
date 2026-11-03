@@ -44,7 +44,7 @@ public:
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
     void Get_Damage(_uint damage=1);
-    _uint Get_DamageFixPrice() { return (m_maxHp - m_hp) * 80.f; };
+    _uint Get_DamageFixPrice() { return (m_maxHP - m_HP) * 80.f; };
 
     float Get_RodSpeed() const{return m_rodSpeed;}
     shared_ptr<CInventory> GetInventory() const{return m_invenCom;}
@@ -95,8 +95,8 @@ private:
     _bool m_wasDead = { false };
 private:
     int m_curBoatLevel = {};
-    int m_hp = {4 };
-    int m_maxHp = {4};
+    int m_HP = {4 };
+    int m_maxHP = {4};
     _float m_money = {};
    _uint m_boatSpeed = {10}; //기본은 10
    _float m_rodSpeed = {10.f};

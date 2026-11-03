@@ -29,21 +29,21 @@ HRESULT CMiniGame_Logic_Diamond::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMiniGame_Logic_Diamond::Render(_uint iMeshIndex)
+HRESULT CMiniGame_Logic_Diamond::Render(_uint meshIndex)
 {
 
 	return S_OK;
 
 }
 
-HRESULT CMiniGame_Logic_Diamond::Initialize(void* pArg)
+HRESULT CMiniGame_Logic_Diamond::Initialize(void* arg)
 {
 	m_miniGameType = EMiniGameType::DIAMOND;
 
-	MiniGameLogicDiamondDesc* pDesc = static_cast<MiniGameLogicDiamondDesc*>(pArg);
+	MiniGameLogicDiamondDesc* desc = static_cast<MiniGameLogicDiamondDesc*>(arg);
 
 	m_speed = 1.f;
-	__super::Initialize(pDesc);
+	__super::Initialize(desc);
 
 	return S_OK;
 
@@ -104,7 +104,7 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 					m_gameInstance.lock()->Play_Once(L"Fishing_Failure");
 
 					m_changeColor = true;
-					colortime = .5f;
+					m_colorTime = .5f;
 				}
 			//}
 
@@ -129,12 +129,12 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 
 			Evt_GetFish  e = {};
-			e.DefID = m_defId;
+			e.defID = m_defID;
 			e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
-			auto& item = CItemDB::GetInstance()->GetItemByID(m_defId);
+			auto& item = CItemDB::GetInstance()->GetItemByID(m_defID);
 			if (auto fish = std::get_if<FishDef>(&item.typeDef))
 			{
-				e.fishInst.mutationId = SelectMutationNoRepeat(*fish);
+				e.fishInst.mutationID = SelectMutationNoRepeat(*fish);
 			}
 			m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
@@ -228,16 +228,16 @@ void CMiniGame_Logic_Diamond::OnInput()
 }
 
 
-shared_ptr<CMiniGame_Logic_Diamond> CMiniGame_Logic_Diamond::Create(void* pArg)
+shared_ptr<CMiniGame_Logic_Diamond> CMiniGame_Logic_Diamond::Create(void* arg)
 {
-	shared_ptr<CMiniGame_Logic_Diamond> pInstance(new CMiniGame_Logic_Diamond(), [](CMiniGame_Logic_Diamond* p) {p->Free(); delete(p); });
+	shared_ptr<CMiniGame_Logic_Diamond> instance(new CMiniGame_Logic_Diamond(), [](CMiniGame_Logic_Diamond* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMiniGame_Logic_Diamond::Free()

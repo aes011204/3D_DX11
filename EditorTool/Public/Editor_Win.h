@@ -10,7 +10,7 @@ public:
     virtual ~CEditor_Win() = default;
 
     virtual HRESULT Initialize() ;
-    virtual void Update(float fTimeDelta) ;
+    virtual void Update(float timeDelta) ;
     virtual void Render() ; // 여기서 ImGui 코드를 작성합니다.
 
 

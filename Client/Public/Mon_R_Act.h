@@ -16,17 +16,17 @@ public:
     enum EState { ATTACK, IDLE, RELEASE, END };
 
 private:
-    CMon_R_Act(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CMon_R_Act(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CMon_R_Act(const CMon_R_Act& prototype);
 public:
     virtual ~CMon_R_Act() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
@@ -45,9 +45,9 @@ protected:
     const _float4x4* m_socketMatrix = { nullptr };
 
 
-    XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
+    XMMATRIX CombinedWorldMatrix(_fmatrix childrenMatrix)
     {
-        return ChildrenMatrix * XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
+        return childrenMatrix * XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
     }
 
 private:
@@ -71,8 +71,8 @@ private:
     weak_ptr<CGameObject> m_player = {  };
 public:
 
-    static shared_ptr<CMon_R_Act> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CMon_R_Act> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

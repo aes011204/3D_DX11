@@ -1,7 +1,7 @@
 ﻿//#include "pch.h"
 #include "ImguiManager.h"
 #include "EditorInstance.h"
-#include "Win_Mananger.h"
+#include "Win_Manager.h"
 #include "GameView.h"
 #include "GameInstance.h"
 #include "Graphic_Device.h"
@@ -29,17 +29,17 @@ Editor::CEditorInstance::CEditorInstance()
 }
 
 
-HRESULT Editor::CEditorInstance::Initialize_Editor(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+HRESULT Editor::CEditorInstance::Initialize_Editor(const EngineDesc& engineDesc, ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
 	m_imguiManager = CImguiManager::Create();
-	m_imguiManager->Initialize(engineDesc.hWnd,pDevice, pContext);
+	m_imguiManager->Initialize(engineDesc.hWnd,device, context);
 
-	m_winManager = CWin_Mananger::Create();
+	m_winManager = CWin_Manager::Create();
 	if (!m_winManager)
 		return E_FAIL;
 
-	m_gameView = CGameView::Create(engineDesc, pDevice, pContext);
+	m_gameView = CGameView::Create(engineDesc, device, context);
 	if (!m_gameView)
 		return E_FAIL;
 
@@ -53,14 +53,14 @@ HRESULT Editor::CEditorInstance::Initialize_Editor(const EngineDesc& engineDesc,
 	return S_OK;
 }
 
-void Editor::CEditorInstance::Update_Editor(float fTimeDelta)
+void Editor::CEditorInstance::Update_Editor(float timeDelta)
 {
     const auto updateStart = EditorPerfClock::now();
 	if (m_winManager)
-		m_winManager->Update(fTimeDelta);
+		m_winManager->Update(timeDelta);
 
 	if (m_gameView)
-		m_gameView->Update(fTimeDelta);
+		m_gameView->Update(timeDelta);
 
 	
 	//m_pImgui_Manager->Example();

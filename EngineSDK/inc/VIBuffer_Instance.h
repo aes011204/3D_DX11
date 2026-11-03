@@ -16,14 +16,14 @@ public:
 	};
 
 protected:
-	CVIBuffer_Instance(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CVIBuffer_Instance(const CVIBuffer_Instance& Prototype);
+	CVIBuffer_Instance(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CVIBuffer_Instance(const CVIBuffer_Instance& prototype);
 public:
 	virtual ~CVIBuffer_Instance() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize(void* arg);
 	virtual HRESULT Bind_Resources();
 	virtual HRESULT Render();
 
@@ -39,7 +39,7 @@ protected:
 
 	
 public:
-	virtual shared_ptr<CComponent> Clone(void* pArg)=0;
+	virtual shared_ptr<CComponent> Clone(void* arg)=0;
 	virtual void Free() override;
 
 

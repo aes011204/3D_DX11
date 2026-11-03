@@ -1,7 +1,7 @@
 ﻿#include "VIBuffer_Instance.h"
 
-CVIBuffer_Instance::CVIBuffer_Instance(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CVIBuffer(pDevice, pContext)
+CVIBuffer_Instance::CVIBuffer_Instance(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CVIBuffer(device, context)
 {
 }
 
@@ -22,7 +22,7 @@ HRESULT CVIBuffer_Instance::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CVIBuffer_Instance::Initialize(void* pArg)
+HRESULT CVIBuffer_Instance::Initialize(void* arg)
 {
 	return S_OK;
 
@@ -30,21 +30,21 @@ HRESULT CVIBuffer_Instance::Initialize(void* pArg)
 
 HRESULT CVIBuffer_Instance::Bind_Resources()
 {
-	ID3D11Buffer* pVertexBuffers[] = {
+	ID3D11Buffer* vertexBuffers[] = {
 		m_VB.Get(),
 		m_VBInstance.Get(),
 	};
 
-	_uint iVertexStrides[] = {
+	_uint vertexStrides[] = {
 		m_vertexStride,
 		m_instanceStride,
 	};
 
-	_uint iOffsets[] = {
+	_uint offsets[] = {
 		0,0,
 	};
 
-	m_context->IASetVertexBuffers(0, m_numVertexBuffers, pVertexBuffers, iVertexStrides, iOffsets);
+	m_context->IASetVertexBuffers(0, m_numVertexBuffers, vertexBuffers, vertexStrides, offsets);
 	m_context->IASetIndexBuffer(m_IB.Get(), 2 == m_indexStride ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
 	m_context->IASetPrimitiveTopology(m_primitiveType);
 

@@ -200,15 +200,15 @@ HRESULT CInventory::Initialize(void* arg)
 	
 	return S_OK;
 }
-ItemInst CInventory::Create_ItemInstance(IdType itemDefId, variant<monostate, FishInst, EquipInst>  typeDefInst, int rot)
+ItemInst CInventory::Create_ItemInstance(IDType itemDefID, variant<monostate, FishInst, EquipInst>  typeDefInst, int rot)
 {
 
-	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemDefId);
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemDefID);
 
 
 	ItemInst newInst;
-	newInst.itemDefId = def.itemId;
-	newInst.itemInstId = num++/*Generate_Unique_ID()*/;
+	newInst.itemDefID = def.itemID;
+	newInst.itemInstID = num++/*Generate_Unique_ID()*/;
 	newInst.itemType = def.itemType;
 
 	newInst.rotation = rot;
@@ -219,7 +219,7 @@ ItemInst CInventory::Create_ItemInstance(IdType itemDefId, variant<monostate, Fi
 	if (auto fish = get_if<FishInst>(&typeDefInst))
 	{
 		const FishDef& fishDef = get<FishDef>(def.typeDef);
-		const int mutationIndex = static_cast<int>(fish->mutationId) - 1;
+		const int mutationIndex = static_cast<int>(fish->mutationID) - 1;
 
 		if (mutationIndex >= 0 && mutationIndex < static_cast<int>(fishDef.vecMutation.size()))
 		{
@@ -268,7 +268,7 @@ ItemInst CInventory::AddItem(ItemInst itemInst, _int baseX, _int baseY)
 	{
 	case EPlaceColor::GREEN:
 	{
-		if (instID != kIdAbsence)
+		if (instID != kIDAbsence)
 			MSG_BOX("Wrong Item");
 
 		// 인밴에 바로 들어감
@@ -308,7 +308,7 @@ _bool CInventory::Auto_Add(ItemInst& itemInst)
 	{
 		for (int j = 0; j < m_w; j++)
 		{
-			if (m_invenSlot[i * m_w + j].itemInstId == kIdAbsence)
+			if (m_invenSlot[i * m_w + j].itemInstID == kIDAbsence)
 			{
 				EPlaceColor color = {};
 				CanPlace(itemInst, j, i, color);
@@ -329,18 +329,18 @@ _bool CInventory::Auto_Add(ItemInst& itemInst)
 _bool CInventory::Auto_Move_To(weak_ptr<CInventory> otherInven, _uint baseX, _uint baseY)
 {
 	//m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID
-		if (m_invenSlot[baseY * m_w + baseX].itemInstId != kIdAbsence)
+		if (m_invenSlot[baseY * m_w + baseX].itemInstID != kIDAbsence)
 	{
 		for (auto& item : m_inventory)
 		{
-			if (m_invenSlot[baseY * m_w + baseX].itemInstId == item.itemInstId)
+			if (m_invenSlot[baseY * m_w + baseX].itemInstID == item.itemInstID)
 			{
 				_bool result = otherInven.lock()->Auto_Add(item);
 
 
 				if(result == true)
 				{
-				RemoveFrom_Inven(item.itemInstId);
+				RemoveFrom_Inven(item.itemInstID);
 				return true;
 				}
 				else
@@ -357,7 +357,7 @@ _bool CInventory::Auto_Move_To(weak_ptr<CInventory> otherInven, _uint baseX, _ui
 _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceColor& color)
 {
 	// 해당 아이템의 모양 + BaseX,Y
-	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefId);
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
 	_bool hasOverlap = false;
 	int overlapID = {};
 	int absenceNum = {};
@@ -423,7 +423,7 @@ _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceCo
 			}
 		}
 
-		if (theSlot.itemInstId == kIdAbsence)
+		if (theSlot.itemInstID == kIDAbsence)
 		{
 			absenceNum++;
 		}
@@ -435,10 +435,10 @@ _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceCo
 			if (!hasOverlap)
 			{
 				//첫 번째 겹친 아이템
-				overlapID = theSlot.itemInstId;
+				overlapID = theSlot.itemInstID;
 				hasOverlap = true;
 			}
-			else if (theSlot.itemInstId != overlapID)
+			else if (theSlot.itemInstID != overlapID)
 			{
 
 				color = EPlaceColor::RED;
@@ -451,7 +451,7 @@ _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceCo
 	{
 		// 해당 칸 전부 빈칸이면 - 그린
 		color = EPlaceColor::GREEN;
-		return kIdAbsence;
+		return kIDAbsence;
 	}
 
 
@@ -461,14 +461,14 @@ _int CInventory::CanPlace(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceCo
 	return static_cast<_int>(overlapID);
 }
 
-ItemInst CInventory::RemoveFrom_Inven(int instId)
+ItemInst CInventory::RemoveFrom_Inven(int instID)
 {
 
 	ItemInst inst = {};
 	// 인밴에서 지우기
 	for (auto it = m_inventory.begin(); it != m_inventory.end(); it++) // 하나 지우고 바로 나갈꺼라 ㄱㅊ
 	{
-		if ((*it).itemInstId == instId)
+		if ((*it).itemInstID == instID)
 		{
 			inst = ((*it));
 			m_inventory.erase(it);
@@ -489,7 +489,7 @@ ItemInst CInventory::RemoveFrom_Inven(int instId)
 
 	for (int i = 0; i < inst.curBase.size(); i++)
 	{
-		m_invenSlot[inst.curBase[i].dy * m_w + inst.curBase[i].dx].itemInstId = 0;
+		m_invenSlot[inst.curBase[i].dy * m_w + inst.curBase[i].dx].itemInstID = 0;
 	}
 
 	m_isDirty = true;
@@ -502,7 +502,7 @@ ItemInst CInventory::Peek_Item(_uint musX, _uint musY)
 	if (musX >= m_w || musY >= m_h)
 	{
 		ItemInst emptyItem = {};
-		emptyItem.itemInstId = kIdAbsence;
+		emptyItem.itemInstID = kIDAbsence;
 		return emptyItem;
 	}
 
@@ -510,17 +510,17 @@ ItemInst CInventory::Peek_Item(_uint musX, _uint musY)
 
 	Slot& currentSlot = m_invenSlot[slotIndex];
 
-	if (currentSlot.itemInstId != kIdAbsence)
+	if (currentSlot.itemInstID != kIDAbsence)
 	{
 		for (auto& item : m_inventory)
 		{
-			if (item.itemInstId == currentSlot.itemInstId)
+			if (item.itemInstID == currentSlot.itemInstID)
 				return item;
 		}
 	}
 
 	ItemInst emptyItem = {};
-	emptyItem.itemInstId = kIdAbsence;
+	emptyItem.itemInstID = kIDAbsence;
 	return emptyItem;
 }
 
@@ -553,18 +553,18 @@ void CInventory::OnGui()
 
 						if (slot.isLock) color = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);      // 잠금 (검정)
 						else if (slot.isBroken) color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f); // 파손 (빨강)
-						else if (slot.itemInstId != 0) color = ImVec4(0.2f, 0.7f, 0.2f, 1.0f); // 아이템 존재 (초록)
+						else if (slot.itemInstID != 0) color = ImVec4(0.2f, 0.7f, 0.2f, 1.0f); // 아이템 존재 (초록)
 
 						// 해당 색상으로 버튼 출력 (내부에는 ID 표시)
 						ImGui::PushStyleColor(ImGuiCol_Button, color);
-						string slotLabel = to_string(slot.itemInstId) + "##" + to_string(slotIndex);
+						string slotLabel = to_string(slot.itemInstID) + "##" + to_string(slotIndex);
 						ImGui::Button(slotLabel.c_str(), ImVec2(35, 35));
 
 						// 마우스 올리면 툴팁으로 상세 정보 표시
 						if (ImGui::IsItemHovered()) {
 							ImGui::BeginTooltip();
 							ImGui::Text("Index: %d (x:%d, y:%d)", slotIndex, col, row);
-							ImGui::Text("ItemInstID: %d", slot.itemInstId);
+							ImGui::Text("ItemInstID: %d", slot.itemInstID);
 							ImGui::Text("Type: %d", (int)slot.slotType);
 							ImGui::EndTooltip();
 						}
@@ -581,7 +581,7 @@ void CInventory::OnGui()
 		{
 			for (auto& item : m_inventory)
 			{
-				string headerLabel = "InstID: " + to_string(item.itemInstId) + " (DefID: " + to_string(item.itemDefId) + ")";
+				string headerLabel = "InstID: " + to_string(item.itemInstID) + " (DefID: " + to_string(item.itemDefID) + ")";
 				if (ImGui::CollapsingHeader(headerLabel.c_str()))
 				{
 					ImGui::BulletText("Type: %d", (int)item.itemType);
@@ -608,12 +608,12 @@ Evt_ShipStat CInventory::CalculateEquip()
 {
 	Evt_ShipStat stat = {};
 
-	auto db = CItemDB::GetInstance();
+	auto DB = CItemDB::GetInstance();
 	for (_uint i = 0; i < m_inventory.size(); i++)
 	{
 		if (m_inventory[i].itemType == EItemType::EQUIP)
 		{
-			ItemDef def = db->GetItemByID(m_inventory[i].itemDefId);
+			ItemDef def = DB->GetItemByID(m_inventory[i].itemDefID);
 
 			if (EquipDef* equip = get_if<EquipDef>(&def.typeDef))
 			{
@@ -646,7 +646,7 @@ Evt_ShipStat CInventory::CalculateEquip()
 			}
 			if (m_inventory[i].itemType == EItemType::FISH)
 			{
-				ItemDef def = db->GetItemByID(m_inventory[i].itemDefId);
+				ItemDef def = DB->GetItemByID(m_inventory[i].itemDefID);
 				if (FishDef* fish = get_if<FishDef>(&def.typeDef))
 				{
 
@@ -692,10 +692,10 @@ void CInventory::Get_Damage()
 
 	// 장비가 있을떄 -> 장비 이것도 그냥 버려버려?? 일단은 버려
 	// 물고기가 있을 떄 -> 물고기 버리기 ->칸 x로 변환
-	if(m_invenSlot[randIndex].itemInstId!= kIdAbsence)
+	if(m_invenSlot[randIndex].itemInstID!= kIDAbsence)
 	{
 		//ThrowAwayFrom_Inven() // 이건 위치 
-		RemoveFrom_Inven(m_invenSlot[randIndex].itemInstId); // 아이디로
+		RemoveFrom_Inven(m_invenSlot[randIndex].itemInstID); // 아이디로
 	}
 		m_invenSlot[randIndex].isBroken = true;
 
@@ -712,7 +712,7 @@ void CInventory::PlaceOn_Inven(ItemInst itemInst, _int baseX, _int baseY)
 	m_inventory.push_back(itemInst);
 	ItemInst& stored = m_inventory.back();
 	// 인밴슬롯에 넣기
-	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefId);
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
 	_uint rot = itemInst.rotation % 4;
 
 
@@ -724,7 +724,7 @@ void CInventory::PlaceOn_Inven(ItemInst itemInst, _int baseX, _int baseY)
 
 	  // 락이랑 겹치는지, 밑아이템 하나랑 겹치는지 , 바로 놓을 수 있는지
 		//LOG_F(LOG_LEVEL::INFO, "fx:%d fy:%d w:%d h:%d", fx, fy, m_w, m_h);
-		m_invenSlot[fy * m_w + fx].itemInstId = itemInst.itemInstId;
+		m_invenSlot[fy * m_w + fx].itemInstID = itemInst.itemInstID;
 
 		stored.curBase.push_back({ fx,fy });
 	}
@@ -735,7 +735,7 @@ void CInventory::PlaceOn_Inven(ItemInst itemInst, _int baseX, _int baseY)
 
 ItemInst CInventory::TryMove_Item(_uint baseX, _uint baseY)
 {
-	IdType id = m_invenSlot[baseY * m_w + baseX].itemInstId;
+	IDType id = m_invenSlot[baseY * m_w + baseX].itemInstID;
 
 	ItemInst holdInst = RemoveFrom_Inven(id);
 
@@ -750,7 +750,7 @@ void CInventory::ThrowAwayFrom_Inven(_uint baseX, _uint baseY)
 
 	// 집고 있는거 버리는건 컨트롤러에서 (집고 있는 아이템의 관리는 컨트로러)
 
-	IdType id = m_invenSlot[baseY * m_w + baseX].itemInstId;
+	IDType id = m_invenSlot[baseY * m_w + baseX].itemInstID;
 
 	RemoveFrom_Inven(id);
 	m_isDirty = true;
@@ -881,7 +881,7 @@ void CInventory::SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, 
 
 
 
-	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefId);
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
 	_uint rot = itemInst.rotation % 4;
 
 

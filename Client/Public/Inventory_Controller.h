@@ -17,14 +17,14 @@ class CInventory_Controller :
     public CGameObject
 {
     //DECLARE_SINGLETON(CInventory_Controller)
-    CInventory_Controller(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CInventory_Controller(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
 public:
     virtual ~CInventory_Controller() = default;
 
 public:
-    HRESULT Initialize(weak_ptr<CInventory> Inven, shared_ptr<class CUI_Item> UIHoldItem);
-    void Update(float TimeDelta);
+    HRESULT Initialize(weak_ptr<CInventory> inven, shared_ptr<class CUI_Item> UIHoldItem);
+    void Update(float timeDelta);
 private:
     void Refresh_Hover();
     Evt_ItemHovered m_hoverState = {};
@@ -53,7 +53,7 @@ private:
     vector<_float2> m_offset = {};
     /*_float m_Rotaion = {};*/ // 이거 인스턴스 안에 있음
 
-    _uint m_prevItemInstId = {};//툴팁용 체크
+    _uint m_prevItemInstID = {};//툴팁용 체크
     //bool prevMouseOnSlot = { false };
     bool m_isDragging = false;
     bool m_isPrevDragging = false;
@@ -81,10 +81,10 @@ private:
 
 
 public:
-    static shared_ptr<CInventory_Controller> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven,shared_ptr<CUI_Item> UIHoldItem);
+    static shared_ptr<CInventory_Controller> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, weak_ptr<CInventory> inven,shared_ptr<CUI_Item> UIHoldItem);
     virtual void Free() override;
 
-    shared_ptr<CGameObject> Clone(void* pArg) { return shared_ptr<CGameObject>{}; };
+    shared_ptr<CGameObject> Clone(void* arg) { return shared_ptr<CGameObject>{}; };
 };
 
 

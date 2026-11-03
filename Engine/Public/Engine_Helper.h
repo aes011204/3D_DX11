@@ -1,4 +1,4 @@
- #pragma once
+﻿ #pragma once
 #include "Engine_Define.h"
 
 NS_BEGIN(Engine)
@@ -24,8 +24,8 @@ inline wstring S2W(const _string& str)
 
 
 template <typename T>
-_wstring ToWStr(T eValue) {
-    return _wstring(magic_enum::enum_name<T, wchar_t>(eValue));
+_wstring ToWStr(T value) {
+    return _wstring(magic_enum::enum_name<T, wchar_t>(value));
 }
 
 NS_END

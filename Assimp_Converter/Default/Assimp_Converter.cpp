@@ -9,19 +9,19 @@ vector<Cvt_VTXMESH> g_vecVertices;
 
 int main()
 {
-	const char* pInputFilePath = "../../Client/Bin/Resources/Models/";
-	const char* pOutputFilePath = "../../Client/Bin/Resources/BinaryModels/";
+	const char* inputFilePath = "../../Client/Bin/Resources/Models/";
+	const char* outputFilePath = "../../Client/Bin/Resources/BinaryModels/";
 
 
-	if (!filesystem::exists(pOutputFilePath))
+	if (!filesystem::exists(outputFilePath))
 	{
-		filesystem::create_directories(pOutputFilePath);
+		filesystem::create_directories(outputFilePath);
 	}
 
 
-	uint32_t iFlag = { /*aiProcess_GlobalScale | aiProcess_PreTransformVertices |*/ aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
+	uint32_t flag = { /*aiProcess_GlobalScale | aiProcess_PreTransformVertices |*/ aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
 	bool result = { false };
-	for (const auto& entry : filesystem::recursive_directory_iterator(pInputFilePath))
+	for (const auto& entry : filesystem::recursive_directory_iterator(inputFilePath))
 	{
 
 		if (filesystem::is_regular_file(entry.path()))
@@ -31,9 +31,9 @@ int main()
 
 				cout << "Checking: " << entry.path().string() << endl;
 
-				filesystem::path relativePath = filesystem::relative(entry.path(), pInputFilePath);
+				filesystem::path relativePath = filesystem::relative(entry.path(), inputFilePath);
 
-				filesystem::path exportPath = pOutputFilePath / relativePath;
+				filesystem::path exportPath = outputFilePath / relativePath;
 				exportPath.replace_extension(".dat");
 
 				filesystem::create_directories(exportPath.parent_path());
@@ -94,7 +94,7 @@ int IsAnim(string fbxPath)
 	return 0;
 }
 
-static const aiScene* LoadScene_Assimp(Assimp::Importer& importer, const string fbxPath, bool IsAnim, uint32_t iFlag = 0)
+static const aiScene* LoadScene_Assimp(Assimp::Importer& importer, const string fbxPath, bool IsAnim, uint32_t flag = 0)
 {
 	uint32_t flags =
 		aiProcess_ConvertToLeftHanded |	/* 왼손 좌표계 변경 */
@@ -256,7 +256,7 @@ static const aiScene* LoadScene_Assimp(Assimp::Importer& importer, const string 
 //
 //};
 
-bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
+bool Write_Model(const aiScene* scene, ofstream& OutFile, bool isAnim)
 {
 	Cvt_MeshInfo meshInfo = {};
 
@@ -264,12 +264,12 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 	{
 		g_vecVertices.clear();
 
-		aiMesh* pAIMesh = scene->mMeshes[meshIdx];
+		aiMesh* srcAIMesh = scene->mMeshes[meshIdx];
 
-		strncpy_s(meshInfo.name, pAIMesh->mName.C_Str(), MAX_PATH);
-		meshInfo.numVertices = pAIMesh->mNumVertices;
-		meshInfo.materialIndex = pAIMesh->mMaterialIndex;
-		meshInfo.numIndices = pAIMesh->mNumFaces * 3;
+		strncpy_s(meshInfo.name, srcAIMesh->mName.C_Str(), MAX_PATH);
+		meshInfo.numVertices = srcAIMesh->mNumVertices;
+		meshInfo.materialIndex = srcAIMesh->mMaterialIndex;
+		meshInfo.numIndices = srcAIMesh->mNumFaces * 3;
 		meshInfo.numBones = 0;
 
 		// -----------------------------
@@ -281,22 +281,22 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 		{
 			Cvt_VTXMESH vtx = {};
 
-			memcpy(&vtx.pos, &pAIMesh->mVertices[j], sizeof(float) * 3);
+			memcpy(&vtx.pos, &srcAIMesh->mVertices[j], sizeof(float) * 3);
 
 			for (uint32_t uv = 0; uv < 8; ++uv)
 			{
-				if (pAIMesh->HasTextureCoords(uv))
+				if (srcAIMesh->HasTextureCoords(uv))
 				{
-					vtx.uv[uv][0] = pAIMesh->mTextureCoords[uv][j].x;
-					vtx.uv[uv][1] = pAIMesh->mTextureCoords[uv][j].y;
+					vtx.uv[uv][0] = srcAIMesh->mTextureCoords[uv][j].x;
+					vtx.uv[uv][1] = srcAIMesh->mTextureCoords[uv][j].y;
 				}
 			}
 
-			if (pAIMesh->HasNormals())
-				memcpy(&vtx.normal, &pAIMesh->mNormals[j], sizeof(float) * 3);
+			if (srcAIMesh->HasNormals())
+				memcpy(&vtx.normal, &srcAIMesh->mNormals[j], sizeof(float) * 3);
 
-			if (pAIMesh->HasTangentsAndBitangents())
-				memcpy(&vtx.tangent, &pAIMesh->mTangents[j], sizeof(float) * 3);
+			if (srcAIMesh->HasTangentsAndBitangents())
+				memcpy(&vtx.tangent, &srcAIMesh->mTangents[j], sizeof(float) * 3);
 
 			for (int k = 0; k < 4; ++k)
 			{
@@ -311,21 +311,21 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 		// Bone 처리 + Remap
 		// -----------------------------
 		vector<Cvt_BoneAdd> m_VecBoneAdd;
-		vector<int> boneRemap(pAIMesh->mNumBones, -1);
+		vector<int> boneRemap(srcAIMesh->mNumBones, -1);
 
-		for (size_t boneIdx = 0; boneIdx < pAIMesh->mNumBones; boneIdx++)
+		for (size_t boneIdx = 0; boneIdx < srcAIMesh->mNumBones; boneIdx++)
 		{
-			aiBone* pAIBone = pAIMesh->mBones[boneIdx];
+			aiBone* srcAIBone = srcAIMesh->mBones[boneIdx];
 
 			int globalBoneIndex = -1;
 
 			for (int b = 0; b < g_vecBones.size(); ++b)
 			{
-				if (strcmp(g_vecBones[b].name, pAIBone->mName.C_Str()) == 0)
+				if (strcmp(g_vecBones[b].name, srcAIBone->mName.C_Str()) == 0)
 				{
 					globalBoneIndex = b;
 
-					aiMatrix4x4 offset = pAIBone->mOffsetMatrix;
+					aiMatrix4x4 offset = srcAIBone->mOffsetMatrix;
 					offset = offset.Transpose();
 
 					memcpy(&g_vecBones[b].offsetMatrix, &offset, sizeof(float) * 16);
@@ -350,18 +350,18 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 		// -----------------------------
 		// Weight 적용 
 		// -----------------------------
-		for (size_t boneIdx = 0; boneIdx < pAIMesh->mNumBones; boneIdx++)
+		for (size_t boneIdx = 0; boneIdx < srcAIMesh->mNumBones; boneIdx++)
 		{
-			aiBone* pAIBone = pAIMesh->mBones[boneIdx];
+			aiBone* srcAIBone = srcAIMesh->mBones[boneIdx];
 
 			int mappedIndex = boneRemap[boneIdx];
 			if (mappedIndex == -1)
 				continue;
 
-			for (uint32_t w = 0; w < pAIBone->mNumWeights; ++w)
+			for (uint32_t w = 0; w < srcAIBone->mNumWeights; ++w)
 			{
-				uint32_t vtxID = pAIBone->mWeights[w].mVertexId;
-				float weight = pAIBone->mWeights[w].mWeight;
+				uint32_t vtxID = srcAIBone->mWeights[w].mVertexId;
+				float weight = srcAIBone->mWeights[w].mWeight;
 
 				if (vtxID >= g_vecVertices.size())
 					continue;
@@ -434,11 +434,11 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 		vector<uint32_t> vecIndices;
 		vecIndices.reserve(meshInfo.numIndices);
 
-		for (uint32_t f = 0; f < pAIMesh->mNumFaces; ++f)
+		for (uint32_t f = 0; f < srcAIMesh->mNumFaces; ++f)
 		{
-			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[0]);
-			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[1]);
-			vecIndices.push_back(pAIMesh->mFaces[f].mIndices[2]);
+			vecIndices.push_back(srcAIMesh->mFaces[f].mIndices[0]);
+			vecIndices.push_back(srcAIMesh->mFaces[f].mIndices[1]);
+			vecIndices.push_back(srcAIMesh->mFaces[f].mIndices[2]);
 		}
 
 		OutFile.write((char*)vecIndices.data(), sizeof(uint32_t) * meshInfo.numIndices);
@@ -448,18 +448,18 @@ bool Write_Model(const aiScene* scene, ofstream& OutFile, bool bIsAnim)
 	return true;
 }
 
-bool Ready_Bones(const aiNode* pAINode, unsigned int iParentBoneIndex, ofstream& OutFile)
+bool Ready_Bones(const aiNode* srcAINode, unsigned int parentBoneIndex, ofstream& OutFile)
 {
 	/*shared_ptr<CAssimp_Bone> pBone = CAssimp_Bone::Create(pAINode, iParentIndex);
 	if (nullptr == pBone)
 		return E_FAIL;*/
 
 	Cvt_Bone Bone = {};
-	strcpy_s(Bone.name, pAINode->mName.data);
+	strcpy_s(Bone.name, srcAINode->mName.data);
 
-	Bone.parentBoneIndex = iParentBoneIndex;
+	Bone.parentBoneIndex = parentBoneIndex;
 
-	aiMatrix4x4 tmpsetMat = pAINode->mTransformation;
+	aiMatrix4x4 tmpsetMat = srcAINode->mTransformation;
 	tmpsetMat = tmpsetMat.Transpose();
 	memcpy(&Bone.transformationMatrix, &tmpsetMat, sizeof(float) * 16);
 
@@ -469,14 +469,14 @@ bool Ready_Bones(const aiNode* pAINode, unsigned int iParentBoneIndex, ofstream&
 
 	g_vecBones.push_back(Bone);
 
-	int iPIndex = g_vecBones.size() - 1; // 부모인덱스 = 백터 사이즈 -1 
+	int curBoneIndex = g_vecBones.size() - 1; // 부모인덱스 = 백터 사이즈 -1 
 
 
 	//OutFile.write((char*)&Bone, sizeof(Cvt_Bone));	g_vecBones.
 
-	for (size_t i = 0; i < pAINode->mNumChildren; i++)
+	for (size_t i = 0; i < srcAINode->mNumChildren; i++)
 	{
-		Ready_Bones(pAINode->mChildren[i], iPIndex, OutFile);
+		Ready_Bones(srcAINode->mChildren[i], curBoneIndex, OutFile);
 	}
 
 	return true;
@@ -484,23 +484,23 @@ bool Ready_Bones(const aiNode* pAINode, unsigned int iParentBoneIndex, ofstream&
 
 
 
-bool Write_Channel(const aiNodeAnim* pAIChannel, ofstream& OutFile)
+bool Write_Channel(const aiNodeAnim* srcAIChannel, ofstream& OutFile)
 {
 
 	Cvt_Channel channelDesc = {};
 
-	unsigned int	m_numKeyFrames = max(pAIChannel->mNumPositionKeys, pAIChannel->mNumRotationKeys);
-	m_numKeyFrames = max(m_numKeyFrames, pAIChannel->mNumScalingKeys);
+	unsigned int	m_numKeyFrames = max(srcAIChannel->mNumPositionKeys, srcAIChannel->mNumRotationKeys);
+	m_numKeyFrames = max(m_numKeyFrames, srcAIChannel->mNumScalingKeys);
 	channelDesc.numKeyframes = m_numKeyFrames;
 
 
 
 	for (int i = 0; i < g_vecBones.size(); i++)
 	{
-		if (strcmp(g_vecBones[i].name, pAIChannel->mNodeName.data) == 0)
+		if (strcmp(g_vecBones[i].name, srcAIChannel->mNodeName.data) == 0)
 		{
 			channelDesc.boneIndex = i;
-			strncpy_s(channelDesc.boneName, pAIChannel->mNodeName.C_Str(), _TRUNCATE);
+			strncpy_s(channelDesc.boneName, srcAIChannel->mNodeName.C_Str(), _TRUNCATE);
 		}
 
 	};
@@ -508,36 +508,36 @@ bool Write_Channel(const aiNodeAnim* pAIChannel, ofstream& OutFile)
 
 	{
 
-		float vScale[3] = {};
-		float qRotation[4] = {};
-		float vTranslation[3] = {};
+		float scale[3] = {};
+		float rotation[4] = {};
+		float translation[3] = {};
 
 		for (size_t i = 0; i < channelDesc.numKeyframes; i++)
 		{
 			Cvt_Keyframe keyFrame = {};
-			if (pAIChannel->mNumScalingKeys > i)
+			if (srcAIChannel->mNumScalingKeys > i)
 			{
-				memcpy(&vScale, &pAIChannel->mScalingKeys[i].mValue, sizeof(float) * 3);
-				keyFrame.trackPosition = pAIChannel->mScalingKeys[i].mTime; // 이거 실제 시간이 아님
+				memcpy(&scale, &srcAIChannel->mScalingKeys[i].mValue, sizeof(float) * 3);
+				keyFrame.trackPosition = srcAIChannel->mScalingKeys[i].mTime; // 이거 실제 시간이 아님
 			}
-			if (pAIChannel->mNumRotationKeys > i)
+			if (srcAIChannel->mNumRotationKeys > i)
 			{
-				qRotation[0] = pAIChannel->mRotationKeys[i].mValue.x;
-				qRotation[1] = pAIChannel->mRotationKeys[i].mValue.y;
-				qRotation[2] = pAIChannel->mRotationKeys[i].mValue.z;
-				qRotation[3] = pAIChannel->mRotationKeys[i].mValue.w;
+				rotation[0] = srcAIChannel->mRotationKeys[i].mValue.x;
+				rotation[1] = srcAIChannel->mRotationKeys[i].mValue.y;
+				rotation[2] = srcAIChannel->mRotationKeys[i].mValue.z;
+				rotation[3] = srcAIChannel->mRotationKeys[i].mValue.w;
 
-				keyFrame.trackPosition = pAIChannel->mRotationKeys[i].mTime;
+				keyFrame.trackPosition = srcAIChannel->mRotationKeys[i].mTime;
 			}
-			if (pAIChannel->mNumPositionKeys > i)
+			if (srcAIChannel->mNumPositionKeys > i)
 			{
-				memcpy(&vTranslation, &pAIChannel->mPositionKeys[i].mValue, sizeof(float) * 3);
-				keyFrame.trackPosition = pAIChannel->mPositionKeys[i].mTime; // 이거 실제 시간이 아님
+				memcpy(&translation, &srcAIChannel->mPositionKeys[i].mValue, sizeof(float) * 3);
+				keyFrame.trackPosition = srcAIChannel->mPositionKeys[i].mTime; // 이거 실제 시간이 아님
 			}
 
-			memcpy(keyFrame.scale, vScale, sizeof(float) * 3);
-			memcpy(keyFrame.rotation, qRotation, sizeof(float) * 4);
-			memcpy(keyFrame.pos, vTranslation, sizeof(float) * 3);
+			memcpy(keyFrame.scale, scale, sizeof(float) * 3);
+			memcpy(keyFrame.rotation, rotation, sizeof(float) * 4);
+			memcpy(keyFrame.pos, translation, sizeof(float) * 3);
 
 			OutFile.write((char*)&keyFrame, sizeof(Cvt_Keyframe));
 		}
@@ -546,18 +546,18 @@ bool Write_Channel(const aiNodeAnim* pAIChannel, ofstream& OutFile)
 	return true;
 }
 
-bool Write_Animation(const aiScene* AIScene, ofstream& OutFile)
+bool Write_Animation(const aiScene* srcAIScene, ofstream& OutFile)
 {
-	for (size_t i = 0; i < AIScene->mNumAnimations; i++)
+	for (size_t i = 0; i < srcAIScene->mNumAnimations; i++)
 	{
-		aiAnimation* pAIAnimation = AIScene->mAnimations[i];
+		aiAnimation* srcAIAnimation = srcAIScene->mAnimations[i];
 
 		Cvt_Animation animationDesc = {};
-		strncpy_s(animationDesc.name, pAIAnimation->mName.C_Str(), MAX_PATH);
+		strncpy_s(animationDesc.name, srcAIAnimation->mName.C_Str(), MAX_PATH);
 		//memcpy(&animationDesc.szName, &pAIAnimation->mName, sizeof(MAX_PATH));
-		animationDesc.duration = pAIAnimation->mDuration;
-		animationDesc.tickPerSecond = pAIAnimation->mTicksPerSecond;
-		animationDesc.numChannels = pAIAnimation->mNumChannels;
+		animationDesc.duration = srcAIAnimation->mDuration;
+		animationDesc.tickPerSecond = srcAIAnimation->mTicksPerSecond;
+		animationDesc.numChannels = srcAIAnimation->mNumChannels;
 
 
 		OutFile.write((char*)&animationDesc, sizeof(Cvt_Animation));
@@ -566,17 +566,17 @@ bool Write_Animation(const aiScene* AIScene, ofstream& OutFile)
 		for (size_t i = 0; i < animationDesc.numChannels; i++)
 		{
 
-			Write_Channel(pAIAnimation->mChannels[i], OutFile);
+			Write_Channel(srcAIAnimation->mChannels[i], OutFile);
 		}
 	}
 	return true;
 }
 
-bool GetPath(aiMaterial* pAIMat, aiTextureType type, char* pOutPath, const char* szDrive, const char* szDir)
+bool GetPath(aiMaterial* srcAIMat, aiTextureType type, char* outPath, const char* szDrive, const char* szDir)
 {
 	aiString aiPath;
 
-	if (pAIMat->GetTexture(type, 0, &aiPath) == AI_SUCCESS)
+	if (srcAIMat->GetTexture(type, 0, &aiPath) == AI_SUCCESS)
 	{
 		/*string fileName = std::filesystem::path(aiPath.C_Str()).filename().string();
 		strncpy_s(pOutPath, _MAX_PATH, fileName.c_str(), _TRUNCATE);
@@ -595,7 +595,7 @@ bool GetPath(aiMaterial* pAIMat, aiTextureType type, char* pOutPath, const char*
 
 
 
-		strncpy_s(pOutPath, _MAX_PATH, fileName.c_str(), _TRUNCATE);
+		strncpy_s(outPath, _MAX_PATH, fileName.c_str(), _TRUNCATE);
 		return true;
 	}
 
@@ -605,31 +605,31 @@ bool GetPath(aiMaterial* pAIMat, aiTextureType type, char* pOutPath, const char*
 }
 
 
-bool Write_Texture(const aiScene* scene, ofstream& OutFile, const string& strInFilePath)
+bool Write_Texture(const aiScene* scene, ofstream& OutFile, const string& inFilePath)
 {
 
-	uint32_t iNumMaterials = scene->mNumMaterials;
+	uint32_t numMaterials = scene->mNumMaterials;
 
 
 	char szDrive[MAX_PATH] = {}, szDir[MAX_PATH] = {};
-	_splitpath_s(strInFilePath.c_str(), szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
+	_splitpath_s(inFilePath.c_str(), szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
 
 	vector<Cvt_Material> vecMat;
-	vecMat.reserve(iNumMaterials);
+	vecMat.reserve(numMaterials);
 
-	for (size_t i = 0; i < iNumMaterials; i++)
+	for (size_t i = 0; i < numMaterials; i++)
 	{
 		Cvt_Material mat = {};
-		aiMaterial* pAIMat = scene->mMaterials[i];
+		aiMaterial* srcAIMat = scene->mMaterials[i];
 
 		aiString matName;
-		pAIMat->Get(AI_MATKEY_NAME, matName);
+		srcAIMat->Get(AI_MATKEY_NAME, matName);
 		strncpy_s(mat.name, matName.C_Str(), _TRUNCATE);
 
-		GetPath(pAIMat, aiTextureType_DIFFUSE, mat.diffusePath, szDrive, szDir);// 색상
-		GetPath(pAIMat, aiTextureType_NORMALS, mat.normalPath, szDrive, szDir); // 노멀
-		GetPath(pAIMat, aiTextureType_SPECULAR, mat.specularPath, szDrive, szDir);// 광택
-		GetPath(pAIMat, aiTextureType_OPACITY, mat.opacityPath, szDrive, szDir);// 투명도 (유리 등)
+		GetPath(srcAIMat, aiTextureType_DIFFUSE, mat.diffusePath, szDrive, szDir);// 색상
+		GetPath(srcAIMat, aiTextureType_NORMALS, mat.normalPath, szDrive, szDir); // 노멀
+		GetPath(srcAIMat, aiTextureType_SPECULAR, mat.specularPath, szDrive, szDir);// 광택
+		GetPath(srcAIMat, aiTextureType_OPACITY, mat.opacityPath, szDrive, szDir);// 투명도 (유리 등)
 
 
 		vecMat.push_back(mat);
@@ -645,23 +645,23 @@ bool Write_Texture(const aiScene* scene, ofstream& OutFile, const string& strInF
 
 
 
-bool Write_Texture_vector(const aiScene* scene, ofstream& OutFile, const string& strInFilePath)
+bool Write_Texture_vector(const aiScene* scene, ofstream& OutFile, const string& inFilePath)
 {
 	// 재질의 총 개수 기록
-	uint32_t iNumMaterials = scene->mNumMaterials;
+	uint32_t numMaterials = scene->mNumMaterials;
 
-	cout << "NumMaterials : " << iNumMaterials << endl;
+	cout << "NumMaterials : " << numMaterials << endl;
 	// 경로 조립용 정보
 	char szDrive[MAX_PATH] = {}, szDir[MAX_PATH] = {};
-	_splitpath_s(strInFilePath.c_str(), szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
+	_splitpath_s(inFilePath.c_str(), szDrive, MAX_PATH, szDir, MAX_PATH, nullptr, 0, nullptr, 0);
 
-	for (size_t i = 0; i < iNumMaterials; i++)
+	for (size_t i = 0; i < numMaterials; i++)
 	{
-		aiMaterial* pAIMat = scene->mMaterials[i];
+		aiMaterial* srcAIMat = scene->mMaterials[i];
 
 		// 재질 이름 저장 (고정 크기)
 		aiString matName;
-		pAIMat->Get(AI_MATKEY_NAME, matName);
+		srcAIMat->Get(AI_MATKEY_NAME, matName);
 		char szMatName[MAX_PATH] = {};
 		strncpy_s(szMatName, matName.C_Str(), _TRUNCATE);
 		OutFile.write(szMatName, MAX_PATH);
@@ -670,21 +670,21 @@ bool Write_Texture_vector(const aiScene* scene, ofstream& OutFile, const string&
 		for (size_t j = 0; j < MAX_TEXTURE_SLOT; j++)
 		{
 			// [확인용 로그] 만약 여기서 iNumTextures가 계속 0이면 FBX 문제임
-			if (iNumMaterials == 0 && j == aiTextureType_DIFFUSE) {
+			if (numMaterials == 0 && j == aiTextureType_DIFFUSE) {
 				cout << "이 모델은 Diffuse 텍스처 정보가 아예 없음!" << endl;
 			}
-			uint32_t iNumTextures = pAIMat->GetTextureCount(static_cast<aiTextureType>(j));
+			uint32_t numTextures = srcAIMat->GetTextureCount(static_cast<aiTextureType>(j));
 
 			// 이 타입(j)의 텍스처 개수를 먼저 기록
-			OutFile.write((char*)&iNumTextures, sizeof(uint32_t));
+			OutFile.write((char*)&numTextures, sizeof(uint32_t));
 
-			if (iNumTextures != 0)
-				cout << iNumTextures << " / " << MAX_TEXTURE_SLOT << "  this type's tex Num" << iNumTextures << endl;
+			if (numTextures != 0)
+				cout << numTextures << " / " << MAX_TEXTURE_SLOT << "  this type's tex Num" << numTextures << endl;
 
-			for (size_t k = 0; k < iNumTextures; k++)
+			for (size_t k = 0; k < numTextures; k++)
 			{
 				aiString aiPath;
-				pAIMat->GetTexture(static_cast<aiTextureType>(j), k, &aiPath);
+				srcAIMat->GetTexture(static_cast<aiTextureType>(j), k, &aiPath);
 
 				// 경로 조립 (파일명만 추출해서 모델 폴더 경로와 합침)
 				string fullPath = aiPath.C_Str();
@@ -712,22 +712,22 @@ bool Write_Texture_vector(const aiScene* scene, ofstream& OutFile, const string&
 bool Convert_Binary(string fbxPath, string exportPath)
 {
 
-	int bIsAnim = IsAnim(fbxPath);
-	if (bIsAnim == -1)
+	int isAnim = IsAnim(fbxPath);
+	if (isAnim == -1)
 	{
 		return false; // 1이몀 애니메이션 2면 넌애님
 	}
 
 	Assimp::Importer Importer = {};
-	const aiScene* AIScene = LoadScene_Assimp(Importer, fbxPath, bIsAnim);
-	if (nullptr == AIScene)
+	const aiScene* srcAIScene = LoadScene_Assimp(Importer, fbxPath, isAnim);
+	if (nullptr == srcAIScene)
 		return false;
 
 	ofstream OutFile(exportPath, ios::binary);
 	if (!OutFile.is_open()) return false;
 
 	g_vecBones.clear();
-	if (false == Ready_Bones(AIScene->mRootNode, -1, OutFile))
+	if (false == Ready_Bones(srcAIScene->mRootNode, -1, OutFile))
 	{
 		return false;
 	}
@@ -735,10 +735,10 @@ bool Convert_Binary(string fbxPath, string exportPath)
 
 	Cvt_Header header = {};
 	header.magic = 0x4D534842;//MSHB
-	header.isAnim = bIsAnim ? 1 : 0;
-	header.numMeshes = AIScene->mNumMeshes;
-	header.numMaterial = AIScene->mNumMaterials;
-	header.numAnimation = AIScene->mNumAnimations;
+	header.isAnim = isAnim ? 1 : 0;
+	header.numMeshes = srcAIScene->mNumMeshes;
+	header.numMaterial = srcAIScene->mNumMaterials;
+	header.numAnimation = srcAIScene->mNumAnimations;
 	header.totalNumBone = g_vecBones.size();
 	
 	
@@ -750,16 +750,16 @@ bool Convert_Binary(string fbxPath, string exportPath)
 
 
 
-	if (false == Write_Model(AIScene, OutFile, bIsAnim))
+	if (false == Write_Model(srcAIScene, OutFile, isAnim))
 	{
 		return false;
 	}
-	if (bIsAnim && false == Write_Animation(AIScene, OutFile))
+	if (isAnim && false == Write_Animation(srcAIScene, OutFile))
 	{
 		return false;
 	}
 
-	if (false == Write_Texture_vector(AIScene, OutFile, fbxPath))
+	if (false == Write_Texture_vector(srcAIScene, OutFile, fbxPath))
 	{
 		return false;
 	}

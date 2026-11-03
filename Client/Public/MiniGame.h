@@ -17,12 +17,12 @@ public:
 	struct MiniGameDesc
 	{
 		
-		_uint DefID = {};
-		float RodSpeed = {};
-		_uint FishCount = {};
+		_uint defID = {};
+		float rodSpeed = {};
+		_uint fishCount = {};
 
-		weak_ptr<class CInventory_Controller> pInvenCtrl;
-		EMiniGameType MiniGameType = {};
+		weak_ptr<class CInventory_Controller> invenCtrl;
+		EMiniGameType miniGameType = {};
 	};
 protected:
 	CMiniGame();
@@ -33,8 +33,8 @@ public:
 public:
 
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
-	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Initialize(void* arg);
+	virtual HRESULT Render(_uint meshIndex);
 	virtual void Update(const _float& timeDelta);
 	_uint SelectMutationRandom(const FishDef& fishDef);
 	_uint SelectMutationNoRepeat(const FishDef& fishDef);
@@ -52,7 +52,7 @@ public:
 	//bool IsFinish() const { return m_bFin; }
 
 	EMiniGameType Get_MiniGameType() { return m_miniGameType; }
-	_uint Get_DefID() { return m_defId; };
+	_uint Get_DefID() { return m_defID; };
 	_uint GetFishCount() const { return m_fishCount; }
 	float GetProgress01() const { return m_prograssBar01; }
 
@@ -73,7 +73,7 @@ protected:
 
 	_bool m_isInputRequested = false;
 
-	_uint m_defId = { kIdAbsence };
+	_uint m_defID = { kIDAbsence };
 	float m_rodSpeed = {};
 	_uint m_fishCount = {};
 	float m_prograssBar01 = { 0 };
@@ -81,7 +81,7 @@ protected:
 	EMiniGameType m_miniGameType = {};
 	weak_ptr<class CInventory_Controller> m_invenCtrl = {};
 	weak_ptr<CGameInstance> m_gameInstance = {};
-	_uint m_prevFishId = { kIdAbsence };
+	_uint m_prevFishID = { kIDAbsence };
 public:
 //	static shared_ptr<CMiniGame> Create(void* pArg);
 	void Free() override;

@@ -12,8 +12,8 @@ public:
 
 public:
 	HRESULT Initialize(ifstream& InFile);
-	void Update_TransformationMatrix(_uint* pCurrentKeyFrameIndex, _float fCurrentTrackPosition, const vector<shared_ptr<class CBone>>& Bones);
-	void Update_ToMatrix(_uint* pCurrentKeyFrameIndex, _float fCurrentTrackPosition, vector<_matrix>& OutMatrices);
+	void Update_TransformationMatrix(_uint* currentKeyFrameIndex, _float currentTrackPosition, const vector<shared_ptr<class CBone>>& Bones);
+	void Update_ToMatrix(_uint* currentKeyFrameIndex, _float currentTrackPosition, vector<_matrix>& outMatrices);
 	int Get_BoneIndex() const { return m_boneIndex; }
 private:
 	vector<KeyFrame> m_keyFrames;

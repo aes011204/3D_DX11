@@ -51,13 +51,13 @@ _float3 CSea_Manager::Calculate_GerstnerWavePosition(_float3 pos)
     //float relativePosX = Pos.x - TerrainPos.x;
     //float relativePosZ = Pos.z - TerrainPos.z;
 
-    _float2 uv;
-    uv.x = (pos.x - m_terrainPos.x) / m_terrainSize;
-    uv.y = 1.0f - ((pos.z - m_terrainPos.z) / m_terrainSize);
-    uv.x = max(0.0f, min(1.0f, uv.x));
-    uv.y = max(0.0f, min(1.0f, uv.y));
-    float gridX = uv.x * (m_terrainBuffer.lock()->Get_NumVerticeX() - 1);
-    float gridZ = uv.y * (m_terrainBuffer.lock()->Get_NumVerticeZ() - 1);
+    _float2 UV;
+    UV.x = (pos.x - m_terrainPos.x) / m_terrainSize;
+    UV.y = 1.0f - ((pos.z - m_terrainPos.z) / m_terrainSize);
+    UV.x = max(0.0f, min(1.0f, UV.x));
+    UV.y = max(0.0f, min(1.0f, UV.y));
+    float gridX = UV.x * (m_terrainBuffer.lock()->Get_NumVerticeX() - 1);
+    float gridZ = UV.y * (m_terrainBuffer.lock()->Get_NumVerticeZ() - 1);
     
     int cellX = (int)gridX;
     int cellZ = (int)gridZ;

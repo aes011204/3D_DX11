@@ -10,8 +10,8 @@
 #include "EventBus.h"
 
 
-CUI_Box::CUI_Box(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_Box::CUI_Box(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -42,9 +42,9 @@ void CUI_Box::UI_Active()
 
 }
 
-void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
+void CUI_Box::UI_PanelActive(_bool isStorage, _bool isBox, _uint boxNum )
 {
-	if(IsStorage == true)
+	if(isStorage == true)
 	{
 		m_nameText->Set_Text(L"내 물품 보관함");
 		m_storage->UI_Active();
@@ -87,14 +87,14 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 
 }
 
-HRESULT CUI_Box::OnInit(void* pArg)
+HRESULT CUI_Box::OnInit(void* arg)
 {
 
 
 
 
 	HRESULT hr = E_FAIL;
-	BoxDesc* desc = static_cast<BoxDesc*>(pArg);
+	BoxDesc* desc = static_cast<BoxDesc*>(arg);
 	//TABCONTAINER_DESC pDesc = {};
 	desc->isFullScreen = false;
 	desc->isTransparent = false;
@@ -111,19 +111,19 @@ HRESULT CUI_Box::OnInit(void* pArg)
 	CUIImage::UIImageDesc nameBaseDesc = {};
 	nameBaseDesc.textureComLevel = ETOI(ELevel::STATIC);
 	nameBaseDesc.textureProtoName = L"Prototype_Component_Texture_TitleBackground";
-	shared_ptr<CUIImage> NameBase = CUIImage::Create(m_device, m_context);
-	NameBase->Initialize(&nameBaseDesc);
-	Add_Child(NameBase, L"NameBase", false);
-	m_nameBase = NameBase;
+	shared_ptr<CUIImage> nameBase = CUIImage::Create(m_device, m_context);
+	nameBase->Initialize(&nameBaseDesc);
+	Add_Child(nameBase, L"NameBase", false);
+	m_nameBase = nameBase;
 	{
 		CUIText::TextDesc nameDesc = {};
 		nameDesc.fontTag = L"Noto_Sans_CJK_SC_24";
 		nameDesc.text = L"내 물품 보관함";
-		shared_ptr<CUIText> Name_Text = CUIText::Create(m_device, m_context);
-		Name_Text->Initialize(&nameDesc);
+		shared_ptr<CUIText> nameText = CUIText::Create(m_device, m_context);
+		nameText->Initialize(&nameDesc);
 
-		NameBase->Add_Child(Name_Text, L"Name_Text", false);
-		m_nameText = Name_Text;
+		nameBase->Add_Child(nameText, L"Name_Text", false);
+		m_nameText = nameText;
 	}
 	
 
@@ -135,15 +135,15 @@ HRESULT CUI_Box::OnInit(void* pArg)
 		storageDesc.isFullScreen = false;
 		storageDesc.isTransparent = true;
 		storageDesc.isSetParentSize = true;
-		storageDesc.Inventype = EInvenType::STORAGE;
+		storageDesc.invenType = EInvenType::STORAGE;
 
-		shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_device, m_context);
-		pStorage->Initialize(&storageDesc);
+		shared_ptr<CUI_Storage> storage = CUI_Storage::Create(m_device, m_context);
+		storage->Initialize(&storageDesc);
 
 
-		Add_Child(pStorage, L"Storage2", false);
-		m_storage = pStorage;
-		pStorage->UI_InActive();
+		Add_Child(storage, L"Storage2", false);
+		m_storage = storage;
+		storage->UI_InActive();
 	
 
 		//////////////////////////////////////////
@@ -153,15 +153,15 @@ HRESULT CUI_Box::OnInit(void* pArg)
 		boxDesc.isFullScreen = false;
 		boxDesc.isTransparent = true;
 		boxDesc.isSetParentSize = true;
-		boxDesc.Inventype = EInvenType::CHEST;
+		boxDesc.invenType = EInvenType::CHEST;
 	
-		shared_ptr<CUI_Storage> pBox = CUI_Storage::Create(m_device, m_context);
-		pBox->Initialize(&boxDesc);
+		shared_ptr<CUI_Storage> box = CUI_Storage::Create(m_device, m_context);
+		box->Initialize(&boxDesc);
 
 
-		Add_Child(pBox, L"Box", false);
-		m_box = pBox;
-		pBox->UI_InActive();
+		Add_Child(box, L"Box", false);
+		m_box = box;
+		box->UI_InActive();
 
 		GetUITransform()->SetAnchoredPos(Vector2{ -GetUITransform()->Get_FinalSize().x, 0.f });
 
@@ -235,17 +235,17 @@ void CUI_Box::OnClear()
 
 
 
-shared_ptr<CUI_Box> CUI_Box::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Box> CUI_Box::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Box> pInstance(new CUI_Box(pDevice, pContext), [](CUI_Box* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_Box> instance(new CUI_Box(device, context), [](CUI_Box* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Box::Free()

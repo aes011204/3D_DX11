@@ -10,8 +10,8 @@
 #include "VIBuffer_Terrain.h"
 
 
-CTerrain::CTerrain(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CGameObject(pDevice, pContext)
+CTerrain::CTerrain(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CGameObject(device, context)
 {
 }
 
@@ -28,12 +28,12 @@ HRESULT CTerrain::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CTerrain::Initialize(void* pArg)
+HRESULT CTerrain::Initialize(void* arg)
 {
 	/* 백그라운드의 멤버를 채워넣어야한다면 여기서 채운다. */
-	TerrainDesc			Desc{};
+	TerrainDesc			desc{};
 
-	if (FAILED(__super::Initialize(&Desc)))
+	if (FAILED(__super::Initialize(&desc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -47,12 +47,12 @@ HRESULT CTerrain::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CTerrain::Priority_Update(_float fTimeDelta)
+void CTerrain::Priority_Update(_float timeDelta)
 {
 	int a = 1;
 }
 
-void CTerrain::Update(_float fTimeDelta)
+void CTerrain::Update(_float timeDelta)
 {
 
 	//m_fX += 10.f * fTimeDelta;
@@ -61,7 +61,7 @@ void CTerrain::Update(_float fTimeDelta)
 
 }
 
-void CTerrain::Late_Update(_float fTimeDelta)
+void CTerrain::Late_Update(_float timeDelta)
 {
 	int a = 1;
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CTerrain>(shared_from_this()));
@@ -135,44 +135,44 @@ HRESULT CTerrain::Bind_ShaderResources()
 	//	return E_FAIL;
 
 	//////////////////
-	_float4 vSandColor  = _float4(0.482f, 0.482f, 0.418f, 1.f);
-	_float4 vAlgaeColor = _float4(0.422f, 0.433f, 0.321f, 1.f);
-	_float4 vRockColor = _float4(0.283f, 0.283f, 0.283f, 1.f);
+	_float4 sandColor  = _float4(0.482f, 0.482f, 0.418f, 1.f);
+	_float4 algaeColor = _float4(0.422f, 0.433f, 0.321f, 1.f);
+	_float4 rockColor = _float4(0.283f, 0.283f, 0.283f, 1.f);
 	//_float fTiling = 80.f; 
 
-	m_shaderCom->Bind_RawValue("g_vSandColor", &vSandColor, sizeof(_float4));
-	m_shaderCom->Bind_RawValue("g_vAlgaeColor", &vAlgaeColor, sizeof(_float4));
-	m_shaderCom->Bind_RawValue("g_vRockColor", &vRockColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vSandColor", &sandColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vAlgaeColor", &algaeColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vRockColor", &rockColor, sizeof(_float4));
 	//m_pShaderCom->Bind_RawValue("g_fTiling", &fTiling, sizeof(_float));
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 
 	return S_OK;
 }
 
-shared_ptr<CTerrain> CTerrain::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CTerrain> CTerrain::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CTerrain> pInstance(new CTerrain(pDevice, pContext), [](CTerrain* p) {p->Free(); delete p;});
+	shared_ptr<CTerrain> instance(new CTerrain(device, context), [](CTerrain* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CTerrain");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CTerrain::Clone(void* pArg)
+shared_ptr<CGameObject> CTerrain::Clone(void* arg)
 {
-	shared_ptr<CTerrain> pInstance(new CTerrain(*this), [](CTerrain* p) {p->Free(); delete p;});
+	shared_ptr<CTerrain> instance(new CTerrain(*this), [](CTerrain* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : BackGround");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CTerrain::Free()

@@ -10,8 +10,8 @@
 //#include "CShader.h"
 //#include "CTexture.h"
 
-CEmptyUObject::CEmptyUObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CGameObject(pDevice, pContext)
+CEmptyUObject::CEmptyUObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CGameObject(device, context)
 {
 }
 
@@ -31,12 +31,12 @@ HRESULT Client::CEmptyUObject::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CEmptyUObject::Initialize(void* pArg)
+HRESULT CEmptyUObject::Initialize(void* arg)
 {
 	m_isSavableClass = true;
 	/* 멤버를 채워넣어야한다면 여기서 채운다. */
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -45,12 +45,12 @@ HRESULT CEmptyUObject::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CEmptyUObject::Priority_Update(_float fTimeDelta)
+void CEmptyUObject::Priority_Update(_float timeDelta)
 {
 	int a = 1;
 }
 
-void CEmptyUObject::Update(_float fTimeDelta)
+void CEmptyUObject::Update(_float timeDelta)
 {
 	if (m_isDirtyCom) {
 		RebindCom();      // "바뀐 것"만 한 번 갱신
@@ -59,7 +59,7 @@ void CEmptyUObject::Update(_float fTimeDelta)
 	int a = 1;
 }
 
-void CEmptyUObject::Late_Update(_float fTimeDelta)
+void CEmptyUObject::Late_Update(_float timeDelta)
 {
 	int a = 1;
 	//m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
@@ -120,28 +120,28 @@ HRESULT CEmptyUObject::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CEmptyUObject> CEmptyUObject::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CEmptyUObject> CEmptyUObject::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CEmptyUObject> pInstance(new CEmptyUObject(pDevice, pContext), [](CEmptyUObject* p) {p->Free(); delete p;});
+	shared_ptr<CEmptyUObject> instance(new CEmptyUObject(device, context), [](CEmptyUObject* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CEmptyUObject");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CEmptyUObject::Clone(void* pArg)
+shared_ptr<CGameObject> CEmptyUObject::Clone(void* arg)
 {
-	shared_ptr<CEmptyUObject> pInstance(new CEmptyUObject(*this), [](CEmptyUObject* p) {p->Free(); delete p;});
+	shared_ptr<CEmptyUObject> instance(new CEmptyUObject(*this), [](CEmptyUObject* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : BackGround");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CEmptyUObject::Free()

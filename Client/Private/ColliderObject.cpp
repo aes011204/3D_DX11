@@ -5,8 +5,8 @@
 #include "Bounding_AABB.h"
 #include "PlayerBoat.h"
 
-CColliderObject::CColliderObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    : CGameObject{ pDevice, pContext }
+CColliderObject::CColliderObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    : CGameObject{ device, context }
 {
 }
 
@@ -20,9 +20,9 @@ HRESULT CColliderObject::Initialize_Prototype()
     return S_OK;
 }
 
-HRESULT CColliderObject::Initialize(void* pArg)
+HRESULT CColliderObject::Initialize(void* arg)
 {
-    if (FAILED(__super::Initialize(pArg)))
+    if (FAILED(__super::Initialize(arg)))
         return E_FAIL;
 
     if (FAILED(Ready_Components()))
@@ -34,11 +34,11 @@ HRESULT CColliderObject::Initialize(void* pArg)
     return S_OK;
 }
 
-void CColliderObject::Priority_Update(_float fTimeDelta)
+void CColliderObject::Priority_Update(_float timeDelta)
 {
 }
 
-void CColliderObject::Update(_float fTimeDelta)
+void CColliderObject::Update(_float timeDelta)
 {
     if (m_isDirtyCom)
     {
@@ -50,7 +50,7 @@ void CColliderObject::Update(_float fTimeDelta)
         m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
-void CColliderObject::Late_Update(_float fTimeDelta)
+void CColliderObject::Late_Update(_float timeDelta)
 {
     m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -180,30 +180,30 @@ HRESULT CColliderObject::Ready_Components()
     return S_OK;
 }
 
-shared_ptr<CColliderObject> CColliderObject::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CColliderObject> CColliderObject::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-    shared_ptr<CColliderObject> pInstance(new CColliderObject(pDevice, pContext),
+    shared_ptr<CColliderObject> instance(new CColliderObject(device, context),
         [](CColliderObject* p) { p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize_Prototype()))
+    if (FAILED(instance->Initialize_Prototype()))
     {
         MSG_BOX("Failed to Created : CColliderObject");
     }
 
-    return pInstance;
+    return instance;
 }
 
-shared_ptr<CGameObject> CColliderObject::Clone(void* pArg)
+shared_ptr<CGameObject> CColliderObject::Clone(void* arg)
 {
-    shared_ptr<CColliderObject> pInstance(new CColliderObject(*this),
+    shared_ptr<CColliderObject> instance(new CColliderObject(*this),
         [](CColliderObject* p) { p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(instance->Initialize(arg)))
     {
         MSG_BOX("Failed to Cloned : CColliderObject");
     }
 
-    return pInstance;
+    return instance;
 }
 
 void CColliderObject::Free()

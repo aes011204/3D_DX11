@@ -13,12 +13,12 @@ public:
     virtual ~CLevel_Manager() = default;
 
 public:
-    HRESULT Initialize(_uint EditorIndex, _uint iNumLevel);
+    HRESULT Initialize(_uint editorIndex, _uint numLevel);
 	
-    HRESULT Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pNewLevel);
+    HRESULT Change_Level(_uint newLevelIndex, shared_ptr<CLevel> newLevel);
 
 	
-    void Update(_float fTimeDelta);
+    void Update(_float timeDelta);
     HRESULT Render();
 
 
@@ -37,7 +37,7 @@ private:
 public:
 
 
-    static unique_ptr<CLevel_Manager> Create(_uint EditorIndex, _uint iNumLevel);
+    static unique_ptr<CLevel_Manager> Create(_uint editorIndex, _uint numLevel);
     virtual void Free() override;
 };
 

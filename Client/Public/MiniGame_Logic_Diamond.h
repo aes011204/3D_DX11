@@ -29,8 +29,8 @@ public:
 public:
 
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
-	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Initialize(void* arg);
+	virtual HRESULT Render(_uint meshIndex);
 	virtual void Update(const _float& timeDelta);
 
 	
@@ -61,7 +61,7 @@ public:
 	///
 	bool m_changeColor = { false };
 	float m_accTime2 = { 0 };
-	float colortime = { 0 };
+	float m_colorTime = { 0 };
 
 
 
@@ -71,7 +71,7 @@ public:
 private:
 
 public:
-	static shared_ptr<CMiniGame_Logic_Diamond> Create(void* pArg);
+	static shared_ptr<CMiniGame_Logic_Diamond> Create(void* arg);
 	void Free() override;
 };
 

@@ -93,7 +93,7 @@
     <ClInclude Include="..\Public\Level_Editor.h">
       <Filter>01.Levels</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\CLient_Helper.h">
+    <ClInclude Include="..\Public\Client_Helper.h">
       <Filter>99.Defines</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\BackGround.h">
@@ -184,9 +184,6 @@
     </ClInclude>
     <ClInclude Include="..\Public\Player_Sea.h">
       <Filter>02.GameObject\00.Player\state</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\Monster_Tantacle.h">
-      <Filter>02.GameObject</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Village.h">
       <Filter>02.GameObject</Filter>
@@ -390,9 +387,6 @@
       <Filter>02.GameObject\00.Player\state</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Village.cpp">
-      <Filter>02.GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Private\Monster_Tantacle.cpp">
       <Filter>02.GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\Snow.cpp" />

@@ -17,8 +17,8 @@ public:
 	
 	struct MiniGameLogicBallDesc 
 	{
-		_uint CallNum = {};
-			_float2 Speed = {};
+		_uint callNum = {};
+			_float2 speed = {};
 
 
 	};
@@ -31,8 +31,8 @@ public:
 public:
 
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
-	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Initialize(void* arg);
+	virtual HRESULT Render(_uint meshIndex);
 	virtual void Update(const _float& timeDelta);
 
 	void ResetZoon();
@@ -51,7 +51,7 @@ public:
 	bool IsStart() const { return m_isStart; }
 	bool IsFinish() const { return m_isFinished; }
 
-	_uint Get_DefID() { return m_defId; };
+	_uint Get_DefID() { return m_defID; };
 
 	void OnInput();
 
@@ -79,7 +79,7 @@ public:
 	///
 	bool m_changeColor = { false };
 	float m_accTime2 = { 0 };
-	float colortime = { 0 };
+	float m_colorTime = { 0 };
 
 	///
 	float m_prograssBar01 = { 0 };
@@ -93,7 +93,7 @@ public:
 private:
 
 public:
-	static shared_ptr<CMiniGame_Logic_Ball> Create(void* pArg);
+	static shared_ptr<CMiniGame_Logic_Ball> Create(void* arg);
 	void Free() override;
 };
 

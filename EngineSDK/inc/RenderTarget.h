@@ -9,22 +9,22 @@ NS_BEGIN(Engine)
 	public CBase
 {
 protected:
-	CRenderTarget(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CRenderTarget(const CRenderTarget& Prototype);
+	CRenderTarget(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CRenderTarget(const CRenderTarget& prototype);
 public:
 	virtual ~CRenderTarget() = default;
 
 public:
 	
-	virtual HRESULT Initialize(_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor);
-	virtual HRESULT Bind_ShaderResource(shared_ptr<class CShader> pShader, const _char* pConstantName) ;
+	virtual HRESULT Initialize(_uint sizeX, _uint sizeY, DXGI_FORMAT pixelFormat, const _float4& color);
+	virtual HRESULT Bind_ShaderResource(shared_ptr<class CShader> shader, const _char* constantName) ;
 	virtual void Clear();
 
 	ComPtr<ID3D11RenderTargetView>	Get_RTV() { return m_RTV; }
 #ifdef _DEBUG
 public:
-	HRESULT Ready_Debug(_float fX, _float fY, _float fSizeX, _float fSizeY);
-	HRESULT Render(shared_ptr<class CVIBuffer_Rect> pVIBuffer, shared_ptr<class CShader> pShader);
+	HRESULT Ready_Debug(_float x, _float y, _float sizeX, _float sizeY);
+	HRESULT Render(shared_ptr<class CVIBuffer_Rect> VIBuffer, shared_ptr<class CShader> shader);
 #endif
 protected:
 
@@ -45,8 +45,8 @@ private:
 	_float4x4		m_worldMatrix = {};
 #endif
 public:
-	static shared_ptr<CRenderTarget> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, 
-		_uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vColor);
+	static shared_ptr<CRenderTarget> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, 
+		_uint sizeX, _uint sizeY, DXGI_FORMAT pixelFormat, const _float4& color);
 	virtual void Free() override;
 
 

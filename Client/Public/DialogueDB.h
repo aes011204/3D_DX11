@@ -21,7 +21,7 @@ public:
     HRESULT     Ready_DialogueDB();
     HRESULT     Load_DialogueData(const string& fileName);
 
-    shared_ptr<Dialogue>   GetDialogueById(const string& dialogueId);
+    shared_ptr<Dialogue>   GetDialogueByID(const string& dialogueID);
     wstring     Utf8ToWstring(const string& str);
 
    void Set_PendingDialogue(list<string> dialogueIds, _int startid = 0) { m_nextIds = dialogueIds; };

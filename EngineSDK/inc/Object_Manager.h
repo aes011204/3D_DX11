@@ -20,14 +20,14 @@ public:
 	virtual ~CObject_Manager() ;
 
 public:
-	HRESULT Initialize(_uint iNumLevels);
-	void Priority_Update(_float fTimeDelta);
-	void Update(_float fTimeDelta);
-	void Late_Update(_float fTimeDelta);
-	HRESULT Clear_Layers(_uint iLevelIndex);
+	HRESULT Initialize(_uint numLevels);
+	void Priority_Update(_float timeDelta);
+	void Update(_float timeDelta);
+	void Late_Update(_float timeDelta);
+	HRESULT Clear_Layers(_uint levelIndex);
 
-	shared_ptr<CGameObject> Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg);
-	shared_ptr<CGameObject> Get_GameObject(_uint iLevelIndex, const _wstring& strLayerTag, _uint GObjIndex);
+	shared_ptr<CGameObject> Add_GameObject(_uint prototypeLevelIndex, const _wstring& prototypeTag, _uint layerLevelIndex, const _wstring& layerTag, void* arg);
+	shared_ptr<CGameObject> Get_GameObject(_uint levelIndex, const _wstring& layerTag, _uint gameObjIndex);
 	/// IMGUI
 	virtual void Update_Gui();
 
@@ -44,10 +44,10 @@ private:
 	weak_ptr<class CGameInstance> m_gameInstance = {};
 
 public:
-	class shared_ptr<CLayer> Find_Layer(_uint iLevelIndex, const _wstring& strLayerTag);
+	class shared_ptr<CLayer> Find_Layer(_uint levelIndex, const _wstring& layerTag);
 
 public:
-	static unique_ptr<CObject_Manager> Create(_uint iNumLevels);
+	static unique_ptr<CObject_Manager> Create(_uint numLevels);
 	void Free()override;
 
 };

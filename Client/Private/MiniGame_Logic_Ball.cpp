@@ -28,20 +28,20 @@ HRESULT CMiniGame_Logic_Ball::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMiniGame_Logic_Ball::Render(_uint iMeshIndex)
+HRESULT CMiniGame_Logic_Ball::Render(_uint meshIndex)
 {
 	return S_OK;
 
 }
 
-HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
+HRESULT CMiniGame_Logic_Ball::Initialize(void* arg)
 {
 	m_miniGameType = EMiniGameType::BASIC_CIRCLE;
 
-	MiniGameLogicBallDesc* pDesc = static_cast<MiniGameLogicBallDesc*>(pArg);
+	MiniGameLogicBallDesc* desc = static_cast<MiniGameLogicBallDesc*>(arg);
 
 	                                                                                                                                                                             
-	m_speed = m_gameInstance.lock()->Random(pDesc->Speed.x, pDesc->Speed.y);
+	m_speed = m_gameInstance.lock()->Random(desc->speed.x, desc->speed.y);
 
 	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
 	//	[this](const Evt_FishingData& e) {
@@ -170,9 +170,9 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 		
 		Evt_GetFish  e = {};
-		e.DefID = m_defId;
+		e.defID = m_defID;
 		e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
-		e.fishInst.mutationId = 2;
+		e.fishInst.mutationID = 2;
 		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
 		m_fishCount--;
@@ -284,23 +284,23 @@ void CMiniGame_Logic_Ball::OnInput()
 				m_lastInputResult = EInputResult::FAIL;
 				
 				m_changeColor = true;
-				colortime = .5f;
+				m_colorTime = .5f;
 			}
 		}
 
 }
 
 
-shared_ptr<CMiniGame_Logic_Ball> CMiniGame_Logic_Ball::Create(void* pArg)
+shared_ptr<CMiniGame_Logic_Ball> CMiniGame_Logic_Ball::Create(void* arg)
 {
-	shared_ptr<CMiniGame_Logic_Ball> pInstance(new CMiniGame_Logic_Ball(), [](CMiniGame_Logic_Ball* p) {p->Free(); delete(p); });
+	shared_ptr<CMiniGame_Logic_Ball> instance(new CMiniGame_Logic_Ball(), [](CMiniGame_Logic_Ball* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMiniGame_Logic_Ball::Free()

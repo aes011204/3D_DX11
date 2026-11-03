@@ -28,15 +28,15 @@ public:
 
 	};
 protected:
-	CUI_Box(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CUI_Box(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CUI_Box(const CUIPanel& prototype);
 public:
 	~CUI_Box() = default;
 
 public:
-	void UI_PanelActive(_bool IsStorage, _bool IsBox = false, _uint BoxNum = 0);
+	void UI_PanelActive(_bool isStorage, _bool isBox = false, _uint boxNum = 0);
 	virtual void UI_Active() override; //  UI 활성활시 호출되는 함수// 이 패널은 다 켜지면 안되기떄문에 오버라이딩으로 호출뻇고 여기서 처리
-	HRESULT OnInit(void* pArg) override;
+	HRESULT OnInit(void* arg) override;
 	void OnActive()override;
 	void OnInActive()override;
 	void OnDisabled()override;
@@ -72,7 +72,7 @@ private:
 	//weak_ptr<CPlayerBoat> m_PlayerBoat = {  };
 
 public:
-	static shared_ptr<CUI_Box> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUI_Box> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	void Free() override;
 };
 

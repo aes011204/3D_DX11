@@ -13,16 +13,16 @@ public:
 	}UIDesc;
 
 protected:
-	CUIObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CUIObject(const CUIObject& Prototype);
+	CUIObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CUIObject(const CUIObject& prototype);
 	virtual ~CUIObject() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype() override;
-	virtual HRESULT Initialize(void* pArg) override;
-	virtual void Priority_Update(_float fTimeDelta) override;
-	virtual void Update(_float fTimeDelta) override;
-	virtual void Late_Update(_float fTimeDelta) override;
+	virtual HRESULT Initialize(void* arg) override;
+	virtual void Priority_Update(_float timeDelta) override;
+	virtual void Update(_float timeDelta) override;
+	virtual void Late_Update(_float timeDelta) override;
 	virtual HRESULT Render() override;
 
 protected:
@@ -32,10 +32,10 @@ protected:
 
 protected:
 	void Update_Transform();
-	HRESULT Bind_ShaderResource(shared_ptr<class CShader> pShader, const _char* pConstantName, ED3DTS eTransformState);
+	HRESULT Bind_ShaderResource(shared_ptr<class CShader> shader, const _char* constantName, ED3DTS transformState);
 
 public:
-	virtual shared_ptr<CGameObject> Clone(void* pArg) = 0;
+	virtual shared_ptr<CGameObject> Clone(void* arg) = 0;
 	virtual void Free() override;
 };
 

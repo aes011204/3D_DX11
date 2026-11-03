@@ -24,11 +24,11 @@ public:
 public:
 	/* 그래픽 디바이스의 초기화. */
 	/* 장치객체를 생성한다. */
-	HRESULT Initialize(HWND hWnd, EWinMode isWindowed, _uint iWinSizeX, _uint iWinSizeY,
+	HRESULT Initialize(HWND hWnd, EWinMode isWindowed, _uint winSizeX, _uint winSizeY,
 		_Inout_ ComPtr<ID3D11Device>& ppDevice, _Inout_ ComPtr<ID3D11DeviceContext>& ppContext);
 	
 	/* 백버퍼를 지운다. */
-	HRESULT Clear_BackBuffer_View(const _float4* pClearColor);
+	HRESULT Clear_BackBuffer_View(const _float4* clearColor);
 
 	/* 깊이버퍼 + 스텐실버퍼를 지운다. */
 	HRESULT Clear_DepthStencil_View();
@@ -96,12 +96,12 @@ private:
 private:
 	/* 스왑체인에게 필수적으로 필요한 데이터는 백버퍼가 필요하여 백버퍼를 생성하기위한 정보를 던져준다. */
 	/* 스왑체인객체를 만들었다 == 백버퍼(텍스쳐)가 생성된다. */
-	HRESULT Ready_SwapChain(HWND hWnd, EWinMode isWindowed, _uint iWinCX, _uint iWinCY);
+	HRESULT Ready_SwapChain(HWND hWnd, EWinMode isWindowed, _uint winCX, _uint winCY);
 	HRESULT Ready_BackBufferRenderTargetView();	
-	HRESULT Ready_DepthStencilView(_uint iWinCX, _uint iWinCY);
+	HRESULT Ready_DepthStencilView(_uint winCX, _uint winCY);
 
 public:
-	static unique_ptr<CGraphic_Device> Create(_In_ HWND hWnd, EWinMode isWindowed, _uint iWinSizeX, _uint iWinSizeY, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppDeviceContextOut);
+	static unique_ptr<CGraphic_Device> Create(_In_ HWND hWnd, EWinMode isWindowed, _uint winSizeX, _uint winSizeY, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppDeviceContextOut);
 	virtual void Free() override;
 };
 

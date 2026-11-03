@@ -3,73 +3,73 @@
 #include "Bounding_AABB.h"
 #include "Bounding_OBB.h"
 #include "DebugDraw.h"
-CBounding_Sphere::CBounding_Sphere(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CBounding(pDevice, pContext)
+CBounding_Sphere::CBounding_Sphere(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CBounding(device, context)
 {
 }
 
-HRESULT CBounding_Sphere::Initialize(BoundingDesc* pDesc)
+HRESULT CBounding_Sphere::Initialize(BoundingDesc* desc)
 {
-	auto pBoundingDesc = static_cast<BoundingSphereDesc*>(pDesc);
-	m_originalDesc = make_shared< BoundingSphere>(pBoundingDesc->center, pBoundingDesc->radius);
+	auto boundingDesc = static_cast<BoundingSphereDesc*>(desc);
+	m_originalDesc = make_shared< BoundingSphere>(boundingDesc->center, boundingDesc->radius);
 	m_desc = make_shared< BoundingSphere>(*m_originalDesc);
 
 	return S_OK;
 }
 
-void CBounding_Sphere::Update(_fmatrix WorldMatrix)
+void CBounding_Sphere::Update(_fmatrix worldMatrix)
 {
 
-	m_originalDesc->Transform(*m_desc, WorldMatrix);
+	m_originalDesc->Transform(*m_desc, worldMatrix);
 
 }
 
-_bool CBounding_Sphere::Intersect(shared_ptr<CBounding>  pTarget)
+_bool CBounding_Sphere::Intersect(shared_ptr<CBounding>  target)
 {
 	_bool isCollision = { false };
-	const _char* pName = typeid(*pTarget).name();
+	const _char* name = typeid(*target).name();
 
-	if(false ==strcmp("class Engine::CBounding_AABB", pName))
+	if(false ==strcmp("class Engine::CBounding_AABB", name))
 	{
-		auto pAABB = dynamic_pointer_cast<CBounding_AABB>(pTarget);
-		isCollision = m_desc->Intersects(*pAABB->Get_Desc());
+		auto AABB = dynamic_pointer_cast<CBounding_AABB>(target);
+		isCollision = m_desc->Intersects(*AABB->Get_Desc());
 	
 	}
-	else if(false == strcmp("class Engine::CBounding_OBB", pName))
+	else if(false == strcmp("class Engine::CBounding_OBB", name))
 	{
-		auto pOBB = dynamic_pointer_cast<CBounding_OBB>(pTarget);
-		isCollision = m_desc->Intersects(*pOBB->Get_Desc());
+		auto OBB = dynamic_pointer_cast<CBounding_OBB>(target);
+		isCollision = m_desc->Intersects(*OBB->Get_Desc());
 
 
 	}
 	else
 	{
-		auto pSphere = dynamic_pointer_cast<CBounding_Sphere>(pTarget);
-		isCollision = m_desc->Intersects(*pSphere->Get_Desc());
+		auto sphere = dynamic_pointer_cast<CBounding_Sphere>(target);
+		isCollision = m_desc->Intersects(*sphere->Get_Desc());
 	}
 	return isCollision;
 }
 
 #ifdef _DEBUG
-HRESULT CBounding_Sphere::Render(PrimitiveBatch<VertexPositionColor>* pBatch, _fvector vColor)
+HRESULT CBounding_Sphere::Render(PrimitiveBatch<VertexPositionColor>* batch, _fvector color)
 {
 
-	DX::Draw(pBatch, *m_desc, vColor);
+	DX::Draw(batch, *m_desc, color);
 	return S_OK;
 
 }
 #endif
 
-shared_ptr<CBounding_Sphere> CBounding_Sphere::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext,
-	BoundingDesc* pDesc)
+shared_ptr<CBounding_Sphere> CBounding_Sphere::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context,
+	BoundingDesc* desc)
 {
-	shared_ptr<CBounding_Sphere> pInstance(new CBounding_Sphere(pDevice, pContext), [](CBounding_Sphere* p) {p->Free(); delete p; });
+	shared_ptr<CBounding_Sphere> instance(new CBounding_Sphere(device, context), [](CBounding_Sphere* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pDesc)))
+	if (FAILED(instance->Initialize(desc)))
 	{
 		MSG_BOX("Failed to Created : CBounding_Sphere");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CBounding_Sphere::Free()

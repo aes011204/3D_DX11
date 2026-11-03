@@ -15,8 +15,8 @@
 #include "UI_Controller.h"
 #include "EventBus.h"
 
-CUI_MainMenu::CUI_MainMenu(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    :CUIPanel(pDevice, pContext)
+CUI_MainMenu::CUI_MainMenu(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    :CUIPanel(device, context)
 {
 }
 
@@ -25,34 +25,34 @@ CUI_MainMenu::CUI_MainMenu(const CUIPanel& prototype)
 {
 }
 
-HRESULT CUI_MainMenu::OnInit(void* pArg)
+HRESULT CUI_MainMenu::OnInit(void* arg)
 {
 	//if(pArg==nullptr)
 		
-    MainMenuDesc* pDesc = static_cast<MainMenuDesc*>(pArg);
+    MainMenuDesc* desc = static_cast<MainMenuDesc*>(arg);
 	HRESULT hr = {};
-	hr = __super::OnInit(pDesc);
+	hr = __super::OnInit(desc);
     
 
 	// 람다 제외 전부 데이터로 수정 가능
 	{
 		wstring name = {};
-		ELevel eLevel = {};
+		ELevel level = {};
 		for (_uint i = 0; i < 3;i++)
 		{
 			switch (i)
 			{
 			case 0:
-				eLevel = ELevel::GAMEPLAY;
+				level = ELevel::GAMEPLAY;
 				name = L"새 게임";
 				break;
 			case 1:
-				eLevel = ELevel::END;
+				level = ELevel::END;
 				name = L"설정";
 
 				break;
 			case 2:
-				eLevel = ELevel::EDITOR;
+				level = ELevel::EDITOR;
 				name = L"에디터";
 
 				break;
@@ -60,22 +60,22 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			}
 
 
-			CUIButton::UIButtonDesc pDesc = {};
-			pDesc.textureComLevel = ETOI(ELevel::STATIC);
-			pDesc.textureProtoName = L"Prototype_Component_Texture_Button";
-			pDesc.anchoredPos = Vector2{ 0.f,16.7f + (98.f * i) };
-			pDesc.sizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
-			pDesc.anchorPoint = Vector2{ 0.254f,0.5f };
-			pDesc.pivot = Vector2{ 0.5f, 0.5f };
-			pDesc.scale = Vector2{ 1.3f, 1.0f };
-			pDesc.OverlapStartEvent = [this](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+			CUIButton::UIButtonDesc desc = {};
+			desc.textureComLevel = ETOI(ELevel::STATIC);
+			desc.textureProtoName = L"Prototype_Component_Texture_Button";
+			desc.anchoredPos = Vector2{ 0.f,16.7f + (98.f * i) };
+			desc.sizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
+			desc.anchorPoint = Vector2{ 0.254f,0.5f };
+			desc.pivot = Vector2{ 0.5f, 0.5f };
+			desc.scale = Vector2{ 1.3f, 1.0f };
+			desc.OverlapStartEvent = [this](CUIButton* self) {auto& ch = self->GetChildren();
 			for (auto& it : ch)
 			{
 				if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
 				it->UI_Active();
-				auto pTransform = dynamic_cast<CUITransform*>(it->Get_Component(g_strUITransformTag).get());
-				if (pTransform) {
-					pTransform->SetLocalScale({ 3.f, 1.8f });
+				auto transform = dynamic_cast<CUITransform*>(it->Get_Component(g_strUITransformTag).get());
+				if (transform) {
+					transform->SetLocalScale({ 3.f, 1.8f });
 				}
 				_float2 tmp = { 3.7f, 2.2f };
 				//it->m_bIsDirtyCom = true;
@@ -87,7 +87,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 
 			};
 
-			pDesc.OverlapEndEvent = [](CUIButton* pThis) {auto& ch = pThis->GetChildren();
+			desc.OverlapEndEvent = [](CUIButton* self) {auto& ch = self->GetChildren();
 			for (auto& it : ch)
 			{
 				if (!it || nullptr != dynamic_pointer_cast<CUIText>(it)) continue;
@@ -96,7 +96,7 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			}
 				};
 
-			pDesc.ClickEvent = [this, i, eLevel](CUIButton* pThis) {
+			desc.ClickEvent = [this, i, level](CUIButton* self) {
 				//if (eLevel != LEVEL::END)
 				//	m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, eLevel));
 				
@@ -107,34 +107,34 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 
 				//eff->SetEvent([this, i, eLevel]() {
 					Evt_ChangeLevel e = {};
-					e.IsChange = true;
-					e.level = ETOI(eLevel);
+					e.isChange = true;
+					e.level = ETOI(level);
 					m_gameInstance.lock()->Get_EventBus()->Publish(e);
 					//});
 					m_gameInstance.lock()->Play_Once(L"Click");
 
 			};
-			shared_ptr<CUIButton> pChild = CUIButton::Create(m_device, m_context);
-			pChild->Initialize(&pDesc);
+			shared_ptr<CUIButton> child = CUIButton::Create(m_device, m_context);
+			child->Initialize(&desc);
 			
 
 			{
-				CUIText::TextDesc text_Name = {};
-				text_Name.fontTag = L"Noto_Sans_CJK_SC_24";
-				text_Name.text = name;
-				shared_ptr<CUIText> Text_Name = CUIText::Create(m_device, m_context);
-				Text_Name->Initialize(&text_Name);
+				CUIText::TextDesc nameTextDesc = {};
+				nameTextDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+				nameTextDesc.text = name;
+				shared_ptr<CUIText> nameText = CUIText::Create(m_device, m_context);
+				nameText->Initialize(&nameTextDesc);
 
-				pChild->Add_Child(Text_Name, L"text_Name_" + S2W(string(magic_enum::enum_name(eLevel))), false);
+				child->Add_Child(nameText, L"text_Name_" + S2W(string(magic_enum::enum_name(level))), false);
 			}
 
 
 
 
 
-			wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eLevel)));
+			wstring nameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(level)));
 
-			Add_Child(pChild,NameTag, false);
+			Add_Child(child,nameTag, false);
 
 			
 
@@ -150,24 +150,24 @@ HRESULT CUI_MainMenu::OnInit(void* pArg)
 			Select->Initialize(&selectImage);
 			Select->UI_InActive();
 
-			wstring NameTag1 = L"IMGAE_SELECT" + S2W(string(magic_enum::enum_name(eLevel)));
-			pChild->Add_Child(Select, NameTag1, false);
+			wstring nameTag1 = L"IMGAE_SELECT" + S2W(string(magic_enum::enum_name(level)));
+			child->Add_Child(Select, nameTag1, false);
 			//
 			Select->Set_Zorder(2);
 		}
 
-		CUIImage::UIImageDesc image_desc{};
-		image_desc.textureComLevel = ETOI(ELevel::STATIC);
-		image_desc.textureProtoName = L"Prototype_Component_Texture_Dredge";
-		image_desc.anchoredPos = Vector2{ 0.f,0.f };
-		image_desc.sizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
-		image_desc.anchorPoint = Vector2{ 0.254f,0.319f };
-		image_desc.pivot = Vector2{ 0.5f, 0.5f };
-		image_desc.scale = Vector2{ 0.5f, 0.5f };
-		shared_ptr<CUIImage> pChild2 = CUIImage::Create(m_device, m_context);
-		pChild2->Initialize(&image_desc);
+		CUIImage::UIImageDesc imageDesc{};
+		imageDesc.textureComLevel = ETOI(ELevel::STATIC);
+		imageDesc.textureProtoName = L"Prototype_Component_Texture_Dredge";
+		imageDesc.anchoredPos = Vector2{ 0.f,0.f };
+		imageDesc.sizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
+		imageDesc.anchorPoint = Vector2{ 0.254f,0.319f };
+		imageDesc.pivot = Vector2{ 0.5f, 0.5f };
+		imageDesc.scale = Vector2{ 0.5f, 0.5f };
+		shared_ptr<CUIImage> child2 = CUIImage::Create(m_device, m_context);
+		child2->Initialize(&imageDesc);
 
-		Add_Child(pChild2, L"IMAGE_DRADGELOGO", false);
+		Add_Child(child2, L"IMAGE_DRADGELOGO", false);
 
 		
 		//
@@ -221,16 +221,16 @@ void CUI_MainMenu::OnClear()
 
 }
 
-shared_ptr<CUI_MainMenu> CUI_MainMenu::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_MainMenu> CUI_MainMenu::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-    shared_ptr<CUI_MainMenu> pInstance(new CUI_MainMenu(pDevice, pContext), [](CUI_MainMenu* p) {p->Free(); delete(p); });
+    shared_ptr<CUI_MainMenu> instance(new CUI_MainMenu(device, context), [](CUI_MainMenu* p) {p->Free(); delete(p); });
 
-    if (FAILED(pInstance->Initialize_Prototype()))
+    if (FAILED(instance->Initialize_Prototype()))
     {
         MSG_BOX("Failed to Created : CUIPanel");
 
     }
-    return pInstance;
+    return instance;
 }
 
 void CUI_MainMenu::Free()

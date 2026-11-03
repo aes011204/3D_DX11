@@ -11,13 +11,13 @@ class CRenderer :
     public CBase
 {
 private:
-    CRenderer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_context);
+    CRenderer(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> m_context);
 public:
 	virtual ~CRenderer();
 
 public:
     HRESULT Initialize();
-    void Add_RenderGroup(ERenderGroup eRenderGroup, shared_ptr<class CEntity> p_GameObject);
+    void Add_RenderGroup(ERenderGroup renderGroup, shared_ptr<class CEntity> pGameObject);
     void Draw();
     double Get_GpuRenderMs() const { return m_gpuRenderMs; }
     bool Has_GpuTiming() const { return m_gpuTimingReady; }
@@ -25,7 +25,7 @@ public:
     double Get_SeaCpuMs() const { return m_seaCpuMs; }
     bool Has_SeaGpuTiming() const { return m_seaGpuTimingReady; }
 #ifdef _DEBUG
-    void Add_DebugenderGroup(shared_ptr < class  CComponent > pDebugComponent);
+    void Add_DebugenderGroup(shared_ptr < class  CComponent > debugComponent);
 private:
     bool m_showColliders = false;
 #endif
@@ -90,7 +90,7 @@ private:
 
     _float2 m_winSize = {};
 public:
-    static unique_ptr<CRenderer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> m_context);
+    static unique_ptr<CRenderer> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> m_context);
     void Free()override;
 
 };

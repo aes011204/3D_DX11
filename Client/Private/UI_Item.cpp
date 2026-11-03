@@ -4,8 +4,8 @@
 #include "DInput_Manager.h"
 //#include "UIImage.h"
 
-CUI_Item::CUI_Item(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIImage(pDevice, pContext)
+CUI_Item::CUI_Item(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIImage(device, context)
 {
 }
 
@@ -14,23 +14,23 @@ CUI_Item::CUI_Item(const CUI_Item& prototype)
 {
 }
 
-void CUI_Item::HoldItem(ItemInst HoldItemInst)
+void CUI_Item::HoldItem(ItemInst holdItemInst)
 {
-	if (HoldItemInst.itemInstId == kIdAbsence)
+	if (holdItemInst.itemInstID == kIDAbsence)
 		return;
 
 	//const Item_Def& def = CItemDB::GetInstance()->GetItemByID(HoldItemInst.ItemDef_ID);
 
 		m_isHold = true; 
-		m_holdItem = HoldItemInst;
+		m_holdItem = holdItemInst;
 
-		Change_Texture(HoldItemInst.cachingTexture);
+		Change_Texture(holdItemInst.cachingTexture);
 		Set_Transparent(false);
 		m_children[0]->UI_Active();
 		static_pointer_cast<CUIRenderable>(m_children[0])->Set_Transparent(false);
 
 
-		if (HoldItemInst.itemType == EItemType::FISH)
+		if (holdItemInst.itemType == EItemType::FISH)
 			m_gameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 		else
 			m_gameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
@@ -47,8 +47,8 @@ void CUI_Item::ReleaseItem()
 
 	m_isHold = false;
 	/*m_HoldItem = HoldItem;*/
-	ItemInst NoInst = {};
-	m_holdItem = NoInst;
+	ItemInst noInst = {};
+	m_holdItem = noInst;
 	//Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
 	Set_Transparent(true);
 	m_children[0]->UI_InActive();
@@ -56,11 +56,11 @@ void CUI_Item::ReleaseItem()
 
 }
 
-HRESULT CUI_Item::OnInit(void* pArg)
+HRESULT CUI_Item::OnInit(void* arg)
 {
-	CUI_Item::ItemDesc pDesc{};
+	CUI_Item::ItemDesc desc{};
 
-	pDesc.isTransparent = true;
+	desc.isTransparent = true;
 
 	Set_Zorder(1);
 
@@ -77,15 +77,15 @@ HRESULT CUI_Item::OnInit(void* pArg)
 	Select->Initialize(&selectImage);
 	Select->UI_InActive();
 	Select->Set_Transparent(true);
-	wstring NameTag1 = L"SELECT" ;
-	Add_Child(Select, NameTag1, false);
+	wstring nameTag1 = L"SELECT" ;
+	Add_Child(Select, nameTag1, false);
 	//
 	Select->Set_Zorder(6);
 	
 	}
 
 	Set_Interactive(false);
-	__super::OnInit(&pDesc);
+	__super::OnInit(&desc);
 
 
 	return S_OK;
@@ -150,15 +150,15 @@ void CUI_Item::OnClear()
 	__super::OnClear();
 }
 
-shared_ptr<CUI_Item> CUI_Item::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Item> CUI_Item::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Item> pInstance(new CUI_Item(pDevice, pContext), [](CUI_Item* p) {p->Free();delete(p);});
+	shared_ptr<CUI_Item> instance(new CUI_Item(device, context), [](CUI_Item* p) {p->Free();delete(p);});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIImage");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Item::Free()

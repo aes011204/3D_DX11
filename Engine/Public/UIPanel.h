@@ -19,14 +19,14 @@ public:
         LayoutDesc layoutDesc;
     };
 protected:
-    CUIPanel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUIPanel(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CUIPanel(const CUIPanel& prototype);
 public:
     ~CUIPanel() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -51,11 +51,11 @@ public:
     /// </summary>
 public:
     void Layout();
-    HRESULT Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect);
+    HRESULT Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool keepWorldRect);
     void Change_LayoutRawCol(_uint col, _uint row) { Layout(); m_isUseLayout = true; m_layoutDesc.col = col; m_layoutDesc.row = row;   }
 private:
     // 내부 계산 용
-    int index = 0;
+    int m_index = 0;
 
     LayoutDesc m_layoutDesc ;
   
@@ -69,7 +69,7 @@ protected:
     shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
     shared_ptr<class CTexture> m_pTextureCom = { nullptr };*/
 public:
-	static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
     void Free() override;
 };

@@ -31,11 +31,11 @@ CSky_Controller::~CSky_Controller()
 
 }
 
-HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
 	m_gameInstance = CGameInstance::GetInstance();
-	m_device = pDevice;
-	m_context = pContext;
+	m_device = device;
+	m_context = context;
 
 
 	return S_OK;
@@ -45,12 +45,12 @@ HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11D
 
 
 
-void CSky_Controller::Update(float TimeDelta)
+void CSky_Controller::Update(float timeDelta)
 {
-	auto pGameInstance = m_gameInstance.lock();
+	auto gameInstance = m_gameInstance.lock();
 
 	// 빛
-	float t = pGameInstance->Get_TOD01();
+	float t = gameInstance->Get_TOD01();
 	//auto lightDESC = pGameInstance->Get_LightDesc(0);
 
 	float offset = XMConvertToRadians(90);
@@ -65,7 +65,7 @@ void CSky_Controller::Update(float TimeDelta)
 
 
 	//
-	_float3 skyColor = Night;
+	_float3 skyColor = m_nightColor;
 
 	auto smooth = [](float a, float b, float t)
 		{
@@ -75,18 +75,18 @@ void CSky_Controller::Update(float TimeDelta)
 		};
 
 	// 밤 → 새벽
-	skyColor = Lerp3(skyColor, MidNight, smooth(NightT.x, NightT.y, t));
+	skyColor = Lerp3(skyColor, m_midNightColor, smooth(m_nightRange.x, m_nightRange.y, t));
 
 	// 새벽 → 낮
-	skyColor = Lerp3(skyColor, Day, smooth(MidNightT.x, MidNightT.y, t));
+	skyColor = Lerp3(skyColor, m_dayColor, smooth(m_midNightRange.x, m_midNightRange.y, t));
 
 	// 낮 → 노을
-	skyColor = Lerp3(skyColor, Sunset, smooth(DayT.x, DayT.y, t));
+	skyColor = Lerp3(skyColor, m_sunsetColor, smooth(m_dayRange.x, m_dayRange.y, t));
 
 	// 노을 → 밤
-	skyColor = Lerp3(skyColor, AfterSunset, smooth(SunsetT.x, SunsetT.y, t));
+	skyColor = Lerp3(skyColor, m_afterSunsetColor, smooth(m_sunsetRange.x, m_sunsetRange.y, t));
 	//
-	skyColor = Lerp3(skyColor, Night, smooth(NightT2.x, NightT2.y, t));
+	skyColor = Lerp3(skyColor, m_nightColor, smooth(m_nightRange2.x, m_nightRange2.y, t));
 
 	m_skyColor = skyColor ;
 
@@ -101,10 +101,10 @@ void CSky_Controller::Update(float TimeDelta)
 	light.diffuse = m_diffuse;
 	light.ambient = m_ambient;
 	light.specular = m_specular;
-	pGameInstance->Set_LightDesc(0, light);
+	gameInstance->Set_LightDesc(0, light);
 
 
-	pGameInstance->Set_SkyColor(m_skyColor);
+	gameInstance->Set_SkyColor(m_skyColor);
 
 }
 

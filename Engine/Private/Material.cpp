@@ -1,8 +1,8 @@
 ﻿#include "Material.h"
 #include "Shader.h"
 
-CMaterial::CMaterial(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_device(pDevice),m_context(pContext)
+CMaterial::CMaterial(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: m_device(device),m_context(context)
 {
 }
 
@@ -113,15 +113,15 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 		for (_uint j = 0; j < MAX_TEXTURE_SLOT; ++j)
 		{
 			// 4. 이 타입(j)의 텍스처 개수 읽기
-			_uint iNumTextures = 0;
-			if (!InFile.read(reinterpret_cast<char*>(&iNumTextures), sizeof(_uint)))
+			_uint numTextures = 0;
+			if (!InFile.read(reinterpret_cast<char*>(&numTextures), sizeof(_uint)))
 				break;
 
-			if (0 == iNumTextures)
+			if (0 == numTextures)
 				continue;
 
 			// 5. 개수만큼 경로 읽고 텍스처 로드
-			for (_uint k = 0; k < iNumTextures; ++k)
+			for (_uint k = 0; k < numTextures; ++k)
 			{
 				_char szFullPath[MAX_PATH] = {};
 				if (!InFile.read(szFullPath, MAX_PATH))
@@ -132,14 +132,14 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 				MultiByteToWideChar(CP_ACP, 0, szFullPath, -1, szWPath, MAX_PATH);
 
 				// 실제 텍스처 로드 및 SRV 생성 (기존 함수 활용)
-				ComPtr<ID3D11ShaderResourceView> pSRV = nullptr;
+				ComPtr<ID3D11ShaderResourceView> SRV = nullptr;
 
 				// 확장자 체크 로직
 				HRESULT hr = S_OK;
 				if (strstr(szFullPath, ".dds") || strstr(szFullPath, ".DDS"))
-					hr = CreateDDSTextureFromFile(m_device.Get(), szWPath, nullptr, &pSRV);
+					hr = CreateDDSTextureFromFile(m_device.Get(), szWPath, nullptr, &SRV);
 				else
-					hr = CreateWICTextureFromFile(m_device.Get(), szWPath, nullptr, &pSRV);
+					hr = CreateWICTextureFromFile(m_device.Get(), szWPath, nullptr, &SRV);
 
 				if (SUCCEEDED(hr))
 				{
@@ -147,7 +147,7 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 					// pMaterial->m_Textures[j].push_back(pSRV); 와 같은 형태
 					//pMaterial->Add_Texture(j, pSRV);
 
-					m_materialTextures[j].push_back(pSRV);
+					m_materialTextures[j].push_back(SRV);
 				}
 			}
 		}
@@ -159,35 +159,35 @@ HRESULT CMaterial::Initialize(ifstream& InFile/*, const _char* pModelFilePath*/)
 }
 
  
-HRESULT CMaterial::Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, Cvt_TexType eMaterialType,
-	_uint iTextureIndex)
+HRESULT CMaterial::Bind_Material(shared_ptr<CShader> shader, const _char* constantName, Cvt_TexType materialType,
+	_uint textureIndex)
 {
 	ComPtr<ID3D11ShaderResourceView> srv = nullptr;
 
 	//if (nullptr == m_MaterialTextures[eMaterialType][iTextureIndex] ||
 	//	iTextureIndex >= m_MaterialTextures[eMaterialType].size())
 	//	return E_FAIL;
-	if (iTextureIndex < m_materialTextures[eMaterialType].size())
-		srv = m_materialTextures[eMaterialType][iTextureIndex];
+	if (textureIndex < m_materialTextures[materialType].size())
+		srv = m_materialTextures[materialType][textureIndex];
 	
 		if (srv == nullptr)
 			srv = m_blackSRV; // 
 
-		pShader->Bind_SRV(pConstantName, srv);
+		shader->Bind_SRV(constantName, srv);
 	
 	
 	return S_OK;
 }
 
-shared_ptr<CMaterial> CMaterial::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, ifstream& InFile/*, const _char* pModelFilePath*/)
+shared_ptr<CMaterial> CMaterial::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, ifstream& InFile/*, const _char* pModelFilePath*/)
 {
-	shared_ptr<CMaterial> pInstance(new CMaterial(pDevice, pContext), [](CMaterial* p) {p->Free(); delete p;});
+	shared_ptr<CMaterial> instance(new CMaterial(device, context), [](CMaterial* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(InFile/*, pModelFilePath*/)))
+	if (FAILED(instance->Initialize(InFile/*, pModelFilePath*/)))
 	{
 		MSG_BOX("Failed to Created : CMaterial");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMaterial::Free()

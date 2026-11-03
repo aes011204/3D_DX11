@@ -8,8 +8,8 @@
 #include "UI_MiniGame.h"
 #include "UI_TabContainer.h"
 
-CPlayer_MiniGame::CPlayer_MiniGame(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
-	: CPlayerState(owner, pStateMachine)
+CPlayer_MiniGame::CPlayer_MiniGame(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> stateMachine)
+	: CPlayerState(owner, stateMachine)
 {
 }
 
@@ -22,27 +22,27 @@ void CPlayer_MiniGame::Enter()
 
 
 	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CamLerpDesc>();
-	pLerp->eMode = ECamMode::LERP;
+	auto lerp = make_shared<CamLerpDesc>();
+	lerp->mode = ECamMode::LERP;
 
 	_vector forward = m_ownerTransformCom.lock()->Get_State(ETransformState::LOOK);
-	XMStoreFloat3(&pLerp->vTargetPos, m_ownerTransformCom.lock()->Get_Position()
+	XMStoreFloat3(&lerp->targetPos, m_ownerTransformCom.lock()->Get_Position()
 		- XMVector3Normalize(forward) * 3.f   // 살짝 뒤로
 		+ XMVectorSet(0.f, 20.f, 0.f, 0.f));   // 위);
-	pLerp->target = m_owner;
-	pLerp->fDuration = 1.5f;
-	pLerp->OnComplete = [this]() {
+	lerp->target = m_owner;
+	lerp->duration = 1.5f;
+	lerp->OnComplete = [this]() {
 		Evt_CamArrived e = {};
 		e.playerstate = EPlayerState::FISHING;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 		
 		};
-	event.commands.push_back(pLerp);
+	event.commands.push_back(lerp);
 
 
-	auto pStop = make_shared<CamDesc>();
-	pStop->eMode = ECamMode::STOP;
-	event.commands.push_back(pStop);
+	auto stop = make_shared<CamDesc>();
+	stop->mode = ECamMode::STOP;
+	event.commands.push_back(stop);
 
 	m_gameInstance.lock()->Get_EventBus()->Publish(event);
 
@@ -109,16 +109,16 @@ void CPlayer_MiniGame::Render_State()
 	
 }
 
-shared_ptr<CPlayer_MiniGame> CPlayer_MiniGame::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
+shared_ptr<CPlayer_MiniGame> CPlayer_MiniGame::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine)
 {
-	shared_ptr<CPlayer_MiniGame> pInstance(new CPlayer_MiniGame(owner,pStateMachine), [](CPlayer_MiniGame* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_MiniGame> instance(new CPlayer_MiniGame(owner,stateMachine), [](CPlayer_MiniGame* p) {p->Free(); delete(p); });
 
 	//if (FAILED(pInstance->Init_State()))
 	//{
 	//	MSG_BOX("Failed to Created : CUIPanel");
 	//
 	//}
-	return pInstance;
+	return instance;
 }
 
 void CPlayer_MiniGame::Free()

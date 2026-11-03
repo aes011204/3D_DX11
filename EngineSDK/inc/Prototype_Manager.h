@@ -23,14 +23,14 @@ private:
 public:
     virtual ~CPrototype_Manager();
 public:
-    HRESULT Initialize(_uint iNumLevels);
-    HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
-    shared_ptr<CBase> Clone_Prototype(EPrototype ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);
+    HRESULT Initialize(_uint numLevels);
+    HRESULT Add_Prototype(_uint levelIndex, const _wstring& prototypeTag, shared_ptr<CBase> prototype);
+    shared_ptr<CBase> Clone_Prototype(EPrototype prototy, _uint levelIndex, const _wstring& prototypeTag, void* arg = nullptr);
     //shared_ptr<CBase> Clone_Prototype(shared_ptr<CBase> pPrototype, void* pArg);
-    HRESULT Clear_Prototype(_uint iLevelIndex);
+    HRESULT Clear_Prototype(_uint levelIndex);
 
 
-    shared_ptr<CBase> Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);
+    shared_ptr<CBase> Find_Prototype(_uint levelIndex, const _wstring& prototypeTag);
     void OnGui()override;
 private:
     map<const _wstring, shared_ptr<CBase>>* m_prototypes = { nullptr }; //
@@ -42,7 +42,7 @@ private:
     _uint m_selectedLevel = {};
     weak_ptr<CGameInstance> m_gameInstance = {};
 public:
-    static unique_ptr<CPrototype_Manager> Create(_uint iNumLevel);
+    static unique_ptr<CPrototype_Manager> Create(_uint numLevel);
     virtual void Free() override;
 };
 

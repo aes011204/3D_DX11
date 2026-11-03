@@ -17,17 +17,17 @@ public:
 
     };
 private:
-    CEmptyUObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CEmptyUObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CEmptyUObject(const CEmptyUObject& prototype);
 public:
     virtual ~CEmptyUObject() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnGui() override;
@@ -46,8 +46,8 @@ private:
     shared_ptr<CTexture> m_textureCom = { nullptr };
 
 public:
-    static shared_ptr<CEmptyUObject> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CEmptyUObject> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 };

@@ -15,8 +15,8 @@
 #include "PlayerBoat.h"
 
 
-CSea::CSea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CGameObject(pDevice, pContext), m_seaManager(CSea_Manager::GetInstance())
+CSea::CSea(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CGameObject(device, context), m_seaManager(CSea_Manager::GetInstance())
 
 {
 }
@@ -34,12 +34,12 @@ HRESULT CSea::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CSea::Initialize(void* pArg)
+HRESULT CSea::Initialize(void* arg)
 {
 
 	m_skyControl = (CSky_Controller::GetInstance());
 	/* 백그라운드의 멤버를 채워넣어야한다면 여기서 채운다. */
-	SeaDesc			Desc{};
+	SeaDesc			desc{};
 
 	// float2 dir1 = float2(1.f, 1.f);
   // float2 dir2 = float2(0.f,-0.46f);
@@ -52,7 +52,7 @@ HRESULT CSea::Initialize(void* pArg)
 
 
 
-	if (FAILED(__super::Initialize(&Desc)))
+	if (FAILED(__super::Initialize(&desc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -62,12 +62,12 @@ HRESULT CSea::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CSea::Priority_Update(_float fTimeDelta)
+void CSea::Priority_Update(_float timeDelta)
 {
 	int a = 1;
 }
 
-void CSea::Update(_float fTimeDelta)
+void CSea::Update(_float timeDelta)
 {
 	// 스냅핑
 	_float3 snapedPos = m_cachedVIBufferCom->Snapping((m_seaManager.lock()->Get_GlobalY()));
@@ -80,7 +80,7 @@ void CSea::Update(_float fTimeDelta)
 
 }
 
-void CSea::Late_Update(_float fTimeDelta)
+void CSea::Late_Update(_float timeDelta)
 {
 	int a = 1;
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::SEA, static_pointer_cast<CSea>(shared_from_this()));
@@ -135,11 +135,11 @@ HRESULT CSea::Ready_Components()
 
 HRESULT CSea::Bind_ShaderResources()
 {
-	auto Sea = m_seaManager.lock();
-	_float fTime = Sea->Get_AccTime();
-	int WaveCount = Sea->Get_WaveCount();
+	auto sea = m_seaManager.lock();
+	_float time = sea->Get_AccTime();
+	int waveCount = sea->Get_WaveCount();
 	//float depthMask01 = Sea->Get_DepthMask01();
-	const WaveDesc* waveDesc = Sea->Get_WaveDescArray();
+	const WaveDesc* waveDesc = sea->Get_WaveDescArray();
 
 	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
@@ -155,7 +155,7 @@ HRESULT CSea::Bind_ShaderResources()
 		return E_FAIL;
 
 
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Time", &fTime, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Time", &time, sizeof(_float))))
 		return E_FAIL;
 
 
@@ -175,80 +175,80 @@ HRESULT CSea::Bind_ShaderResources()
 	if (FAILED(m_shaderCom->Bind_RawValue("g_vLightSpecular", &spec, sizeof(_float4))))
 		return E_FAIL;
 
-		_int iPlayerPointLightActive = 0;
-	_float4 vPlayerLightPos = _float4(0.f, 0.f, 0.f, 1.f);
-	_float fPlayerLightRange = 0.f;
-	_float4 vPlayerLightDiffuse = _float4(0.f, 0.f, 0.f, 1.f);
-	_float4 vPlayerLightSpecular = _float4(0.f, 0.f, 0.f, 1.f);
+		_int playerPointLightActive = 0;
+	_float4 playerLightPos = _float4(0.f, 0.f, 0.f, 1.f);
+	_float playerLightRange = 0.f;
+	_float4 playerLightDiffuse = _float4(0.f, 0.f, 0.f, 1.f);
+	_float4 playerLightSpecular = _float4(0.f, 0.f, 0.f, 1.f);
 
-	auto pPlayerObject = m_gameInstance.lock()->Get_GameObject(m_gameInstance.lock()->Get_Current_LevelIdx(), L"Layer_Player", 0);
-	auto pPlayerBoat = dynamic_pointer_cast<CPlayerBoat>(pPlayerObject);
-	auto pPlayerLight = pPlayerBoat ? pPlayerBoat->Get_Light().lock() : nullptr;
-	if (pPlayerLight != nullptr && pPlayerLight->Get_Active())
+	auto playerObject = m_gameInstance.lock()->Get_GameObject(m_gameInstance.lock()->Get_Current_LevelIdx(), L"Layer_Player", 0);
+	auto playerBoat = dynamic_pointer_cast<CPlayerBoat>(playerObject);
+	auto playerLight = playerBoat ? playerBoat->Get_Light().lock() : nullptr;
+	if (playerLight != nullptr && playerLight->Get_Active())
 	{
-		const LightDesc* pPlayerLightDesc = pPlayerLight->Get_LightDesc();
-		if (pPlayerLightDesc != nullptr && pPlayerLightDesc->type == ELightType::POINT)
+		const LightDesc* playerLightDesc = playerLight->Get_LightDesc();
+		if (playerLightDesc != nullptr && playerLightDesc->type == ELightType::POINT)
 		{
-			iPlayerPointLightActive = 1;
-			vPlayerLightPos = pPlayerLightDesc->position;
-			fPlayerLightRange = max(pPlayerLightDesc->range, 12.f);
-			vPlayerLightDiffuse = pPlayerLightDesc->diffuse;
-			vPlayerLightSpecular = pPlayerLightDesc->specular;
+			playerPointLightActive = 1;
+			playerLightPos = playerLightDesc->position;
+			playerLightRange = max(playerLightDesc->range, 12.f);
+			playerLightDiffuse = playerLightDesc->diffuse;
+			playerLightSpecular = playerLightDesc->specular;
 		}
 	}
-if (FAILED(m_shaderCom->Bind_RawValue("g_iPlayerPointLightActive", &iPlayerPointLightActive, sizeof(_int))))
+if (FAILED(m_shaderCom->Bind_RawValue("g_iPlayerPointLightActive", &playerPointLightActive, sizeof(_int))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightPos", &vPlayerLightPos, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightPos", &playerLightPos, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_fPlayerLightRange", &fPlayerLightRange, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_fPlayerLightRange", &playerLightRange, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightDiffuse", &vPlayerLightDiffuse, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightDiffuse", &playerLightDiffuse, sizeof(_float4))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightSpecular", &vPlayerLightSpecular, sizeof(_float4))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_vPlayerLightSpecular", &playerLightSpecular, sizeof(_float4))))
 		return E_FAIL;
 
 	///////Wave///////
-	if (FAILED(m_shaderCom->Bind_RawValue("g_WaveCount", &WaveCount, sizeof(int))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_WaveCount", &waveCount, sizeof(int))))
 		return E_FAIL;
 	if (FAILED(m_shaderCom->Bind_RawValue("g_Waves", waveDesc, sizeof(WaveDesc)*10)))
 		return E_FAIL; // 고정 배열 10
 	
 
-	if (FAILED(m_shaderCom->Bind_RawValue("g_TerrainSize", &Sea->m_terrainSize, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_TerrainSize", &sea->m_terrainSize, sizeof(_float))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_TerrainPos", &Sea->m_terrainPos, sizeof(_float3))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_TerrainPos", &sea->m_terrainPos, sizeof(_float3))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_deepColor", &Sea->m_deepColor, sizeof(_float3))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_deepColor", &sea->m_deepColor, sizeof(_float3))))
 		return E_FAIL;
-	if (FAILED(m_shaderCom->Bind_RawValue("g_shallowColor", &Sea->m_shallowColor, sizeof(_float3))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_shallowColor", &sea->m_shallowColor, sizeof(_float3))))
 		return E_FAIL;
 	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_TerrainHeight", 0)))
 		return E_FAIL;
 	return S_OK;
 }
 
-shared_ptr<CSea> CSea::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CSea> CSea::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CSea> pInstance(new CSea(pDevice, pContext), [](CSea* p) {p->Free(); delete p; });
+	shared_ptr<CSea> instance(new CSea(device, context), [](CSea* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CSea");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CSea::Clone(void* pArg)
+shared_ptr<CGameObject> CSea::Clone(void* arg)
 {
-	shared_ptr<CSea> pInstance(new CSea(*this), [](CSea* p) {p->Free(); delete p; });
+	shared_ptr<CSea> instance(new CSea(*this), [](CSea* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CSea");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CSea::Free()

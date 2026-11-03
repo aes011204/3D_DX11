@@ -1,7 +1,7 @@
 ﻿#include "UIRenderable.h"
 
-CUIRenderable::CUIRenderable(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUI(pDevice, pContext)
+CUIRenderable::CUIRenderable(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUI(device, context)
 {
 
 }
@@ -13,20 +13,20 @@ CUIRenderable::CUIRenderable(const CUIRenderable& prototype)
 }
 
 
-HRESULT CUIRenderable::OnInit(void* pArg)
+HRESULT CUIRenderable::OnInit(void* arg)
 {
 
-	RenderableDesc* pDesc = static_cast<RenderableDesc*>(pArg);
+	RenderableDesc* desc = static_cast<RenderableDesc*>(arg);
 
-	m_isTransparent = pDesc->isTransparent;
-	m_useDark = pDesc->useDark;
-	m_useNineSlice = pDesc->useNineSlice;
+	m_isTransparent = desc->isTransparent;
+	m_useDark = desc->useDark;
+	m_useNineSlice = desc->useNineSlice;
 
-	m_texProtoLevel = pDesc->textureComLevel;
-	 m_texProtoName = pDesc->textureProtoName;
-	m_texIndex = pDesc->textureIndex;
+	m_texProtoLevel = desc->textureComLevel;
+	 m_texProtoName = desc->textureProtoName;
+	m_texIndex = desc->textureIndex;
 
-	m_shaderType = pDesc->shaderType;
+	m_shaderType = desc->shaderType;
 	if(m_shaderType == UIShaderType::Radial)
 	{
 		m_useRadial = true;
@@ -48,10 +48,10 @@ HRESULT CUIRenderable::OnInit(void* pArg)
 
 
 
-	if (pDesc->pxSliceLRTB.x != 0.f && pDesc->pxSliceLRTB.y != 0.f
-		&& pDesc->pxSliceLRTB.z != 0.f && pDesc->pxSliceLRTB.w != 0.f)
+	if (desc->pxSliceLRTB.x != 0.f && desc->pxSliceLRTB.y != 0.f
+		&& desc->pxSliceLRTB.z != 0.f && desc->pxSliceLRTB.w != 0.f)
 	{
-		m_sliceDesc.pxSliceLRTB = (pDesc->pxSliceLRTB);
+		m_sliceDesc.pxSliceLRTB = (desc->pxSliceLRTB);
 	}
 
 
@@ -126,16 +126,16 @@ HRESULT CUIRenderable::OnRender()
 	return S_OK;
 }
 
-HRESULT CUIRenderable::Change_Texture(shared_ptr<CTexture> texture, _uint TexIndex)
+HRESULT CUIRenderable::Change_Texture(shared_ptr<CTexture> texture, _uint texIndex)
 {
 	//if(protoName != m_TexProtoName)
 	//{
 
 	m_textureCom = texture;
-	m_texIndex = TexIndex;
+	m_texIndex = texIndex;
 	if (m_textureCom && m_UITransformCom) {
 
-		m_UITransformCom->SetSizeDelta((m_textureCom->Get_SizeFromSRV(TexIndex) / 3.f) * 2.f);
+		m_UITransformCom->SetSizeDelta((m_textureCom->Get_SizeFromSRV(texIndex) / 3.f) * 2.f);
 	}
 	return S_OK;
 	//}
@@ -331,23 +331,23 @@ void CUIRenderable::OnGui()
 	ImGui::DragFloat("Top", &slice.z, 1.0f, 0.0f, 1000.0f);
 	ImGui::DragFloat("Bottom", &slice.w, 1.0f, 0.0f, 1000.0f);
 
-	_float& TileScale = m_sliceDesc.tileScale;
-	ImGui::DragFloat("TileScale", &TileScale, 1.0f, 0.0f, 1000.0f);
+	_float& tileScale = m_sliceDesc.tileScale;
+	ImGui::DragFloat("TileScale", &tileScale, 1.0f, 0.0f, 1000.0f);
 
 	ImGui::Text("ZOrder: %d", m_zOrder);
 
 	__super::OnGui();
 }
 
-shared_ptr<CUIRenderable> CUIRenderable::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUIRenderable> CUIRenderable::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUIRenderable> pInstance(new CUIRenderable(pDevice, pContext), [](CUIRenderable* p) {p->Free(); delete(p); });
+	shared_ptr<CUIRenderable> instance(new CUIRenderable(device, context), [](CUIRenderable* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIImage");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUIRenderable::Free()

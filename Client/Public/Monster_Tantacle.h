@@ -16,17 +16,17 @@ public:
     enum EState{ATTACK, IDLE, RELEASE, END};
 
 private:
-    CMonster_Tantacle(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CMonster_Tantacle(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CMonster_Tantacle(const CMonster_Tantacle& prototype);
 public:
     virtual ~CMonster_Tantacle() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
@@ -65,8 +65,8 @@ private:
 
 public:
 
-    static shared_ptr<CMonster_Tantacle> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CMonster_Tantacle> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

@@ -8,43 +8,43 @@ CAssimp_Channel::CAssimp_Channel()
 }
 
 
-HRESULT CAssimp_Channel::Initialize(const aiNodeAnim* pAIChannel, shared_ptr<class CAssimp_Model> pModel)
+HRESULT CAssimp_Channel::Initialize(const aiNodeAnim* srcAIChannel, shared_ptr<class CAssimp_Model> model)
 {
-    m_boneIndex = pModel->Get_BoneIndex(pAIChannel->mNodeName.data);
+    m_boneIndex = model->Get_BoneIndex(srcAIChannel->mNodeName.data);
 
-	m_numKeyFrames = max(pAIChannel->mNumPositionKeys, pAIChannel->mNumRotationKeys);
-	m_numKeyFrames = max(m_numKeyFrames, pAIChannel->mNumScalingKeys);
+	m_numKeyFrames = max(srcAIChannel->mNumPositionKeys, srcAIChannel->mNumRotationKeys);
+	m_numKeyFrames = max(m_numKeyFrames, srcAIChannel->mNumScalingKeys);
 
-    _float3 vScale = {};
-    _float4 vRotation = {};
-    _float3 vTranslation = {};
+    _float3 scale = {};
+    _float4 rotation = {};
+    _float3 translation = {};
 
     for(size_t i =0;i<m_numKeyFrames;i++)
     {
         KeyFrame keyFrame = {};
-        if(pAIChannel->mNumScalingKeys > i)
+        if(srcAIChannel->mNumScalingKeys > i)
         {
-            memcpy(&vScale, &pAIChannel->mScalingKeys[i].mValue, sizeof(_float3));
-            keyFrame.trackPosition = pAIChannel->mScalingKeys[i].mTime; // 이거 실제 시간이 아님
+            memcpy(&scale, &srcAIChannel->mScalingKeys[i].mValue, sizeof(_float3));
+            keyFrame.trackPosition = srcAIChannel->mScalingKeys[i].mTime; // 이거 실제 시간이 아님
         }
-        if (pAIChannel->mNumRotationKeys > i)
+        if (srcAIChannel->mNumRotationKeys > i)
         {
-            vRotation.x = pAIChannel->mRotationKeys[i].mValue.x;
-            vRotation.y = pAIChannel->mRotationKeys[i].mValue.y;
-            vRotation.z = pAIChannel->mRotationKeys[i].mValue.z;
-            vRotation.w = pAIChannel->mRotationKeys[i].mValue.w;
+            rotation.x = srcAIChannel->mRotationKeys[i].mValue.x;
+            rotation.y = srcAIChannel->mRotationKeys[i].mValue.y;
+            rotation.z = srcAIChannel->mRotationKeys[i].mValue.z;
+            rotation.w = srcAIChannel->mRotationKeys[i].mValue.w;
 
-            keyFrame.trackPosition = pAIChannel->mRotationKeys[i].mTime;
+            keyFrame.trackPosition = srcAIChannel->mRotationKeys[i].mTime;
         }
-        if (pAIChannel->mNumPositionKeys > i)
+        if (srcAIChannel->mNumPositionKeys > i)
         {
-            memcpy(&vTranslation, &pAIChannel->mPositionKeys[i].mValue, sizeof(_float3));
-            keyFrame.trackPosition = pAIChannel->mPositionKeys[i].mTime; // 이거 실제 시간이 아님
+            memcpy(&translation, &srcAIChannel->mPositionKeys[i].mValue, sizeof(_float3));
+            keyFrame.trackPosition = srcAIChannel->mPositionKeys[i].mTime; // 이거 실제 시간이 아님
         }
 
-        keyFrame.scale = vScale;
-        keyFrame.rotation = vRotation;
-        keyFrame.translation = vTranslation;
+        keyFrame.scale = scale;
+        keyFrame.rotation = rotation;
+        keyFrame.translation = translation;
 
         m_keyFrames.push_back(keyFrame);
     }
@@ -53,61 +53,61 @@ HRESULT CAssimp_Channel::Initialize(const aiNodeAnim* pAIChannel, shared_ptr<cla
     return S_OK;
 }
 
-void CAssimp_Channel::Update_TransformationMatrix(_float fCurrentTrackPosition, const vector<shared_ptr<CAssimp_Bone>>& Bones)
+void CAssimp_Channel::Update_TransformationMatrix(_float currentTrackPosition, const vector<shared_ptr<CAssimp_Bone>>& Bones)
 {
-    if (0.f == fCurrentTrackPosition)
+    if (0.f == currentTrackPosition)
         m_currentKeyFrameIndex = 0;
 
-    KeyFrame LastKeyFrame = m_keyFrames.back();
+    KeyFrame lastKeyFrame = m_keyFrames.back();
 
-    _vector vScale, vRotation, vTranslation;
+    _vector scale, rotation, translation;
 
-    if (fCurrentTrackPosition >= LastKeyFrame.trackPosition)// 마지막 프레임 이후 그 자세 그대로 유지
+    if (currentTrackPosition >= lastKeyFrame.trackPosition)// 마지막 프레임 이후 그 자세 그대로 유지
     {
-        vScale = XMLoadFloat3(&LastKeyFrame.scale);
-        vRotation = XMLoadFloat4(&LastKeyFrame.rotation);
-        vTranslation = XMVectorSetW(XMLoadFloat3(&LastKeyFrame.translation), 1.f);
+        scale = XMLoadFloat3(&lastKeyFrame.scale);
+        rotation = XMLoadFloat4(&lastKeyFrame.rotation);
+        translation = XMVectorSetW(XMLoadFloat3(&lastKeyFrame.translation), 1.f);
     }
     else // 사이보간
     {
-        while (fCurrentTrackPosition >= m_keyFrames[m_currentKeyFrameIndex + 1].trackPosition)
+        while (currentTrackPosition >= m_keyFrames[m_currentKeyFrameIndex + 1].trackPosition)
             ++m_currentKeyFrameIndex;
 
-        _float fRatio = (fCurrentTrackPosition - m_keyFrames[m_currentKeyFrameIndex].trackPosition) /
+        _float ratio = (currentTrackPosition - m_keyFrames[m_currentKeyFrameIndex].trackPosition) /
             (m_keyFrames[m_currentKeyFrameIndex + 1].trackPosition - m_keyFrames[m_currentKeyFrameIndex].trackPosition);
 
-        _vector vLeftScale, vRightScale;
-        _vector	vLeftRotation, vRightRotation;
-        _vector	vLeftTranslation, vRightTranslation;
+        _vector leftScale, rightScale;
+        _vector	leftRotation, rightRotation;
+        _vector	leftTranslation, rightTranslation;
 
-        vLeftScale = XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex].scale);
-        vRightScale = XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex+1].scale);
-        vScale = XMVectorLerp(vLeftScale, vRightScale, fRatio);
+        leftScale = XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex].scale);
+        rightScale = XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex+1].scale);
+        scale = XMVectorLerp(leftScale, rightScale, ratio);
 
-        vLeftRotation = XMLoadFloat4(&m_keyFrames[m_currentKeyFrameIndex].rotation);
-        vRightRotation = XMLoadFloat4(&m_keyFrames[m_currentKeyFrameIndex + 1].rotation);
-        vRotation = XMQuaternionSlerp(vLeftRotation, vRightRotation, fRatio);
+        leftRotation = XMLoadFloat4(&m_keyFrames[m_currentKeyFrameIndex].rotation);
+        rightRotation = XMLoadFloat4(&m_keyFrames[m_currentKeyFrameIndex + 1].rotation);
+        rotation = XMQuaternionSlerp(leftRotation, rightRotation, ratio);
 
-        vLeftTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex].translation), 1.f);
-        vRightTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex + 1].translation), 1.f);
-        vTranslation = XMVectorLerp(vLeftTranslation, vRightTranslation, fRatio);
+        leftTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex].translation), 1.f);
+        rightTranslation = XMVectorSetW(XMLoadFloat3(&m_keyFrames[m_currentKeyFrameIndex + 1].translation), 1.f);
+        translation = XMVectorLerp(leftTranslation, rightTranslation, ratio);
     }
 
-    _matrix		BoneTransformationMatrix = XMMatrixAffineTransformation(
-        vScale, XMVectorSet(0.f, 0.f, 0.f, 1.f), vRotation, vTranslation);
+    _matrix		boneTransformationMatrix = XMMatrixAffineTransformation(
+        scale, XMVectorSet(0.f, 0.f, 0.f, 1.f), rotation, translation);
 
-    Bones[m_boneIndex]->Update_TransformationMatrix(BoneTransformationMatrix);
+    Bones[m_boneIndex]->Update_TransformationMatrix(boneTransformationMatrix);
 }
 
-shared_ptr<CAssimp_Channel> CAssimp_Channel::Create(const aiNodeAnim* pAIChannel, shared_ptr<class CAssimp_Model> pModel)
+shared_ptr<CAssimp_Channel> CAssimp_Channel::Create(const aiNodeAnim* srcAIChannel, shared_ptr<class CAssimp_Model> model)
 {
-    shared_ptr<CAssimp_Channel> pInstance(new CAssimp_Channel(), [](CAssimp_Channel* p) {p->Free(); delete p; });
+    shared_ptr<CAssimp_Channel> instance(new CAssimp_Channel(), [](CAssimp_Channel* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pAIChannel, pModel)))
+    if (FAILED(instance->Initialize(srcAIChannel, model)))
     {
         MSG_BOX("Failed to Created : CAssimp_Channel");
     }
-    return pInstance;
+    return instance;
 }
 
 

@@ -8,18 +8,18 @@ class CUI_HUD final :
     public CUIPanel
 {
 public:
-    struct HudDesc : public CUIPanel::UIPanelDesc
+    struct HUDDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:
-    CUI_HUD(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_HUD(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_HUD(const CUIPanel& prototype);
 public:
     ~CUI_HUD() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -33,7 +33,7 @@ public:
 private:
 
 public:
-    static shared_ptr<CUI_HUD> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_HUD> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

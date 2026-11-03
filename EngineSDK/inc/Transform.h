@@ -24,16 +24,16 @@ public:
         _float					degreePerSec = {};
     };
 private:
-    CTransform(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CTransform(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CTransform(const CTransform& prototype);
 public:
     virtual ~CTransform() = default;
 
 public:
-    _vector Get_State(ETransformState eState)
+    _vector Get_State(ETransformState state)
     {
         //return XMLoadFloat4(reinterpret_cast<_float4*>(&m_WorldMatrix.m[ETOI(eState)][0]));
-        switch(ETOI(eState))
+        switch(ETOI(state))
         {
         case ETOI(ETransformState::POSITION):
             return XMLoadFloat3(&m_position);
@@ -86,80 +86,80 @@ public:
     //    m_bIsDirty = true;
     //}
     _vector Get_Position() { return XMLoadFloat3(&m_position); }
-    void Set_Position(_fvector vPos) { XMStoreFloat3(&m_position, vPos); m_isDirty = true; }
+    void Set_Position(_fvector pos) { XMStoreFloat3(&m_position, pos); m_isDirty = true; }
 
     _vector Get_Quaternion() { return XMLoadFloat4(&m_rotationQuat);}
-    void Set_Quaternion(_fvector vQuat)
+    void Set_Quaternion(_fvector quat)
 	{
-    	XMStoreFloat4(&m_rotationQuat, vQuat);
+    	XMStoreFloat4(&m_rotationQuat, quat);
 
         _float4 q = {};
-        XMStoreFloat4(&q, vQuat);
+        XMStoreFloat4(&q, quat);
         //m_vRotationDegree = QuaternionToEuler(q);
     	m_isDirty = true;
 	}
     _float3 Get_RotationDegree() { return QuaternionToEuler(m_rotationQuat); };
-    void Set_RotationDegree(_float3 vRotation)
+    void Set_RotationDegree(_float3 rotation)
     {
-        m_rotationDegree = vRotation;
+        m_rotationDegree = rotation;
 
-        _vector vRadian = XMVectorSet(
+        _vector radian = XMVectorSet(
             XMConvertToRadians(m_rotationDegree.x),
             XMConvertToRadians(m_rotationDegree.y),
             XMConvertToRadians(m_rotationDegree.z), 0.f);
 
-        XMStoreFloat4(&m_rotationQuat, XMQuaternionRotationRollPitchYawFromVector(vRadian));
+        XMStoreFloat4(&m_rotationQuat, XMQuaternionRotationRollPitchYawFromVector(radian));
         m_isDirty = true;
     }
     
     _float3 Get_Scale() { return m_scale; }
-    void Set_Scale(_float3 vScale) { m_scale = vScale; m_isDirty = true; }
+    void Set_Scale(_float3 scale) { m_scale = scale; m_isDirty = true; }
 
-    void Set_ParentMatrix(const _float4x4* pParentMatrix) { m_parentMatrix = pParentMatrix; m_isDirty = true; }
+    void Set_ParentMatrix(const _float4x4* parentMatrix) { m_parentMatrix = parentMatrix; m_isDirty = true; }
 
 	const _float4x4* Get_WorldMatrixPtr() const { return &m_worldMatrix;}
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual HRESULT Bind_ShaderResource(shared_ptr<class CShader>pShaderCom, const _char* pConstantName );
+    virtual HRESULT Initialize(void* arg) override;
+    virtual HRESULT Bind_ShaderResource(shared_ptr<class CShader>shaderCom, const _char* constantName );
 
     void Update_WorldMatrix();
 public:
-    void SetUp_Scale(_float fScaleX, _float fScaleY, _float fScaleZ);//기존의 있는 크기에 배수가 아니라 스케일정보 바꿔줌
-    void Scaling(_float fScaleX, _float fScaleY, _float fScaleZ);//저장된 크기의 배수로 키우기
-    void Go_Forward_Distanace(_float fDistance);
-    void Go_Backward_Distanace(_float fDistance);
+    void SetUp_Scale(_float scaleX, _float scaleY, _float scaleZ);//기존의 있는 크기에 배수가 아니라 스케일정보 바꿔줌
+    void Scaling(_float scaleX, _float scaleY, _float scaleZ);//저장된 크기의 배수로 키우기
+    void Go_Forward_Distanace(_float distance);
+    void Go_Backward_Distanace(_float distance);
 
-	void Go_Forward(_float fTimeDelta);
-    void Go_Backward(_float fTimeDelta);
+	void Go_Forward(_float timeDelta);
+    void Go_Backward(_float timeDelta);
 
-    void Go_Right(_float fTimeDelta);
-    void Go_Left(_float fTimeDelta);
+    void Go_Right(_float timeDelta);
+    void Go_Left(_float timeDelta);
 
-    void Go_Up(_float fTimeDelta);
-    void Go_Down(_float fTimeDelta);
+    void Go_Up(_float timeDelta);
+    void Go_Down(_float timeDelta);
 
-    void Start_Lerp(_fvector vTargetPos, _float3 vTargetRotation, _float fDuration, _bool IsTarget= false);
+    void Start_Lerp(_fvector targetPos, _float3 targetRotation, _float duration, _bool isTarget= false);
 
-    void Lerp_To(_float fTimeDelta);
+    void Lerp_To(_float timeDelta);
 
    // void Rotation(_fvector vAxis, _float fDegree);//속도X 정해논 각도로 따라 항등상태에서 회전 하는거임
-    void Turn(_fvector vAxis, _float fTimeDelta);//나한테 저장된 회전 속도 만큼 서서히 회전
+    void Turn(_fvector axis, _float timeDelta);//나한테 저장된 회전 속도 만큼 서서히 회전
 
-    void LookAt(_fvector vAt);
+    void LookAt(_fvector at);
 
-    void Orbit(_fvector vTargetPos, _float3 vTargetQuat, _float fDistance, _float fPitch, _float fYaw);
+    void Orbit(_fvector targetPos, _float3 targetQuat, _float distance, _float pitch, _float yaw);
 
     void OnGui() override;
     virtual void Save_ToJson(nlohmann::json& j) override;
     virtual void Load_FromJson(nlohmann::json& j) override;
 
     _float Get_Speed() const { return m_speedPerSec; }
-    void Set_Speed(_float fSpeed) { m_speedPerSec = fSpeed; }
+    void Set_Speed(_float speed) { m_speedPerSec = speed; }
 
     _float Get_RadianSpeed() const { return m_radianPerSec; }
-    void Set_RadianSpeed(_float fRadian) { m_radianPerSec = fRadian; }
+    void Set_RadianSpeed(_float radian) { m_radianPerSec = radian; }
 
 
     _float3 QuaternionToEuler(_float4 q);
@@ -191,8 +191,8 @@ private:
     _bool m_isTarget = false;
 
 public:
-    static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    virtual shared_ptr<CComponent> Clone(void* pArg)override;
+    static shared_ptr<CTransform> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    virtual shared_ptr<CComponent> Clone(void* arg)override;
     void Free();
 };
 

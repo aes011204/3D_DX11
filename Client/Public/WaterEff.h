@@ -16,38 +16,38 @@ class CWaterEff :
     struct EffDesc : public CGameObject::GameObjectDesc
     {
         EEffType type = {};
-        weak_ptr<class CGameObject>Target = {};
+        weak_ptr<class CGameObject>target = {};
 
     };
 private:
-    CWaterEff(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CWaterEff(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CWaterEff(const CWaterEff& prototype);
 public:
     virtual ~CWaterEff() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnGui() override;
 
     virtual void RebindCom();
 
-    void Set_Player(weak_ptr<class CGameObject> Player) { m_player = Player; }
+    void Set_Player(weak_ptr<class CGameObject> player) { m_player = player; }
 
-    _float3 curPos = {};
-    _float3 PrevPos = {};
+    _float3 m_curPos = {};
+    _float3 m_prevPos = {};
 
 protected:
     HRESULT Bind_ShaderResources();
     HRESULT Ready_Components();
 
    
-    EEffType   eType={};
+    EEffType   m_type={};
 private:
     weak_ptr<class CGameObject> m_player = {};
 private:
@@ -60,8 +60,8 @@ private:
 
 public:
 
-    static shared_ptr<CWaterEff> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CWaterEff> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

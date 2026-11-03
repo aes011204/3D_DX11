@@ -8,8 +8,8 @@
 //#include "CShader.h"
 //#include "CTexture.h"
 
-CBackGround::CBackGround(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIObject(pDevice, pContext)
+CBackGround::CBackGround(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIObject(device, context)
 {
 }
 
@@ -29,21 +29,21 @@ HRESULT Client::CBackGround::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CBackGround::Initialize(void* pArg)
+HRESULT CBackGround::Initialize(void* arg)
 {
 
 
 	/* 백그라운드의 멤버를 채워넣어야한다면 여기서 채운다. */
-	BackGroundDesc			Desc{};
+	BackGroundDesc			desc{};
 
-	Desc.degreePerSec = 90.f;
-	Desc.speedPerSec = 1.f;
-	Desc.x = 100.f;
-	Desc.y = 100.f;
-	Desc.sizeX = 200.f;
-	Desc.sizeY = 200.f;
+	desc.degreePerSec = 90.f;
+	desc.speedPerSec = 1.f;
+	desc.x = 100.f;
+	desc.y = 100.f;
+	desc.sizeX = 200.f;
+	desc.sizeY = 200.f;
 
-	if (FAILED(__super::Initialize(&Desc)))
+	if (FAILED(__super::Initialize(&desc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -52,12 +52,12 @@ HRESULT CBackGround::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CBackGround::Priority_Update(_float fTimeDelta)
+void CBackGround::Priority_Update(_float timeDelta)
 {
 	int a = 1;
 }
 
-void CBackGround::Update(_float fTimeDelta)
+void CBackGround::Update(_float timeDelta)
 {
 
 	//m_fX += 10.f * fTimeDelta;
@@ -66,7 +66,7 @@ void CBackGround::Update(_float fTimeDelta)
 
 }
 
-void CBackGround::Late_Update(_float fTimeDelta)
+void CBackGround::Late_Update(_float timeDelta)
 {
 	int a = 1;
 	//m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::UI_WINDOW, static_pointer_cast<CEntity>(shared_from_this()));
@@ -117,28 +117,28 @@ HRESULT CBackGround::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CBackGround> CBackGround::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CBackGround> CBackGround::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CBackGround> pInstance(new CBackGround(pDevice, pContext), [](CBackGround* p) {p->Free(); delete p;});
+	shared_ptr<CBackGround> instance(new CBackGround(device, context), [](CBackGround* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CBackGround");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CBackGround::Clone(void* pArg)
+shared_ptr<CGameObject> CBackGround::Clone(void* arg)
 {
-	shared_ptr<CBackGround> pInstance(new CBackGround(*this), [](CBackGround* p) {p->Free(); delete p;});
+	shared_ptr<CBackGround> instance(new CBackGround(*this), [](CBackGround* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : BackGround");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CBackGround::Free()

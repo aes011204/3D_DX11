@@ -113,59 +113,59 @@ shared_ptr<CPlayerState> CPlayerStateMachine::Get_State(_uint stateKey)
 HRESULT CPlayerStateMachine::Init_PlayerStates()
 {
     m_vecState.resize(ETOI(EPlayerState::END));
-   shared_ptr<CPlayerState> pState = nullptr;
+   shared_ptr<CPlayerState> state = nullptr;
 
-    if (nullptr == (pState = CPlayer_Sea::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_Sea::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(EPlayerState::SEA)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::SEA)] = state;
+    state->Init_State();
 
-    if (nullptr == (pState = CPlayer_MiniGame::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_MiniGame::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(EPlayerState::FISHING)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::FISHING)] = state;
+    state->Init_State();
 
-    if (nullptr == (pState = CPlayer_Village::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_Village::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(EPlayerState::VILLAGE)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::VILLAGE)] = state;
+    state->Init_State();
 
 
 
 
-    if (nullptr == (pState = CPlayer_Storage::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_Storage::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(EPlayerState::STORAGE)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::STORAGE)] = state;
+    state->Init_State();
 
-        if (nullptr == (pState = CPlayer_RepairShop::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        if (nullptr == (state = CPlayer_RepairShop::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
             return E_FAIL;
-    m_vecState[ETOI(EPlayerState::REPAIR_SHOP)] = pState;
-    pState->Init_State();;
+    m_vecState[ETOI(EPlayerState::REPAIR_SHOP)] = state;
+    state->Init_State();;
 
-        if (nullptr == (pState = CPlayer_FishShop::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        if (nullptr == (state = CPlayer_FishShop::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
             return E_FAIL;
-    m_vecState[ETOI(EPlayerState::FISH_SHOP)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::FISH_SHOP)] = state;
+    state->Init_State();
 
-    if (nullptr == (pState = CPlayer_Interact::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_Interact::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(EPlayerState::INTERACT)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::INTERACT)] = state;
+    state->Init_State();
 
     return S_OK;
 }
 
 shared_ptr<CPlayerStateMachine> CPlayerStateMachine::Create(shared_ptr<CPlayerBoat> owner)
 {
-    shared_ptr<CPlayerStateMachine> pInstance(new CPlayerStateMachine(owner), [](CPlayerStateMachine* p) {p->Free(); delete(p); });
+    shared_ptr<CPlayerStateMachine> instance(new CPlayerStateMachine(owner), [](CPlayerStateMachine* p) {p->Free(); delete(p); });
 
-    if (FAILED(pInstance->Init_StateMachine()))
+    if (FAILED(instance->Init_StateMachine()))
     {
         MSG_BOX("Failed to Created : CUIPanel");
 
     }
-    return pInstance;
+    return instance;
 }
 
 void CPlayerStateMachine::Free()

@@ -13,13 +13,13 @@ public:
     virtual ~CData_Manager() ;
 
 public:
-    HRESULT Initialize(_uint  EditorLevel); // 생성 할떄 호출
+    HRESULT Initialize(_uint  editorLevel); // 생성 할떄 호출
 public:
 
     bool Reload(const _tchar* Path);// 이건그냥 임구이에서 하면 될듯
-    bool ClearMap(ESaveType eDATATYPE);
-    bool Load(ESaveType eDATATYPE, const string& fileName );
-    bool Save(ESaveType eDATATYPE, const string& fileName);
+    bool ClearMap(ESaveType dataType);
+    bool Load(ESaveType dataType, const string& fileName );
+    bool Save(ESaveType dataType, const string& fileName);
 
 public:
     HRESULT Load_ObjData(const string& fileName);
@@ -29,11 +29,11 @@ public:
     HRESULT Save_UIData(const string& fileName);
 
 private:
-    const _tchar* CurLoadedMapPath = {};
+    const _tchar* m_curLoadedMapPath = {};
     weak_ptr<class CGameInstance> m_gameInstance = {};
     _uint  m_editorLevel = {};
 public:
-    static unique_ptr<CData_Manager> Create(_uint  EditorLevel);
+    static unique_ptr<CData_Manager> Create(_uint  editorLevel);
     void Free() override;
 };
 

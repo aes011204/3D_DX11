@@ -15,11 +15,11 @@ public:
 
 
 	// IModifier을(를) 통해 상속됨
-	void Tick(float fDeltaTime, CUI* pOwner) override;
+	void Tick(float deltaTime, CUI* owner) override;
 
-	void OnAppear(float fDeltaTime, CUI* pOwner) override;
+	void OnAppear(float deltaTime, CUI* owner) override;
 
-	void OnDisappear(float fDeltaTime, CUI* pOwner) override;
+	void OnDisappear(float deltaTime, CUI* owner) override;
 
 	virtual bool IsFinished() { return m_isFinish; };
 

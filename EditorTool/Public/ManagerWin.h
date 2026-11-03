@@ -19,10 +19,10 @@ public:
 
 public:
     virtual HRESULT Initialize() override;
-    virtual void Update(float fTimeDelta) override;
+    virtual void Update(float timeDelta) override;
     virtual void Render() override;
 
-    void DrawUITree(const Engine::CBase& ui);
+    void DrawUITree(const Engine::CBase& UI);
 
     bool Picking();
 

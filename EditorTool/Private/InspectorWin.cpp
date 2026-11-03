@@ -70,10 +70,10 @@ void CInspectorWin::RenderEntity(const std::shared_ptr<Engine::CEntity>& obj)
     ImGui::TextDisabled("Entity");
 
     // 선택 대상 바뀌면 버퍼/상태 리셋
-    const uint64_t curId = (uint64_t)obj.get();
-    if (m_lastSelectedId != curId)
+    const uint64_t curID = (uint64_t)obj.get();
+    if (m_lastSelectedID != curID)
     {
-        m_lastSelectedId = curId;
+        m_lastSelectedID = curID;
         m_isEditingName = false;
 
         _string curName = ConvertW2A(obj->Get_Name());
@@ -161,25 +161,25 @@ void CInspectorWin::RenderEntity(const std::shared_ptr<Engine::CEntity>& obj)
             ImGui::PushID((void*)comp.get());
 
             // 1. 태그 출력 (비어있을 경우 대비)
-            string strTag = W2S(kv.first);
-            if (strTag.empty()) strTag = "Unknown_Tag";
+            string tag = W2S(kv.first);
+            if (tag.empty()) tag = "Unknown_Tag";
             ImGui::Text(W2S(kv.first).c_str());
             //string strCompName = W2S(kv.second->Get_ProtoTag());
 
             //ImGui::Button(strCompName.c_str(), ImVec2(-1, 30)); // 이 버튼이 '박스' 역할
-            string strProtoTag = W2S(comp->Get_ProtoTag());
-            char btnIdBuf[256];
-            sprintf_s(btnIdBuf, "%s##Btn_%p", strProtoTag.c_str(), comp.get());
+            string protoTag = W2S(comp->Get_ProtoTag());
+            char btnIDBuf[256];
+            sprintf_s(btnIDBuf, "%s##Btn_%p", protoTag.c_str(), comp.get());
 
-            if (ImGui::Button(btnIdBuf, ImVec2(-1, 30))) { /* 클릭 로직 */ }
+            if (ImGui::Button(btnIDBuf, ImVec2(-1, 30))) { /* 클릭 로직 */ }
             if (ImGui::BeginDragDropTarget())
             {
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("COMP_DRAG_DATA"))
                 {
                     shared_ptr <CComponent> nothing = {};
                     // 택배 박스 열기 (새로운 프로토타입 태그 이름 꺼내기)
-                    DragDropProto* pData = (DragDropProto*)payload->Data;
-                    obj->Add_Component<CComponent>(pData->level, pData->tag, kv.first, nullptr, nullptr);
+                    DragDropProto* data = (DragDropProto*)payload->Data;
+                    obj->Add_Component<CComponent>(data->level, data->tag, kv.first, nullptr, nullptr);
              
                     ImGui::EndDragDropTarget();
                     ImGui::PopID();

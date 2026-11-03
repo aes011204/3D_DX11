@@ -17,8 +17,8 @@ public:
         std::string message;
     };
 public:
-    void Add_Log_F(ELogLevel eLevel, const char* pFormat, ...);
-    void Add_Log(ELogLevel eLevel, const char* pMessage);
+    void Add_Log_F(ELogLevel level, const char* format, ...);
+    void Add_Log(ELogLevel level, const char* message);
     const vector<LogData>& Get_Logs() { return m_vecLogs; }
     void Clear() { m_vecLogs.clear(); }
 private:

@@ -2,8 +2,8 @@
 #include "GameInstance.h"
 #include "Model.h"
 
-CIsland::CIsland(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CIsland::CIsland(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -17,12 +17,12 @@ HRESULT CIsland::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CIsland::Initialize(void* pArg)
+HRESULT CIsland::Initialize(void* arg)
 {
 
 	m_isSavableClass = true;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -31,11 +31,11 @@ HRESULT CIsland::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CIsland::Priority_Update(_float fTimeDelta)
+void CIsland::Priority_Update(_float timeDelta)
 {
 }
 
-void CIsland::Update(_float fTimeDelta)
+void CIsland::Update(_float timeDelta)
 {
 	if (m_isDirtyCom) {
 		RebindCom();      // "바뀐 것"만 한 번 갱신
@@ -46,7 +46,7 @@ void CIsland::Update(_float fTimeDelta)
 	//m_pModelCom->Play_Animation(fTimeDelta);
 }
 
-void CIsland::Late_Update(_float fTimeDelta)
+void CIsland::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -56,9 +56,9 @@ HRESULT CIsland::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for (size_t i = 0; i < iNumMesh; i++)
+	for (size_t i = 0; i < numMesh; i++)
 	{
 		//m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
@@ -148,8 +148,8 @@ HRESULT CIsland::Bind_ShaderResources()
 	if (FAILED(m_shaderCom->Bind_RawValue("g_GrassColor", &m_grassColor, sizeof(_float4))))
 		return E_FAIL;
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 
 
 	return S_OK;
@@ -210,27 +210,27 @@ HRESULT CIsland::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CIsland> CIsland::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CIsland> CIsland::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CIsland> pInstance(new CIsland(pDevice, pContext), [](CIsland* p) {p->Free(); delete p; });
+	shared_ptr<CIsland> instance(new CIsland(device, context), [](CIsland* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CIsland");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CIsland::Clone(void* pArg)
+shared_ptr<CGameObject> CIsland::Clone(void* arg)
 {
-	shared_ptr<CIsland> pInstance(new CIsland(*this), [](CIsland* p) {p->Free(); delete p; });
+	shared_ptr<CIsland> instance(new CIsland(*this), [](CIsland* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CIsland");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CIsland::Free()

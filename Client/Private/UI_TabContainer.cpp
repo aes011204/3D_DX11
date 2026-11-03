@@ -10,8 +10,8 @@
 #include "EventBus.h"
 
 
-CUI_TabContainer::CUI_TabContainer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_TabContainer::CUI_TabContainer(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -42,13 +42,13 @@ void CUI_TabContainer::UI_Active()
 
 }
 
-void CUI_TabContainer::UI_PanelActive(_uint iTabfig, ETab Active)
+void CUI_TabContainer::UI_PanelActive(_uint tabfig, ETab Active)
 {
 	//m_Children.clear();
 	_uint numPanel = {};
 	// 일단 기본적으로 패널 은 다 inactive, 버튼은 iTabfig 에 따라 active
 	//::OnActive() 에서 클릭한 거만 활성화
-	if (iTabfig & ETOI(ETab::INVEN))
+	if (tabfig & ETOI(ETab::INVEN))
 	{
 		//Add_Child(m_ButtonContents[ETOI(TAB::INVEN)], L"BUTTON_INVEN", false);
 		(m_buttonContents[ETOI(ETab::INVEN)]->UI_Active());
@@ -56,7 +56,7 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, ETab Active)
 		m_tabContents[ETOI(ETab::INVEN)]->UI_InActive();
 		numPanel++;
 	}
-	if (iTabfig & ETOI(ETab::STORAGE))
+	if (tabfig & ETOI(ETab::STORAGE))
 	{
 		//(m_ButtonContents[ETOI(TAB::STORAGE)], L"BUTTON_STORAGE", false);
 		(m_buttonContents[ETOI(ETab::STORAGE)]->UI_Active());
@@ -65,7 +65,7 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, ETab Active)
 		numPanel++;
 
 	}
-	if (iTabfig & ETOI(ETab::ETC))
+	if (tabfig & ETOI(ETab::ETC))
 	{
 		//(m_ButtonContents[ETOI(TAB::ETC)], L"BUTTON_ETC", false);
 		m_buttonContents[ETOI(ETab::ETC)]->UI_Active();
@@ -103,20 +103,20 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, ETab Active)
 	//	it->UI_InActive();
 }
 
-HRESULT CUI_TabContainer::OnInit(void* pArg)
+HRESULT CUI_TabContainer::OnInit(void* arg)
 {
 	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_AddMoney>([this](const Evt_AddMoney& e)
 		{
 			
-			wstring strMoney = format(L"${:.2f}", e.money);
+			wstring moneyText = format(L"${:.2f}", e.money);
 			//wstring strM = L"$";
-			this->m_textFont->Set_Text(/*strM +*/ strMoney);
+			this->m_textFont->Set_Text(/*strM +*/ moneyText);
 		});
 
 
 
 	HRESULT hr = E_FAIL;
-	TabContainerDesc* TABpDesc = static_cast<TabContainerDesc*>(pArg);
+	TabContainerDesc* TABpDesc = static_cast<TabContainerDesc*>(arg);
 	//TABCONTAINER_DESC pDesc = {};
 	TABpDesc->isFullScreen = false;
 	TABpDesc->isTransparent = false;
@@ -143,36 +143,36 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 
 	for (_uint i = 0; i < 3; i++)
 	{
-		ETab eTab = static_cast<ETab>(1 << i);
+		ETab tab = static_cast<ETab>(1 << i);
 
 		/// 버튼
-		CUIButton::UIButtonDesc ButDesc = {};
-		ButDesc.textureComLevel = ETOI(ELevel::STATIC);
-		ButDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
+		CUIButton::UIButtonDesc butDesc = {};
+		butDesc.textureComLevel = ETOI(ELevel::STATIC);
+		butDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 		//ButDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f ) };
 		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// 안건드려도 됨 텍스쳐에서 초기화 예정
 		//ButDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
 		//ButDesc.vPivot = Vector2{ 0.5f, 0.5f };
 		//ButDesc.vScale = Vector2{ 1.3f, 1.0f };
-		ButDesc.typeIndex = ETOI(eTab);
-		ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
+		butDesc.typeIndex = ETOI(tab);
+		butDesc.OverlapStartEvent = [this](CUIButton* self)
 		{
 				m_gameInstance.lock()->Play_Once(L"Hover");
 		};
-		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
-		ButDesc.ClickEvent = [this](CUIButton* pThis)
+		butDesc.OverlapEndEvent = [](CUIButton* self) {};
+		butDesc.ClickEvent = [this](CUIButton* self)
 			{
-				SetActiveTab(static_cast<ETab>(pThis->Get_TypeIndex()));
+				SetActiveTab(static_cast<ETab>(self->Get_TypeIndex()));
 				m_gameInstance.lock()->Play_Once(L"Click");
 			};
 		shared_ptr<CUIButton> button = CUIButton::Create(m_device, m_context);
-		button->Initialize(&ButDesc);
+		button->Initialize(&butDesc);
 		button->Set_Zorder(2);
 		button->UI_InActive();
 
 		{
 			wstring name = {};
-			switch (eTab)
+			switch (tab)
 			{
 			case ETab::INVEN:
 				name = L"화물";
@@ -186,57 +186,57 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 				break;
 			}
 
-			CUIText::TextDesc text_Desc = {};
-			text_Desc.fontTag = L"Noto_Sans_CJK_SC_24";
-			text_Desc.text = name;
-			shared_ptr<CUIText> Text_storage = CUIText::Create(m_device, m_context);
-			Text_storage->Initialize(&text_Desc);
-			button->Add_Child(Text_storage, L"Text_"+S2W(string(magic_enum::enum_name(eTab))), false);
+			CUIText::TextDesc textDesc = {};
+			textDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+			textDesc.text = name;
+			shared_ptr<CUIText> textStorage = CUIText::Create(m_device, m_context);
+			textStorage->Initialize(&textDesc);
+			button->Add_Child(textStorage, L"Text_"+S2W(string(magic_enum::enum_name(tab))), false);
 		}
 
 		//Add_Child(pChild, NameTag, false);
-		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
-		Add_Layout_Child(button, NameTag, false);
-		m_buttonContents[ETOI(eTab)] = button;
+		wstring nameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(tab)));
+		Add_Layout_Child(button, nameTag, false);
+		m_buttonContents[ETOI(tab)] = button;
 
 	}
 
 	//for (_uint i = 0; i < 3; i++)
 	{
-		ETab eTab = static_cast<ETab>(1 << 0);
+		ETab tab = static_cast<ETab>(1 << 0);
 		// 일단 테스트 인벤 3개
 		CUI_Inventory::InventoryDesc InvenDesc = {};
 		InvenDesc.isFullScreen = false;
 		InvenDesc.isTransparent = true;
 		InvenDesc.isSetParentSize = true;
 
-		shared_ptr<CUI_Inventory> pInven = CUI_Inventory::Create(m_device, m_context);
-		pInven->Initialize(&InvenDesc);
+		shared_ptr<CUI_Inventory> inven = CUI_Inventory::Create(m_device, m_context);
+		inven->Initialize(&InvenDesc);
 		
-		wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-		Add_Child(pInven, NameTag, false);
-		m_tabContents[ETOI(eTab)] = pInven;
-		pInven->UI_InActive();
+		wstring nameTag = S2W(string(magic_enum::enum_name(tab)));
+		Add_Child(inven, nameTag, false);
+		m_tabContents[ETOI(tab)] = inven;
+		inven->UI_InActive();
 	}
 		{
-			ETab eTab = static_cast<ETab>(1 << 1);
+			ETab tab = static_cast<ETab>(1 << 1);
 			// 일단 테스트 인벤 3개
 			CUI_Storage::StorageDesc storageDesc = {};
 			storageDesc.isFullScreen = false;
 			storageDesc.isTransparent = true;
 			storageDesc.isSetParentSize = true;
-			storageDesc.Inventype = EInvenType::STORAGE;
+			storageDesc.invenType = EInvenType::STORAGE;
 
-			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_device, m_context);
-			pStorage->Initialize(&storageDesc);
+			shared_ptr<CUI_Storage> storage = CUI_Storage::Create(m_device, m_context);
+			storage->Initialize(&storageDesc);
 
 			
 
 
-			wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-			Add_Child(pStorage, NameTag, false);
-			m_tabContents[ETOI(eTab)] = pStorage;
-			pStorage->UI_InActive();
+			wstring nameTag = S2W(string(magic_enum::enum_name(tab)));
+			Add_Child(storage, nameTag, false);
+			m_tabContents[ETOI(tab)] = storage;
+			storage->UI_InActive();
 		}
 
 		///돈///
@@ -248,14 +248,14 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 		shared_ptr<CUIImage> money = CUIImage::Create(m_device, m_context);
 		money->Initialize(&moneyDesc);
 		{
-			CUIText::TextDesc MoneyTexDesc = {};
-			MoneyTexDesc.fontTag = L"Noto_Sans_CJK_SC";
-			MoneyTexDesc.text = L"$0";
-			MoneyTexDesc.fontAlign = CUIText::EFontAlign::RIGHT;
-			shared_ptr<CUIText> MoneyTex = CUIText::Create(m_device, m_context);
-			MoneyTex->Initialize(&MoneyTexDesc);
-			money->Add_Child(MoneyTex, L"MoneyTex", false);
-			m_textFont = MoneyTex;
+			CUIText::TextDesc moneyTexDesc = {};
+			moneyTexDesc.fontTag = L"Noto_Sans_CJK_SC";
+			moneyTexDesc.text = L"$0";
+			moneyTexDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+			shared_ptr<CUIText> moneyTex = CUIText::Create(m_device, m_context);
+			moneyTex->Initialize(&moneyTexDesc);
+			money->Add_Child(moneyTex, L"MoneyTex", false);
+			m_textFont = moneyTex;
 		}
 		Add_Child(money, L"MONEY", false);
 		m_textImg = money;
@@ -357,17 +357,17 @@ void CUI_TabContainer::SetActiveTab(ETab tab)
 		m_buttonContents[ETOI(tab)]->ChangeState(EButtonState::SELECT); // 셀렉트
 }
 
-shared_ptr<CUI_TabContainer> CUI_TabContainer::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_TabContainer> CUI_TabContainer::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_TabContainer> pInstance(new CUI_TabContainer(pDevice, pContext), [](CUI_TabContainer* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_TabContainer> instance(new CUI_TabContainer(device, context), [](CUI_TabContainer* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_TabContainer::Free()

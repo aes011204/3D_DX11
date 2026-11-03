@@ -16,19 +16,19 @@ NS_BEGIN(Client)
     public CUIPanel
 {
 public:
-    struct NpcDesc : public CUIPanel::UIPanelDesc
+    struct NPCDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:
-    CUI_NPC(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_NPC(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_NPC(const CUIPanel& prototype);
 public:
     ~CUI_NPC() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
-    void UI_NPCActive(const string& dialogueId, list<string>& Fistlist);
+    HRESULT OnInit(void* arg) override;
+    void UI_NPCActive(const string& dialogueID, list<string>& firstList);
     void UI_DialogueActive(_bool dialogueOrSpeech, _uint curIndex);
     void OnActive()override;
     void OnInActive()override;
@@ -42,7 +42,7 @@ public:
     void ChangeToSpeech();
 public:
     shared_ptr<CUIImage> m_dialogue = { nullptr };
-    shared_ptr<CUIImage> m_npcImg = { nullptr };
+    shared_ptr<CUIImage> m_NPCImg = { nullptr };
     shared_ptr<CUIImage> m_nameBase = { nullptr };
     shared_ptr<CUIImage> m_backImg = { nullptr };
     shared_ptr<CUIText> m_nameText = { nullptr };
@@ -60,7 +60,7 @@ private:
     list<string> m_dialogueList;
 
 public:
-    static shared_ptr<CUI_NPC> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_NPC> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

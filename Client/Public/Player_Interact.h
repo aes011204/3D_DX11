@@ -10,7 +10,7 @@ class CPlayer_Interact :
     public CPlayerState
 {
 private:
-    explicit CPlayer_Interact(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> pStateMachine);
+    explicit CPlayer_Interact(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> stateMachine);
     virtual ~CPlayer_Interact();
 
 public:
@@ -31,10 +31,10 @@ private:
     //weak_ptr<class CSea_Manager> m_pSea_Manager = {};
  
 public:
-    static shared_ptr<CPlayer_Interact> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
+    static shared_ptr<CPlayer_Interact> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine);
    
 private:
-    EPlayerState eNextState = EPlayerState::STORAGE;
+    EPlayerState m_nextState = EPlayerState::STORAGE;
 
 private:
     virtual void Free();

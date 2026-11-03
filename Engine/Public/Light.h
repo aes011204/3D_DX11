@@ -14,15 +14,15 @@ public:
     HRESULT Initialize(const LightDesc& lightDesc);
 
     const LightDesc* Get_LightDesc() const { return &m_lightDesc; }
-    HRESULT Render(shared_ptr<class CShader> pShader, shared_ptr<class CVIBuffer_Rect> pVIBuffer);
-    void Set_LightDesc(LightDesc Desc){m_lightDesc = Desc;}
+    HRESULT Render(shared_ptr<class CShader> shader, shared_ptr<class CVIBuffer_Rect> VIBuffer);
+    void Set_LightDesc(LightDesc desc){m_lightDesc = desc;}
 
     _bool Get_Active() const{return m_active;}
 
     void Set_Active(_bool value){m_active = value;}
-    void Set_Position(const XMFLOAT4& vPos)
+    void Set_Position(const XMFLOAT4& pos)
     {
-        m_lightDesc.position = vPos;
+        m_lightDesc.position = pos;
     }
 	void Set_Position(float x, float y, float z, float w = 1.f)
     {

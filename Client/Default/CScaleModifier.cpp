@@ -17,22 +17,22 @@ CScaleModifier::~CScaleModifier()
 	m_accTime = 0.f;
 }
 
-void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
+void CScaleModifier::Tick(float deltaTime, CUI* owner)
 {
 	if (nullptr == m_ownerTransform) 
 	{
-		m_ownerTransform = dynamic_cast<CUITransform*>(pOwner->Get_Component(g_strUITransformTag).get());
+		m_ownerTransform = dynamic_cast<CUITransform*>(owner->Get_Component(g_strUITransformTag).get());
 	}
 
-	m_accTime += fDeltaTime;
+	m_accTime += deltaTime;
 
 
 
 	if (m_isContinuous == true)
 	{
 		// 이건 듀레이션 을 스피드로
-		float CurSin = sinf(m_duration * m_accTime + m_startPosRad);
-		float sinValue = sinf(CurSin * PI / 2.0f);
+		float curSin = sinf(m_duration * m_accTime + m_startPosRad);
+		float sinValue = sinf(curSin * PI / 2.0f);
 
 		Vector2 size = {};
 
@@ -46,11 +46,11 @@ void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
 	if(m_isContinuous == false)
 	{
 
-		float fRatio = m_accTime / m_duration;
-		if (fRatio >= 1.0f) fRatio = 1.0f;
+		float ratio = m_accTime / m_duration;
+		if (ratio >= 1.0f) ratio = 1.0f;
 
 		//float CurSin = sinf(m_Speed * m_fAccTime + m_StartPosRad);
-		float sinValue = sinf(fRatio * PI / 2.0f);
+		float sinValue = sinf(ratio * PI / 2.0f);
 
 		Vector2 size = {};
 
@@ -59,7 +59,7 @@ void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
 		m_ownerTransform->SetLocalScale({ sinX,sinY });
 
 
-		if (fRatio >= 1.0f)
+		if (ratio >= 1.0f)
 		{
 			m_finsh = true;
 
@@ -68,11 +68,11 @@ void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
 	//CLog_Manager::GetInstance()->Add_Log_F(LOG_LEVEL::INFO,"dt: %.4f  acc: %.3f  scale: %.4f", fDeltaTime, m_fAccTime, sin);
 }
 
-void CScaleModifier::OnAppear(float fDeltaTime, CUI* pOwner)
+void CScaleModifier::OnAppear(float deltaTime, CUI* owner)
 {
 }
 
-void CScaleModifier::OnDisappear(float fDeltaTime, CUI* pOwner)
+void CScaleModifier::OnDisappear(float deltaTime, CUI* owner)
 {
 
 }

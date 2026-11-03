@@ -13,20 +13,20 @@ CCamera_Manager::~CCamera_Manager()
 	Free();
 }
 
-HRESULT CCamera_Manager::Initialize(_uint iNumLevels)
+HRESULT CCamera_Manager::Initialize(_uint numLevels)
 {
-	m_numLevel = iNumLevels;
-	m_cameras = new map<const _wstring, shared_ptr<class CCamera>>[iNumLevels];
+	m_numLevel = numLevels;
+	m_cameras = new map<const _wstring, shared_ptr<class CCamera>>[numLevels];
 
 	return S_OK;
 
 }
 
-void CCamera_Manager::Update_AfterTarget(_float fTimeDelta)
+void CCamera_Manager::Update_AfterTarget(_float timeDelta)
 {
 	auto camera = m_curCam;
 	if (camera)
-		camera->Update_AfterTarget(fTimeDelta);
+		camera->Update_AfterTarget(timeDelta);
 }
 
 void CCamera_Manager::Apply_To_PipeLine()
@@ -68,18 +68,18 @@ void CCamera_Manager::OnGui()
 		for (auto& pair : m_cameras[i])
 		{
 			// wstring -> string 변환
-			string  strBtnName = W2S(pair.first);
+			string  btnName = W2S(pair.first);
 
 			// 활성화 하이라이트 체크
-			bool bIsActive = (m_curCam == pair.second);
+			bool isActive = (m_curCam == pair.second);
 
-			if (bIsActive)
+			if (isActive)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
 
-			if (ImGui::Button(strBtnName.c_str()))
+			if (ImGui::Button(btnName.c_str()))
 				CGameInstance::GetInstance()->Change_Camera(pair.first);
 
-			if (bIsActive)
+			if (isActive)
 				ImGui::PopStyleColor();
 
 			ImGui::SameLine();
@@ -110,8 +110,8 @@ shared_ptr<class CCamera> CCamera_Manager::Find_Camera(_wstring key)
 HRESULT CCamera_Manager::Add_Camera(_uint camLevel, _wstring key, shared_ptr<CCamera> cam)
 {
 
-	auto FindCam = Find_Camera(key);
-	if (FindCam != nullptr)
+	auto findCam = Find_Camera(key);
+	if (findCam != nullptr)
 	{
 		return E_FAIL;
 		// 같은 이름을 가진객체가 있음
@@ -128,10 +128,10 @@ HRESULT CCamera_Manager::Add_Camera(_uint camLevel, _wstring key, shared_ptr<CCa
 _bool CCamera_Manager::Change_Camera(_wstring key)
 {
 
-	auto FindCam = Find_Camera(key);
-	if (FindCam)
+	auto findCam = Find_Camera(key);
+	if (findCam)
 	{
-		m_curCam = FindCam;
+		m_curCam = findCam;
 		return true;
 	}
 
@@ -148,15 +148,15 @@ HRESULT CCamera_Manager::Clear_Camera(_uint level )
 }
 
 
-unique_ptr<CCamera_Manager> CCamera_Manager::Create(_uint iNumLevels)
+unique_ptr<CCamera_Manager> CCamera_Manager::Create(_uint numLevels)
 {
-	unique_ptr<CCamera_Manager> pInstance(new CCamera_Manager());
+	unique_ptr<CCamera_Manager> instance(new CCamera_Manager());
 
-	if (FAILED(pInstance->Initialize(iNumLevels)))
+	if (FAILED(instance->Initialize(numLevels)))
 	{
 		MSG_BOX("Failed to Cloned : CCamera_Manager");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CCamera_Manager::Free()

@@ -28,9 +28,9 @@ HRESULT CWin_Mananger::Initialize() {
     return S_OK;
 }
 
-void CWin_Mananger::Update(float fTimeDelta) {
+void CWin_Mananger::Update(float timeDelta) {
     for (auto& pair : m_windows)
-        pair.second->Update(fTimeDelta);
+        pair.second->Update(timeDelta);
 }
 
 void CWin_Mananger::Render() {
@@ -40,8 +40,8 @@ void CWin_Mananger::Render() {
     }
 }
 
-void CWin_Mananger::Add_Window(shared_ptr<CEditor_Win> pWindow) {
-    m_windows[pWindow->Get_Name()] = pWindow;
+void CWin_Mananger::Add_Window(shared_ptr<CEditor_Win> window) {
+    m_windows[window->Get_Name()] = window;
 }
 
 shared_ptr<CEditor_Win> CWin_Mananger::Get_Window(string name) {
@@ -51,11 +51,11 @@ shared_ptr<CEditor_Win> CWin_Mananger::Get_Window(string name) {
 
 unique_ptr<CWin_Mananger> CWin_Mananger::Create()
 {
-    auto pInatance =  make_unique<CWin_Mananger>();
-    if (FAILED(pInatance->Initialize()))
+    auto inatance =  make_unique<CWin_Mananger>();
+    if (FAILED(inatance->Initialize()))
         return nullptr;
 
-        return pInatance;
+        return inatance;
 }
 
 void CWin_Mananger::Free()

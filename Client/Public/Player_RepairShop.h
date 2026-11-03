@@ -10,7 +10,7 @@ class CPlayer_RepairShop :
     public CPlayerState
 {
 private:
-    explicit CPlayer_RepairShop(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> pStateMachine);
+    explicit CPlayer_RepairShop(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> stateMachine);
     virtual ~CPlayer_RepairShop();
 
 public:
@@ -31,12 +31,12 @@ private:
     //weak_ptr<class CSea_Manager> m_pSea_Manager = {};
  
 public:
-    static shared_ptr<CPlayer_RepairShop> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
+    static shared_ptr<CPlayer_RepairShop> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine);
    
 private:
-    EPlayerState eNextState = EPlayerState::REPAIR_SHOP;
+    EPlayerState m_nextState = EPlayerState::REPAIR_SHOP;
 
-    ItemInst m_itemIdInst = {};
+    ItemInst m_itemIDInst = {};
 private:
     virtual void Free();
 

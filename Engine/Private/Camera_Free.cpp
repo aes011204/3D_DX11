@@ -2,8 +2,8 @@
 #include "DInput_Manager.h"
 #include "GameInstance.h"
 
-CCamera_Free::CCamera_Free(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CCamera(pDevice, pContext)
+CCamera_Free::CCamera_Free(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CCamera(device, context)
 {
 }
 
@@ -17,18 +17,18 @@ HRESULT CCamera_Free::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CCamera_Free::Initialize(void* pArg)
+HRESULT CCamera_Free::Initialize(void* arg)
 {
-	CameraFreeDesc* pDesc = static_cast<CameraFreeDesc*>(pArg);
-	m_mouseSensor = pDesc->mouseSensor;
+	CameraFreeDesc* desc = static_cast<CameraFreeDesc*>(arg);
+	m_mouseSensor = desc->mouseSensor;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-void CCamera_Free::Priority_Update(_float fTimeDelta)
+void CCamera_Free::Priority_Update(_float timeDelta)
 {
 
 	if(m_stop != true)
@@ -37,46 +37,46 @@ void CCamera_Free::Priority_Update(_float fTimeDelta)
 
 		if (dinput->KeyPress(DIK_UP))
 		{
-			m_transformCom->Go_Forward(fTimeDelta);
+			m_transformCom->Go_Forward(timeDelta);
 		}
 
 		if (dinput->KeyPress(DIK_DOWN))
 		{
-			m_transformCom->Go_Backward(fTimeDelta);
+			m_transformCom->Go_Backward(timeDelta);
 		}
 
 		if (dinput->KeyPress(DIK_LEFT))
 		{
-			m_transformCom->Go_Left(fTimeDelta);
+			m_transformCom->Go_Left(timeDelta);
 		}
 
 		if (dinput->KeyPress(DIK_RIGHT))
 		{
-			m_transformCom->Go_Right(fTimeDelta);
+			m_transformCom->Go_Right(timeDelta);
 		}
 
 
 		if (dinput->KeyPress(DIK_E))
 		{
-			m_transformCom->Go_Up(fTimeDelta);
+			m_transformCom->Go_Up(timeDelta);
 		}
 
 
 		if (dinput->KeyPress(DIK_Q))
 		{
-			m_transformCom->Go_Down(fTimeDelta);
+			m_transformCom->Go_Down(timeDelta);
 		}
 
-		_long		MouseMove = {};
+		_long		mouseMove = {};
 
-		if (MouseMove = dinput->Get_DIMouseMove(EMouseMove::X))
+		if (mouseMove = dinput->Get_DIMouseMove(EMouseMove::X))
 		{
-			m_transformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), fTimeDelta * MouseMove * m_mouseSensor);
+			m_transformCom->Turn(XMVectorSet(0.f, 1.f, 0.f, 0.f), timeDelta * mouseMove * m_mouseSensor);
 		}
 
-		if (MouseMove = dinput->Get_DIMouseMove(EMouseMove::Y))
+		if (mouseMove = dinput->Get_DIMouseMove(EMouseMove::Y))
 		{
-			m_transformCom->Turn(m_transformCom->Get_State(ETransformState::RIGHT), fTimeDelta * MouseMove * m_mouseSensor);
+			m_transformCom->Turn(m_transformCom->Get_State(ETransformState::RIGHT), timeDelta * mouseMove * m_mouseSensor);
 		}
 		//long dx = dinput->Get_DIMouseMove(DIMM::X);
 		//long dy = dinput->Get_DIMouseMove(DIMM::Y);
@@ -87,11 +87,11 @@ void CCamera_Free::Priority_Update(_float fTimeDelta)
 	__super::Update_TransformMatrices();
 }
 
-void CCamera_Free::Update(_float fTimeDelta)
+void CCamera_Free::Update(_float timeDelta)
 {
 }
 
-void CCamera_Free::Late_Update(_float fTimeDelta)
+void CCamera_Free::Late_Update(_float timeDelta)
 {
 }
 
@@ -133,26 +133,26 @@ void CCamera_Free::OnGui()
 	ImGui::Text("Rotation (Euler): X:%.2f, Y:%.2f, Z:%.2f", euler.x, euler.y, euler.z);
 }
 
-shared_ptr<CCamera_Free> CCamera_Free::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CCamera_Free> CCamera_Free::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CCamera_Free> pInstance(new CCamera_Free(pDevice, pContext), [](CCamera* p) {p->Free(); delete p;});
+	shared_ptr<CCamera_Free> instance(new CCamera_Free(device, context), [](CCamera* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CCamera_Free");
 	}
-	return pInstance;
+	return instance;
 }
 
-shared_ptr<CGameObject> CCamera_Free::Clone(void* pArg)
+shared_ptr<CGameObject> CCamera_Free::Clone(void* arg)
 {
-	shared_ptr<CCamera_Free> pInstance(new CCamera_Free(*this), [](CCamera* p) {p->Free(); delete p;});
+	shared_ptr<CCamera_Free> instance(new CCamera_Free(*this), [](CCamera* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CCamera_Free");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CCamera_Free::Free()

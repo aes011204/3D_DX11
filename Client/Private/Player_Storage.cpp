@@ -7,8 +7,8 @@
 #include "Sea_Manager.h"
 #include "EventBus.h"
 
-CPlayer_Storage::CPlayer_Storage(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
-	: CPlayerState(owner, pStateMachine)
+CPlayer_Storage::CPlayer_Storage(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> stateMachine)
+	: CPlayerState(owner, stateMachine)
 {
 }
 
@@ -21,28 +21,28 @@ void CPlayer_Storage::Enter()
 	CDialogueDB::GetInstance()->Set_PendingDialogue(list<string> {});
 
 	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CamLerpDesc>();
-	pLerp->eMode = ECamMode::LERP;
-	pLerp->vTargetPos = _float3(3.016f, 2.944f, 0.87f);
-	pLerp->vTargetRot = _float3(33.84f, -55.60f, 0.f);
-	pLerp->fDuration = 2.0f;
-	pLerp->fFov = 30.f;
-	pLerp->OnComplete = [this]() {
+	auto lerp = make_shared<CamLerpDesc>();
+	lerp->mode = ECamMode::LERP;
+	lerp->targetPos = _float3(3.016f, 2.944f, 0.87f);
+	lerp->targetRot = _float3(33.84f, -55.60f, 0.f);
+	lerp->duration = 2.0f;
+	lerp->FOV = 30.f;
+	lerp->OnComplete = [this]() {
 		Evt_CamArrived e = {};
 		e.playerstate = EPlayerState::STORAGE;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 	};
-	event.commands.push_back(pLerp);
+	event.commands.push_back(lerp);
 
-	auto pStop = make_shared<CamDesc>();
-	pStop->eMode = ECamMode::STOP;
-	event.commands.push_back(pStop);
+	auto stop = make_shared<CamDesc>();
+	stop->mode = ECamMode::STOP;
+	event.commands.push_back(stop);
 
 
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-	eNextState = EPlayerState::STORAGE;
+	m_nextState = EPlayerState::STORAGE;
 
 
 	/*Evt_OpenInventory e;
@@ -77,7 +77,7 @@ HRESULT CPlayer_Storage::Init_State()
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeState>([this](const Evt_ChangeState& e)
 		{
-			eNextState = e.playerstate;
+			m_nextState = e.playerstate;
 		});
 
 
@@ -94,7 +94,7 @@ int CPlayer_Storage::Update_State(const _float& timeDelta)
 	}
 
 
-	return ETOI(eNextState);
+	return ETOI(m_nextState);
 }
 
 
@@ -108,12 +108,12 @@ void CPlayer_Storage::Render_State()
 	
 }
 
-shared_ptr<CPlayer_Storage> CPlayer_Storage::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
+shared_ptr<CPlayer_Storage> CPlayer_Storage::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine)
 {
-	shared_ptr<CPlayer_Storage> pInstance(new CPlayer_Storage(owner,pStateMachine), [](CPlayer_Storage* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_Storage> instance(new CPlayer_Storage(owner,stateMachine), [](CPlayer_Storage* p) {p->Free(); delete(p); });
 
 
-	return pInstance;
+	return instance;
 }
 
 void CPlayer_Storage::Free()

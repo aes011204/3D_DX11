@@ -4,8 +4,8 @@
 #include "Assimp_Bone.h"
 #include "Assimp_Animation.h"
 
-CAssimp_Model::CAssimp_Model(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    : CComponent(pDevice, pContext)
+CAssimp_Model::CAssimp_Model(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    : CComponent(device, context)
 {
 }
 
@@ -25,119 +25,119 @@ CAssimp_Model::CAssimp_Model(const CAssimp_Model& Prototype)
 {
 }
 
-HRESULT CAssimp_Model::Initialize_Prototype(const _char* pModelFilePath, EModelType eType, _fmatrix PreLocalTransformMatrix)
+HRESULT CAssimp_Model::Initialize_Prototype(const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix)
 {
-    _uint iFlag = { /*aiProcess_GlobalScale | aiProcess_PreTransformVertices |*/ aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
+    _uint flag = { /*aiProcess_GlobalScale | aiProcess_PreTransformVertices |*/ aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
 
-    if (EModelType::NONANIM == eType)
+    if (EModelType::NONANIM == type)
     {
-        iFlag |= aiProcess_PreTransformVertices;
+        flag |= aiProcess_PreTransformVertices;
     }
 
     // 로드해야할 모든 데이터를 다 읽어들이고 aiScene이라는 타입안에 보관된다. 
-    m_AIScene = m_importer.ReadFile(pModelFilePath, iFlag);
+    m_AIScene = m_importer.ReadFile(modelFilePath, flag);
     if (nullptr == m_AIScene)
         return E_FAIL;
 
 
-    m_type = eType;
-    XMStoreFloat4x4(&m_preLocalTransformMatrix, PreLocalTransformMatrix);
+    m_type = type;
+    XMStoreFloat4x4(&m_preLocalTransformMatrix, preLocalTransformMatrix);
 
     /* aiScene안의 데이터를 DX환경에서 이용하기 쉽도록 정리하는 작업 수행.  */
 
         /* 메시를 생성한다. */
     if (FAILED(Ready_Bones(m_AIScene->mRootNode, -1)))
         return E_FAIL;
-    if (FAILED(Ready_Meshes(eType)))
+    if (FAILED(Ready_Meshes(type)))
         return E_FAIL;
     if (FAILED(Ready_Animations()))
         return E_FAIL;
-    if (FAILED(Ready_Material(pModelFilePath)))
+    if (FAILED(Ready_Material(modelFilePath)))
         return E_FAIL;
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Initialize(void* pArg)
+HRESULT CAssimp_Model::Initialize(void* arg)
 {
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Render(_uint iMeshIndex)
+HRESULT CAssimp_Model::Render(_uint meshIndex)
 {
     //for (auto& pMesh : m_Meshes)
     //{
-    m_meshes[iMeshIndex]->Bind_Resources();
-    m_meshes[iMeshIndex]->Render();
+    m_meshes[meshIndex]->Bind_Resources();
+    m_meshes[meshIndex]->Render();
    // }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Ready_Meshes(EModelType eType)
+HRESULT CAssimp_Model::Ready_Meshes(EModelType type)
 {
     m_numMeshes = m_AIScene->mNumMeshes;
 
     for (_uint i = 0; i < m_numMeshes; i++)
     {
-        shared_ptr<CAssimp_Mesh> pMesh = CAssimp_Mesh::Create(m_device, m_context,
-            eType, m_AIScene->mMeshes[i],
+        shared_ptr<CAssimp_Mesh> mesh = CAssimp_Mesh::Create(m_device, m_context,
+            type, m_AIScene->mMeshes[i],
             static_pointer_cast<CAssimp_Model>(shared_from_this()),
             XMLoadFloat4x4(&m_preLocalTransformMatrix));
 
-        if (nullptr == pMesh)
+        if (nullptr == mesh)
             return E_FAIL;
 
-        m_meshes.push_back(pMesh);
+        m_meshes.push_back(mesh);
     }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Ready_Material(const _char* pModelFilePath)
+HRESULT CAssimp_Model::Ready_Material(const _char* modelFilePath)
 {
     m_numMaterials = m_AIScene->mNumMaterials;
 
     for (_uint i = 0; i < m_numMaterials; i++)
     {
-        shared_ptr<CAssimp_Material> pMat = CAssimp_Material::Create(m_device, m_context, m_AIScene->mMaterials[i], pModelFilePath);
-        if (nullptr == pMat)
+        shared_ptr<CAssimp_Material> mat = CAssimp_Material::Create(m_device, m_context, m_AIScene->mMaterials[i], modelFilePath);
+        if (nullptr == mat)
             return E_FAIL;
 
-        m_materials.push_back(pMat);
+        m_materials.push_back(mat);
     }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Bind_Material(shared_ptr<CShader> pShader,  const _char* pConstantName, _uint iMeshIndex, aiTextureType eMaterialType,
-                              _uint iTextureIndex)
+HRESULT CAssimp_Model::Bind_Material(shared_ptr<CShader> shader,  const _char* constantName, _uint meshIndex, aiTextureType materialType,
+                              _uint textureIndex)
 {
-    return m_materials[m_meshes[iMeshIndex]->Get_MaterialIndex()]->Bind_Material(pShader, pConstantName, eMaterialType, iTextureIndex);
+    return m_materials[m_meshes[meshIndex]->Get_MaterialIndex()]->Bind_Material(shader, constantName, materialType, textureIndex);
 }
 
 
 
-HRESULT CAssimp_Model::Ready_Bones(const aiNode* pAINode, _int iParentIndex)
+HRESULT CAssimp_Model::Ready_Bones(const aiNode* srcAINode, _int parentIndex)
 {
-    shared_ptr<CAssimp_Bone> pBone = CAssimp_Bone::Create(pAINode, iParentIndex);
-    if (nullptr == pBone)
+    shared_ptr<CAssimp_Bone> bone = CAssimp_Bone::Create(srcAINode, parentIndex);
+    if (nullptr == bone)
         return E_FAIL;
 
-	m_bones.push_back(pBone);
+	m_bones.push_back(bone);
 
-    _int iPIndex = m_bones.size() - 1; // 부모인덱스 = 백터 사이즈 -1 
+    _int curBoneIndex = m_bones.size() - 1; // 부모인덱스 = 백터 사이즈 -1 
 
-    for (_uint i = 0; i < pAINode->mNumChildren; i++)
+    for (_uint i = 0; i < srcAINode->mNumChildren; i++)
     {
-        Ready_Bones(pAINode->mChildren[i], iPIndex);
+        Ready_Bones(srcAINode->mChildren[i], curBoneIndex);
     }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex)
+HRESULT CAssimp_Model::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* constantNamem, _uint meshIndex)
 {
-    return m_meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantNamem, m_bones);
+    return m_meshes[meshIndex]->Bind_BoneMatrices(shader, constantNamem, m_bones);
 }
 
 HRESULT CAssimp_Model::Ready_Animations()
@@ -146,42 +146,42 @@ HRESULT CAssimp_Model::Ready_Animations()
 
     for (_uint i = 0; i < m_numAnimations; i++)
     {
-        shared_ptr<CAssimp_Animation> pAnimation = CAssimp_Animation::Create(m_AIScene->mAnimations[i], static_pointer_cast<CAssimp_Model>(shared_from_this()));
-        if (nullptr == pAnimation)
+        shared_ptr<CAssimp_Animation> animation = CAssimp_Animation::Create(m_AIScene->mAnimations[i], static_pointer_cast<CAssimp_Model>(shared_from_this()));
+        if (nullptr == animation)
             return E_FAIL;
 
-        m_animations.push_back(pAnimation);
+        m_animations.push_back(animation);
     }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Play_Animation(_float fTimeDelta)
+HRESULT CAssimp_Model::Play_Animation(_float timeDelta)
 {
     // 현제 애니메이션에 맞는 상태대로 뼈의 Transformation을 갱신해준다
     _bool       isFinish = { false };
-    isFinish = m_animations[m_currentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_bones, m_isAnimLoop);
+    isFinish = m_animations[m_currentAnimIndex]->Update_TransformationMatrices(timeDelta, m_bones, m_isAnimLoop);
 
 
     // 모든뼈를 순회하면 CombinedTransformation을 셋팅 해준다
 
-    for (auto& pBone : m_bones)
+    for (auto& bone : m_bones)
     {
-        pBone->Update_CombinedTransformMatrix(m_bones, XMLoadFloat4x4(&m_preLocalTransformMatrix));
+        bone->Update_CombinedTransformMatrix(m_bones, XMLoadFloat4x4(&m_preLocalTransformMatrix));
     }
 
     return S_OK;
 }
 
-_int CAssimp_Model::Get_BoneIndex(const _char* pBoneName)
+_int CAssimp_Model::Get_BoneIndex(const _char* boneName)
 {
-    _int iBoneIndex = -1;
+    _int boneIndex = -1;
 
 
-    auto iter = find_if(m_bones.begin(), m_bones.end(), [&](shared_ptr<CAssimp_Bone> pBone)->bool
+    auto iter = find_if(m_bones.begin(), m_bones.end(), [&](shared_ptr<CAssimp_Bone> bone)->bool
     {
-            ++iBoneIndex;
-            return pBone->isCompare(pBoneName);
+            ++boneIndex;
+            return bone->isCompare(boneName);
     });
 
     if(iter == m_bones.end())
@@ -189,31 +189,31 @@ _int CAssimp_Model::Get_BoneIndex(const _char* pBoneName)
         return -1;
     }
 
-    return iBoneIndex;
+    return boneIndex;
 }
 
-shared_ptr<CAssimp_Model> CAssimp_Model::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, EModelType eType, _fmatrix PreLocalTransformMatrix)
+shared_ptr<CAssimp_Model> CAssimp_Model::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix)
 {
-    shared_ptr<CAssimp_Model> pInstance(new CAssimp_Model(pDevice, pContext), [](CAssimp_Model* p) {p->Free(); delete p;});
+    shared_ptr<CAssimp_Model> instance(new CAssimp_Model(device, context), [](CAssimp_Model* p) {p->Free(); delete p;});
 
-    if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, eType, PreLocalTransformMatrix)))
+    if (FAILED(instance->Initialize_Prototype(modelFilePath, type, preLocalTransformMatrix)))
     {
         MSG_BOX("Failed to Created : CAssimp_Model");
     }
-    return pInstance;
+    return instance;
 
 }
 
-shared_ptr<CComponent> CAssimp_Model::Clone(void* pArg)
+shared_ptr<CComponent> CAssimp_Model::Clone(void* arg)
 {
 
-    shared_ptr<CComponent> pInstance(new CAssimp_Model(*this), [](CAssimp_Model* p) {p->Free(); delete p;});
+    shared_ptr<CComponent> instance(new CAssimp_Model(*this), [](CAssimp_Model* p) {p->Free(); delete p;});
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(instance->Initialize(arg)))
     {
         MSG_BOX("Failed to Cloned : CAssimp_Model");
     }
-    return pInstance;
+    return instance;
 }
 
 void CAssimp_Model::Free()

@@ -10,8 +10,8 @@
 #include "Camera_Play.h"
 #include "UI_Controller.h"
 
-CPlayer_Village::CPlayer_Village(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
-	: CPlayerState(owner, pStateMachine)
+CPlayer_Village::CPlayer_Village(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> stateMachine)
+	: CPlayerState(owner, stateMachine)
 {
 }
 
@@ -23,7 +23,7 @@ void CPlayer_Village::Enter()
 {
 	if (m_owner.lock()->Get_WasDead())
 	{
-		m_vecDialogue.push_back("Mayer_End");
+		m_dialogueList.push_back("Mayer_End");
 
 	}
 	CGameInstance::GetInstance()->Set_TimeScale(1.f);
@@ -66,18 +66,18 @@ void CPlayer_Village::Enter()
 	}
 	
 	
-	CDialogueDB::GetInstance()->Set_PendingDialogue(m_vecDialogue);
+	CDialogueDB::GetInstance()->Set_PendingDialogue(m_dialogueList);
 
 
 
 	Evt_ChangeCam event = {};
-	auto pLerp = make_shared<CamLerpDesc>();
-	pLerp->eMode = ECamMode::LERP;
-	pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
-	pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
-	pLerp->fDuration = duration;
-	pLerp->fFov = 30.f;
-	pLerp->OnComplete = [this]() {
+	auto lerp = make_shared<CamLerpDesc>();
+	lerp->mode = ECamMode::LERP;
+	lerp->targetPos = _float3(13.9f, 3.8f, 9.29f);
+	lerp->targetRot = _float3(5.f, -121.f, 0.f);
+	lerp->duration = duration;
+	lerp->FOV = 30.f;
+	lerp->OnComplete = [this]() {
 
 		Evt_CamArrived e = {};
 		e.playerstate = EPlayerState::VILLAGE;
@@ -85,15 +85,15 @@ void CPlayer_Village::Enter()
 	//		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 	//m_Village->UI_Active();
 	};
-	event.commands.push_back(pLerp);
+	event.commands.push_back(lerp);
 
-	auto pStop = make_shared<CamDesc>();
-	pStop->eMode = ECamMode::STOP;
-	event.commands.push_back(pStop);
+	auto stop = make_shared<CamDesc>();
+	stop->mode = ECamMode::STOP;
+	event.commands.push_back(stop);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-	eNextState = EPlayerState::VILLAGE;
+	m_nextState = EPlayerState::VILLAGE;
 	//m_pGameInstance.lock()->Play_Loop(L"Waves_Ambience_1");
 
 	CPlayerState::Enter();
@@ -110,8 +110,8 @@ void CPlayer_Village::Exit()
 	//e.playerstate = E_PLAYERSTATE::VILLAGE;
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 
-	m_vecDialogue.clear();
-	CDialogueDB::GetInstance()->Set_PendingDialogue(m_vecDialogue);
+	m_dialogueList.clear();
+	CDialogueDB::GetInstance()->Set_PendingDialogue(m_dialogueList);
 
 	//m_pGameInstance.lock()->Stop(L"GM_BGM_Theme");
 
@@ -126,7 +126,7 @@ HRESULT CPlayer_Village::Init_State()
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeState>([this](const Evt_ChangeState& e)
 		{
-			eNextState = e.playerstate;
+			m_nextState = e.playerstate;
 		});
 
 
@@ -134,13 +134,13 @@ HRESULT CPlayer_Village::Init_State()
 	{
 		if(e.type ==0)
 		{
-			eNextState = EPlayerState::SEA;
+			m_nextState = EPlayerState::SEA;
 		}
 		else if(e.type == 1)
 		{
 			// 잠자기
 			CUI_Controller::GetInstance()->ActiveTime(999, true);
-			IsSleep = true;
+			m_isSleep = true;
 		}
 		else if (e.type == 2)
 		{
@@ -164,19 +164,19 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 		if(m_acc > 4.f)
 		{
 
-			m_vecDialogue.push_back("Start");
-			m_vecDialogue.push_back("Mayer_start");
-			CDialogueDB::GetInstance()->Set_PendingDialogue(m_vecDialogue);
+			m_dialogueList.push_back("Start");
+			m_dialogueList.push_back("Mayer_start");
+			CDialogueDB::GetInstance()->Set_PendingDialogue(m_dialogueList);
 
 
 			Evt_ChangeCam event = {};
-			auto pLerp = make_shared<CamLerpDesc>();
-			pLerp->eMode = ECamMode::LERP;
-			pLerp->vTargetPos = _float3(13.9f, 3.8f, 9.29f);
-			pLerp->vTargetRot = _float3(5.f, -121.f, 0.f);
-			pLerp->fDuration = 5.f;
-			pLerp->fFov = 30.f;
-			pLerp->OnComplete = [this]() {
+			auto lerp = make_shared<CamLerpDesc>();
+			lerp->mode = ECamMode::LERP;
+			lerp->targetPos = _float3(13.9f, 3.8f, 9.29f);
+			lerp->targetRot = _float3(5.f, -121.f, 0.f);
+			lerp->duration = 5.f;
+			lerp->FOV = 30.f;
+			lerp->OnComplete = [this]() {
 
 				Evt_CamArrived e = {};
 				e.playerstate = EPlayerState::VILLAGE;
@@ -184,11 +184,11 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 				//		auto m_Village = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"Village");
 				//m_Village->UI_Active();
 				};
-			event.commands.push_back(pLerp);
+			event.commands.push_back(lerp);
 
-			auto pStop = make_shared<CamDesc>();
-			pStop->eMode = ECamMode::STOP;
-			event.commands.push_back(pStop);
+			auto stop = make_shared<CamDesc>();
+			stop->mode = ECamMode::STOP;
+			event.commands.push_back(stop);
 
 
 
@@ -204,18 +204,18 @@ int CPlayer_Village::Update_State(const _float& timeDelta)
 
 	if(m_inputManager->KeyDown(DIK_X))
 	{
-		if(IsSleep == true)
+		if(m_isSleep == true)
 		{
 			CUI_Controller::GetInstance()->InActiveTime();
 			m_gameInstance.lock()->Play_Once(L"Hold_Complete");
-			return ETOI(eNextState);
+			return ETOI(m_nextState);
 		}
 
 		return  ETOI(EPlayerState::SEA);
 	}
 
 
-	return ETOI(eNextState);
+	return ETOI(m_nextState);
 }
 
 void CPlayer_Village::LateUpdate_State(const _float& timeDelta)
@@ -228,12 +228,12 @@ void CPlayer_Village::Render_State()
 	
 }
 
-shared_ptr<CPlayer_Village> CPlayer_Village::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
+shared_ptr<CPlayer_Village> CPlayer_Village::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine)
 {
-	shared_ptr<CPlayer_Village> pInstance(new CPlayer_Village(owner,pStateMachine), [](CPlayer_Village* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_Village> instance(new CPlayer_Village(owner,stateMachine), [](CPlayer_Village* p) {p->Free(); delete(p); });
 
 
-	return pInstance;
+	return instance;
 }
 
 void CPlayer_Village::Free()

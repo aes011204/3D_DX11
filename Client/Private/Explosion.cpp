@@ -5,8 +5,8 @@
 #include "Texture.h"
 
 
-CExplosion::CExplosion(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CExplosion::CExplosion(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -20,9 +20,9 @@ HRESULT CExplosion::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CExplosion::Initialize(void* pArg)
+HRESULT CExplosion::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -35,16 +35,16 @@ HRESULT CExplosion::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CExplosion::Priority_Update(_float fTimeDelta)
+void CExplosion::Priority_Update(_float timeDelta)
 {
 }
 
-void CExplosion::Update(_float fTimeDelta)
+void CExplosion::Update(_float timeDelta)
 {
-	m_VIBufferCom->Spread(fTimeDelta);
+	m_VIBufferCom->Spread(timeDelta);
 }
 
-void CExplosion::Late_Update(_float fTimeDelta)
+void CExplosion::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONLIGHT, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -139,27 +139,27 @@ HRESULT CExplosion::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CExplosion> CExplosion::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CExplosion> CExplosion::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CExplosion> pInstance(new CExplosion(pDevice, pContext), [](CExplosion* p) {p->Free(); delete p; });
+	shared_ptr<CExplosion> instance(new CExplosion(device, context), [](CExplosion* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CExplosion");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CExplosion::Clone(void* pArg)
+shared_ptr<CGameObject> CExplosion::Clone(void* arg)
 {
-	shared_ptr<CExplosion> pInstance(new CExplosion(*this), [](CExplosion* p) {p->Free(); delete p; });
+	shared_ptr<CExplosion> instance(new CExplosion(*this), [](CExplosion* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CExplosion");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CExplosion::Free()

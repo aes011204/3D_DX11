@@ -8,8 +8,8 @@
 #include "Inventory.h"
 
 
-CBox::CBox(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CBox::CBox(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -23,9 +23,9 @@ HRESULT CBox::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CBox::Initialize(void* pArg)
+HRESULT CBox::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -51,13 +51,13 @@ HRESULT CBox::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CBox::Priority_Update(_float fTimeDelta)
+void CBox::Priority_Update(_float timeDelta)
 {
 }
 
-void CBox::Update(_float fTimeDelta)
+void CBox::Update(_float timeDelta)
 {
-	m_modelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(timeDelta);
 
 
 	if(m_modelCom->Get_IsFinishAnim() == true)
@@ -83,7 +83,7 @@ void CBox::Update(_float fTimeDelta)
 
 }
 
-void CBox::Late_Update(_float fTimeDelta)
+void CBox::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -94,9 +94,9 @@ HRESULT CBox::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
 		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
@@ -191,8 +191,8 @@ HRESULT CBox::Bind_ShaderResources()
 	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return E_FAIL;
 
 	float emissive = 0.f;
@@ -224,35 +224,35 @@ HRESULT CBox::Ready_Components()
 
 
 
-	CInventory::InvenDesc storage_desc = {};
-	storage_desc.invenType = EInvenType::CHEST;
-	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_storageCom, &storage_desc)))
+	CInventory::InvenDesc storageDesc = {};
+	storageDesc.invenType = EInvenType::CHEST;
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_storageCom, &storageDesc)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-shared_ptr<CBox> CBox::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CBox> CBox::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CBox> pInstance(new CBox(pDevice, pContext), [](CBox* p) {p->Free(); delete p;});
+	shared_ptr<CBox> instance(new CBox(device, context), [](CBox* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CBox");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CBox::Clone(void* pArg)
+shared_ptr<CGameObject> CBox::Clone(void* arg)
 {
-	shared_ptr<CBox> pInstance(new CBox(*this), [](CBox* p) {p->Free(); delete p;});
+	shared_ptr<CBox> instance(new CBox(*this), [](CBox* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CBox");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CBox::Free()

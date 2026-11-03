@@ -12,29 +12,29 @@ NS_BEGIN(Client)
 class CLevel_Loading final : public CLevel
 {
 private:
-	CLevel_Loading(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CLevel_Loading(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
 	virtual ~CLevel_Loading() = default;
 
 public:
-	virtual HRESULT Initialize(ELevel eNextLevelID) ;
+	virtual HRESULT Initialize(ELevel nextLevelID) ;
 	virtual HRESULT Post_Initialize()override;
-	virtual void Update(_float fTimeDelta) override;
+	virtual void Update(_float timeDelta) override;
 	virtual HRESULT Render() override;
 
 
 
 private:
 	class shared_ptr<class CLoader> m_loader = { nullptr };
-	ELevel m_nextLevelId = { ELevel::END };
+	ELevel m_nextLevelID = { ELevel::END };
 
 	//ko m_LoadingUI = {};
 private:
-	HRESULT Ready_Layer_BackGround(const _tchar* pLayerTag);
-	HRESULT Ready_Layer_UI(const _tchar* LayerTag);
+	HRESULT Ready_Layer_BackGround(const _tchar* layerTag);
+	HRESULT Ready_Layer_UI(const _tchar* layerTag);
 
 public:
-	static shared_ptr<CLevel_Loading> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, ELevel eNextLevel);
+	static shared_ptr<CLevel_Loading> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, ELevel eNextLevel);
 	virtual void Free() override;
 };
 

@@ -10,21 +10,21 @@ HRESULT CMiniGame::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMiniGame::Initialize(void* pArg)
+HRESULT CMiniGame::Initialize(void* arg)
 {
 
-	MiniGameDesc* pDesc = static_cast<MiniGameDesc*>(pArg);
+	MiniGameDesc* desc = static_cast<MiniGameDesc*>(arg);
 
-	m_defId = pDesc->DefID;
-	m_rodSpeed = pDesc->RodSpeed;
-	m_fishCount = pDesc->FishCount;
-	m_miniGameType = pDesc->MiniGameType;
-	m_invenCtrl = pDesc->pInvenCtrl;
+	m_defID = desc->defID;
+	m_rodSpeed = desc->rodSpeed;
+	m_fishCount = desc->fishCount;
+	m_miniGameType = desc->miniGameType;
+	m_invenCtrl = desc->invenCtrl;
 
 	return S_OK;
 }
 
-HRESULT CMiniGame::Render(_uint iMeshIndex)
+HRESULT CMiniGame::Render(_uint meshIndex)
 {
 	return S_OK;
 
@@ -35,39 +35,39 @@ void CMiniGame::Update(const _float& timeDelta)
 }
 _uint CMiniGame::SelectMutationRandom(const FishDef& fishDef)
 {
-    vector<IdType> candidates;
-    candidates.push_back(kIdAbsence);
+    vector<IDType> candidates;
+    candidates.push_back(kIDAbsence);
 
     for (const Mutation& mut : fishDef.vecMutation)
-        candidates.push_back(mut.mutationId);
+        candidates.push_back(mut.mutationID);
 
     int index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
     return candidates[index];
 }
 _uint CMiniGame::SelectMutationNoRepeat(const FishDef& fishDef)
 {
-    vector<IdType> candidates;
-    candidates.push_back(kIdAbsence); // 기본형 포함
+    vector<IDType> candidates;
+    candidates.push_back(kIDAbsence); // 기본형 포함
 
     for (const Mutation& mut : fishDef.vecMutation)
-        candidates.push_back(mut.mutationId);
+        candidates.push_back(mut.mutationID);
 
     if (candidates.empty())
-        return kIdAbsence;
+        return kIDAbsence;
 
     if (candidates.size() == 1)
         return candidates[0];
 
     int index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
-    IdType pickedID = candidates[index];
+    IDType pickedID = candidates[index];
 
-    while (pickedID == m_prevFishId)
+    while (pickedID == m_prevFishID)
     {
         index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
         pickedID = candidates[index];
     }
 
-    m_prevFishId = pickedID;
+    m_prevFishID = pickedID;
     return pickedID;
 }
 

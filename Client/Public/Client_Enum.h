@@ -27,7 +27,7 @@ namespace Client
 	enum class ESeaType : _ubyte { COASTAL, SHALLOW, OCEANIC, ABYSSAL, HADAL, MANGROVE, VOLCANIC, ICE, CRAB, END };
 	// 비트 플레그로쓸거임 //uint8_t : “하나 선택” → 8비트로 충분
     using SeaMask = _uint; // uint16_t (_ushort) : 16개 까지 가능 // 여러 개 ON/OFF 집합” → 16비트로 넉넉하게 // _uint 32 비트로 해도됨 
-    constexpr SeaMask Set_SeaType_Mask(ESeaType SeaType) { return SeaMask{ 1u } << static_cast<uint32_t>(SeaType);
+    constexpr SeaMask Set_SeaType_Mask(ESeaType seaType) { return SeaMask{ 1u } << static_cast<uint32_t>(seaType);
     } // 1u = unsigned 1 // << 비트 연산 왼쪽으로 한칸씩 이동
 
 }
@@ -36,9 +36,9 @@ namespace Client
 
 namespace Client
 {
-    using IdType = _ushort;
+    using IDType = _ushort;
     
-    static constexpr IdType kIdAbsence = 0;
+    static constexpr IDType kIDAbsence = 0;
 
 	// 아이템 관련
 
@@ -54,7 +54,7 @@ namespace Client
 
      struct Mutation
      {
-         IdType speciesId = { kIdAbsence }; IdType mutationId = { kIdAbsence };
+         IDType speciesID = { kIDAbsence }; IDType mutationID = { kIDAbsence };
          _string mutName = {}; _string mutDesc = {}; _string mutTexturePath = {};
          _float mutCost = { 0 };
          shared_ptr<Engine::CTexture> texture = { nullptr };
@@ -88,14 +88,14 @@ namespace Client
     struct TrinketDef { float cost = { 0 }; };
 
 
-    struct FishInst { EFreshness freshness = EFreshness::FRESH; IdType mutationId = { kIdAbsence }; _float size = {}; };
+    struct FishInst { EFreshness freshness = EFreshness::FRESH; IDType mutationID = { kIDAbsence }; _float size = {}; };
     struct EquipInst { bool isBroken = false; };
 
     /// 아이템 인스턴스 
     struct ItemInst
     {
-        IdType itemDefId = { kIdAbsence }; 
-        IdType itemInstId = { kIdAbsence };
+        IDType itemDefID = { kIDAbsence }; 
+        IDType itemInstID = { kIDAbsence };
         EItemType itemType = EItemType::END; // 이건 그냥 캐싱용으로 두자
 
         bool isMutation = { false };
@@ -118,7 +118,7 @@ namespace Client
     /// 아이템 정의
     struct ItemDef
 	{
-		IdType itemId = { kIdAbsence }; // 이제 id 는 0 을 아무것도 없는 가짜 상태로
+		IDType itemID = { kIDAbsence }; // 이제 id 는 0 을 아무것도 없는 가짜 상태로
 		EItemType itemType = EItemType::END;
 		_string itemName = {};
 		_string itemDesc = {};
@@ -191,10 +191,10 @@ namespace Client
         return result;
     }
 
-    static wstring GetBroken(_bool IsBroken)
+    static wstring GetBroken(_bool isBroken)
     {
 
-        switch (IsBroken)
+        switch (isBroken)
     	{
         case true: return L"사용 불가";
         case false: return L"사용가능";
@@ -210,7 +210,7 @@ namespace Client
     /// 슬롯
     struct Slot
     {
-        IdType itemInstId = { kIdAbsence };
+        IDType itemInstID = { kIDAbsence };
         ESlotType slotType = ESlotType::ANY;
         _bool isLock = { false };
         _bool isBroken = { false };
@@ -229,8 +229,8 @@ namespace Client
     {
         wstring leftText;           // 왼쪽 선택지 ("살해")
         wstring rightText;          // 오른쪽 선택지 ("노예 ㄱㄱ")
-        _int leftNextId;
-        _int rightNextId;
+        _int leftNextID;
+        _int rightNextID;
     };
 
     // 대사 한 줄
@@ -240,7 +240,7 @@ namespace Client
         wstring speaker;             // 말하는 놈 ("보스", "플레이어", "")
         wstring text;                // 대사 내용
         _bool  hasChoices;          // 선택지가 있는 라인인지
-        _int  NextID;          // 선택지가 있는 라인인지
+        _int  nextID;          // 선택지가 있는 라인인지
 
         DialogueChoice choice;           // 선택지가 있을 때
 
@@ -252,10 +252,10 @@ namespace Client
     // 대화 묶음 (하나의 대화 시퀀스)
     struct Dialogue
     {
-        string dialogueId;               // 대화 ID ("boss1_intro", "boss1_battle")
+        string dialogueID;               // 대화 ID ("boss1_intro", "boss1_battle")
         wstring speaker;                  // 말하는 놈
-        shared_ptr<Engine::CTexture> Texture_Back_Path = nullptr;
-        shared_ptr<Engine::CTexture> Texture_Char_Path = nullptr;
+        shared_ptr<Engine::CTexture> backTexture = nullptr;
+        shared_ptr<Engine::CTexture> charTexture = nullptr;
         vector<DialogueLine> lines;      // 대사 라인들
     };
 
@@ -295,11 +295,11 @@ namespace Client
     };
     struct  Evt_MouseToIndexData
     {
-        _bool IsOnSlot = { false };
+        _bool isOnSlot = { false };
         _uint x = {};
         _uint y = {};
 
-        _bool IsPlayer = {};
+        _bool isPlayer = {};
 
     };
 
@@ -318,13 +318,13 @@ namespace Client
 
     struct Evt_GetFish
     {
-        _uint DefID = { kIdAbsence };
+        _uint defID = { kIDAbsence };
         FishInst fishInst = {};
     };
 
     struct Evt_ItemSold
     {
-        IdType itemInstId = kIdAbsence;
+        IDType itemInstID = kIDAbsence;
     };
 
     struct Evt_ItemHovered
@@ -332,10 +332,10 @@ namespace Client
         _bool isHold = {false};
         ItemInst itemInst = {};
         ELocationState locationState = {};
-        _bool IsPlayer = {};
+        _bool isPlayer = {};
     };
 
-    enum class EHud { SKILL, COMPASS, TOP, BOAT, ETC, END };
+    enum class EHUD { SKILL, COMPASS, TOP, BOAT, ETC, END };
 
     enum class ENpc { MAYOR, SHIPWRIGHT, FISHMONGER, TRADER, END };
 
@@ -372,7 +372,7 @@ namespace Client
     struct CamDesc
     {
         virtual ~CamDesc() = default;
-        ECamMode eMode;
+        ECamMode mode;
         function<void()> OnComplete = nullptr;
     };
 
@@ -381,12 +381,12 @@ namespace Client
     {
         CamLerpDesc() = default;
 
-        _float3 vTargetPos;
-        _float3 vTargetRot;
-        _float  fDuration;
+        _float3 targetPos;
+        _float3 targetRot;
+        _float  duration;
 
-        _float fFov = 0;
-        _bool IsLerpTarget = false;
+        _float FOV = 0;
+        _bool isLerpTarget = false;
         weak_ptr<Engine::CGameObject> target = {};
     };
 
@@ -395,17 +395,17 @@ namespace Client
     {
         CamFollowDesc() = default;
 
-        _float fDistance;
-        _float fPitch;
-        _float fYaw;
-        _float3 vCurrentPos;
+        _float distance;
+        _float pitch;
+        _float yaw;
+        _float3 currentPos;
     };
 
 
     struct CamShakeDesc : public CamDesc
     {
-        _float fIntensity;
-        _float fDuration;
+        _float intensity;
+        _float duration;
     };
 
 
@@ -458,15 +458,15 @@ namespace Client
 
     struct Evt_FishingData
     {
-        int Fish_ID;
-        weak_ptr<CFish> Fish ={};
-        _float RodSpeed = {};
+        int fishID;
+        weak_ptr<CFish> fish ={};
+        _float rodSpeed = {};
     };
 
 
     struct Evt_MiniGame
     {
-        _bool IsOnZoon = {};
+        _bool isOnZone = {};
 
 
     };
@@ -501,12 +501,12 @@ namespace Client
     };
     struct Evt_ChangeLevel
     {
-        _bool IsChange = false;
+        _bool isChange = false;
         _uint level = {};
     };
     struct Evt_BoatLight
     {
-        _bool Light = false;
+        _bool isLightOn = false;
     };
 
     enum class EInputResult

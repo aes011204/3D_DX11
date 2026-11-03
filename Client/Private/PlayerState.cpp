@@ -3,8 +3,8 @@
 #include "PlayerBoat.h"
 #include "Camera_Play.h"
 
-CPlayerState::CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
-	: m_owner(owner), m_stateMachine(pStateMachine), m_gameInstance(CGameInstance::GetInstance())
+CPlayerState::CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> stateMachine)
+	: m_owner(owner), m_stateMachine(stateMachine), m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -24,7 +24,7 @@ void CPlayerState::Exit()
 {
 	CState::Exit();
 
-	m_vecDialogue.clear();
+	m_dialogueList.clear();
 
 }
 

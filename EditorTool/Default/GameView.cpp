@@ -47,10 +47,10 @@ bool CGameView::CreateRT(UINT width, UINT height)
 	return true;
 }
 
-HRESULT CGameView::Initialize(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+HRESULT CGameView::Initialize(const EngineDesc& engineDesc, ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	m_device = pDevice;
-	m_context = pContext;
+	m_device = device;
+	m_context = context;
 
 	m_width = engineDesc.viewportWidth;
 	m_height = engineDesc.viewportHeight;
@@ -113,28 +113,28 @@ void CGameView::Render()
 	//Render_CameraToolbar();
 
 	{// 마우스 위치 
-		ImVec2 vPanelSize = ImGui::GetContentRegionAvail();
-		if (vPanelSize.x > 0 && vPanelSize.y > 0)
+		ImVec2 panelSize = ImGui::GetContentRegionAvail();
+		if (panelSize.x > 0 && panelSize.y > 0)
 		{
 			// 비율 및 크기 계산
-			float fTargetRatio = (float)m_width / (float)m_height;
-			float fPanelRatio = vPanelSize.x / vPanelSize.y;
+			float targetRatio = (float)m_width / (float)m_height;
+			float panelRatio = panelSize.x / panelSize.y;
 
-			if (fPanelRatio > fTargetRatio) {
-				m_renderSize.y = vPanelSize.y;
-				m_renderSize.x = vPanelSize.y * fTargetRatio;
+			if (panelRatio > targetRatio) {
+				m_renderSize.y = panelSize.y;
+				m_renderSize.x = panelSize.y * targetRatio;
 			}
 			else {
-				m_renderSize.x = vPanelSize.x;
-				m_renderSize.y = vPanelSize.x / fTargetRatio;
+				m_renderSize.x = panelSize.x;
+				m_renderSize.y = panelSize.x / targetRatio;
 			}
 
 			// 중앙 정렬 및 시작점 저장
-			float fOffsetX = (vPanelSize.x - m_renderSize.x) * 0.5f;
-			float fOffsetY = (vPanelSize.y - m_renderSize.y) * 0.5f;
+			float offsetX = (panelSize.x - m_renderSize.x) * 0.5f;
+			float offsetY = (panelSize.y - m_renderSize.y) * 0.5f;
 
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + fOffsetX);
-			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + fOffsetY);
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offsetY);
 
 			// 중요: Update에서 쓸 시작점(0,0) 좌표 저장
 			m_contentPos = ImGui::GetCursorScreenPos();
@@ -149,12 +149,12 @@ void CGameView::Render()
 				if (m_isMouseInScene)
 				{
 					//이미 구해놓은 m_vContentPos(그림 시작점)를 빼서 상대 좌표 구함
-					float fLocalX = ImGui::GetMousePos().x - m_contentPos.x;
-					float fLocalY = ImGui::GetMousePos().y - m_contentPos.y;
+					float localX = ImGui::GetMousePos().x - m_contentPos.x;
+					float localY = ImGui::GetMousePos().y - m_contentPos.y;
 
 					// 이미 구해놓은 m_vRenderSize(실제 출력 크기)로 비율 계산 후 가상 해상도 곱함
-					float fCalibratedX = (fLocalX / m_renderSize.x) * (float)m_width;
-					float fCalibratedY = (fLocalY / m_renderSize.y) * (float)m_height;
+					float calibratedX = (localX / m_renderSize.x) * (float)m_width;
+					float calibratedY = (localY / m_renderSize.y) * (float)m_height;
 
 					//  화면에 출력
                     //ImGui::SetCursorScreenPos(ImVec2(m_vContentPos.x + 10.f, m_vContentPos.y + 10.f));
@@ -174,40 +174,40 @@ void CGameView::Render()
 	ImGui::End();
 }
 
-void CGameView::Update(float fTimeDelta)
+void CGameView::Update(float timeDelta)
 {
 	// 패널 정보 미리 파악 (Begin/End 사이에서만 유효한 값들이라 여기서 체크)
 
 	if (m_isMouseInScene)
 	{
-		ImVec2 vMousePos = ImGui::GetMousePos();
+		ImVec2 mousePos = ImGui::GetMousePos();
 
 		// 그림 영역 내의 상대 좌표 계산
-		float fLocalX = vMousePos.x - m_contentPos.x;
-		float fLocalY = vMousePos.y - m_contentPos.y;
+		float localX = mousePos.x - m_contentPos.x;
+		float localY = mousePos.y - m_contentPos.y;
 
 		// 0.0 ~ 1.0 비율 계산 ,매핑
-		float fCalibratedX = (fLocalX / m_renderSize.x) * m_width;
-		float fCalibratedY = (fLocalY / m_renderSize.y) * m_height;
+		float calibratedX = (localX / m_renderSize.x) * m_width;
+		float calibratedY = (localY / m_renderSize.y) * m_height;
 
-		float fFixedY = (float)m_height - fCalibratedY; //카르트 좌표계에 맞게 보정
+		float fixedY = (float)m_height - calibratedY; //카르트 좌표계에 맞게 보정
 
-		CGameInstance::GetInstance()->Set_MousePos(fCalibratedX, fFixedY);
+		CGameInstance::GetInstance()->Set_MousePos(calibratedX, fixedY);
 	}
 	else
 		CGameInstance::GetInstance()->Set_MousePos(-10.f, -10.f);
 }
 
 unique_ptr<CGameView>  CGameView::Create(const EngineDesc& engineDesc,
-	ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+	ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	unique_ptr<CGameView> pInstance(new CGameView()/*, [](CGameView* p) {p->Free();delete p;}*/);
-	if (FAILED(pInstance->Initialize(engineDesc, pDevice, pContext)))
+	unique_ptr<CGameView> instance(new CGameView()/*, [](CGameView* p) {p->Free();delete p;}*/);
+	if (FAILED(instance->Initialize(engineDesc, device, context)))
 		return nullptr;
 
 	//CreateRT(EngineDesc.iViewportWidth, EngineDesc.iViewportHeight);
-	return pInstance;
+	return instance;
 }
 
 void CGameView::Render_CameraToolbar()

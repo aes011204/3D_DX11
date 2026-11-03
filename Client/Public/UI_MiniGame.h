@@ -23,7 +23,7 @@ public:
 
 	};
 protected:
-	CUI_MiniGame(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CUI_MiniGame(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CUI_MiniGame(const CUIPanel& prototype);
 public:
 	~CUI_MiniGame() = default;
@@ -33,8 +33,8 @@ public:
 
 	void UI_PanelActive();
 
-	HRESULT OnInit(void* pArg) override;
-	void Is_OnZoon(_bool IsOnZoon);
+	HRESULT OnInit(void* arg) override;
+	void Is_OnZoon(_bool isOnZone);
 	void OnActive()override;
 	void OnInActive()override;
 	void OnDisabled()override;
@@ -57,7 +57,7 @@ public:
 	///
 	bool m_changeColor = { false };
 	float m_accTime2 = { 0 };
-	float colortime = { 0 };
+	float m_colorTime = { 0 };
 
 	///
 	float m_prograssBar01 = { 0 };
@@ -65,7 +65,7 @@ public:
 
 
 	// 공통
-	_uint m_defId = { kIdAbsence };
+	_uint m_defID = { kIDAbsence };
 	_bool m_isFinished = { false };
 
 	//
@@ -106,7 +106,7 @@ private:
 	//shared_ptr<class CMiniGame_Logic_Ball> m_LogicCashingBall = { nullptr };
 	//shared_ptr<class CMiniGame_Logic_Diamond> m_LogicCashingDiamond = {nullptr};
 public:
-	static shared_ptr<CUI_MiniGame> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUI_MiniGame> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
 	void Free() override;
 };

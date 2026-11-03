@@ -14,9 +14,9 @@ HRESULT CTimeOfDay::Initialize()
 	return S_OK;
 }
 
-void CTimeOfDay::Update(_float fDeltaTime)
+void CTimeOfDay::Update(_float deltaTime)
 {
-	m_second += fDeltaTime*m_timeScale;
+	m_second += deltaTime*m_timeScale;
 	if(m_second >= m_secondPerDay)
 	{
 		m_day++;
@@ -26,7 +26,7 @@ void CTimeOfDay::Update(_float fDeltaTime)
 
 
 	//IsNight = (m_fTOD01 >= 0.75f) || (m_fTOD01 <= 0.25f);
-	IsNight = (m_TOD01 >= m_sunset01) || (m_TOD01 < m_sunrise01);
+	m_isNight = (m_TOD01 >= m_sunset01) || (m_TOD01 < m_sunrise01);
 }
 
 void CTimeOfDay::Set_TimeScale(_float timeScale)
@@ -34,14 +34,14 @@ void CTimeOfDay::Set_TimeScale(_float timeScale)
 	m_timeScale = timeScale;
 }
 
-void CTimeOfDay::ComputeTime(_uint& iDay,_float& fHour, _float& fMinute, _float& fSecond)
+void CTimeOfDay::ComputeTime(_uint& day,_float& hour, _float& minute, _float& second)
 {
-	iDay = m_day;
-	_float fGameSecond = m_TOD01 * 86400.f;
+	day = m_day;
+	_float gameSecond = m_TOD01 * 86400.f;
 
-	fHour = fGameSecond / 3600.f;
-	fMinute = fmod(fGameSecond, 3600.f) / 60.f;
-	fSecond = fmod(fmod(fGameSecond, 3600.f) , 60.f);
+	hour = gameSecond / 3600.f;
+	minute = fmod(gameSecond, 3600.f) / 60.f;
+	second = fmod(fmod(gameSecond, 3600.f) , 60.f);
 }
 
 void CTimeOfDay::Set_TOD01(_float tod)
@@ -64,29 +64,29 @@ void CTimeOfDay::OnGui()
 
 	ImGui::ProgressBar(m_TOD01, ImVec2(0.f, 0.f), "Day/Night Progress");
 
-	_uint iDay;
-	_float fHour, fMin, fSec;
+	_uint day;
+	_float hour, minValue, sec;
 	// 작성하신 함수 호출
-	ComputeTime(iDay, fHour, fMin, fSec);
+	ComputeTime(day, hour, minValue, sec);
 
 	ImGui::TextColored(ImVec4(0.2f, 1.f, 0.5f, 1.f), "[ Current Status ]");
 
 	// 날짜와 시:분:초 출력 (%02d는 두자리 고정, 앞자리를 0으로 채움)
-	ImGui::Text("In-Game Date : Day %d", iDay);
-	ImGui::Text("In-Game Time : %02d : %02d : %02d", (_int)fHour, (_int)fMin, (_int)fSec);
+	ImGui::Text("In-Game Date : Day %d", day);
+	ImGui::Text("In-Game Time : %02d : %02d : %02d", (_int)hour, (_int)minValue, (_int)sec);
 
 
 }
 
 unique_ptr<CTimeOfDay> CTimeOfDay::Create()
 {
-	unique_ptr<CTimeOfDay> pInstance(new CTimeOfDay());
+	unique_ptr<CTimeOfDay> instance(new CTimeOfDay());
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CTimeOfDay");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CTimeOfDay::Free()

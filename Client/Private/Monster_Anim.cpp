@@ -4,8 +4,8 @@
 #include "Collider.h"
 //#include "Assimp_Model.h"
 
-CMonster_Anim::CMonster_Anim(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CMonster_Anim::CMonster_Anim(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -19,9 +19,9 @@ HRESULT CMonster_Anim::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMonster_Anim::Initialize(void* pArg)
+HRESULT CMonster_Anim::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -32,19 +32,19 @@ HRESULT CMonster_Anim::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CMonster_Anim::Priority_Update(_float fTimeDelta)
+void CMonster_Anim::Priority_Update(_float timeDelta)
 {
 }
 
-void CMonster_Anim::Update(_float fTimeDelta)
+void CMonster_Anim::Update(_float timeDelta)
 {
-	m_modelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(timeDelta);
 
 
 m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
-void CMonster_Anim::Late_Update(_float fTimeDelta)
+void CMonster_Anim::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -57,9 +57,9 @@ HRESULT CMonster_Anim::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
 		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
@@ -129,8 +129,8 @@ HRESULT CMonster_Anim::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 
 
 	return S_OK;
@@ -162,27 +162,27 @@ HRESULT CMonster_Anim::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CMonster_Anim> CMonster_Anim::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CMonster_Anim> CMonster_Anim::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CMonster_Anim> pInstance(new CMonster_Anim(pDevice, pContext), [](CMonster_Anim* p) {p->Free(); delete p;});
+	shared_ptr<CMonster_Anim> instance(new CMonster_Anim(device, context), [](CMonster_Anim* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CMonster_Anim");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CMonster_Anim::Clone(void* pArg)
+shared_ptr<CGameObject> CMonster_Anim::Clone(void* arg)
 {
-	shared_ptr<CMonster_Anim> pInstance(new CMonster_Anim(*this), [](CMonster_Anim* p) {p->Free(); delete p;});
+	shared_ptr<CMonster_Anim> instance(new CMonster_Anim(*this), [](CMonster_Anim* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CMonster_Anim");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMonster_Anim::Free()

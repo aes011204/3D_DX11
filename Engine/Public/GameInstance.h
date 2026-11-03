@@ -23,7 +23,7 @@ public:
 
 public:
 	HRESULT Initialize_Engine(const EngineDesc& engineDesc, _Out_ ComPtr<ID3D11Device>& ppDevice, _Out_ ComPtr<ID3D11DeviceContext>& ppContext);
-	void Update_Engine(float fTimeDelta);
+	void Update_Engine(float timeDelta);
 	void Draw();
 
     struct FrameTimings
@@ -40,10 +40,10 @@ public:
     };
     const FrameTimings& Get_FrameTimings() const { return m_frameTimings; }
 
-	void Clear_Resources(_uint iLevelIndex);
+	void Clear_Resources(_uint levelIndex);
 
-	_float Random(_float fMin, _float fMax);
-	_int RandomInt(_int iMin, _int iMax);
+	_float Random(_float minValue, _float maxValue);
+	_int RandomInt(_int minValue, _int maxValue);
 
 	void SetImguiContext(ImGuiContext* imgContext);
 
@@ -52,9 +52,9 @@ public:
 	bool Get_IsDebug() { return m_isDebug; };
 
 	const _float3& Get_SkyColor() const{return m_syColor;}
-	void Set_SkyColor(const _float3& vColor){m_syColor = vColor;}
+	void Set_SkyColor(const _float3& color){m_syColor = color;}
 public:  /* For.Graphic_Device */
-	HRESULT Clear_Buffers(const _float4* pClearColor);
+	HRESULT Clear_Buffers(const _float4* clearColor);
 	HRESULT Bind_BackBufferRenderTarget(HWND hwnd);
 	HRESULT Present();
 
@@ -62,26 +62,26 @@ public: /* For.IMGUI*/
 	HRESULT Resize(_uint g_RsizeWidth, _uint g_RsizeHeight);
 
 public: /* For.TimerManager*/
-	HRESULT Add_Timer(const _wstring& strTimeTag);
-	_float Compute_TimeDelta(const _wstring& strTimeTag);
+	HRESULT Add_Timer(const _wstring& timeTag);
+	_float Compute_TimeDelta(const _wstring& timeTag);
 
 public:/* For.levelManager*/
-	HRESULT Change_Level(_uint iNewLevelIndex, shared_ptr<class CLevel> pNewLevel);
+	HRESULT Change_Level(_uint newLevelIndex, shared_ptr<class CLevel> newLevel);
 
 public: /* For.PrototypeManager*/
-	HRESULT Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype);
-	shared_ptr<CBase> Clone_Prototype(EPrototype ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg = nullptr);;
+	HRESULT Add_Prototype(_uint levelIndex, const _wstring& prototypeTag, shared_ptr<CBase> prototype);
+	shared_ptr<CBase> Clone_Prototype(EPrototype prototy, _uint levelIndex, const _wstring& prototypeTag, void* arg = nullptr);;
 	//shared_ptr<CBase> Get_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag);;
 
 public: /*For.GameObject_Manager*/
-	shared_ptr<CGameObject> Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg = nullptr);
-	shared_ptr<CGameObject> Get_GameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint GObjIndex);
+	shared_ptr<CGameObject> Add_GameObject(_uint prototypeLevelIndex, const _wstring& prototypeTag, _uint layerLevelIndex, const _wstring& layerTag, void* arg = nullptr);
+	shared_ptr<CGameObject> Get_GameObject(_uint layerLevelIndex, const _wstring& layerTag, _uint gameObjIndex);
 
 
 public:
 	/*For.Renderer*/
-	void Add_RenderGroup(ERenderGroup eRenderGroup, shared_ptr<class CEntity> pNTT);
-	void Add_DebugenderGroup(shared_ptr<CComponent> pDebugComponent);
+	void Add_RenderGroup(ERenderGroup renderGroup, shared_ptr<class CEntity> NTT);
+	void Add_DebugenderGroup(shared_ptr<CComponent> debugComponent);
 
 public: /*For.Editor*/
 	const map<const _wstring, shared_ptr<CLayer>>& Get_GameObjects(_uint levelIndex) const;
@@ -91,10 +91,10 @@ public: /*For.Editor*/
 	class CUI_Manager* Get_UI_Manager() const;
 	class CGraphic_Device* Get_GraphicDevice() const;
 	const map<_wstring,CBase*>& Get_ManagerClass()const;
-	void Push_ManagerClass(_wstring strKey, CBase* ManagerClass);
+	void Push_ManagerClass(_wstring key, CBase* managerClass);
 
 public:/*For.UI_Manager*/
-	void UI_Push(EUILayer layer, wstring name, _bool isOnActive = true, void* pArg = nullptr);
+	void UI_Push(EUILayer layer, wstring name, _bool isOnActive = true, void* arg = nullptr);
 	void UI_Pop(EUILayer layer, wstring type); // 레이어에서 넣얶다 뻇다하는건 안씀 
 	void UI_Detach_All(); // 씬 전환 할떄 레이어에 있는거 객체를 지우니까 그전에 
 	void UI_InsertToPool(wstring UIType, shared_ptr<CUI> UI);
@@ -111,27 +111,27 @@ public:/*For.DInput_Manager*/
 
 public:/*For.Data_Manager*/
 	class CData_Manager* Get_Data_Manager() { return m_dataManager.get(); }
-	bool ClearMap(ESaveType eDATATYPE);
-	bool Load(ESaveType eDATATYPE, const string& fileName);
-	bool Save(ESaveType eDATATYPE, const string& fileName);
+	bool ClearMap(ESaveType dataType);
+	bool Load(ESaveType dataType, const string& fileName);
+	bool Save(ESaveType dataType, const string& fileName);
 
 public:/*For.PipeLine*/
-	const _float4x4* Get_Transform(ED3DTS eTransformState) const;
-	const _float4x4* Get_InverseTransfrom(ED3DTS eTransformState) const;
+	const _float4x4* Get_Transform(ED3DTS transformState) const;
+	const _float4x4* Get_InverseTransfrom(ED3DTS transformState) const;
 	const _float4* Get_CamPositon() const;
-	void Set_Transform(ED3DTS eTransformState, _fmatrix TransformStateMatrix);
-	HRESULT Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName);
-	HRESULT Bind_TransformMatrix(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
-	HRESULT Bind_TransformMatrix_Inverse(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName);
+	void Set_Transform(ED3DTS transformState, _fmatrix transformStateMatrix);
+	HRESULT Bind_CamPosition(shared_ptr<class CShader> shader, const _char* constantName);
+	HRESULT Bind_TransformMatrix(ED3DTS transformState, shared_ptr<class CShader> shader, const _char* constantName);
+	HRESULT Bind_TransformMatrix_Inverse(ED3DTS transformState, shared_ptr<class CShader> shader, const _char* constantName);
 
 public:/*For.Light_Manager*/
-	const LightDesc* Get_LightDesc(_uint iIndex);
+	const LightDesc* Get_LightDesc(_uint index);
 	shared_ptr<CLight> Add_Light(const LightDesc& lightDesc);
-	void Set_LightDesc(_uint iIndex, LightDesc Desc);
+	void Set_LightDesc(_uint index, LightDesc desc);
 	void Clear_Light();
 public:/*For.Picking_Manager*/
-	_bool Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag = L"Layer_BackGround", _uint TerrainIndex = 0);
-	_bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
+	_bool Compute_HeightOnTerrain(_fvector pos, _float* Out, _wstring layerTag = L"Layer_BackGround", _uint terrainIndex = 0);
+	_bool Picking_Terrain(_wstring layerTag, _uint terrainIndex, _float3* Out);
 
 public:/*For.Camera_Manager*/
 	HRESULT Add_Camera(_uint camLevel, _wstring key, shared_ptr<class CCamera> cam);
@@ -140,12 +140,12 @@ public:/*For.Camera_Manager*/
 	float Get_Far();
 
 public:/*For.Font_Manager*/
-	HRESULT Add_Font(const _wstring& strFontTag , const _tchar* pFontFilePath);
-	void Font_Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor = { 1.f,1.f,1.f,1.f });
-	_float2 Measure_String(const _wstring& strFontTag, const _tchar* pText);
+	HRESULT Add_Font(const _wstring& fontTag , const _tchar* fontFilePath);
+	void Font_Draw(const _wstring& fontTag, const _tchar* text, const _float2& position, _fvector color = { 1.f,1.f,1.f,1.f });
+	_float2 Measure_String(const _wstring& fontTag, const _tchar* text);
 
 	public:/*For.TimeOfDay*/
-		void ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond);
+		void ComputeTime(_uint& day, _float& hour, _float& minute, _float& second);
 		_float Get_TOD01();
 		void Set_TOD01(_float tod);
 		void Set_TimeScale(_float timeScale);
@@ -155,33 +155,33 @@ public:/*For.Font_Manager*/
 		void Add_Collider(shared_ptr<class CCollider> coll);
 
 		public:/*For.Target_Manager_Mgr*/
-	HRESULT Add_RenderTarget(const _wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat,
-	                         const _float4& vClearColor);
-	HRESULT Bind_RT_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName,
-	                               const _wstring& strTargetTag);
+	HRESULT Add_RenderTarget(const _wstring& targetTag, _uint sizeX, _uint sizeY, DXGI_FORMAT pixelFormat,
+	                         const _float4& clearColor);
+	HRESULT Bind_RT_ShaderResource(shared_ptr<CShader> shader, const _char* constantName,
+	                               const _wstring& targetTag);
 
-	HRESULT Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag);
-	HRESULT Begin_MRT(const _wstring& strMRTTag, bool useDepth = true);
+	HRESULT Add_MRT(const _wstring& MRTTag, const _wstring& targetTag);
+	HRESULT Begin_MRT(const _wstring& MRTTag, bool useDepth = true);
 	HRESULT End_MRT();
 #ifdef _DEBUG
 public:
-	HRESULT Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY);
-	HRESULT Render_RT_Debug(shared_ptr<CVIBuffer_Rect> pVIBuffer, shared_ptr<CShader> pShader, const _wstring& strMRTTag);
+	HRESULT Ready_RT_Debug(const _wstring& targetTag, _float x, _float y, _float sizeX, _float sizeY);
+	HRESULT Render_RT_Debug(shared_ptr<CVIBuffer_Rect> VIBuffer, shared_ptr<CShader> shader, const _wstring& MRTTag);
 #endif
 public:
-	HRESULT Render_Lights(shared_ptr<CShader> pShader, shared_ptr< CVIBuffer_Rect> pVIBuffer);
+	HRESULT Render_Lights(shared_ptr<CShader> shader, shared_ptr< CVIBuffer_Rect> VIBuffer);
 
 
 
 
 public:// SoundManager
 	HRESULT Register_Sounds(const vector<SoundAssetDesc>& vecSoundDescs);
-	void Update(_float fTimeDelta);
-	void Play_Once(const _wstring& strSoundTag, _float fVolumeScale = 1.f);
-	void Play_Loop(const _wstring& strSoundTag, _float fVolumeScale = 1.f);
-	void Stop(const _wstring& strSoundTag, float fadeOutTime=0);
+	void Update(_float timeDelta);
+	void Play_Once(const _wstring& soundTag, _float volumeScale = 1.f);
+	void Play_Loop(const _wstring& soundTag, _float volumeScale = 1.f);
+	void Stop(const _wstring& soundTag, float fadeOutTime=0);
 	void Stop_All();
-	void Set_CategoryVolume(ESoundCategory eCategory, _float fVolume);
+	void Set_CategoryVolume(ESoundCategory category, _float volume);
 
 private:
     FrameTimings m_frameTimings;

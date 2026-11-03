@@ -31,18 +31,18 @@ HRESULT CAnimation::Initialize(ifstream& InFile)
 
 	for (size_t i = 0; i < m_numChannels; i++)
 	{
-		auto pChannel = CChannel::Create(InFile);
-		if (nullptr == pChannel)
+		auto channel = CChannel::Create(InFile);
+		if (nullptr == channel)
 			return E_FAIL;
 
-		m_channels.push_back(pChannel);
+		m_channels.push_back(channel);
 	}
 	return S_OK;
 }
 
-_bool CAnimation::Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<CBone>>& Bones, _bool isLoop)
+_bool CAnimation::Update_TransformationMatrices(_float timeDelta, const vector<shared_ptr<CBone>>& Bones, _bool isLoop)
 {
-	m_currentTrackPosition += m_tickPerSecond * fTimeDelta;
+	m_currentTrackPosition += m_tickPerSecond * timeDelta;
 
 	if (m_currentTrackPosition >= m_duration)
 	{
@@ -123,18 +123,18 @@ _bool CAnimation::Blend_TransformationMatrices(_float timeDelta, const shared_pt
 	return true;
 }
 void CAnimation::Update_ToBuffer(
-	_float fTimeDelta,
-	vector<_matrix>& OutMatrices,
+	_float timeDelta,
+	vector<_matrix>& outMatrices,
 	_bool isLoop ,_uint boneCount)
 {
 	
-	OutMatrices.resize(boneCount);
+	outMatrices.resize(boneCount);
 
-	for (auto& mat : OutMatrices)
+	for (auto& mat : outMatrices)
 		mat = XMMatrixIdentity();
 
 	// 시간 업데이트
-	m_currentTrackPosition += m_tickPerSecond * fTimeDelta;
+	m_currentTrackPosition += m_tickPerSecond * timeDelta;
 
 	if (m_currentTrackPosition >= m_duration)
 	{
@@ -145,7 +145,7 @@ void CAnimation::Update_ToBuffer(
 				m_channels[i]->Update_ToMatrix(
 					&m_currentKeyFrameIndices[i],
 					m_currentTrackPosition,
-					OutMatrices);
+					outMatrices);
 			}
 			return;
 		}
@@ -158,24 +158,24 @@ void CAnimation::Update_ToBuffer(
 		m_channels[i]->Update_ToMatrix(
 			&m_currentKeyFrameIndices[i],
 			m_currentTrackPosition,
-			OutMatrices);
+			outMatrices);
 	}
 }
 shared_ptr<CAnimation> CAnimation::Create(ifstream& InFile)
 {
-	shared_ptr<CAnimation> pInstance(new CAnimation(), [](CAnimation* p) {p->Free(); delete p; });
+	shared_ptr<CAnimation> instance(new CAnimation(), [](CAnimation* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(InFile)))
+	if (FAILED(instance->Initialize(InFile)))
 	{
 		MSG_BOX("Failed to Created : CAnimation");
 	}
-	return pInstance;
+	return instance;
 }
 
 shared_ptr<CAnimation> CAnimation::Clone()
 {
-	shared_ptr<CAnimation> pInstance(new CAnimation(*this), [](CAnimation* p) {p->Free(); delete p; });
-	return pInstance;
+	shared_ptr<CAnimation> instance(new CAnimation(*this), [](CAnimation* p) {p->Free(); delete p; });
+	return instance;
 }
 
 void CAnimation::Free()

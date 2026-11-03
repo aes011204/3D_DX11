@@ -37,7 +37,7 @@ void CUI_Manager::Update(float m_deltaTime)
 {
 	//ProcessUIQ();
 
-	bool bMouseHold = {false};
+	bool isMouseHold = {false};
 
 	//순서(OVERRIDE -> WINDOW -> STACK -> HUD)
 	for (int i = 0; i < ETOI(EUILayer::END); i++)
@@ -49,7 +49,7 @@ void CUI_Manager::Update(float m_deltaTime)
 		//}
 		for (auto it = vecCopy.rbegin(); it != vecCopy.rend(); ++it)
 		{
-			(*it)->Update(m_deltaTime, bMouseHold);
+			(*it)->Update(m_deltaTime, isMouseHold);
 		}
 	}
 
@@ -67,25 +67,25 @@ void CUI_Manager::Late_Update(float m_deltaTime)
 
 	}
 
-	for (auto& pUI : m_UI[ETOI(EUILayer::HUD)])
+	for (auto& UI : m_UI[ETOI(EUILayer::HUD)])
 	{
-		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, pUI);
+		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, UI);
 	}
 
 	
-	for (auto& pUI : m_UI[ETOI(EUILayer::WINDOW)])
+	for (auto& UI : m_UI[ETOI(EUILayer::WINDOW)])
 	{
-		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, pUI);
+		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, UI);
 	}
 
 	
-	for (auto& pUI : m_UI[ETOI(EUILayer::OVERRIDE)])
+	for (auto& UI : m_UI[ETOI(EUILayer::OVERRIDE)])
 	{
-		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, pUI);
+		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, UI);
 	}
-	for (auto& pUI : m_UI[ETOI(EUILayer::STACK)])
+	for (auto& UI : m_UI[ETOI(EUILayer::STACK)])
 	{
-		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, pUI);
+		m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::UI, UI);
 	}
 }
 
@@ -119,7 +119,7 @@ void CUI_Manager::OnFail()
 	m_activeUI = nullptr;
 }
 
-void CUI_Manager::Push(EUILayer layer, wstring name,_bool isOnActive, void* pArg)
+void CUI_Manager::Push(EUILayer layer, wstring name,_bool isOnActive, void* arg)
 {
 	//RequestUI tmp{ name, layer, pArg };
 
@@ -158,13 +158,13 @@ void CUI_Manager::Pop(EUILayer layer, wstring type)
 	//일단 스택,오버레이 이면 pop_back만
 	// 다른거는 그냥 제거
 
-	auto pUIPair = FindUIOnPool(type);
+	auto UIPair = FindUIOnPool(type);
 
 	if(layer==EUILayer::HUD|| layer == EUILayer::WINDOW)
 	{
 		for(auto it = m_UI[ETOI(layer)].begin();it != m_UI[ETOI(layer)].end();)
 		{
-			if ((*it) == pUIPair)
+			if ((*it) == UIPair)
 			{
 
 				m_UI[ETOI(layer)].erase(it);
@@ -191,13 +191,13 @@ void CUI_Manager::Pop(EUILayer layer, wstring type)
 shared_ptr<CUI> CUI_Manager::Find_UI_InCurLevel(EUILayer layer, wstring type)
 {
 	
-	auto pUIPair = FindUIOnPool(type);
+	auto UIPair = FindUIOnPool(type);
 
 	if (layer == EUILayer::HUD || layer == EUILayer::WINDOW|| layer == EUILayer::OVERRIDE )
 	{
 		for (auto& it : m_UI[ETOI(layer)])
 		{
-			if (it == pUIPair)
+			if (it == UIPair)
 			{
 
 				return it;
@@ -293,13 +293,13 @@ Rect CUI_Manager::Get_WinSize()
 
 unique_ptr<CUI_Manager> CUI_Manager::Create(_uint width, _uint height)
 {
-	unique_ptr<CUI_Manager> pInstance (new CUI_Manager());
-	if (FAILED(pInstance->Initialize(width, height)))
+	unique_ptr<CUI_Manager> instance (new CUI_Manager());
+	if (FAILED(instance->Initialize(width, height)))
 	{
 		MSG_BOX("failed prototype: CUI_Manager");
 		
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Manager::Free()
@@ -336,13 +336,13 @@ void CUI_Manager::OnGui()
 		else {
 			for (auto& pair : pool)
 			{
-				_string strKey = W2S(pair.first);
+				_string key = W2S(pair.first);
 				auto& root = pair.second;
 				if (!root) continue;
 
 				const auto& children = root->GetChildren();
 
-				_string imguiLabel = strKey + " [Prototype]##Pool" + std::to_string((uint64_t)root.get());
+				_string imguiLabel = key + " [Prototype]##Pool" + std::to_string((uint64_t)root.get());
 
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 

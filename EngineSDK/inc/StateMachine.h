@@ -16,7 +16,7 @@ public:
 public:
     virtual HRESULT Init_StateMachine() = 0;
     virtual _int    Update_StateMachine(const _float& timeDelta) = 0;
-    virtual void    Change_State(_uint dwStateKey) = 0;
+    virtual void    Change_State(_uint stateKey) = 0;
 
     _uint       Get_CurStateNum() { return m_curStateKey; }
     _uint       Get_PrevStateKey() { return m_prevStateKey; }

@@ -13,7 +13,7 @@ public:
 public:
 
     void Render() override;
-    void Update(float fTimeDelta)override;
+    void Update(float timeDelta)override;
     bool Resize(UINT width, UINT height);
     void CaptureFromBackBuffer(ID3D11RenderTargetView* backBufferRTV);
 
@@ -22,8 +22,8 @@ public:
 private:
     bool CreateRT(UINT width, UINT height);
 
-    HRESULT Initialize(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice,
-        ComPtr<ID3D11DeviceContext> pContext);
+    HRESULT Initialize(const EngineDesc& engineDesc, ComPtr<ID3D11Device> device,
+        ComPtr<ID3D11DeviceContext> context);
 
 private:
     UINT m_width = { 0 }, m_height = {0};
@@ -43,8 +43,8 @@ private:
     bool   m_isMouseInScene; // 마우스가 장면 안에 있는지 여부
 
 public:
-    unique_ptr<CGameView> static Create(const EngineDesc& engineDesc, ComPtr<ID3D11Device> pDevice,
-        ComPtr<ID3D11DeviceContext> pContext);
+    unique_ptr<CGameView> static Create(const EngineDesc& engineDesc, ComPtr<ID3D11Device> device,
+        ComPtr<ID3D11DeviceContext> context);
     void Free();
 };
 

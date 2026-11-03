@@ -6,8 +6,8 @@
 #include "UI_Skill.h"
 #include "UI_Top.h"
 
-CUI_HUD::CUI_HUD(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_HUD::CUI_HUD(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -16,69 +16,69 @@ CUI_HUD::CUI_HUD(const CUIPanel& prototype)
 {
 }
 
-HRESULT CUI_HUD::OnInit(void* pArg)
+HRESULT CUI_HUD::OnInit(void* arg)
 {
 	{
-		CUI_Skill::SkillDesc SkillPanelDesc = {};
-		SkillPanelDesc.textureComLevel = ETOI(ELevel::STATIC);
-		SkillPanelDesc.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-		SkillPanelDesc.isTransparent = true;
-		SkillPanelDesc.useDark = false;
-		shared_ptr<CUI_Skill> SkillPanel = CUI_Skill::Create(m_device, m_context);
-		SkillPanel->Initialize(&SkillPanelDesc);
+		CUI_Skill::SkillDesc skillPanelDesc = {};
+		skillPanelDesc.textureComLevel = ETOI(ELevel::STATIC);
+		skillPanelDesc.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
+		skillPanelDesc.isTransparent = true;
+		skillPanelDesc.useDark = false;
+		shared_ptr<CUI_Skill> skillPanel = CUI_Skill::Create(m_device, m_context);
+		skillPanel->Initialize(&skillPanelDesc);
 
-		wstring NameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(EHud::SKILL)));
-		Add_Child(SkillPanel, NameTag, false);
+		wstring nameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(EHUD::SKILL)));
+		Add_Child(skillPanel, nameTag, false);
 	}
 	{
-		CUI_Top::UIPanelDesc TopPanelDesc = {};
-		TopPanelDesc.textureComLevel = ETOI(ELevel::STATIC);
-		TopPanelDesc.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-		TopPanelDesc.isTransparent = true;
-		TopPanelDesc.useDark = false;
+		CUI_Top::UIPanelDesc topPanelDesc = {};
+		topPanelDesc.textureComLevel = ETOI(ELevel::STATIC);
+		topPanelDesc.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
+		topPanelDesc.isTransparent = true;
+		topPanelDesc.useDark = false;
 
-		shared_ptr<CUI_Top> TopPanel = CUI_Top::Create(m_device, m_context);
-		TopPanel->Initialize(&TopPanelDesc);
+		shared_ptr<CUI_Top> topPanel = CUI_Top::Create(m_device, m_context);
+		topPanel->Initialize(&topPanelDesc);
 
-		wstring NameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(EHud::TOP)));
-		Add_Child(TopPanel, NameTag, false);
+		wstring nameTag = L"PANNEL_" + S2W(string(magic_enum::enum_name(EHUD::TOP)));
+		Add_Child(topPanel, nameTag, false);
 	}
 	{
-		CUIButton::UIButtonDesc BoatButtonDesc = {};
-		BoatButtonDesc.textureComLevel = ETOI(ELevel::STATIC);
-		BoatButtonDesc.textureProtoName = L"Prototype_Component_Texture_Speaker_Button_Default";
+		CUIButton::UIButtonDesc boatButtonDesc = {};
+		boatButtonDesc.textureComLevel = ETOI(ELevel::STATIC);
+		boatButtonDesc.textureProtoName = L"Prototype_Component_Texture_Speaker_Button_Default";
 		//BoatButtonDesc.bUseDark = false;
 
-		shared_ptr<CUIPanel> BoatButton = CUIPanel::Create(m_device, m_context);
-		BoatButton->Initialize(&BoatButtonDesc);
+		shared_ptr<CUIPanel> boatButton = CUIPanel::Create(m_device, m_context);
+		boatButton->Initialize(&boatButtonDesc);
 
 		{
 			
 
-			CUIImage::UIImageDesc img_k = {};
-			img_k.textureComLevel = ETOI(ELevel::STATIC);
-			img_k.textureProtoName = L"Prototype_Component_Texture_KEY";
-			img_k.textureIndex = 196;
-			shared_ptr<CUIPanel> Image_K = CUIPanel::Create(m_device, m_context);
-			Image_K->Initialize(&img_k);
+			CUIImage::UIImageDesc imgK = {};
+			imgK.textureComLevel = ETOI(ELevel::STATIC);
+			imgK.textureProtoName = L"Prototype_Component_Texture_KEY";
+			imgK.textureIndex = 196;
+			shared_ptr<CUIPanel> imageK = CUIPanel::Create(m_device, m_context);
+			imageK->Initialize(&imgK);
 
-			BoatButton->Add_Child(Image_K, L"Img_tab", false);
+			boatButton->Add_Child(imageK, L"Img_tab", false);
 
 
-			CUIImage::UIImageDesc img_B = {};
-			img_B.textureComLevel = ETOI(ELevel::STATIC);
-			img_B.textureProtoName = L"Prototype_Component_Texture_ShipIcon";
-			shared_ptr<CUIPanel> Image_B = CUIPanel::Create(m_device, m_context);
-			Image_B->Initialize(&img_B);
+			CUIImage::UIImageDesc imgB = {};
+			imgB.textureComLevel = ETOI(ELevel::STATIC);
+			imgB.textureProtoName = L"Prototype_Component_Texture_ShipIcon";
+			shared_ptr<CUIPanel> imageB = CUIPanel::Create(m_device, m_context);
+			imageB->Initialize(&imgB);
 
-			BoatButton->Add_Child(Image_B, L"Img_boat", false);
+			boatButton->Add_Child(imageB, L"Img_boat", false);
 
 		}
-		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(EHud::BOAT)));
-		Add_Child(BoatButton, NameTag, false);
+		wstring nameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(EHUD::BOAT)));
+		Add_Child(boatButton, nameTag, false);
 	}
 
-	return __super::OnInit(pArg);
+	return __super::OnInit(arg);
 }
 
 void CUI_HUD::OnActive()
@@ -116,16 +116,16 @@ void CUI_HUD::OnClear()
 	__super::OnClear();
 }
 
-shared_ptr<CUI_HUD> CUI_HUD::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_HUD> CUI_HUD::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_HUD> pInstance(new CUI_HUD(pDevice, pContext), [](CUI_HUD* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_HUD> instance(new CUI_HUD(device, context), [](CUI_HUD* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUI_HUD");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_HUD::Free()

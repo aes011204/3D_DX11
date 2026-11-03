@@ -7,7 +7,7 @@ NS_BEGIN(Client)
 class CLevel_Logo final : public CLevel
 {
 private:
-	CLevel_Logo(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CLevel_Logo(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
 	virtual ~CLevel_Logo() = default;
 
@@ -18,17 +18,17 @@ public:
 
 	virtual HRESULT Initialize() override;
 	virtual HRESULT Post_Initialize()override;
-	virtual void Update(_float fTimeDelta) override;
+	virtual void Update(_float timeDelta) override;
 	virtual HRESULT Render() override;
 
 private:
-	HRESULT Ready_Layer_BackGround(const _wstring& strLayerTag);
+	HRESULT Ready_Layer_BackGround(const _wstring& layerTag);
 	_bool  m_isFlag = { false };
 	ELevel m_nextLevel = {};
-	_bool ChangeNextLevel = { false };
+	_bool m_isChangeNextLevel = { false };
 	_float m_acc = {};
 public:
-	static shared_ptr<CLevel_Logo> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CLevel_Logo> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	virtual void Free() override;
 };
 

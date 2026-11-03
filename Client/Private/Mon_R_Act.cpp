@@ -5,8 +5,8 @@
 #include "PlayerBoat.h"
 
 
-CMon_R_Act::CMon_R_Act(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CMon_R_Act::CMon_R_Act(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -20,9 +20,9 @@ HRESULT CMon_R_Act::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMon_R_Act::Initialize(void* pArg)
+HRESULT CMon_R_Act::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	m_turnSpeed = 2.f;
@@ -65,18 +65,18 @@ HRESULT CMon_R_Act::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CMon_R_Act::Priority_Update(_float fTimeDelta)
+void CMon_R_Act::Priority_Update(_float timeDelta)
 {
 }
 
-void CMon_R_Act::Update(_float fTimeDelta)
+void CMon_R_Act::Update(_float timeDelta)
 {
-	m_modelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(timeDelta);
 
 	if(m_player.lock()&& m_isColl==false)
 	{
-	_vector TargetPos = m_player.lock()->Get_TransformCom()->Get_Position();
-	m_transformCom->Set_Position(TargetPos );
+	_vector targetPos = m_player.lock()->Get_TransformCom()->Get_Position();
+	m_transformCom->Set_Position(targetPos );
 
 	//m_pTransformCom->Set_Quaternion(m_pPlayer.lock()->Get_TransformCom()->Get_Quaternion()+m_pCurRot);
 	}
@@ -90,7 +90,7 @@ void CMon_R_Act::Update(_float fTimeDelta)
 	
 }
 
-void CMon_R_Act::Late_Update(_float fTimeDelta)
+void CMon_R_Act::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -101,9 +101,9 @@ HRESULT CMon_R_Act::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_modelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
 		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
@@ -220,8 +220,8 @@ HRESULT CMon_R_Act::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
-	float fFar = m_gameInstance.lock()->Get_Far();
-	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return E_FAIL;
 
 	return S_OK;
@@ -248,41 +248,41 @@ HRESULT CMon_R_Act::Ready_Components()
 		return E_FAIL;
 	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);*/
 
-	CBounding_Sphere::BoundingSphereDesc		SPhereDesc{};
+	CBounding_Sphere::BoundingSphereDesc		sphereDesc{};
 	
-	SPhereDesc.radius = 2.f;
-	SPhereDesc.center = _float3(0.f, 0.f,0.f);
-	SPhereDesc.myLayer = ECollisionLayer::MONSTERATT;
-	SPhereDesc.otherMask = ECollisionLayer::PLAYER;
+	sphereDesc.radius = 2.f;
+	sphereDesc.center = _float3(0.f, 0.f,0.f);
+	sphereDesc.myLayer = ECollisionLayer::MONSTERATT;
+	sphereDesc.otherMask = ECollisionLayer::PLAYER;
 	if (FAILED(__super::Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Collider"), &m_collider , &SPhereDesc)))
+		TEXT("Com_Collider"), &m_collider , &sphereDesc)))
 		return E_FAIL;
 	m_gameInstance.lock()->Add_Collider(m_collider);
 	
 	return S_OK;
 }
 
-shared_ptr<CMon_R_Act> CMon_R_Act::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CMon_R_Act> CMon_R_Act::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CMon_R_Act> pInstance(new CMon_R_Act(pDevice, pContext), [](CMon_R_Act* p) {p->Free(); delete p;});
+	shared_ptr<CMon_R_Act> instance(new CMon_R_Act(device, context), [](CMon_R_Act* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CMon_R_Act");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CMon_R_Act::Clone(void* pArg)
+shared_ptr<CGameObject> CMon_R_Act::Clone(void* arg)
 {
-	shared_ptr<CMon_R_Act> pInstance(new CMon_R_Act(*this), [](CMon_R_Act* p) {p->Free(); delete p;});
+	shared_ptr<CMon_R_Act> instance(new CMon_R_Act(*this), [](CMon_R_Act* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CMon_R_Act");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMon_R_Act::Free()

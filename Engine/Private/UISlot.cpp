@@ -1,7 +1,7 @@
 ﻿#include "UISlot.h"
 
-CUISlot::CUISlot(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CUIButton(pDevice, pContext)
+CUISlot::CUISlot(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CUIButton(device, context)
 {
 }
 
@@ -9,19 +9,19 @@ CUISlot::CUISlot(const CUISlot& prototype) : CUIButton(prototype)
 {
 }
 
-void CUISlot::Change_Color(_fvector color, bool bUseDark, bool bUseColorMix, bool bUseColorFlat)
+void CUISlot::Change_Color(_fvector color, bool useDark, bool useColorMix, bool useColorFlat)
 {
 
 }
 
-HRESULT CUISlot::OnInit(void* pArg)
+HRESULT CUISlot::OnInit(void* arg)
 {
-	SlotDesc* pDesc = static_cast<SlotDesc*>(pArg);
-	m_slotType = pDesc->slotType;
-	m_gridIndex = pDesc->index;
+	SlotDesc* desc = static_cast<SlotDesc*>(arg);
+	m_slotType = desc->slotType;
+	m_gridIndex = desc->index;
 
 
-	CUIButton::OnInit(pDesc);
+	CUIButton::OnInit(desc);
 
 	return S_OK;
 }
@@ -62,16 +62,16 @@ void CUISlot::OnClear()
 	CUIButton::OnClear();
 }
 
-shared_ptr<CUISlot> CUISlot::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUISlot> CUISlot::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUISlot> pInstance(new CUISlot(pDevice, pContext), [](CUISlot* p) {p->Free(); delete(p); });
+	shared_ptr<CUISlot> instance(new CUISlot(device, context), [](CUISlot* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUISlot");
 		return nullptr;
 	}
-	return pInstance;
+	return instance;
 
 }
 

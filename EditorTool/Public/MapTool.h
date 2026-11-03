@@ -18,10 +18,10 @@ public:
 
 public:
     virtual HRESULT Initialize() override;
-    virtual void Update(float fTimeDelta) override;
+    virtual void Update(float timeDelta) override;
     virtual void Render() override;
 
-    void Render_SaveLoadPanel(ESaveType eType, const string& folderPath);
+    void Render_SaveLoadPanel(ESaveType type, const string& folderPath);
 
 private:
     vector<string> s_files[(int)ESaveType::END];

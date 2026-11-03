@@ -7,27 +7,27 @@ CAssimp_Animation::CAssimp_Animation()
 {
 }
 
-HRESULT CAssimp_Animation::Initialize(const aiAnimation* pAIAnimation, shared_ptr<class CAssimp_Model> pModel)
+HRESULT CAssimp_Animation::Initialize(const aiAnimation* srcAIAnimation, shared_ptr<class CAssimp_Model> model)
 {
-    m_duration = pAIAnimation->mDuration;
-    m_tickPerSecond = pAIAnimation->mTicksPerSecond;
+    m_duration = srcAIAnimation->mDuration;
+    m_tickPerSecond = srcAIAnimation->mTicksPerSecond;
 
-    m_numChannels = pAIAnimation->mNumChannels; // 애니메이션을 재생하는데 필요한 뼈의 갯수
+    m_numChannels = srcAIAnimation->mNumChannels; // 애니메이션을 재생하는데 필요한 뼈의 갯수
 
     for(size_t i =0;i< m_numChannels;i++)
     {
-        auto pChannel = CAssimp_Channel::Create(pAIAnimation->mChannels[i], pModel);
-        if (nullptr == pChannel)
+        auto channel = CAssimp_Channel::Create(srcAIAnimation->mChannels[i], model);
+        if (nullptr == channel)
             return E_FAIL;
 
-        m_channels.push_back(pChannel);
+        m_channels.push_back(channel);
     }
     return S_OK;
 }
 
-_bool CAssimp_Animation::Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<CAssimp_Bone>>& Bones, _bool isLoop)
+_bool CAssimp_Animation::Update_TransformationMatrices(_float timeDelta, const vector<shared_ptr<CAssimp_Bone>>& Bones, _bool isLoop)
 {
-    m_currentTrackPosition += m_tickPerSecond * fTimeDelta;
+    m_currentTrackPosition += m_tickPerSecond * timeDelta;
 
     if(m_currentTrackPosition >= m_duration)
     {
@@ -37,22 +37,22 @@ _bool CAssimp_Animation::Update_TransformationMatrices(_float fTimeDelta, const 
         m_currentTrackPosition = 0.f;
     }
 
-    for(auto& pChannel:m_channels)
+    for(auto& channel:m_channels)
     {
-        pChannel->Update_TransformationMatrix(m_currentTrackPosition, Bones);
+        channel->Update_TransformationMatrix(m_currentTrackPosition, Bones);
     }
     return false;
 }
 
-shared_ptr<CAssimp_Animation> CAssimp_Animation::Create(const aiAnimation* pAIAnimation, shared_ptr<class CAssimp_Model> pModel)
+shared_ptr<CAssimp_Animation> CAssimp_Animation::Create(const aiAnimation* srcAIAnimation, shared_ptr<class CAssimp_Model> model)
 {
-    shared_ptr<CAssimp_Animation> pInstance(new CAssimp_Animation(), [](CAssimp_Animation* p) {p->Free(); delete p; });
+    shared_ptr<CAssimp_Animation> instance(new CAssimp_Animation(), [](CAssimp_Animation* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pAIAnimation, pModel)))
+    if (FAILED(instance->Initialize(srcAIAnimation, model)))
     {
         MSG_BOX("Failed to Created : CAssimp_Animation");
     }
-    return pInstance;
+    return instance;
 }
 
 void CAssimp_Animation::Free()

@@ -8,16 +8,16 @@ CLevel_Manager::CLevel_Manager()
 
 }
 
-HRESULT CLevel_Manager::Initialize(_uint EditorIndex, _uint iNumLevel)
+HRESULT CLevel_Manager::Initialize(_uint editorIndex, _uint numLevel)
 {
-	m_editorIndex = EditorIndex;
+	m_editorIndex = editorIndex;
 
-	m_numLevel = iNumLevel;
+	m_numLevel = numLevel;
 
 	return S_OK;
 }
 
-HRESULT CLevel_Manager::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pNewLevel)
+HRESULT CLevel_Manager::Change_Level(_uint newLevelIndex, shared_ptr<CLevel> newLevel)
 {
 	if (m_curLevel != nullptr)
 	{
@@ -39,18 +39,18 @@ HRESULT CLevel_Manager::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pN
 	}
 
 
-	m_curLevel = pNewLevel;
+	m_curLevel = newLevel;
 
-	m_curLevelIdx = iNewLevelIndex;
+	m_curLevelIdx = newLevelIndex;
 
 	return m_curLevel->Post_Initialize();
 
 }
 
-void CLevel_Manager::Update(_float fTimeDelta)
+void CLevel_Manager::Update(_float timeDelta)
 {
 	if (m_curLevel != nullptr)
-		m_curLevel->Update(fTimeDelta);
+		m_curLevel->Update(timeDelta);
 }
 
 HRESULT CLevel_Manager::Render()
@@ -61,14 +61,14 @@ HRESULT CLevel_Manager::Render()
 	return S_OK;
 }
 
-unique_ptr<CLevel_Manager> CLevel_Manager::Create(_uint EditorIndex, _uint iNumLevel)
+unique_ptr<CLevel_Manager> CLevel_Manager::Create(_uint editorIndex, _uint numLevel)
 {
-	unique_ptr<CLevel_Manager> pInstance(new CLevel_Manager());
-	if (FAILED(pInstance->Initialize(EditorIndex, iNumLevel)))
+	unique_ptr<CLevel_Manager> instance(new CLevel_Manager());
+	if (FAILED(instance->Initialize(editorIndex, numLevel)))
 	{
 		MSG_BOX("Failed to Created : CLoader");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CLevel_Manager::Free()

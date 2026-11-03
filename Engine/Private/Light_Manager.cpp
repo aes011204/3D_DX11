@@ -10,11 +10,11 @@ CLight_Manager::~CLight_Manager()
     Free();
 }
 
-const LightDesc* CLight_Manager::Get_LightDesc(_uint iIndex)
+const LightDesc* CLight_Manager::Get_LightDesc(_uint index)
 {
     auto iter = m_lights.begin();
 
-    for (_uint i = 0; i < iIndex; i++)
+    for (_uint i = 0; i < index; i++)
     {
         ++iter;
     }
@@ -22,35 +22,35 @@ const LightDesc* CLight_Manager::Get_LightDesc(_uint iIndex)
     return  (*iter)->Get_LightDesc();
 }
 
- void CLight_Manager::Set_LightDesc(_uint iIndex, LightDesc Desc)
+ void CLight_Manager::Set_LightDesc(_uint index, LightDesc desc)
 {
     auto iter = m_lights.begin();
 
-    for (_uint i = 0; i < iIndex; i++)
+    for (_uint i = 0; i < index; i++)
     {
         ++iter;
     }
 
-    return  (*iter)->Set_LightDesc(Desc);
+    return  (*iter)->Set_LightDesc(desc);
 }
 
 shared_ptr<CLight> CLight_Manager::Add_Light(const LightDesc& lightDesc)
 {
-   shared_ptr<CLight>  pInstance = CLight::Create(lightDesc);
-   if (pInstance == nullptr)
+   shared_ptr<CLight>  instance = CLight::Create(lightDesc);
+   if (instance == nullptr)
        return nullptr;
 
-   m_lights.push_back(pInstance);
-    return pInstance;
+   m_lights.push_back(instance);
+    return instance;
 }
 
-HRESULT CLight_Manager::Render_Light(shared_ptr<CShader> pShared, shared_ptr<CVIBuffer_Rect> pVIBuffer)
+HRESULT CLight_Manager::Render_Light(shared_ptr<CShader> shared, shared_ptr<CVIBuffer_Rect> VIBuffer)
 {
-    for(auto& pLight :m_lights)
+    for(auto& light :m_lights)
     {
-	    if(nullptr != pLight&& pLight->Get_Active() == true)
+	    if(nullptr != light&& light->Get_Active() == true)
 	    {
-            pLight->Render(pShared, pVIBuffer);
+            light->Render(shared, VIBuffer);
 	    }
     }
 
@@ -109,8 +109,8 @@ void CLight_Manager::clear_light()
 
 unique_ptr<CLight_Manager> CLight_Manager::Create()
 {
-    unique_ptr<CLight_Manager> pInstance(new CLight_Manager());
-    return pInstance; // 이니셜라이즈 필요 없음
+    unique_ptr<CLight_Manager> instance(new CLight_Manager());
+    return instance; // 이니셜라이즈 필요 없음
 }
 
 void CLight_Manager::Free()

@@ -5,8 +5,8 @@
 #include "GameObject.h"
 #include "UI.h"
 
-CComponent::CComponent(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_device{ pDevice }, m_context{ pContext },
+CComponent::CComponent(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: m_device{ device }, m_context{ context },
 	m_gameInstance{ CGameInstance::GetInstance() }
 ,  m_isCloned{ false }
 {
@@ -31,25 +31,25 @@ HRESULT CComponent::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CComponent::Initialize(void* pArg)
+HRESULT CComponent::Initialize(void* arg)
 {
 	return S_OK;
 }
 
-HRESULT CComponent::Set_Owner(shared_ptr<CEntity> pOwner)
+HRESULT CComponent::Set_Owner(shared_ptr<CEntity> owner)
 {
 
-	if (shared_ptr<CGameObject> GObj = dynamic_pointer_cast<CGameObject>(pOwner))
+	if (shared_ptr<CGameObject> gameObj = dynamic_pointer_cast<CGameObject>(owner))
 	{
-		m_GOwner = GObj;
-		m_GOwnerTransform = dynamic_cast<CTransform*>(GObj->Get_Component(g_strTransformTag).get());
+		m_GOwner = gameObj;
+		m_GOwnerTransform = dynamic_cast<CTransform*>(gameObj->Get_Component(g_strTransformTag).get());
 
 		return S_OK;
 	}
-	else if (shared_ptr<CUI> UObj = dynamic_pointer_cast<CUI>(pOwner))
+	else if (shared_ptr<CUI> UIObj = dynamic_pointer_cast<CUI>(owner))
 	{
-		m_UOwner = UObj;
-		m_UOwnerUITransform = dynamic_cast<CUITransform*>(UObj->Get_Component(g_strUITransformTag).get());
+		m_UOwner = UIObj;
+		m_UOwnerUITransform = dynamic_cast<CUITransform*>(UIObj->Get_Component(g_strUITransformTag).get());
 
 		return S_OK;
 	}

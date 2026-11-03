@@ -26,15 +26,15 @@ public:
 
 	};
 protected:
-	CUI_TabContainer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CUI_TabContainer(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CUI_TabContainer(const CUIPanel& prototype);
 public:
 	~CUI_TabContainer() = default;
 
 public:
-	void UI_PanelActive(_uint iTabfig, ETab Active);
+	void UI_PanelActive(_uint tabfig, ETab Active);
 	virtual void UI_Active() override; //  UI 활성활시 호출되는 함수// 이 패널은 다 켜지면 안되기떄문에 오버라이딩으로 호출뻇고 여기서 처리
-	HRESULT OnInit(void* pArg) override;
+	HRESULT OnInit(void* arg) override;
 	void OnActive()override;
 	void OnInActive()override;
 	void OnDisabled()override;
@@ -67,7 +67,7 @@ private:
 	weak_ptr<CPlayerBoat> m_playerBoat = {  };
 
 public:
-	static shared_ptr<CUI_TabContainer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUI_TabContainer> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	void Free() override;
 };
 

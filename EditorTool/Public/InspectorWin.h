@@ -31,7 +31,7 @@ private:
 private:
     bool     m_isEditingName = false;
     char     m_nameBuf[256] = {};
-    uint64_t m_lastSelectedId = 0;
+    uint64_t m_lastSelectedID = 0;
 public:
     static shared_ptr<CInspectorWin> Create();
     void Free() override;

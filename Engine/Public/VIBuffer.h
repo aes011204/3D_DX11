@@ -7,14 +7,14 @@ class CVIBuffer abstract:
     public CComponent
 {
 protected:
-	CVIBuffer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CVIBuffer(const CVIBuffer& Prototype);
+	CVIBuffer(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CVIBuffer(const CVIBuffer& prototype);
 public:
 	virtual ~CVIBuffer() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize(void* arg);
 
 	virtual HRESULT Bind_Resources();
 	virtual HRESULT Render();
@@ -36,7 +36,7 @@ protected:
 
 
 public:
-	virtual shared_ptr<CComponent> Clone(void* pArg)=0;
+	virtual shared_ptr<CComponent> Clone(void* arg)=0;
 	virtual void Free() override;
 };
 

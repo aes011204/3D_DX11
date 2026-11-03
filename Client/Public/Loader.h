@@ -16,12 +16,12 @@ class CLoader :
     public CBase
 {
 private:
-    CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CLoader(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
     virtual ~CLoader() = default;
 
 public:
-    HRESULT Initialize(ELevel eNextLevelID);
+    HRESULT Initialize(ELevel nextLevelID);
     HRESULT Loading();
 
 
@@ -41,7 +41,7 @@ private:
     HANDLE m_hThread = {};
     CRITICAL_SECTION m_criticalSection = {};
 
-    ELevel m_nextLevelId = { ELevel::END };
+    ELevel m_nextLevelID = { ELevel::END };
     _tchar m_loadingText[MAX_PATH] = {};
     _bool m_isFinished = { false };
 private:
@@ -51,7 +51,7 @@ private:
     HRESULT Loading_For_EditorLevel();
 
 public:
-    static shared_ptr<CLoader> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, ELevel eNextLevelID);
+    static shared_ptr<CLoader> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, ELevel nextLevelID);
     void Free() override;
 
 };

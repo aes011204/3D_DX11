@@ -158,14 +158,14 @@ void CGameInstance::SetImguiContext(ImGuiContext* imgContext)
 //{
 //	return m_pImgui_Manager->GetContext();
 //}
-void CGameInstance::Update_Engine(float fTimeDelta)
+void CGameInstance::Update_Engine(float timeDelta)
 {
     const auto updateStart = PerfClock::now();
 	m_DInputManager->Update_InputDev();
 
-	m_timeOfDay->Update(fTimeDelta);
+	m_timeOfDay->Update(timeDelta);
 
-	m_objectManager->Priority_Update(fTimeDelta);
+	m_objectManager->Priority_Update(timeDelta);
 
 	m_cameraManager->Apply_To_PipeLine();
 
@@ -173,22 +173,22 @@ void CGameInstance::Update_Engine(float fTimeDelta)
 
 	m_pickingManager->Update();
 
-	m_objectManager->Update(fTimeDelta);
-	m_UIManager->Update(fTimeDelta);
+	m_objectManager->Update(timeDelta);
+	m_UIManager->Update(timeDelta);
 
 	m_collisionManager->Update();
 
-	m_cameraManager->Update_AfterTarget(fTimeDelta);
+	m_cameraManager->Update_AfterTarget(timeDelta);
 	m_cameraManager->Apply_To_PipeLine();
 	m_pipeLine->Update();
 	m_pickingManager->Update();
 
-	m_objectManager->Late_Update(fTimeDelta);
+	m_objectManager->Late_Update(timeDelta);
 
-	m_UIManager->Late_Update(fTimeDelta);
+	m_UIManager->Late_Update(timeDelta);
 
-	m_levelManager->Update(fTimeDelta);
-	m_soundManager->Update_Audio(fTimeDelta);
+	m_levelManager->Update(timeDelta);
+	m_soundManager->Update_Audio(timeDelta);
     RecordMs(m_frameTimings.updateMs, updateStart);
 
 }
@@ -213,15 +213,15 @@ void CGameInstance::Draw()
 
 }
 
-void CGameInstance::Clear_Resources(_uint iLevelIndex)
+void CGameInstance::Clear_Resources(_uint levelIndex)
 {
 
-	if (FAILED(m_objectManager->Clear_Layers(iLevelIndex)))
+	if (FAILED(m_objectManager->Clear_Layers(levelIndex)))
 	{
 		MSG_BOX("failed to Clear Resourse");
 		return;
 	}
-	if (FAILED(m_protoManager->Clear_Prototype(iLevelIndex)))
+	if (FAILED(m_protoManager->Clear_Prototype(levelIndex)))
 	{
 		MSG_BOX("failed to Clear Resourse");
 		return;
@@ -231,7 +231,7 @@ void CGameInstance::Clear_Resources(_uint iLevelIndex)
 
 	//m_pLight_Manager->clear_light();
 
-	if (FAILED(m_cameraManager->Clear_Camera(iLevelIndex)))
+	if (FAILED(m_cameraManager->Clear_Camera(levelIndex)))
 	{
 		MSG_BOX("failed to Clear Resourse");
 		return;
@@ -240,17 +240,17 @@ void CGameInstance::Clear_Resources(_uint iLevelIndex)
 	return;
 }
 
-_float CGameInstance::Random(_float fMin, _float fMax)
+_float CGameInstance::Random(_float minValue, _float maxValue)
 {
-	return fMin + (static_cast<_float>(rand()) / RAND_MAX) * (fMax - fMin);
+	return minValue + (static_cast<_float>(rand()) / RAND_MAX) * (maxValue - minValue);
 }
 
-_int CGameInstance::RandomInt(_int iMin, _int iMax)
+_int CGameInstance::RandomInt(_int minValue, _int maxValue)
 {
-	if (iMin > iMax)
-		swap(iMin, iMax);
+	if (minValue > maxValue)
+		swap(minValue, maxValue);
 
-	return iMin + rand() % (iMax - iMin + 1);
+	return minValue + rand() % (maxValue - minValue + 1);
 }
 HRESULT CGameInstance::Resize(_uint g_RsizeWidth, _uint g_RsizeHeight)
 {
@@ -258,39 +258,39 @@ HRESULT CGameInstance::Resize(_uint g_RsizeWidth, _uint g_RsizeHeight)
 	return m_graphicDevice->Resize(g_RsizeWidth, g_RsizeHeight);;
 }
 
-HRESULT CGameInstance::Add_Timer(const _wstring& strTimeTag)
+HRESULT CGameInstance::Add_Timer(const _wstring& timeTag)
 {
 
-	if (FAILED(m_timerManager->Add_Timer(strTimeTag)))
+	if (FAILED(m_timerManager->Add_Timer(timeTag)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-_float CGameInstance::Compute_TimeDelta(const _wstring& strTimeTag)
+_float CGameInstance::Compute_TimeDelta(const _wstring& timeTag)
 {
-	return m_timerManager->Compute_TimeDelta(strTimeTag);
+	return m_timerManager->Compute_TimeDelta(timeTag);
 }
 
-HRESULT CGameInstance::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pNewLevel)
+HRESULT CGameInstance::Change_Level(_uint newLevelIndex, shared_ptr<CLevel> newLevel)
 {
 
 
-	return m_levelManager->Change_Level(iNewLevelIndex, pNewLevel);
+	return m_levelManager->Change_Level(newLevelIndex, newLevel);
 
 
 }
 
-HRESULT CGameInstance::Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype)
+HRESULT CGameInstance::Add_Prototype(_uint levelIndex, const _wstring& prototypeTag, shared_ptr<CBase> prototype)
 {
-	return m_protoManager->Add_Prototype(iLevelIndex, strPrototypeTag, pPrototype);
+	return m_protoManager->Add_Prototype(levelIndex, prototypeTag, prototype);
 }
 
-shared_ptr<CBase> CGameInstance::Clone_Prototype(EPrototype ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag,
-	void* pArg)
+shared_ptr<CBase> CGameInstance::Clone_Prototype(EPrototype prototy, _uint levelIndex, const _wstring& prototypeTag,
+	void* arg)
 {
 
-	shared_ptr<CBase> tmp = m_protoManager->Clone_Prototype(ePrototy, iLevelIndex, strPrototypeTag, pArg);
+	shared_ptr<CBase> tmp = m_protoManager->Clone_Prototype(prototy, levelIndex, prototypeTag, arg);
 	if (tmp == nullptr)
 		return nullptr;
 	tmp->SetDefaultNameFromThisType();
@@ -303,27 +303,27 @@ shared_ptr<CBase> CGameInstance::Clone_Prototype(EPrototype ePrototy, _uint iLev
 //}
 
 
-shared_ptr<CGameObject> CGameInstance::Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
-	_uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg)
+shared_ptr<CGameObject> CGameInstance::Add_GameObject(_uint prototypeLevelIndex, const _wstring& prototypeTag,
+	_uint layerLevelIndex, const _wstring& layerTag, void* arg)
 {
-	return m_objectManager->Add_GameObject(iPrototypeLevelIndex, strPrototypeTag, iLayerLevelIndex, strLayerTag, pArg);
+	return m_objectManager->Add_GameObject(prototypeLevelIndex, prototypeTag, layerLevelIndex, layerTag, arg);
 }
 
-shared_ptr<CGameObject> CGameInstance::Get_GameObject(_uint iLayerLevelIndex, const _wstring& strLayerTag, _uint GObjIndex)
+shared_ptr<CGameObject> CGameInstance::Get_GameObject(_uint layerLevelIndex, const _wstring& layerTag, _uint gameObjIndex)
 {
-	return m_objectManager->Get_GameObject(iLayerLevelIndex, strLayerTag, GObjIndex);
-}
-
-
-void CGameInstance::Add_RenderGroup(ERenderGroup eRenderGroup, shared_ptr<CEntity> pNTT)
-{
-	m_renderer->Add_RenderGroup(eRenderGroup, pNTT);
+	return m_objectManager->Get_GameObject(layerLevelIndex, layerTag, gameObjIndex);
 }
 
 
-HRESULT CGameInstance::Clear_Buffers(const _float4* pClearColor)
+void CGameInstance::Add_RenderGroup(ERenderGroup renderGroup, shared_ptr<CEntity> NTT)
 {
-	if (FAILED(m_graphicDevice->Clear_BackBuffer_View(pClearColor)))
+	m_renderer->Add_RenderGroup(renderGroup, NTT);
+}
+
+
+HRESULT CGameInstance::Clear_Buffers(const _float4* clearColor)
+{
+	if (FAILED(m_graphicDevice->Clear_BackBuffer_View(clearColor)))
 		return E_FAIL;
 	if (FAILED(m_graphicDevice->Clear_DepthStencil_View()))
 		return E_FAIL;
@@ -366,14 +366,14 @@ const map<_wstring, CBase*>& CGameInstance::Get_ManagerClass() const
 {
 	return m_managerForImgui;
 }
-void CGameInstance::Push_ManagerClass(_wstring strKey, CBase* ManagerClass)
+void CGameInstance::Push_ManagerClass(_wstring key, CBase* managerClass)
 {
-	m_managerForImgui.emplace(strKey, ManagerClass);
+	m_managerForImgui.emplace(key, managerClass);
 }
 
-void CGameInstance::UI_Push(EUILayer layer, wstring name, _bool isOnActive, void* pArg)
+void CGameInstance::UI_Push(EUILayer layer, wstring name, _bool isOnActive, void* arg)
 {
-	m_UIManager->Push(layer, name, isOnActive, pArg);
+	m_UIManager->Push(layer, name, isOnActive, arg);
 }
 void CGameInstance::UI_Pop(EUILayer layer, wstring type)
 {
@@ -424,30 +424,30 @@ _float2 CGameInstance::Get_MousePos()
 
 }
 
-bool CGameInstance::ClearMap(ESaveType eDATATYPE)
+bool CGameInstance::ClearMap(ESaveType dataType)
 {
-	return m_dataManager->ClearMap(eDATATYPE);
+	return m_dataManager->ClearMap(dataType);
 }
 
-bool CGameInstance::Load(ESaveType eDATATYPE, const string& fileName)
+bool CGameInstance::Load(ESaveType dataType, const string& fileName)
 {
-	return m_dataManager->Load(eDATATYPE, fileName);
+	return m_dataManager->Load(dataType, fileName);
 }
 
-bool CGameInstance::Save(ESaveType eDATATYPE, const string& fileName)
+bool CGameInstance::Save(ESaveType dataType, const string& fileName)
 {
-	return m_dataManager->Save(eDATATYPE, fileName);
+	return m_dataManager->Save(dataType, fileName);
 
 }
 
-const _float4x4* CGameInstance::Get_Transform(ED3DTS eTransformState) const
+const _float4x4* CGameInstance::Get_Transform(ED3DTS transformState) const
 {
-	return m_pipeLine->Get_Transfrom(eTransformState);
+	return m_pipeLine->Get_Transfrom(transformState);
 }
 
-const _float4x4* CGameInstance::Get_InverseTransfrom(ED3DTS eTransformState) const
+const _float4x4* CGameInstance::Get_InverseTransfrom(ED3DTS transformState) const
 {
-	return m_pipeLine->Get_InverseTransfrom(eTransformState);
+	return m_pipeLine->Get_InverseTransfrom(transformState);
 }
 
 const _float4* CGameInstance::Get_CamPositon() const
@@ -455,29 +455,29 @@ const _float4* CGameInstance::Get_CamPositon() const
 	return m_pipeLine->Get_CamPosition();
 }
 
-void CGameInstance::Set_Transform(ED3DTS eTransformState, _fmatrix TransformStateMatrix)
+void CGameInstance::Set_Transform(ED3DTS transformState, _fmatrix transformStateMatrix)
 {
-	return m_pipeLine->Set_Transform(eTransformState, TransformStateMatrix);
+	return m_pipeLine->Set_Transform(transformState, transformStateMatrix);
 }
 
-HRESULT CGameInstance::Bind_CamPosition(shared_ptr<class CShader> pShader, const _char* pConstantName)
+HRESULT CGameInstance::Bind_CamPosition(shared_ptr<class CShader> shader, const _char* constantName)
 {
-	return m_pipeLine->Bind_CamPosition(pShader, pConstantName);
+	return m_pipeLine->Bind_CamPosition(shader, constantName);
 }
 
-HRESULT CGameInstance::Bind_TransformMatrix(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
+HRESULT CGameInstance::Bind_TransformMatrix(ED3DTS transformState, shared_ptr<class CShader> shader, const _char* constantName)
 {
-	return m_pipeLine->Bind_TransformMatrix(eTransformState, pShader, pConstantName);
+	return m_pipeLine->Bind_TransformMatrix(transformState, shader, constantName);
 }
 
-HRESULT CGameInstance::Bind_TransformMatrix_Inverse(ED3DTS eTransformState, shared_ptr<class CShader> pShader, const _char* pConstantName)
+HRESULT CGameInstance::Bind_TransformMatrix_Inverse(ED3DTS transformState, shared_ptr<class CShader> shader, const _char* constantName)
 {
-	return m_pipeLine->Bind_TransformMatrix_Inverse(eTransformState, pShader, pConstantName);
+	return m_pipeLine->Bind_TransformMatrix_Inverse(transformState, shader, constantName);
 }
 
-const LightDesc* CGameInstance::Get_LightDesc(_uint iIndex)
+const LightDesc* CGameInstance::Get_LightDesc(_uint index)
 {
-	return m_lightManager->Get_LightDesc(iIndex);
+	return m_lightManager->Get_LightDesc(index);
 }
 
 shared_ptr<CLight> CGameInstance::Add_Light(const LightDesc& lightDesc)
@@ -485,9 +485,9 @@ shared_ptr<CLight> CGameInstance::Add_Light(const LightDesc& lightDesc)
 	return m_lightManager->Add_Light(lightDesc);
 }
 
-void CGameInstance::Set_LightDesc(_uint iIndex, LightDesc Desc)
+void CGameInstance::Set_LightDesc(_uint index, LightDesc desc)
 {
-	m_lightManager->Set_LightDesc(iIndex, Desc);
+	m_lightManager->Set_LightDesc(index, desc);
 }
 
 void CGameInstance::Clear_Light()
@@ -495,17 +495,17 @@ void CGameInstance::Clear_Light()
 	return m_lightManager->clear_light();
 }
 
-_bool CGameInstance::Compute_HeightOnTerrain(_fvector pPos, _float* Out, _wstring layerTag, _uint TerrainIndex)
+_bool CGameInstance::Compute_HeightOnTerrain(_fvector pos, _float* Out, _wstring layerTag, _uint terrainIndex)
 {
 
 
-	return m_pickingManager->Compute_HeightOnTerrain(layerTag, TerrainIndex, pPos, Out);
+	return m_pickingManager->Compute_HeightOnTerrain(layerTag, terrainIndex, pos, Out);
 }
 
-_bool CGameInstance::Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out)
+_bool CGameInstance::Picking_Terrain(_wstring layerTag, _uint terrainIndex, _float3* Out)
 {
 
-	return m_pickingManager->Picking_Terrain(layerTag, TerrainIndex, Out);
+	return m_pickingManager->Picking_Terrain(layerTag, terrainIndex, Out);
 }
 
 HRESULT CGameInstance::Add_Camera(_uint camLevel, _wstring key, shared_ptr<CCamera> cam)
@@ -531,25 +531,25 @@ float CGameInstance::Get_Far()
 	return m_cameraManager->Get_Far();
 }
 
-HRESULT CGameInstance::Add_Font(const _wstring& strFontTag, const _tchar* pFontFilePath)
+HRESULT CGameInstance::Add_Font(const _wstring& fontTag, const _tchar* fontFilePath)
 {
-	return m_fontManager->Add_Font(strFontTag, pFontFilePath);
+	return m_fontManager->Add_Font(fontTag, fontFilePath);
 }
 
-void CGameInstance::Font_Draw(const _wstring& strFontTag, const _tchar* pText, const _float2& vPosition, _fvector vColor)
+void CGameInstance::Font_Draw(const _wstring& fontTag, const _tchar* text, const _float2& position, _fvector color)
 {
-	m_fontManager->Draw(strFontTag, pText, vPosition, vColor);
+	m_fontManager->Draw(fontTag, text, position, color);
 }
 
-_float2 CGameInstance::Measure_String(const _wstring& strFontTag, const _tchar* pText)
+_float2 CGameInstance::Measure_String(const _wstring& fontTag, const _tchar* text)
 {
-	return m_fontManager->Measure_String(strFontTag, pText);
+	return m_fontManager->Measure_String(fontTag, text);
 
 }
 
-void CGameInstance::ComputeTime(_uint& iDay, _float& fHour, _float& fMinute, _float& fSecond)
+void CGameInstance::ComputeTime(_uint& day, _float& hour, _float& minute, _float& second)
 {
-	m_timeOfDay->ComputeTime(iDay, fHour, fMinute, fSecond);
+	m_timeOfDay->ComputeTime(day, hour, minute, second);
 }
 
 _float CGameInstance::Get_TOD01()
@@ -578,24 +578,24 @@ void CGameInstance::Add_Collider(shared_ptr<CCollider> coll)
 	m_collisionManager->Add_Collider(coll);
 }
 
-HRESULT CGameInstance::Add_RenderTarget(const _wstring& strTargetTag, _uint iSizeX, _uint iSizeY, DXGI_FORMAT ePixelFormat, const _float4& vClearColor)
+HRESULT CGameInstance::Add_RenderTarget(const _wstring& targetTag, _uint sizeX, _uint sizeY, DXGI_FORMAT pixelFormat, const _float4& clearColor)
 {
-	return m_targetManager->Add_RenderTarget(strTargetTag, iSizeX, iSizeY, ePixelFormat, vClearColor);
+	return m_targetManager->Add_RenderTarget(targetTag, sizeX, sizeY, pixelFormat, clearColor);
 }
 
-HRESULT CGameInstance::Bind_RT_ShaderResource(shared_ptr<CShader> pShader, const _char* pConstantName, const _wstring& strTargetTag)
+HRESULT CGameInstance::Bind_RT_ShaderResource(shared_ptr<CShader> shader, const _char* constantName, const _wstring& targetTag)
 {
-	return m_targetManager->Bind_ShaderResource(pShader, pConstantName, strTargetTag);
+	return m_targetManager->Bind_ShaderResource(shader, constantName, targetTag);
 }
 
-HRESULT CGameInstance::Add_MRT(const _wstring& strMRTTag, const _wstring& strTargetTag)
+HRESULT CGameInstance::Add_MRT(const _wstring& MRTTag, const _wstring& targetTag)
 {
-	return m_targetManager->Add_MRT(strMRTTag, strTargetTag);
+	return m_targetManager->Add_MRT(MRTTag, targetTag);
 }
 
-HRESULT CGameInstance::Begin_MRT(const _wstring& strMRTTag, bool useDepth)
+HRESULT CGameInstance::Begin_MRT(const _wstring& MRTTag, bool useDepth)
 {
-	return m_targetManager->Begin_MRT(strMRTTag, useDepth);
+	return m_targetManager->Begin_MRT(MRTTag, useDepth);
 }
 
 HRESULT CGameInstance::End_MRT()
@@ -604,25 +604,25 @@ HRESULT CGameInstance::End_MRT()
 }
 
 #ifdef _DEBUG
-HRESULT CGameInstance::Ready_RT_Debug(const _wstring& strTargetTag, _float fX, _float fY, _float fSizeX, _float fSizeY)
+HRESULT CGameInstance::Ready_RT_Debug(const _wstring& targetTag, _float x, _float y, _float sizeX, _float sizeY)
 {
-	return m_targetManager->Ready_Debug(strTargetTag, fX, fY, fSizeX, fSizeY);
+	return m_targetManager->Ready_Debug(targetTag, x, y, sizeX, sizeY);
 }
 
-HRESULT CGameInstance::Render_RT_Debug(shared_ptr<CVIBuffer_Rect> pVIBuffer, shared_ptr < CShader> pShader, const _wstring& strMRTTag)
+HRESULT CGameInstance::Render_RT_Debug(shared_ptr<CVIBuffer_Rect> VIBuffer, shared_ptr < CShader> shader, const _wstring& MRTTag)
 {
-	return m_targetManager->Render(pVIBuffer, pShader, strMRTTag);
+	return m_targetManager->Render(VIBuffer, shader, MRTTag);
 }
 #endif
 
-HRESULT CGameInstance::Render_Lights(shared_ptr<CShader> pShader, shared_ptr< CVIBuffer_Rect> pVIBuffer)
+HRESULT CGameInstance::Render_Lights(shared_ptr<CShader> shader, shared_ptr< CVIBuffer_Rect> VIBuffer)
 {
-	return m_lightManager->Render_Light(pShader, pVIBuffer);
+	return m_lightManager->Render_Light(shader, VIBuffer);
 }
 #ifdef _DEBUG
-void CGameInstance::Add_DebugenderGroup(shared_ptr<CComponent> pDebugComponent)
+void CGameInstance::Add_DebugenderGroup(shared_ptr<CComponent> debugComponent)
 {
-	m_renderer->Add_DebugenderGroup(pDebugComponent);
+	m_renderer->Add_DebugenderGroup(debugComponent);
 }
 #endif
 HRESULT CGameInstance::Register_Sounds(const vector<SoundAssetDesc>& vecSoundDescs)
@@ -632,26 +632,26 @@ HRESULT CGameInstance::Register_Sounds(const vector<SoundAssetDesc>& vecSoundDes
 
 	return m_soundManager->Register_Sounds(vecSoundDescs);
 }
-void CGameInstance::Play_Once(const _wstring& strSoundTag, _float fVolumeScale)
+void CGameInstance::Play_Once(const _wstring& soundTag, _float volumeScale)
 {
 	if (!m_soundManager)
 		return;
 
-	m_soundManager->Play_Once(strSoundTag, fVolumeScale);
+	m_soundManager->Play_Once(soundTag, volumeScale);
 }
-void CGameInstance::Play_Loop(const _wstring& strSoundTag, _float fVolumeScale)
+void CGameInstance::Play_Loop(const _wstring& soundTag, _float volumeScale)
 {
 	if (!m_soundManager)
 		return;
 
-	m_soundManager->Play_Loop(strSoundTag, fVolumeScale);
+	m_soundManager->Play_Loop(soundTag, volumeScale);
 }
-void CGameInstance::Stop(const _wstring& strSoundTag, float fadeOutTime)
+void CGameInstance::Stop(const _wstring& soundTag, float fadeOutTime)
 {
 	if (!m_soundManager)
 		return;
 
-	m_soundManager->Stop_Sound(strSoundTag,  fadeOutTime);
+	m_soundManager->Stop_Sound(soundTag,  fadeOutTime);
 }
 void CGameInstance::Stop_All()
 {
@@ -660,12 +660,12 @@ void CGameInstance::Stop_All()
 
 	m_soundManager->Stop_AllSounds();
 }
-void CGameInstance::Set_CategoryVolume(ESoundCategory eCategory, _float fVolume)
+void CGameInstance::Set_CategoryVolume(ESoundCategory category, _float volume)
 {
 	if (!m_soundManager)
 		return;
 
-	m_soundManager->Set_SoundCategoryVolume(eCategory, fVolume);
+	m_soundManager->Set_SoundCategoryVolume(category, volume);
 }
 
 void CGameInstance::Free()

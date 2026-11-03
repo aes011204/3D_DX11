@@ -34,15 +34,15 @@ HRESULT CSelection::Initialize()
 }
 shared_ptr<CSelection> CSelection::Create()
 {
-    shared_ptr<CSelection> pInstance(new CSelection());
-    if (FAILED(pInstance->Initialize()))
+    shared_ptr<CSelection> instance(new CSelection());
+    if (FAILED(instance->Initialize()))
     {
         MSG_BOX("failed to create :CSelection");
         return nullptr;
     }
     // 나중에 이벤트 버스 Subscribe 같은 거 붙이기 좋음
 
-    return pInstance;
+    return instance;
 }
 
 void CSelection::Free()

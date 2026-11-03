@@ -10,12 +10,12 @@ public:
     virtual ~CLight_Manager();
 
 public:
-    const LightDesc* Get_LightDesc(_uint iIndex);
-    void Set_LightDesc(_uint iIndex, LightDesc Desc);
+    const LightDesc* Get_LightDesc(_uint index);
+    void Set_LightDesc(_uint index, LightDesc desc);
 
     shared_ptr<class CLight> Add_Light(const LightDesc& lightDesc);
 
-    HRESULT Render_Light(shared_ptr<class CShader> pShared, shared_ptr<class CVIBuffer_Rect> pVIBuffer);
+    HRESULT Render_Light(shared_ptr<class CShader> shared, shared_ptr<class CVIBuffer_Rect> VIBuffer);
 
     void OnGui() override;
     void clear_light();

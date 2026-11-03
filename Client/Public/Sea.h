@@ -23,17 +23,17 @@ public:
 
     };
 private:
-    CSea(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CSea(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CSea(const CSea& prototype);
 public:
     virtual ~CSea() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     float Calculate_GerstnerWave_Overlap(_float3 Pos);
     virtual HRESULT Render() override;
     virtual _vector Get_WorldPos();
@@ -55,8 +55,8 @@ private:
     Wave_Desc m_waveDesc[10] = {};
     float m_depthMask01 = {1};*/
 public:
-    static shared_ptr<CSea> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CSea> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 };

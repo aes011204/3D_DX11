@@ -21,7 +21,7 @@ class CPlayerState :
 	public CState
 {
 protected:
-	explicit CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine);
+	explicit CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> stateMachine);
 public:
 	virtual ~CPlayerState();
 
@@ -40,7 +40,7 @@ protected:
 	virtual void    Find_Player();
 protected:
 
-	_bool       DoneAnim = false;
+	_bool       m_isAnimDone = false;
 
 	weak_ptr<CPlayerBoat> m_owner = {};
 	weak_ptr<CGameInstance> m_gameInstance;
@@ -53,7 +53,7 @@ protected:
 
 
 
-	list<string> m_vecDialogue;
+	list<string> m_dialogueList;
 private:
 	// CBase을(를) 통해 상속됨
 	//void Free() override;

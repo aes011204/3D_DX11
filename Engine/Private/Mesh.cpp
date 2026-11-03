@@ -2,8 +2,8 @@
 #include "Model.h"
 #include "Shader.h"
 
-CMesh::CMesh(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    :CVIBuffer(pDevice, pContext)
+CMesh::CMesh(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    :CVIBuffer(device, context)
 {
 }
 
@@ -12,9 +12,9 @@ CMesh::CMesh(const CMesh& Prototype)
 {
 }
 
-HRESULT CMesh::Initialize_Prototype(EModelType eType,
+HRESULT CMesh::Initialize_Prototype(EModelType type,
 	 ifstream& InFile,
-	shared_ptr<CModel> pModel, _fmatrix PreTransformMatrix)
+	shared_ptr<CModel> model, _fmatrix preTransformMatrix)
 {
 	Cvt_MeshInfo meshInfo;
 	InFile.read(reinterpret_cast<_char*>(&meshInfo), sizeof(Cvt_MeshInfo));
@@ -52,8 +52,8 @@ HRESULT CMesh::Initialize_Prototype(EModelType eType,
 
 
 	//vertex Buffer
-	HRESULT hr = EModelType::NONANIM == eType ? Ready_VertexBuffer_For_NonAnim(InFile, PreTransformMatrix)
-		: Ready_VertexBuffer_For_Anim(InFile, pModel);
+	HRESULT hr = EModelType::NONANIM == type ? Ready_VertexBuffer_For_NonAnim(InFile, preTransformMatrix)
+		: Ready_VertexBuffer_For_Anim(InFile, model);
 
 	if (FAILED(hr))
 		return E_FAIL;
@@ -61,17 +61,17 @@ HRESULT CMesh::Initialize_Prototype(EModelType eType,
 
 	//Index Buffer
 
-	D3D11_BUFFER_DESC	IndexBufferDesc{};
-	IndexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
-	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.StructureByteStride = m_indexStride;
-	IndexBufferDesc.CPUAccessFlags = 0;
-	IndexBufferDesc.MiscFlags = 0;
+	D3D11_BUFFER_DESC	indexBufferDesc{};
+	indexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.StructureByteStride = m_indexStride;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
 
 
-	_uint* pIndices = new _uint[m_numIndices];
-	InFile.read(reinterpret_cast<_char*>(pIndices), sizeof(_uint) * m_numIndices);
+	_uint* indices = new _uint[m_numIndices];
+	InFile.read(reinterpret_cast<_char*>(indices), sizeof(_uint) * m_numIndices);
 
 	/*_uint	iNumIndices = { 0 };
 
@@ -87,26 +87,26 @@ HRESULT CMesh::Initialize_Prototype(EModelType eType,
 	}*/
 
 	
-	D3D11_SUBRESOURCE_DATA			IndexInitialData{};
-	IndexInitialData.pSysMem = pIndices;
+	D3D11_SUBRESOURCE_DATA			indexInitialData{};
+	indexInitialData.pSysMem = indices;
 
-	if (FAILED(m_device->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_IB)))
+	if (FAILED(m_device->CreateBuffer(&indexBufferDesc, &indexInitialData, &m_IB)))
 		return E_FAIL;
 
 
 
-	Safe_Delete_Array(pIndices);
+	Safe_Delete_Array(indices);
 
 
 	return S_OK;
 }
 
-HRESULT CMesh::Initialize(void* pArg)
+HRESULT CMesh::Initialize(void* arg)
 {
     return S_OK;
 }
 
-HRESULT CMesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* pConstantName,
+HRESULT CMesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* constantName,
 	const vector<shared_ptr<CBone>>& bones)
 {
 	//ZeroMemory(m_BoneMatrices, sizeof(_float4x4) * 512);
@@ -123,23 +123,23 @@ HRESULT CMesh::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* pConst
 		//	XMLoadFloat4x4(&m_OffsetMatrices[i]));
 	}
 	
-		return shader->Bind_Matrices(pConstantName, m_boneMatrices, m_numBones);
+		return shader->Bind_Matrices(constantName, m_boneMatrices, m_numBones);
 }
 
 
-HRESULT CMesh::Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTransformMatrix)
+HRESULT CMesh::Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix preTransformMatrix)
 {
 	// Vertex Buffer
 
 	m_vertexStride = sizeof(VTXMESH);
-	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_vertexStride;
+	D3D11_BUFFER_DESC vertexBufferDesc{};
+	vertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
-	VertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
 
 
 	// read
@@ -147,56 +147,56 @@ HRESULT CMesh::Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTran
 	InFile.read(reinterpret_cast<_char*>(tmpVertices), sizeof(Cvt_VTXMESH) * m_numVertices);
 
 
-	VTXMESH* pVertices = new VTXMESH[m_numVertices];
+	VTXMESH* vertices = new VTXMESH[m_numVertices];
 
 	for (size_t i = 0; i < m_numVertices; i++)
 	{
-		memcpy(&pVertices[i].position, &tmpVertices[i].pos, sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].position,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].position), PreTransformMatrix));
+		memcpy(&vertices[i].position, &tmpVertices[i].pos, sizeof(_float3));
+		XMStoreFloat3(&vertices[i].position,
+			XMVector3TransformCoord(XMLoadFloat3(&vertices[i].position), preTransformMatrix));
 
-		memcpy(&pVertices[i].normal, &tmpVertices[i].normal, sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].normal,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].normal), PreTransformMatrix));
+		memcpy(&vertices[i].normal, &tmpVertices[i].normal, sizeof(_float3));
+		XMStoreFloat3(&vertices[i].normal,
+			XMVector3TransformCoord(XMLoadFloat3(&vertices[i].normal), preTransformMatrix));
 
-		memcpy(&pVertices[i].tangent, &tmpVertices[i].tangent, sizeof(_float3));
-		XMStoreFloat3(&pVertices[i].tangent,
-			XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].tangent), PreTransformMatrix));
+		memcpy(&vertices[i].tangent, &tmpVertices[i].tangent, sizeof(_float3));
+		XMStoreFloat3(&vertices[i].tangent,
+			XMVector3TransformCoord(XMLoadFloat3(&vertices[i].tangent), preTransformMatrix));
 
-		pVertices[i].texcoord.x = tmpVertices[i].uv[0][0];
-		pVertices[i].texcoord.y = tmpVertices[i].uv[0][1];
+		vertices[i].texcoord.x = tmpVertices[i].uv[0][0];
+		vertices[i].texcoord.y = tmpVertices[i].uv[0][1];
 
 		
 		// 덱스쿠드는 여러개일수도 있으니 이차배열
 		// 하나의 세트인데 바디 에 디퓨즈 , 노말의 모양이 다르다면 , 텍스쿠드를더 선언해야함
 		// 큐브 라던지 그건 xyz 다있음 
 	}
-	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
-	VertexInitialData.pSysMem = pVertices;
+	D3D11_SUBRESOURCE_DATA			vertexInitialData{};
+	vertexInitialData.pSysMem = vertices;
 
-	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
+	if (FAILED(m_device->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_VB)))
 		return E_FAIL;
 
-	Safe_Delete_Array(pVertices);
+	Safe_Delete_Array(vertices);
 	Safe_Delete_Array(tmpVertices);
 
 	return S_OK;
 }
 
-HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> pModel)
+HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> model)
 {
 	m_vertexStride = sizeof(VTXANIMMESH);
 	
 	// Vertex Buffer
 	
-	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_vertexStride;
+	D3D11_BUFFER_DESC vertexBufferDesc{};
+	vertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.StructureByteStride = m_vertexStride;
 	
-	VertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
-	VertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.CPUAccessFlags = 0; // 동적 버퍼할떄 의미 있음
+	vertexBufferDesc.MiscFlags = 0; // 동적 버퍼할떄 의미 있음
 	
 
 
@@ -206,27 +206,27 @@ HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> 
 	InFile.read(reinterpret_cast<_char*>(tmpVertices), sizeof(Cvt_VTXMESH) * m_numVertices);
 
 
-	VTXANIMMESH* pVertices = new VTXANIMMESH[m_numVertices];
+	VTXANIMMESH* vertices = new VTXANIMMESH[m_numVertices];
 
 	for (size_t i = 0; i < m_numVertices; i++)
 	{
-		memcpy(&pVertices[i].position, &tmpVertices[i].pos, sizeof(_float3));
+		memcpy(&vertices[i].position, &tmpVertices[i].pos, sizeof(_float3));
 		//XMStoreFloat3(&pVertices[i].vPosition,
 		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vPosition), PreTransformMatrix));
 
-		memcpy(&pVertices[i].normal, &tmpVertices[i].normal, sizeof(_float3));
+		memcpy(&vertices[i].normal, &tmpVertices[i].normal, sizeof(_float3));
 		//XMStoreFloat3(&pVertices[i].vNormal,
 		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vNormal), PreTransformMatrix));
 
-		memcpy(&pVertices[i].tangent, &tmpVertices[i].tangent, sizeof(_float3));
+		memcpy(&vertices[i].tangent, &tmpVertices[i].tangent, sizeof(_float3));
 		//XMStoreFloat3(&pVertices[i].vTangent,
 		//	XMVector3TransformCoord(XMLoadFloat3(&pVertices[i].vTangent), PreTransformMatrix));
 
-		pVertices[i].texcoord.x = tmpVertices[i].uv[0][0];
-		pVertices[i].texcoord.y = tmpVertices[i].uv[0][1];
+		vertices[i].texcoord.x = tmpVertices[i].uv[0][0];
+		vertices[i].texcoord.y = tmpVertices[i].uv[0][1];
 
-		memcpy(&pVertices[i].blendIndex, tmpVertices[i].indices, sizeof(_uint) * 4);
-		memcpy(&pVertices[i].blendWeight, tmpVertices[i].weights, sizeof(_float) * 4);
+		memcpy(&vertices[i].blendIndex, tmpVertices[i].indices, sizeof(_uint) * 4);
+		memcpy(&vertices[i].blendWeight, tmpVertices[i].weights, sizeof(_float) * 4);
 
 
 	}
@@ -234,25 +234,25 @@ HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> 
 	if (0 == m_numBones)
 	{
 
-		m_boneIndices.push_back(pModel->Get_BoneIndex(m_name));
+		m_boneIndices.push_back(model->Get_BoneIndex(m_name));
 
 		m_numBones = 1;
 
-		_float4x4		OffsetMatrix = {};
-		XMStoreFloat4x4(&OffsetMatrix, XMMatrixIdentity());
+		_float4x4		offsetMatrix = {};
+		XMStoreFloat4x4(&offsetMatrix, XMMatrixIdentity());
 
-		m_offsetMatrices.push_back(OffsetMatrix);
+		m_offsetMatrices.push_back(offsetMatrix);
 		for (size_t i = 0; i < m_numVertices; ++i) {
-			pVertices[i].blendIndex = { 0, 0, 0, 0 }; // 셰이더가 딴데 안 가게 고정
-			pVertices[i].blendWeight = _float4(0.f, 0.f, 0.f, 0.f); // x,y,z가 0이면 fWeightW가 1이 됨
+			vertices[i].blendIndex = { 0, 0, 0, 0 }; // 셰이더가 딴데 안 가게 고정
+			vertices[i].blendWeight = _float4(0.f, 0.f, 0.f, 0.f); // x,y,z가 0이면 fWeightW가 1이 됨
 		}
 		}
 
 
-	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
-	VertexInitialData.pSysMem = pVertices;
+	D3D11_SUBRESOURCE_DATA			vertexInitialData{};
+	vertexInitialData.pSysMem = vertices;
 
-	if (FAILED(m_device->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_VB)))
+	if (FAILED(m_device->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_VB)))
 		return E_FAIL;
 
 
@@ -271,34 +271,34 @@ HRESULT CMesh::Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel> 
 	//	m_OffsetMatrices.push_back(OffsetMatrix);
 	//}
 	
-	Safe_Delete_Array(pVertices);
+	Safe_Delete_Array(vertices);
 	Safe_Delete_Array(tmpVertices);
 	return S_OK;
 
 }
 
-shared_ptr<CMesh> CMesh::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, EModelType eType, ifstream& InFile , shared_ptr<CModel> pModel, _fmatrix PreTransformMatrix)
+shared_ptr<CMesh> CMesh::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, EModelType type, ifstream& InFile , shared_ptr<CModel> model, _fmatrix preTransformMatrix)
 {
-    shared_ptr<CMesh> pInstance(new CMesh(pDevice, pContext), [](CMesh* p) {p->Free(); delete p;});
+    shared_ptr<CMesh> instance(new CMesh(device, context), [](CMesh* p) {p->Free(); delete p;});
 
-    if (FAILED(pInstance->Initialize_Prototype(eType, InFile, pModel, PreTransformMatrix)))
+    if (FAILED(instance->Initialize_Prototype(type, InFile, model, preTransformMatrix)))
     {
         MSG_BOX("Failed to Created : CMesh");
     }
-    return pInstance;
+    return instance;
 
 }
 
-shared_ptr<CComponent> CMesh::Clone(void* pArg)
+shared_ptr<CComponent> CMesh::Clone(void* arg)
 {
 
-    shared_ptr<CComponent> pInstance(new CMesh(*this), [](CMesh* p) {p->Free(); delete p;});
+    shared_ptr<CComponent> instance(new CMesh(*this), [](CMesh* p) {p->Free(); delete p;});
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(instance->Initialize(arg)))
     {
         MSG_BOX("Failed to Cloned : CMesh");
     }
-    return pInstance;
+    return instance;
 }
 
 

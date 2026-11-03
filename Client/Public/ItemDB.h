@@ -26,7 +26,7 @@ public:
 
 public:
     HRESULT Initialize(); // 생성 할떄 호출
-    const ItemDef& GetItemByID(_uint itemId); 
+    const ItemDef& GetItemByID(_uint itemID); 
 
     _wstring Utf8ToWstring(const string& str);
 private:
@@ -42,7 +42,7 @@ private:
     void Compute_Occ(Shape& shape, _uint w, _uint h);
 private:
     vector<ItemDef>               m_vecItemDefs;
-    unordered_map<_uint, _uint> m_mapItemId;
+    unordered_map<_uint, _uint> m_mapItemID;
 
     weak_ptr<CGameInstance >m_gameInstance = {};
 public:

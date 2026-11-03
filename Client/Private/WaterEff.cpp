@@ -6,8 +6,8 @@
 #include "Texture.h"
 
 
-CWaterEff::CWaterEff(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CWaterEff::CWaterEff(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -21,15 +21,15 @@ HRESULT CWaterEff::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CWaterEff::Initialize(void* pArg)
+HRESULT CWaterEff::Initialize(void* arg)
 {
 
-	EffDesc* pDesc = static_cast<EffDesc*>(pArg);
+	EffDesc* desc = static_cast<EffDesc*>(arg);
 
-	eType = pDesc->type;
-	m_player = pDesc->Target;
+	m_type = desc->type;
+	m_player = desc->target;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -40,10 +40,10 @@ HRESULT CWaterEff::Initialize(void* pArg)
 	//m_pSocketMatrix_AttackPoint = m_pModelCom->Get_BoneMatrixPtr(/*"l_botclaw_jnt"*/);
 	//m_pTransformCom->Set_Position(XMVectorSet(50.f, 2.f, 1.f, 1.f));
 
-	_vector vPos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
+	_vector pos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
 	//m_pTransformCom->Set_Position(vPos);
 	_float3 pos3;
-	XMStoreFloat3(&pos3, vPos);
+	XMStoreFloat3(&pos3, pos);
 	pos3.y = 0.2f;
 
 	m_VIBufferCom->Set_Pivot(pos3);
@@ -51,16 +51,16 @@ HRESULT CWaterEff::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CWaterEff::Priority_Update(_float fTimeDelta)
+void CWaterEff::Priority_Update(_float timeDelta)
 {
 }
 
-void CWaterEff::Update(_float fTimeDelta)
+void CWaterEff::Update(_float timeDelta)
 {
 	if (!m_player.lock())
 	{
 		m_VIBufferCom->Stop();
-		m_VIBufferCom->Spawn(fTimeDelta);
+		m_VIBufferCom->Spawn(timeDelta);
 		if (m_VIBufferCom->Is_Finished() == true)
 		{
 			Mark_Destroy();
@@ -68,23 +68,23 @@ void CWaterEff::Update(_float fTimeDelta)
 		return;
 	}
 
-	_vector vPos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
+	_vector pos = m_player.lock()->Get_TransformCom()->Get_State(ETransformState::POSITION);
 	//m_pTransformCom->Set_Position(vPos);
 	_float3 pos3;
-	XMStoreFloat3(&pos3, vPos);
+	XMStoreFloat3(&pos3, pos);
 	pos3.y = 0.2f;
 
 
-	if (eType == EEffType::PLAYER)
+	if (m_type == EEffType::PLAYER)
 	{
-		_vector vPrevPos = XMLoadFloat3(&PrevPos);
-		_vector vCurrentPos = XMLoadFloat3(&pos3);
+		_vector vecPrevPos = XMLoadFloat3(&m_prevPos);
+		_vector currentPos = XMLoadFloat3(&pos3);
 
 	//m_pTransformCom->Set_Position(XMLoadFloat3(&pos3));
 	m_VIBufferCom->Set_Pivot(pos3);
 
-		_float fDistance = XMVectorGetX(XMVector3Length(vCurrentPos - vPrevPos));
-		if (fDistance > 0.01f)
+		_float distance = XMVectorGetX(XMVector3Length(currentPos - vecPrevPos));
+		if (distance > 0.01f)
 		{
 			m_VIBufferCom->Start();
 		}
@@ -92,18 +92,18 @@ void CWaterEff::Update(_float fTimeDelta)
 		{
 			m_VIBufferCom->Stop();
 		}
-		PrevPos = pos3;
-		m_VIBufferCom->Spawn(fTimeDelta);
+		m_prevPos = pos3;
+		m_VIBufferCom->Spawn(timeDelta);
 	}
 	else
 	{
 
-		m_VIBufferCom->Spawn(fTimeDelta);
+		m_VIBufferCom->Spawn(timeDelta);
 	}
 
 }
 
-void CWaterEff::Late_Update(_float fTimeDelta)
+void CWaterEff::Late_Update(_float timeDelta)
 {
 	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::BLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
@@ -198,27 +198,27 @@ HRESULT CWaterEff::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CWaterEff> CWaterEff::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CWaterEff> CWaterEff::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CWaterEff> pInstance(new CWaterEff(pDevice, pContext), [](CWaterEff* p) {p->Free(); delete p; });
+	shared_ptr<CWaterEff> instance(new CWaterEff(device, context), [](CWaterEff* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CWaterEff");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CWaterEff::Clone(void* pArg)
+shared_ptr<CGameObject> CWaterEff::Clone(void* arg)
 {
-	shared_ptr<CWaterEff> pInstance(new CWaterEff(*this), [](CWaterEff* p) {p->Free(); delete p; });
+	shared_ptr<CWaterEff> instance(new CWaterEff(*this), [](CWaterEff* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CWaterEff");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CWaterEff::Free()

@@ -13,8 +13,8 @@
 #include "DInput_Manager.h"
 
 
-CUI_Storage::CUI_Storage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext) :
-	CUIPanel(pDevice, pContext)
+CUI_Storage::CUI_Storage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context) :
+	CUIPanel(device, context)
 {
 }
 
@@ -55,12 +55,12 @@ HRESULT CUI_Storage::Initialize_Prototype()
 }
 
 
-HRESULT CUI_Storage::OnInit(void* pArg)
+HRESULT CUI_Storage::OnInit(void* arg)
 {
 
-	StorageDesc* pDesc = static_cast<StorageDesc*>(pArg);
-	m_inventype = pDesc->Inventype;
-	m_shopTab = pDesc->shopTab;
+	StorageDesc* desc = static_cast<StorageDesc*>(arg);
+	m_inventype = desc->invenType;
+	m_shopTab = desc->shopTab;
 
 
 	HRESULT hr = {};
@@ -68,23 +68,23 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 
 
 	///// 창고 슬롯 패널 /////
-	CUIPanel::UIPanelDesc Panel_Inven = {};
-	Panel_Inven.textureProtoName = L"Prototype_Component_Texture_StorageInventoryBackground";
-	Panel_Inven.textureComLevel = ETOI(ELevel::STATIC);
-	Panel_Inven.isFullScreen = false;
-	Panel_Inven.isTransparent = false;
-	Panel_Inven.isUseLayout = true;
-	Panel_Inven.useNineSlice = false;
+	CUIPanel::UIPanelDesc panelInven = {};
+	panelInven.textureProtoName = L"Prototype_Component_Texture_StorageInventoryBackground";
+	panelInven.textureComLevel = ETOI(ELevel::STATIC);
+	panelInven.isFullScreen = false;
+	panelInven.isTransparent = false;
+	panelInven.isUseLayout = true;
+	panelInven.useNineSlice = false;
 
-	Panel_Inven.layoutDesc.spacing = { 4.f ,4.f };
-	Panel_Inven.layoutDesc.col = 7;
-	Panel_Inven.layoutDesc.row = 8;
+	panelInven.layoutDesc.spacing = { 4.f ,4.f };
+	panelInven.layoutDesc.col = 7;
+	panelInven.layoutDesc.row = 8;
 	//Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
 
 
-	shared_ptr<CUIPanel> StoragePanel = CUIPanel::Create(m_device, m_context);
-	StoragePanel->Initialize(&Panel_Inven);
-	m_invenPanel = StoragePanel;
+	shared_ptr<CUIPanel> storagePanel = CUIPanel::Create(m_device, m_context);
+	storagePanel->Initialize(&panelInven);
+	m_invenPanel = storagePanel;
 
 	Add_Child(m_invenPanel, L"Panel_storage", false);
 
@@ -116,7 +116,7 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 
 
 
-	hr = __super::OnInit(pDesc);
+	hr = __super::OnInit(desc);
 
 
 	return hr;
@@ -156,33 +156,33 @@ void CUI_Storage::OnPrepareRender()
     auto inventory = m_inven.lock();
     if (!inventory || !m_invenPanel || m_slot.empty())
         return;
-	auto& InvenItem = m_inven.lock()->Get_InventoryItem();
-	auto& InvenSlot = m_inven.lock()->Get_Invenslot();
+	auto& invenItem = m_inven.lock()->Get_InventoryItem();
+	auto& invenSlot = m_inven.lock()->Get_Invenslot();
 
-	for (_uint index = 0; index < InvenSlot.size(); index++)
+	for (_uint index = 0; index < invenSlot.size(); index++)
 	{
-		_float4 Muscolor = {};
+		_float4 slotColor = {};
 		_float4 colorReset = { 0.f,0.f,0.f,0.f };
 
 		m_slot[index]->Set_ColorFlat(colorReset);
-		switch (InvenSlot[index].slotColor)
+		switch (invenSlot[index].slotColor)
 		{
 		case EPlaceColor::GREEN:
-			Muscolor = { 0.f,1.f,0.f,.8f };
+			slotColor = { 0.f,1.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 
 			break;
 		case EPlaceColor::ORANGE:
-			Muscolor = { 1.0f,0.6f,0.0f,.8f };
+			slotColor = { 1.0f,0.6f,0.0f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 
 			break;
 		case EPlaceColor::RED:
-			Muscolor = { 1.f,0.f,0.f,.8f };
+			slotColor = { 1.f,0.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 			break;
 		case EPlaceColor::END:
 
@@ -190,14 +190,14 @@ void CUI_Storage::OnPrepareRender()
 			break;
 		}
 
-		if (InvenSlot[index].isBroken == true)
+		if (invenSlot[index].isBroken == true)
 		{
 			m_slot[index]->Set_TextureIndex(1);
 		}
 	}
 
 
-	for (auto& invnelItem : InvenItem)
+	for (auto& invnelItem : invenItem)
 	{
 		_float4 color = {};
 		switch (invnelItem.itemType)
@@ -247,30 +247,30 @@ void CUI_Storage::OnClear()
 	__super::OnClear();
 }
 
-shared_ptr<CUI_Storage> CUI_Storage::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Storage> CUI_Storage::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Storage> pInstance(new CUI_Storage(pDevice, pContext), [](CUI_Storage* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_Storage> instance(new CUI_Storage(device, context), [](CUI_Storage* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIStorage");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Storage::Free()
 {
 	__super::Free();
 
-	m_itemUi.clear();
+	m_itemUI.clear();
 	m_slot.clear();
 
 }
 
 
 
-_bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& inven_slot)
+_bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& invenSlot)
 {
 	//보트 슬롯모양이 바뀌면 람다등으로 Init_InventorySlot 호출 
 	//find boat back ground ->  clear boat back ground's chilren -> for{for{}} add new slot children
@@ -298,44 +298,44 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 	{
 		for (_uint j = 0; j < w; j++)
 		{
-			Engine::CUISlot::SlotDesc slot_Inven = {};
+			Engine::CUISlot::SlotDesc slotInven = {};
 			//slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-			slot_Inven.textureComLevel = ETOI(ELevel::STATIC);
-			slot_Inven.scale = Vector2{ 1.6f,1.6f };
-			slot_Inven.index = i * w + j;
-			if (inven_slot[i * w + j].isLock == true)
+			slotInven.textureComLevel = ETOI(ELevel::STATIC);
+			slotInven.scale = Vector2{ 1.6f,1.6f };
+			slotInven.index = i * w + j;
+			if (invenSlot[i * w + j].isLock == true)
 			{
-				slot_Inven.isTransparent = true;
+				slotInven.isTransparent = true;
 			}
-			slot_Inven.slotType = ETOI(inven_slot[i * w + j].slotType);
+			slotInven.slotType = ETOI(invenSlot[i * w + j].slotType);
 
-			switch (slot_Inven.slotType)
+			switch (slotInven.slotType)
 			{
 			case ETOI(ESlotType::ENGINE):
-				slot_Inven.textureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
+				slotInven.textureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
 				break;
 			case ETOI(ESlotType::LIGHT):
-				slot_Inven.textureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
+				slotInven.textureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
 				break;
 			case ETOI(ESlotType::NET):
-				slot_Inven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // 앤 없는듯
+				slotInven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // 앤 없는듯
 				break;
 			case ETOI(ESlotType::ROT):
-				slot_Inven.textureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
+				slotInven.textureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
 				break;
 			case ETOI(ESlotType::ANY):
-				slot_Inven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
+				slotInven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
 				break;
 			}
 
 
 			shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_device, m_context);
-			m_pInstanceINVEN->Initialize(&slot_Inven);
+			m_pInstanceINVEN->Initialize(&slotInven);
 
-			wstring NameTag = L"SLOT_STORAGE_" + S2W(to_string(i * w + j));
+			wstring nameTag = L"SLOT_STORAGE_" + S2W(to_string(i * w + j));
 
 
-			m_invenPanel->Add_Layout_Child(m_pInstanceINVEN, NameTag, false);
+			m_invenPanel->Add_Layout_Child(m_pInstanceINVEN, nameTag, false);
 			m_slot[i * w + j] = m_pInstanceINVEN;
 
 			m_pInstanceINVEN->Set_ButtonState(false);
@@ -349,23 +349,23 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 	{
 		for (_uint i = 0; i < 30; i++)
 		{
-			CUIImage::UIImageDesc ImgItemPool = {};
-			ImgItemPool.textureComLevel = ETOI(ELevel::STATIC);
-			ImgItemPool.textureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
-			ImgItemPool.ZOrder = 5;
-			ImgItemPool.isTransparent = true;
+			CUIImage::UIImageDesc imgItemPool = {};
+			imgItemPool.textureComLevel = ETOI(ELevel::STATIC);
+			imgItemPool.textureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
+			imgItemPool.ZOrder = 5;
+			imgItemPool.isTransparent = true;
 			//ImgDesc. = true;
 
-			shared_ptr<CUIImage> pChild = CUIImage::Create(m_device, m_context);
-			pChild->Initialize(&ImgItemPool);
+			shared_ptr<CUIImage> child = CUIImage::Create(m_device, m_context);
+			child->Initialize(&imgItemPool);
 			//pChild->UI_InActive();
 
-			wstring NameTag = L"ITEM_STORAGE_" + S2W(to_string(i));
+			wstring nameTag = L"ITEM_STORAGE_" + S2W(to_string(i));
 
 
-			m_invenPanel->Add_Child(pChild, NameTag, false);
+			m_invenPanel->Add_Child(child, nameTag, false);
 
-			m_itemUi.push_back(pChild);
+			m_itemUI.push_back(child);
 		}
 	}
 
@@ -377,15 +377,15 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 {
 	Evt_MouseToIndexData e = {};
-	e.IsOnSlot = false; // 기본 false
+	e.isOnSlot = false; // 기본 false
 
 	if (m_inven.lock()->Get_Inventype() == EInvenType::PLAYER)
 	{
-		e.IsPlayer = true;
+		e.isPlayer = true;
 	}
 	else
 	{
-		e.IsPlayer = false;
+		e.isPlayer = false;
 	}
 
 	LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
@@ -407,7 +407,7 @@ _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 			e.x = index % layout.col;;
 			e.y = index / layout.col;;
-			e.IsOnSlot = true;
+			e.isOnSlot = true;
 
 			break;
 		}
@@ -484,7 +484,7 @@ void CUI_Storage::Render_Item()
 	auto& items = inven->Get_InventoryItem();
 	_float2 slotSize = m_slot[0]->GetUITransform()->Get_FinalSize();
 
-	for (auto& UI : m_itemUi)
+	for (auto& UI : m_itemUI)
 	{
 		UI->Set_Transparent(true);
 	}
@@ -494,20 +494,20 @@ void CUI_Storage::Render_Item()
 
 		LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
 
-		for (auto& UI : m_itemUi)
+		for (auto& UI : m_itemUI)
 		{
 			if (UI->Get_Transparent() == true)
 			{
-				ItemDef def = CItemDB::GetInstance()->GetItemByID(items[i].itemDefId);
+				ItemDef def = CItemDB::GetInstance()->GetItemByID(items[i].itemDefID);
 				UI->Change_Texture(items[i].cachingTexture);
 				if (items[i].cachingTexture == nullptr)
 				{
 					MSG_BOX("Texture NULL");
 					continue;
 				}
-				_float2 vAnchoredPos = Calculate_RenderPos(items[i]);
+				_float2 anchoredPos = Calculate_RenderPos(items[i]);
 
-				UI->GetUITransform()->SetAnchoredPos(vAnchoredPos);
+				UI->GetUITransform()->SetAnchoredPos(anchoredPos);
 				UI->GetUITransform()->SetSizeDelta(
 					{ slotSize.x * def.itemShape.width + layout.spacing.x * (def.itemShape.width - 1),
 					slotSize.y * def.itemShape.height + layout.spacing.y * (def.itemShape.height - 1)

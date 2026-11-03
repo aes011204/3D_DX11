@@ -11,7 +11,7 @@ class ENGINE_DLL CEntity abstract:
     public CBase
 {
 protected:
-    CEntity(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CEntity(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CEntity(const CEntity& prototype);
 public:
     virtual ~CEntity() = default;
@@ -24,16 +24,16 @@ public:
     //virtual void Late_Update(_float fTimeDelta) {};
     virtual HRESULT Render() { return S_OK; }
 
-	shared_ptr<CComponent> Get_Component(const _wstring& strComponentTag);
+	shared_ptr<CComponent> Get_Component(const _wstring& componentTag);
 	template <typename T>
-	shared_ptr<T> Get_Component(const _wstring& strComponentTag)
+	shared_ptr<T> Get_Component(const _wstring& componentTag)
 	{
-		auto it = m_components.find(strComponentTag);
+		auto it = m_components.find(componentTag);
 		if (it == m_components.end())
 			return nullptr;
-		shared_ptr<T> pCom = dynamic_pointer_cast<T>(it->second);
+		shared_ptr<T> com = dynamic_pointer_cast<T>(it->second);
 
-		return pCom;
+		return com;
 	}
 	virtual _vector Get_WorldPos() const
 	{
@@ -41,13 +41,13 @@ public:
 	}
 
 
-	HRESULT Remove_Component(const _wstring& strComponentTag);
+	HRESULT Remove_Component(const _wstring& componentTag);
 
 	virtual void Load_FromJson(nlohmann::json& j);
 	//virtual void Save_FromJson(nlohmann::json& j) {} ;
 
 	_bool IsSavableClass() { return m_isSavableClass; }
-	void Set_SaveType(ESaveType SaveType) { m_saveType = SaveType; }
+	void Set_SaveType(ESaveType saveType) { m_saveType = saveType; }
 	ESaveType Get_SaveType() { return m_saveType; }
 
 	void Mark_Destroy() { m_isPendingDestroy = true; }
@@ -69,38 +69,38 @@ protected:
 public:
     // 원형객체를 복제하여 맵에도 추가하고 + 자식객체의 멤버변수에도 셋팅해준다
 	template <typename T>
-	HRESULT Add_Component(_uint iProtoLevelIndex, const _wstring& strProtoTag, const _wstring& strComponentTag,
-		shared_ptr<T>* pOut, void* pArg)
+	HRESULT Add_Component(_uint protoLevelIndex, const _wstring& protoTag, const _wstring& componentTag,
+		shared_ptr<T>* out, void* arg)
 	{
-		shared_ptr<CComponent> tmpComp = Get_Component(strComponentTag);
+		shared_ptr<CComponent> tmpComp = Get_Component(componentTag);
 		if (tmpComp != nullptr)
 		{
 			/*MSG_BOX("Failed Add Component : Same Key exist");
 			return E_FAIL;*/
-			if (FAILED(Remove_Component(strComponentTag)))
+			if (FAILED(Remove_Component(componentTag)))
 			{
 				return E_FAIL;
 			}
 		}
-		shared_ptr<CComponent> CloneComp = dynamic_pointer_cast<CComponent>(
-			m_gameInstance.lock()->Clone_Prototype(EPrototype::COMPONENT, iProtoLevelIndex, strProtoTag, pArg));
-		if (CloneComp == nullptr)
+		shared_ptr<CComponent> cloneComp = dynamic_pointer_cast<CComponent>(
+			m_gameInstance.lock()->Clone_Prototype(EPrototype::COMPONENT, protoLevelIndex, protoTag, arg));
+		if (cloneComp == nullptr)
 			return E_FAIL;
 		// 부모설정
-		CloneComp->Set_Owner(static_pointer_cast<Engine::CEntity>(shared_from_this()));
+		cloneComp->Set_Owner(static_pointer_cast<Engine::CEntity>(shared_from_this()));
 
-		shared_ptr<T> pCastComp = dynamic_pointer_cast<T>(CloneComp);
-		if (pCastComp == nullptr)
+		shared_ptr<T> castComp = dynamic_pointer_cast<T>(cloneComp);
+		if (castComp == nullptr)
 		{
 			MSG_BOX("Failed Add Component : Wrong Type(it's should Component's Child)");
 			return E_FAIL;
 		}
-		if (pOut != nullptr)
+		if (out != nullptr)
 		{
-			*pOut = pCastComp;
+			*out = castComp;
 
 		}
-		auto result = m_components.emplace(strComponentTag, pCastComp);
+		auto result = m_components.emplace(componentTag, castComp);
 
 		// result.second가 false면 삽입 실패 (이미 같은 Tag가 존재함)
 		if (result.second == false)

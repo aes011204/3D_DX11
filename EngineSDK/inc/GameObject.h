@@ -18,16 +18,16 @@ public:
 
     };
 protected:
-    CGameObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CGameObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CGameObject(const CGameObject& prototype);
 public:
     virtual ~CGameObject() = default;
 public:
     virtual HRESULT Initialize_Prototype();
-    virtual HRESULT Initialize(void* pArg);
-    virtual void Priority_Update(_float fTimeDelta);
-    virtual void Update(_float fTimeDelta);
-    virtual void Late_Update(_float fTimeDelta);
+    virtual HRESULT Initialize(void* arg);
+    virtual void Priority_Update(_float timeDelta);
+    virtual void Update(_float timeDelta);
+    virtual void Late_Update(_float timeDelta);
     virtual HRESULT Render();
 
 public:
@@ -43,7 +43,7 @@ protected:
 
 public:
     //void* pArg : 사본객체의 추가적인 초기화가 필요 할수 있음 런타임 할당 되는 주소 같은거
-    virtual shared_ptr<CGameObject> Clone(void* pArg) = 0 ;
+    virtual shared_ptr<CGameObject> Clone(void* arg) = 0 ;
     void Free() override;
 };
 

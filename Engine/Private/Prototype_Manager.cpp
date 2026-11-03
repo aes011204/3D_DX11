@@ -20,18 +20,18 @@ CPrototype_Manager::~CPrototype_Manager()
 	Free();
 }
 
-HRESULT CPrototype_Manager::Initialize(_uint iNumLevels)
+HRESULT CPrototype_Manager::Initialize(_uint numLevels)
 {
-	m_numLevel = iNumLevels;
+	m_numLevel = numLevels;
 
-	m_prototypes = new PROTOTYPES[iNumLevels];
+	m_prototypes = new PROTOTYPES[numLevels];
 
 	return S_OK;
 }
 
-HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag, shared_ptr<CBase> pPrototype)
+HRESULT CPrototype_Manager::Add_Prototype(_uint levelIndex, const _wstring& prototypeTag, shared_ptr<CBase> prototype)
 {
-	if (iLevelIndex >= m_numLevel) // 배열 인댁스라서 
+	if (levelIndex >= m_numLevel) // 배열 인댁스라서 
 		return E_FAIL;
 
 	//// 같은 키를 가진 객체가 있는지 확인
@@ -42,10 +42,10 @@ HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& str
 	//}
 
 	//m_pPrototypes[iLevelIndex].emplace(strPrototypeTag, pPrototype);
-	auto result = m_prototypes[iLevelIndex].insert(make_pair(strPrototypeTag, pPrototype));
+	auto result = m_prototypes[levelIndex].insert(make_pair(prototypeTag, prototype));
 
-	pPrototype->Set_ProtoLevel(iLevelIndex);
-	pPrototype->Set_ProtoTag(strPrototypeTag);
+	prototype->Set_ProtoLevel(levelIndex);
+	prototype->Set_ProtoTag(prototypeTag);
 
 
 	if (result.second == false) {
@@ -57,50 +57,50 @@ HRESULT CPrototype_Manager::Add_Prototype(_uint iLevelIndex, const _wstring& str
 	return S_OK;
 }
 
-shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(EPrototype ePrototy, _uint iLevelIndex, const _wstring& strPrototypeTag, void* pArg)
+shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(EPrototype prototy, _uint levelIndex, const _wstring& prototypeTag, void* arg)
 {
 	/* 조건에 맞는 원형객체를 검색한다. */
-	shared_ptr<CBase> pPrototype = Find_Prototype(iLevelIndex, strPrototypeTag);
-	if (nullptr == pPrototype)
+	shared_ptr<CBase> prototype = Find_Prototype(levelIndex, prototypeTag);
+	if (nullptr == prototype)
 		return nullptr;
 
 
 
-	if (ePrototy == EPrototype::GAMEOBJECT)
+	if (prototy == EPrototype::GAMEOBJECT)
 	{
-		shared_ptr<CGameObject> pInstance = { nullptr };
-		shared_ptr<CGameObject> origin = dynamic_pointer_cast<CGameObject>(pPrototype);
-		pInstance = origin->Clone(pArg);
+		shared_ptr<CGameObject> instance = { nullptr };
+		shared_ptr<CGameObject> origin = dynamic_pointer_cast<CGameObject>(prototype);
+		instance = origin->Clone(arg);
 
-		if (pInstance == nullptr)
+		if (instance == nullptr)
 		{
 			MSG_BOX("Failed to Cloned");
 			return nullptr;
 		}
 
-		pInstance->Set_ProtoTag(origin->Get_ProtoTag());
-		pInstance->Set_ProtoLevel(origin->Get_ProtoLevel());
+		instance->Set_ProtoTag(origin->Get_ProtoTag());
+		instance->Set_ProtoLevel(origin->Get_ProtoLevel());
 
-		return pInstance;
+		return instance;
 
 	}
 	else
 	{
-		shared_ptr<CComponent> pInstance = { nullptr };
-		shared_ptr<CComponent> origin = dynamic_pointer_cast<CComponent>(pPrototype);
-		pInstance = origin->Clone(pArg);
+		shared_ptr<CComponent> instance = { nullptr };
+		shared_ptr<CComponent> origin = dynamic_pointer_cast<CComponent>(prototype);
+		instance = origin->Clone(arg);
 
-		if (pInstance == nullptr)
+		if (instance == nullptr)
 		{
 			MSG_BOX("Failed to Cloned");
 			return nullptr;
 		}
 		string str = W2S(origin->Get_ProtoTag());
-		pInstance->Set_ProtoTag(origin->Get_ProtoTag());
-		pInstance->Set_ProtoLevel(origin->Get_ProtoLevel());
-		string str22 = W2S(pInstance->Get_ProtoTag());
+		instance->Set_ProtoTag(origin->Get_ProtoTag());
+		instance->Set_ProtoLevel(origin->Get_ProtoLevel());
+		string str22 = W2S(instance->Get_ProtoTag());
 
-		return pInstance;
+		return instance;
 
 	}
 
@@ -152,13 +152,13 @@ shared_ptr<CBase> CPrototype_Manager::Clone_Prototype(EPrototype ePrototy, _uint
 //    return pInstance;
 //}
 
-HRESULT CPrototype_Manager::Clear_Prototype(_uint iLevelIndex)
+HRESULT CPrototype_Manager::Clear_Prototype(_uint levelIndex)
 {
-	if (iLevelIndex >= m_numLevel)
+	if (levelIndex >= m_numLevel)
 		return E_FAIL;
 
 
-	m_prototypes[iLevelIndex].clear();
+	m_prototypes[levelIndex].clear();
 
 	return S_OK;
 
@@ -174,8 +174,8 @@ void CPrototype_Manager::OnGui()
 
 		if (ImGui::TreeNode(levelName.c_str()))
 		{
-			auto CopyProtoType = m_prototypes;
-			for (auto& pair : CopyProtoType[i])
+			auto copyProtoType = m_prototypes;
+			for (auto& pair : copyProtoType[i])
 			{
 				string tagStr = Engine::W2S(pair.first);
 
@@ -201,13 +201,13 @@ void CPrototype_Manager::OnGui()
 				// 드래그
 				if (ImGui::BeginDragDropSource()) {
 
-					DragDropProto protoClone_Desc = {};
+					DragDropProto protoCloneDesc = {};
 					//wcscpy_s(payload.szTag, pair.first.c_str());
-					wcscpy_s(protoClone_Desc.tag, pair.first.c_str());
-					protoClone_Desc.level = i;
-					ImGui::SetDragDropPayload("COMP_DRAG_DATA", &protoClone_Desc, sizeof(DragDropProto));
+					wcscpy_s(protoCloneDesc.tag, pair.first.c_str());
+					protoCloneDesc.level = i;
+					ImGui::SetDragDropPayload("COMP_DRAG_DATA", &protoCloneDesc, sizeof(DragDropProto));
 
-					ImGui::Text("Swap to %s", Engine::W2S(protoClone_Desc.tag).c_str());
+					ImGui::Text("Swap to %s", Engine::W2S(protoCloneDesc.tag).c_str());
 					ImGui::EndDragDropSource();
 				}
 			}
@@ -247,27 +247,27 @@ void CPrototype_Manager::OnGui()
 }
 
 
-shared_ptr<CBase> CPrototype_Manager::Find_Prototype(_uint iLevelIndex, const _wstring& strPrototypeTag)
+shared_ptr<CBase> CPrototype_Manager::Find_Prototype(_uint levelIndex, const _wstring& prototypeTag)
 {
-	if (iLevelIndex >= m_numLevel)
+	if (levelIndex >= m_numLevel)
 		return nullptr;
 
-	auto iter = m_prototypes[iLevelIndex].find(strPrototypeTag);
-	if (iter == m_prototypes[iLevelIndex].end())
+	auto iter = m_prototypes[levelIndex].find(prototypeTag);
+	if (iter == m_prototypes[levelIndex].end())
 		return nullptr;
 
 	return iter->second;
 }
 
-unique_ptr<CPrototype_Manager> CPrototype_Manager::Create(_uint iNumLevel)
+unique_ptr<CPrototype_Manager> CPrototype_Manager::Create(_uint numLevel)
 {
-	unique_ptr<CPrototype_Manager> pInstance(new CPrototype_Manager());
+	unique_ptr<CPrototype_Manager> instance(new CPrototype_Manager());
 
-	if (FAILED(pInstance->Initialize(iNumLevel)))
+	if (FAILED(instance->Initialize(numLevel)))
 	{
 		MSG_BOX("Failed to Created : CPrototype_Manager");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CPrototype_Manager::Free()
