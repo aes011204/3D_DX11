@@ -275,7 +275,7 @@ bool CPlayerBoat::MinusMoney(int amount)
 	}
 }
 
-void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SeaMask seaMask, _float invenMoney)
+void CPlayerBoat::Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SeaMask seaMask)
 {
 
 
@@ -287,7 +287,6 @@ int i = {};
 	e.lightIntensity = m_light = light;
 	e.seaMask = m_seaMask = seaMask;
 
-	e.invenMoney = m_invenMoney;
 
 	m_gameInstance.lock()->Get_EventBus()->Publish(e);
 

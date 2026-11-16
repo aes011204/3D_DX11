@@ -145,9 +145,6 @@
     <ClCompile Include="..\Private\UIImage.cpp">
       <Filter>01.Utility\05.UI</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\UIProgress.cpp">
-      <Filter>01.Utility\05.UI</Filter>
-    </ClCompile>
     <ClCompile Include="..\Private\UIText.cpp">
       <Filter>01.Utility\05.UI</Filter>
     </ClCompile>
@@ -379,9 +376,6 @@
       <Filter>01.Utility\05.UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\UIImage.h">
-      <Filter>01.Utility\05.UI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Public\UIProgress.h">
       <Filter>01.Utility\05.UI</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\Texture.h">

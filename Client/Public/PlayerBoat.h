@@ -78,7 +78,7 @@ public:
     void Set_FishingSpeed(_uint speed) { m_RodSpeed = speed; }
     void Set_Light(_uint light) { m_Light = light; }
     void Set_SeaMask(SEA_MASK mask) { m_SeaMask = mask; }*/
-    void Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SeaMask seaMask, _float invenMoney);
+    void Set_ShipStats(_uint boatSpeed, _uint fishingSpeed, _uint light, SeaMask seaMask);
 private:
     weak_ptr<class CSea_Manager> m_seaManager = {};
 
@@ -102,7 +102,6 @@ private:
    _float m_rodSpeed = {10.f};
    _uint m_light = {};
    SeaMask m_seaMask = {}; // d이거 왜 있음
-   float m_invenMoney = {}; // d이거 왜 있음
 
    shared_ptr<CLight> m_lightObj = { nullptr };
   // _bool On_Light = { false };

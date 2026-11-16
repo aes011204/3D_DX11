@@ -420,7 +420,6 @@ namespace Client
         _uint lightIntensity = {};
         _uint fishingSpeed = {};
         SeaMask seaMask = {};
-        _float invenMoney = {};
     };
 
 

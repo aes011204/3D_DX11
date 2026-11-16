@@ -520,7 +520,7 @@ void CInventory_Controller::Update(float timeDelta)
 
 		player->Set_Dirty(false);
 		Evt_ShipStat stat = player->CalculateEquip();
-		dynamic_pointer_cast<CPlayerBoat>(player->Get_GOwner())->Set_ShipStats(stat.engineSpeed, stat.fishingSpeed, stat.lightIntensity, stat.seaMask, stat.invenMoney);
+		dynamic_pointer_cast<CPlayerBoat>(player->Get_GOwner())->Set_ShipStats(stat.engineSpeed, stat.fishingSpeed, stat.lightIntensity, stat.seaMask);
 
 	}
 

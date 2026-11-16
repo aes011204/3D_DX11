@@ -297,9 +297,7 @@ ItemInst CInventory::AddItem(ItemInst itemInst, _int baseX, _int baseY)
 	}
 	}
 
-
-
-	// 초록
+	return itemInst; // switch 밖으로 나오는 경우(END 등): 그대로 반려
 }
 
 _bool CInventory::Auto_Add(ItemInst& itemInst)
@@ -643,24 +641,6 @@ Evt_ShipStat CInventory::CalculateEquip()
 				  {
 
 				  }*/
-			}
-			if (m_inventory[i].itemType == EItemType::FISH)
-			{
-				const ItemDef& def = DB->GetItemByID(m_inventory[i].itemDefID);
-				if (const FishDef* fish = get_if<FishDef>(&def.typeDef))
-				{
-
-					if (m_inventory[i].isMutation == false)
-					{
-						stat.invenMoney += fish->cost;
-
-					}
-					else
-					{
-						stat.invenMoney += m_inventory[i].mutationCaching.mutCost;
-					}
-				}
-	
 			}
 		}
 
