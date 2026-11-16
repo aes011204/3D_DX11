@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
-// ¸ğµ¨Àº ¸Ş½¬·Î ÀÌ·ç¾îÁ®ÀÖÀ½ 
-// ÄÄÆ÷³ÍÆ®·Î ÀÏ´Ü »ó¼Ó ¹ŞÀ½ 
+// ëª¨ë¸ì€ ë©”ì‰¬ë¡œ ì´ë£¨ì–´ì ¸ìˆìŒ 
+// ì»´í¬ë„ŒíŠ¸ë¡œ ì¼ë‹¨ ìƒì† ë°›ìŒ 
 
 NS_BEGIN(Engine)
 
@@ -11,61 +11,61 @@ class CShader;
     public CComponent
 {
 protected:
-	CAssimp_Model(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CAssimp_Model(const CAssimp_Model& Prototype);
+	CAssimp_Model(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CAssimp_Model(const CAssimp_Model& prototype);
 public:
 	virtual ~CAssimp_Model() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
-	virtual HRESULT Initialize(void* pArg);
-	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Initialize_Prototype(const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix);
+	virtual HRESULT Initialize(void* arg);
+	virtual HRESULT Render(_uint meshIndex);
 
-	HRESULT Ready_Meshes(MODEL eType);
+	HRESULT Ready_Meshes(EModelType type);
 
-	HRESULT Ready_Material(const _char* pModelFilePath);
-	HRESULT Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex,
-	                      aiTextureType eMaterialType, _uint iTextureIndex);
+	HRESULT Ready_Material(const _char* modelFilePath);
+	HRESULT Bind_Material(shared_ptr<CShader> shader, const _char* constantName, _uint meshIndex,
+	                      aiTextureType materialType, _uint textureIndex);
 
-	HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
-	HRESULT Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex);
+	HRESULT Ready_Bones(const aiNode* srcAINode, _int parentIndex);
+	HRESULT Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* constantNamem, _uint meshIndex);
 
 	HRESULT Ready_Animations();
-	HRESULT Play_Animation(_float fTimeDelta);
+	HRESULT Play_Animation(_float timeDelta);
 
-	void Set_Animation(_uint iIndex, _bool isLoop) {
-		m_iCurrentAnimIndex = iIndex;
+	void Set_Animation(_uint index, _bool isLoop) {
+		m_currentAnimIndex = index;
 		m_isAnimLoop = isLoop;
 	}
 
 	public:
-	size_t Get_NumMeshes() { return m_Meshes.size(); }
-	_int Get_BoneIndex(const _char* pBoneName);
+	size_t Get_NumMeshes() { return m_meshes.size(); }
+	_int Get_BoneIndex(const _char* boneName);
 
 private:
-	// ÀÌµÎ°³´Â ³»ºÎ¿¡¼­ ¾Ë¾Æ¼­ ¸Ş¸ğ¸® °ü¸® ÇØÁÜ shared_ptrÀÌ·±°Å ÇÊ¿ä x
-	// ÀÓÆ÷ÅÍ°¡ Áö¿öÁú‹š aiScene µµ ¾Ë¾Æ¼­ Áö¿öÁü ÀÓÆ÷ÅÍ´Â CAssimp_ModelÀÌ ¸Ş¸ğ¸®¿¡¼­ ÇØÁ¦µÉ ¶§ ÀÚµ¿À¸·Î ¼Ò¸êÀÚ È£Ãâ
-	const aiScene* m_pAIScene = { nullptr };
-	Assimp::Importer m_Importer = {};
+	// ì´ë‘ê°œëŠ” ë‚´ë¶€ì—ì„œ ì•Œì•„ì„œ ë©”ëª¨ë¦¬ ê´€ë¦¬ í•´ì¤Œ shared_ptrì´ëŸ°ê±° í•„ìš” x
+	// ì„í¬í„°ê°€ ì§€ì›Œì§ˆë–„ aiScene ë„ ì•Œì•„ì„œ ì§€ì›Œì§ ì„í¬í„°ëŠ” CAssimp_Modelì´ ë©”ëª¨ë¦¬ì—ì„œ í•´ì œë  ë•Œ ìë™ìœ¼ë¡œ ì†Œë©¸ì í˜¸ì¶œ
+	const aiScene* m_AIScene = { nullptr };
+	Assimp::Importer m_importer = {};
 
-	MODEL m_eType = { MODEL::END };
-	_float4x4 m_PreLocalTransformMatrix = {};
+	EModelType m_type = { EModelType::END };
+	_float4x4 m_preLocalTransformMatrix = {};
 private:
-	_uint m_iNumMeshes = {};
-	vector<shared_ptr<class CAssimp_Mesh>> m_Meshes={};
+	_uint m_numMeshes = {};
+	vector<shared_ptr<class CAssimp_Mesh>> m_meshes={};
 
-	_uint m_iNumMaterials = {};
-	vector<shared_ptr<class CAssimp_Material>> m_Materials={};
+	_uint m_numMaterials = {};
+	vector<shared_ptr<class CAssimp_Material>> m_materials={};
 
-	vector< shared_ptr<class CAssimp_Bone>> m_Bones = {};
+	vector< shared_ptr<class CAssimp_Bone>> m_bones = {};
 
 	_bool m_isAnimLoop = { false };
-	_uint m_iCurrentAnimIndex = {};
-	_uint m_iNumAnimations = {};
-	vector<shared_ptr<class CAssimp_Animation>> m_Animations;
+	_uint m_currentAnimIndex = {};
+	_uint m_numAnimations = {};
+	vector<shared_ptr<class CAssimp_Animation>> m_animations;
 public:
-	static shared_ptr<CAssimp_Model> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
-	virtual shared_ptr<CComponent> Clone(void* pArg);
+	static shared_ptr<CAssimp_Model> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix);
+	virtual shared_ptr<CComponent> Clone(void* arg);
 	virtual void Free() override;
 };
 

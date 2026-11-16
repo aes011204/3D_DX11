@@ -1,4 +1,4 @@
-#include "UI_Inventory.h"
+Ôªø#include "UI_Inventory.h"
 
 #include "UIText.h"
 
@@ -13,11 +13,11 @@
 
 namespace Engine
 {
-	struct Evt_Demage;
+	struct Evt_Damage;
 }
 
-CUI_Inventory::CUI_Inventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CUIPanel(pDevice, pContext)
+CUI_Inventory::CUI_Inventory(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CUIPanel(device, context)
 {
 }
 
@@ -29,72 +29,72 @@ CUI_Inventory::CUI_Inventory(const CUIPanel& prototype)
 
 HRESULT CUI_Inventory::Initialize_Prototype()
 {
-	// ¿Ã∞« ±◊≥…  PreInitialize ¥ÎøÎ¿∏∑Œ ªÁøÎ
+	// Ïù¥Í±¥ Í∑∏ÎÉ•  PreInitialize ÎåÄÏö©ÏúºÎ°ú ÏÇ¨Ïö©
 	//
-	///πﬂ«‡¿Ã ≥™¡ﬂø° µ«æﬂ«‘ 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenPlayerInit_Data>([this](const Evt_InvenPlayerInit_Data& e)
+	///Î∞úÌñâÏù¥ ÎÇòÏ§ëÏóê ÎêòÏïºÌï® 
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenPlayerInitData>([this](const Evt_InvenPlayerInitData& e)
 		{
-			m_Inven = e.Inven_ptr;
-			if (m_Inven.lock() != nullptr)
-				Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+			m_inven = e.invenPtr;
+			if (m_inven.lock() != nullptr)
+				Rebuild_InventorySlot(m_inven.lock()->Get_W(), m_inven.lock()->Get_H(), m_inven.lock()->Get_Invenslot());
 		});
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ShipStat>([this](const Evt_ShipStat& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_ShipStat>([this](const Evt_ShipStat& e)
 		{
-			wstring strInfo = format(L"æÓº± º”µµ : {}kn\n≥¨Ω√ º”µµ : {}%\nµÓ∫“ : {}lm",
-				e.EngineSpeed, e.FishingSpeed, e.LightIntensity);
-			this->m_TextInfo->Set_Text(strInfo);
+			wstring info = format(L"Ïñ¥ÏÑ† ÏÜçÎèÑ : {}kn\nÎÇöÏãú ÏÜçÎèÑ : {}%\nÎì±Î∂à : {}lm",
+				e.engineSpeed, e.fishingSpeed, e.lightIntensity);
+			this->m_textInfo->Set_Text(info);
 
-			wstring strSeaTypes = L"";
-			_uint iCount = 0;
-			for (_uint i = 0; i < (_uint)SEA_TYPE::END; ++i)
+			wstring seaTypes = L"";
+			_uint count = 0;
+			for (_uint i = 0; i < (_uint)ESeaType::END; ++i)
 			{
-				// e.maskø° «ÿ¥Á ∫Ò∆Æ∞° ƒ—¡Æ ¿÷¥¬¡ˆ »Æ¿Œ (øπ: 1 << 0, 1 << 1 ...)
-				if (e.SeaMask & (1 << i))
+				// e.maskÏóê Ìï¥Îãπ ÎπÑÌä∏Í∞Ä ÏºúÏ†∏ ÏûàÎäîÏßÄ ÌôïÏù∏ (Ïòà: 1 << 0, 1 << 1 ...)
+				if (e.seaMask & (1 << i))
 				{
-					if (iCount > 0) strSeaTypes += L", "; // µŒ π¯¬∞ ¿Ã∏ß∫Œ≈Õ¥¬ Ω∞«• √ﬂ∞°
-					strSeaTypes += GetSeaTypeName((SEA_TYPE)(1 << i));
-					iCount++;
+					if (count > 0) seaTypes += L", "; // Îëê Î≤àÏß∏ Ïù¥Î¶ÑÎ∂ÄÌÑ∞Îäî ÏâºÌëú Ï∂îÍ∞Ä
+					seaTypes += GetSeaTypeName((ESeaType)(1 << i));
+					count++;
 				}
 			}
 
-			if (iCount == 0) strSeaTypes = L"æ¯¿Ω";
+			if (count == 0) seaTypes = L"ÏóÜÏùå";
 
-			wstring strInfo_2 = format(L"¿‚¿ªºˆ ¿÷¥¬ æÓ¡æ :\n {}", strSeaTypes);
-			this->m_TextInfo_1->Set_Text(strInfo_2);
+			wstring info2 = format(L"Ïû°ÏùÑÏàò ÏûàÎäî Ïñ¥Ï¢Ö :\n {}", seaTypes);
+			this->m_textInfo1->Set_Text(info2);
 		});
 
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Demage>(
-		[this](const Evt_Demage& e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Damage>(
+		[this](const Evt_Damage& e)
 		{
-			if (e.DemageCount > m_DemageSlot.size())
+			if (e.damageCount > m_damageSlot.size())
 				return;
 			
-			for (_uint i = 0; i < e.DemageCount; i++)
+			for (_uint i = 0; i < e.damageCount; i++)
 			{
-				m_DemageSlot[i]->Set_TextureIndex(1);
+				m_damageSlot[i]->Set_TextureIndex(1);
 			}
 		});
 
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_FixAll_Done>(
-		[this](const Evt_FixAll_Done& e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_FixAllDone>(
+		[this](const Evt_FixAllDone& e)
 		{
 			
-			for (_uint i = 0; i < m_DemageSlot.size(); i++)
+			for (_uint i = 0; i < m_damageSlot.size(); i++)
 			{
-				m_DemageSlot[i]->Set_TextureIndex(0);
+				m_damageSlot[i]->Set_TextureIndex(0);
 			}
 		});
 
 	return CUIPanel::Initialize_Prototype();
 }
 
-_bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& inven_slot)
+_bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& invenSlot)
 {
-	//∫∏∆Æ ΩΩ∑‘∏æÁ¿Ã πŸ≤Ó∏È ∂˜¥ŸµÓ¿∏∑Œ Init_InventorySlot »£√‚ 
+	//Î≥¥Ìä∏ Ïä¨Î°ØÎ™®ÏñëÏù¥ Î∞îÎÄåÎ©¥ ÎûåÎã§Îì±ÏúºÎ°ú Init_InventorySlot Ìò∏Ï∂ú 
 	//find boat back ground ->  clear boat back ground's chilren -> for{for{}} add new slot children
 
-	if (/*Inven_Contrl == nullptr||*/ m_InvenPanel == nullptr)
+	if (/*Inven_Contrl == nullptr||*/ m_invenPanel == nullptr)
 	{
 		MSG_BOX("failed  : Rebuild_InventorySlot");
 		return false;
@@ -102,61 +102,61 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 
 
 
-	m_InvenPanel->UI_Clear();
+	m_invenPanel->UI_Clear();
 
 
-	m_InvenPanel->Change_LayoutRawCol(w, h);
+	m_invenPanel->Change_LayoutRawCol(w, h);
 
 
 	/// slot ///
 
-	m_Slot.clear();
-	m_Slot.resize(h * w);
+	m_slot.clear();
+	m_slot.resize(h * w);
 
 	for (_uint i = 0; i < h; i++)
 	{
 		for (_uint j = 0; j < w; j++)
 		{
-			Engine::CUISlot::SLOT_DESC slot_Inven = {};
+			Engine::CUISlot::SlotDesc slotInven = {};
 			//slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-			slot_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
-			slot_Inven.vScale = Vector2{ 1.6f,1.6f };
-			slot_Inven.Index = i * w + j;
-			if (inven_slot[i * w + j].IsLock == true)
+			slotInven.textureComLevel = ETOI(ELevel::STATIC);
+			slotInven.scale = Vector2{ 1.6f,1.6f };
+			slotInven.index = i * w + j;
+			if (invenSlot[i * w + j].isLock == true)
 			{
-				slot_Inven.IsTransparent = true;
+				slotInven.isTransparent = true;
 			}
-			slot_Inven.slotType = ETOI(inven_slot[i * w + j].slotType);
+			slotInven.slotType = ETOI(invenSlot[i * w + j].slotType);
 
 
-			switch (slot_Inven.slotType)
+			switch (slotInven.slotType)
 			{
-			case ETOI(SLOT_TYPE::ENGINE):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
+			case ETOI(ESlotType::ENGINE):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::LIGHT):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
+			case ETOI(ESlotType::LIGHT):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::NET):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // æÿ æ¯¥¬µÌ
+			case ETOI(ESlotType::NET):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // Ïï§ ÏóÜÎäîÎìØ
 				break;
-			case ETOI(SLOT_TYPE::ROT):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
+			case ETOI(ESlotType::ROT):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::ANY):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
+			case ETOI(ESlotType::ANY):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
 				break;
 			}
 
 
-			shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_pDevice, m_pContext);
-			m_pInstanceINVEN->Initialize(&slot_Inven);
+			shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_device, m_context);
+			m_pInstanceINVEN->Initialize(&slotInven);
 
-			wstring NameTag = L"SLOT_INVEN_" + S2W(to_string(i * w + j));
+			wstring nameTag = L"SLOT_INVEN_" + S2W(to_string(i * w + j));
 
 
-			m_InvenPanel->Add_Layout_Child(m_pInstanceINVEN, NameTag, false);
-			m_Slot[i * w + j] = m_pInstanceINVEN;
+			m_invenPanel->Add_Layout_Child(m_pInstanceINVEN, nameTag, false);
+			m_slot[i * w + j] = m_pInstanceINVEN;
 
 			m_pInstanceINVEN->Set_ButtonState(false);
 			m_pInstanceINVEN->Set_UseDark(true);
@@ -165,142 +165,143 @@ _bool CUI_Inventory::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>&
 		}
 	}
 
-	m_Slot.resize(h * w);
+	m_slot.resize(h * w);
+	m_itemUI.clear(); // Ïû¨Íµ¨ÏÑ± Ïãú Ïù¥Ï†Ñ ÌíÄ(UI_ClearÎ°ú Ï†úÍ±∞Îê®)Ïù¥ ÎÇ®ÏïÑ ÎàÑÏ†ÅÎêòÏßÄ ÏïäÎèÑÎ°ù ÎπÑÏö¥Îã§
 	{
 		for (_uint i = 0; i < 30; i++)
 		{
-			CUIImage::UIIMAGE_DESC ImgItemPool = {};
-			ImgItemPool.TextureComLevel = ETOI(LEVEL::STATIC);
-			ImgItemPool.TextureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
-			ImgItemPool.ZOrder = 5;
-			ImgItemPool.IsTransparent = true;
+			CUIImage::UIImageDesc imgItemPool = {};
+			imgItemPool.textureComLevel = ETOI(ELevel::STATIC);
+			imgItemPool.textureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
+			imgItemPool.ZOrder = 5;
+			imgItemPool.isTransparent = true;
 			//ImgDesc. = true;
 
-			shared_ptr<CUIImage> pChild = CUIImage::Create(m_pDevice, m_pContext);
-			pChild->Initialize(&ImgItemPool);
+			shared_ptr<CUIImage> child = CUIImage::Create(m_device, m_context);
+			child->Initialize(&imgItemPool);
 			//pChild->UI_InActive();
 
-			wstring NameTag = L"ITEM_" + S2W(to_string(i));
+			wstring nameTag = L"ITEM_" + S2W(to_string(i));
 
 
-			m_InvenPanel->Add_Child(pChild, NameTag, false);
+			m_invenPanel->Add_Child(child, nameTag, false);
 
-			m_ItemUI.push_back(pChild);
+			m_itemUI.push_back(child);
 		}
 	}
 
 	return true;
 }
 
-HRESULT CUI_Inventory::OnInit(void* pArg)
+HRESULT CUI_Inventory::OnInit(void* arg)
 {
 
-	INVENTORY_DESC* pDesc = static_cast<INVENTORY_DESC*>(pArg);
+	InventoryDesc* desc = static_cast<InventoryDesc*>(arg);
 	HRESULT hr = {};
 
 
 
-	///// ¡§∫∏ ¿ÃπÃ¡ˆ /////
+	///// Ï†ïÎ≥¥ Ïù¥ÎØ∏ÏßÄ /////
 
-	CUIImage::UIIMAGE_DESC ImgDesc = {};
-	ImgDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	ImgDesc.TextureProtoName = L"Prototype_Component_Texture_PanelBackground";
-	ImgDesc.ZOrder = 3;
+	CUIImage::UIImageDesc imgDesc = {};
+	imgDesc.textureComLevel = ETOI(ELevel::STATIC);
+	imgDesc.textureProtoName = L"Prototype_Component_Texture_PanelBackground";
+	imgDesc.ZOrder = 3;
 
-	shared_ptr<CUIImage> pChild = CUIImage::Create(m_pDevice, m_pContext);
-	pChild->Initialize(&ImgDesc);
+	shared_ptr<CUIImage> child = CUIImage::Create(m_device, m_context);
+	child->Initialize(&imgDesc);
 
-	wstring NameTag = L"INVEN_BACK";
+	wstring nameTag = L"INVEN_BACK";
 
 	{
-		CUIText::TEXT_DESC InfoTexDesc = {};
-		InfoTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
-		InfoTexDesc.strText = format(L"æÓº± º”µµ : {}kn\n≥¨Ω√ º”µµ : {}%\nµÓ∫“ : {}lm",
+		CUIText::TextDesc infoTexDesc = {};
+		infoTexDesc.fontTag = L"Noto_Sans_CJK_SC";
+		infoTexDesc.text = format(L"Ïñ¥ÏÑ† ÏÜçÎèÑ : {}kn\nÎÇöÏãú ÏÜçÎèÑ : {}%\nÎì±Î∂à : {}lm",
 			0, 0, 0);
-		InfoTexDesc.fontaline = CUIText::FONTALINE::LEFT;
-		shared_ptr<CUIText>InfoTex = CUIText::Create(m_pDevice, m_pContext);
-		InfoTex->Initialize(&InfoTexDesc);
-		pChild->Add_Child(InfoTex, L"InfoTex", false);
-		m_TextInfo = InfoTex;
+		infoTexDesc.fontAlign = CUIText::EFontAlign::LEFT;
+		shared_ptr<CUIText>infoTex = CUIText::Create(m_device, m_context);
+		infoTex->Initialize(&infoTexDesc);
+		child->Add_Child(infoTex, L"InfoTex", false);
+		m_textInfo = infoTex;
 
 
-		CUIText::TEXT_DESC InfoTexDesc_1 = {};
-		InfoTexDesc_1.strFontTag = L"Noto_Sans_CJK_SC";
-		InfoTexDesc_1.strText = format(L"¿‚¿ªºˆ ¿÷¥¬ æÓ¡æ :\n {}kn",0);
-		InfoTexDesc_1.fontaline = CUIText::FONTALINE::LEFT;
-		shared_ptr<CUIText> InfoTex_1 = CUIText::Create(m_pDevice, m_pContext);
-		InfoTex_1->Initialize(&InfoTexDesc_1);
-		pChild->Add_Child(InfoTex_1, L"InfoTex_1", false);
-		m_TextInfo_1 = InfoTex_1;
+		CUIText::TextDesc infoTexDesc1 = {};
+		infoTexDesc1.fontTag = L"Noto_Sans_CJK_SC";
+		infoTexDesc1.text = format(L"Ïû°ÏùÑÏàò ÏûàÎäî Ïñ¥Ï¢Ö :\n {}kn",0);
+		infoTexDesc1.fontAlign = CUIText::EFontAlign::LEFT;
+		shared_ptr<CUIText> infoTex1 = CUIText::Create(m_device, m_context);
+		infoTex1->Initialize(&infoTexDesc1);
+		child->Add_Child(infoTex1, L"InfoTex_1", false);
+		m_textInfo1 = infoTex1;
 
 	}
 
-	Add_Child(pChild, NameTag, false);
+	Add_Child(child, nameTag, false);
 
 
-	///// ¿ŒπÍ ΩΩ∑‘ ∆–≥Œ /////
-	CUIPanel::UIPANEL_DESC Panel_Inven = {};
-	Panel_Inven.TextureProtoName = L"Prototype_Component_Texture_PlayerInventoryBackground";
-	Panel_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
-	Panel_Inven.IsFullScreen = false;
-	Panel_Inven.IsTransparent = false;
-	Panel_Inven.IsUseLayout = true;
-	Panel_Inven.bUseNineSlice = false;
+	///// Ïù∏Î∞¥ Ïä¨Î°Ø Ìå®ÎÑê /////
+	CUIPanel::UIPanelDesc panelInven = {};
+	panelInven.textureProtoName = L"Prototype_Component_Texture_PlayerInventoryBackground";
+	panelInven.textureComLevel = ETOI(ELevel::STATIC);
+	panelInven.isFullScreen = false;
+	panelInven.isTransparent = false;
+	panelInven.isUseLayout = true;
+	panelInven.useNineSlice = false;
 
-	Panel_Inven.LayoutDesc.m_Spacing = { 4.f ,4.f };
-	Panel_Inven.LayoutDesc.m_Col = 6;
-	Panel_Inven.LayoutDesc.m_Row = 8;
+	panelInven.layoutDesc.spacing = { 4.f ,4.f };
+	panelInven.layoutDesc.col = 6;
+	panelInven.layoutDesc.row = 8;
 	//Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
 
 
-	shared_ptr<CUIPanel> InvenPanel = CUIPanel::Create(m_pDevice, m_pContext);
-	InvenPanel->Initialize(&Panel_Inven);
-	m_InvenPanel = InvenPanel;
+	shared_ptr<CUIPanel> invenPanel = CUIPanel::Create(m_device, m_context);
+	invenPanel->Initialize(&panelInven);
+	m_invenPanel = invenPanel;
 
-	Add_Child(m_InvenPanel, L"Panel_inven", false);
+	Add_Child(m_invenPanel, L"Panel_inven", false);
 
 
 
-	///// µ•πÃ¡ˆ ΩΩ∑Œ ∆–≥Œ /////
-	CUIPanel::UIPANEL_DESC Panel_damage = {};
-	Panel_damage.TextureProtoName = L"Prototype_Component_Texture_HealthBarPanel";
-	Panel_damage.TextureComLevel = ETOI(LEVEL::STATIC);
-	Panel_damage.IsFullScreen = false;
-	Panel_damage.IsTransparent = false;
-	Panel_damage.IsUseLayout = true;
+	///// Îç∞ÎØ∏ÏßÄ Ïä¨Î°ú Ìå®ÎÑê /////
+	CUIPanel::UIPanelDesc panelDamage = {};
+	panelDamage.textureProtoName = L"Prototype_Component_Texture_HealthBarPanel";
+	panelDamage.textureComLevel = ETOI(ELevel::STATIC);
+	panelDamage.isFullScreen = false;
+	panelDamage.isTransparent = false;
+	panelDamage.isUseLayout = true;
 
-	Panel_damage.LayoutDesc.m_Spacing = { 2.f ,2.f };
-	Panel_damage.LayoutDesc.m_Col = 0;
-	Panel_damage.LayoutDesc.m_Row = 3;
+	panelDamage.layoutDesc.spacing = { 2.f ,2.f };
+	panelDamage.layoutDesc.col = 0;
+	panelDamage.layoutDesc.row = 3;
 	//Panel_damage.LayoutDesc.m_Offset = { 0.f, 0.f};
 
-	Panel_damage.bUseNineSlice = true;
+	panelDamage.useNineSlice = true;
 
-	shared_ptr<CUIPanel> DamgePanel = CUIPanel::Create(m_pDevice, m_pContext);
-	DamgePanel->Initialize(&Panel_damage);
+	shared_ptr<CUIPanel> damagePanel = CUIPanel::Create(m_device, m_context);
+	damagePanel->Initialize(&panelDamage);
 
 	for (_uint i = 0; i < 3; i++)
 	{
 
-		CUISlot::SLOT_DESC slot_Damage = {};
-		slot_Damage.TextureProtoName = L"Prototype_Component_Texture_Slot_Damage";
-		slot_Damage.TextureComLevel = ETOI(LEVEL::STATIC);
-		slot_Damage.bUseDark = false;
+		CUISlot::SlotDesc slotDamage = {};
+		slotDamage.textureProtoName = L"Prototype_Component_Texture_Slot_Damage";
+		slotDamage.textureComLevel = ETOI(ELevel::STATIC);
+		slotDamage.useDark = false;
 		/*	slot_Damage.Interaction = false;*/
-		shared_ptr<CUISlot> m_pInstance = CUISlot::Create(m_pDevice, m_pContext);
-		m_pInstance->Initialize(&slot_Damage);
+		shared_ptr<CUISlot> m_pInstance = CUISlot::Create(m_device, m_context);
+		m_pInstance->Initialize(&slotDamage);
 
-		wstring NameTag = L"SLOT_" + S2W(to_string(i));
+		wstring nameTag = L"SLOT_" + S2W(to_string(i));
 
 
-		DamgePanel->Add_Layout_Child(m_pInstance, NameTag, false);
+		damagePanel->Add_Layout_Child(m_pInstance, nameTag, false);
 		m_pInstance->Set_Interactive(false);
 		m_pInstance->Set_Zorder(2);
-		m_DemageSlot.push_back(m_pInstance);
+		m_damageSlot.push_back(m_pInstance);
 	}
 
 
-	Add_Child(DamgePanel, L"Panel_damage", false);
+	Add_Child(damagePanel, L"Panel_damage", false);
 
 
 	{
@@ -309,7 +310,7 @@ HRESULT CUI_Inventory::OnInit(void* pArg)
 
 
 
-	hr = __super::OnInit(pDesc);
+	hr = __super::OnInit(desc);
 	return hr;
 }
 
@@ -322,12 +323,12 @@ void CUI_Inventory::OnActive()
 void CUI_Inventory::OnInActive()
 {
 
-	Evt_MouseToIndex_Data e = {};
-	e.IsOnSlot = false; // ±‚∫ª false
+	Evt_MouseToIndexData e = {};
+	e.isOnSlot = false; // Í∏∞Î≥∏ false
 
 	//if (m_Inven.lock()->Get_Inventype() == INVENTYPE::PLAYER)
 	//{
-		e.IsPlayer = true;
+		e.isPlayer = true;
 	//}
 	//else
 	//{
@@ -341,11 +342,11 @@ void CUI_Inventory::OnInActive()
 
 	e.x = 0;
 		e.y = 0;
-			e.IsOnSlot = false;
+			e.isOnSlot = false;
 
 
 
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
 	
 
 	__super::OnInActive();
@@ -360,91 +361,91 @@ void CUI_Inventory::OnDisabled()
 
 void CUI_Inventory::OnUpdate(const _float& timeDelta)
 {
-    if (!m_Inven.expired() && m_InvenPanel && !m_Slot.empty())
+    if (!m_inven.expired() && m_invenPanel && !m_slot.empty())
         MousePosToSlot();
     __super::OnUpdate(timeDelta);
 }
 
 void CUI_Inventory::OnPrepareRender()
 {
-    auto inventory = m_Inven.lock();
-    if (!inventory || !m_InvenPanel || m_Slot.empty())
+    auto inventory = m_inven.lock();
+    if (!inventory || !m_invenPanel || m_slot.empty())
         return;
-	auto& InvenItem = m_Inven.lock()->Get_InventoryItem();
-	auto& InvenSlot = m_Inven.lock()->Get_Invenslot();
+	auto& invenItem = m_inven.lock()->Get_InventoryItem();
+	auto& invenSlot = m_inven.lock()->Get_Invenslot();
 
-	for (_uint index = 0; index < InvenSlot.size(); index++)
+	for (_uint index = 0; index < invenSlot.size(); index++)
 	{
-		_float4 Muscolor={};
+		_float4 slotColor={};
 		_float4 colorReset = { 0.f,0.f,0.f,0.f };
 
-		m_Slot[index]->Set_ColorFlat(colorReset);
-		switch (InvenSlot[index].Slot_Color)
+		m_slot[index]->Set_ColorFlat(colorReset);
+		switch (invenSlot[index].slotColor)
 		{
-		case PLACE_COLOR::GREEN:
-			Muscolor = { 0.f,1.f,0.f,.8f };
+		case EPlaceColor::GREEN:
+			slotColor = { 0.f,1.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 		
 			break;
-		case PLACE_COLOR::ORANGE:
-			Muscolor = { 1.0f,0.6f,0.0f,.8f };
+		case EPlaceColor::ORANGE:
+			slotColor = { 1.0f,0.6f,0.0f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 
 			break;
-		case PLACE_COLOR::RED:
-			Muscolor = { 1.f,0.f,0.f,.8f };
+		case EPlaceColor::RED:
+			slotColor = { 1.f,0.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 			break;
-		case PLACE_COLOR::END:
+		case EPlaceColor::END:
 		
 			//m_Slot[index]->Set_ColorFlat(false);
 			break;
 		}
 
 
-		if(InvenSlot[index].IsLock == false)
+		if(invenSlot[index].isLock == false)
 		{
-			if (InvenSlot[index].IsBroken == true)
+			if (invenSlot[index].isBroken == true)
 			{
-				m_Slot[index]->Set_TextureIndex(1);
+				m_slot[index]->Set_TextureIndex(1);
 			}
 			else
 			{
-				m_Slot[index]->Set_TextureIndex(0);
+				m_slot[index]->Set_TextureIndex(0);
 			}
 		}
 		
 	}
 
 
-	for (auto& invnelItem : InvenItem)
+	for (auto& invnelItem : invenItem)
 	{
 		_float4 color = {};
-		switch (invnelItem.ItemType)
+		switch (invnelItem.itemType)
 		{
-		case ITEM_TYPE::MATERIAL:
-		case ITEM_TYPE::EQUIP:
+		case EItemType::MATERIAL:
+		case EItemType::EQUIP:
 			color = { 0.23f, 0.23f, 0.21f, 1.f };
 			break;
-		case ITEM_TYPE::FISH:
+		case EItemType::FISH:
 			color = { .7f,0.2f,0.2f,1.f };
 			break;
 
 		}
 
 
-		for (_uint i = 0; i < invnelItem.CurBase.size(); i++)
+		for (_uint i = 0; i < invnelItem.curBase.size(); i++)
 		{
 
-			_uint x = invnelItem.CurBase[i].dx;
-			_uint y = invnelItem.CurBase[i].dy;
-			_uint index = y * m_Inven.lock()->Get_W() + x;
+			_uint x = invnelItem.curBase[i].dx;
+			_uint y = invnelItem.curBase[i].dy;
+			_uint index = y * m_inven.lock()->Get_W() + x;
 
-			m_Slot[index]->Set_UseColorFlat(true);
-			m_Slot[index]->Set_ColorFlat(color);
+			m_slot[index]->Set_UseColorFlat(true);
+			m_slot[index]->Set_ColorFlat(color);
 		}
 	}
 
@@ -475,26 +476,26 @@ void CUI_Inventory::OnClear()
 
 _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 {
-	Evt_MouseToIndex_Data e = {};
-	e.IsOnSlot = false; // ±‚∫ª false
+	Evt_MouseToIndexData e = {};
+	e.isOnSlot = false; // Í∏∞Î≥∏ false
 
-	if(m_Inven.lock()->Get_Inventype() == INVENTYPE::PLAYER)
+	if(m_inven.lock()->Get_Inventype() == EInvenType::PLAYER)
 	{
-		e.IsPlayer = true;
+		e.isPlayer = true;
 	}
 	else
 	{
-		e.IsPlayer = false;
+		e.isPlayer = false;
 	}
 
-	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
+	LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
 
-	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manager()->Get_MousePos();
 
 
 	
 
-	for (auto& slot : m_Slot)
+	for (auto& slot : m_slot)
 	{
 		if (true == slot->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 		{
@@ -504,9 +505,9 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 			//SlotY = index % layout.m_Col;
 
 
-			e.x = index % layout.m_Col;;
-			e.y = index / layout.m_Col;;
-			e.IsOnSlot = true;
+			e.x = index % layout.col;;
+			e.y = index / layout.col;;
+			e.isOnSlot = true;
 
 			break;
 		}
@@ -524,9 +525,9 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 
 	//LOG_F(LOG_LEVEL::INFO, "x: %d ,y: %d ", e.x, e.y);
 
-	if (m_InvenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
+	if (m_invenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 	{
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
 	}
 	
 	return true;
@@ -557,16 +558,16 @@ _bool CUI_Inventory::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 //
 //	return { posX, posY };
 //}
-_float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
+_float2 CUI_Inventory::Calculate_RenderPos(const ItemInst& item)
 {
 
 	_float minX = FLT_MAX, minY = FLT_MAX;
 	_float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
-	_uint col = m_InvenPanel->Get_LayoutDesc().m_Col;
-	_uint row = m_InvenPanel->Get_LayoutDesc().m_Row;
-	// æ∆¿Ã≈€¿Ã ¡°¿Ø«— ∏µÁ ƒ≠¿ª µπ∏Èº≠ Ω«¡¶ ΩΩ∑‘µÈ¿« ¿ßƒ°∏¶ ºˆ¡˝
-	for (auto& OccCell : item.CurBase)
+	_uint col = m_invenPanel->Get_LayoutDesc().col;
+	_uint row = m_invenPanel->Get_LayoutDesc().row;
+	// ÏïÑÏù¥ÌÖúÏù¥ Ï†êÏú†Ìïú Î™®Îì† Ïπ∏ÏùÑ ÎèåÎ©¥ÏÑú Ïã§Ï†ú Ïä¨Î°ØÎì§Ïùò ÏúÑÏπòÎ•º ÏàòÏßë
+	for (auto& OccCell : item.curBase)
 	{
 		//   int index = OccCell.dy * m_w + OccCell.dx;
 		//_uint col = Get_LayoutDesc().m_Col;
@@ -577,7 +578,7 @@ _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
 		//int index = y * col + x;
 		int index = OccCell.dy * col + OccCell.dx;
 
-		_float2 slotPos = m_Slot[index]->GetUITransform()->Get_AnchoredPos();
+		_float2 slotPos = m_slot[index]->GetUITransform()->Get_AnchoredPos();
 
 		minX = min(minX, slotPos.x);
 		maxX = max(maxX, slotPos.x);
@@ -589,7 +590,7 @@ _float2 CUI_Inventory::Calculate_RenderPos(const Item_Inst& item)
 
 	}
 
-	// 4. ºˆ¡˝µ» ΩΩ∑‘ ¡¬«•µÈ¿« ¡§¡ﬂæ”¿ª ±∏«‘
+	// 4. ÏàòÏßëÎêú Ïä¨Î°Ø Ï¢åÌëúÎì§Ïùò Ï†ïÏ§ëÏïôÏùÑ Íµ¨Ìï®
 	_float2 center = {
 		(minX + maxX) * 0.5f,
 		(minY + maxY) * 0.5f
@@ -646,67 +647,61 @@ void CUI_Inventory::Render_Item()
 {
 	
 
-	//¿Ã «‘ºˆ¥¬ ¿Øæ∆¿Ã∞° √ﬂ∞°µ«∞≈≥™ ¡Ÿæ˙¿ªãö Ω≈»£πﬁ¿∏∏È ±◊ãö «—π¯æø «œ¥¬∞≈¿”
+	//Ïù¥ Ìï®ÏàòÎäî Ïú†ÏïÑÏù¥Í∞Ä Ï∂îÍ∞ÄÎêòÍ±∞ÎÇò Ï§ÑÏóàÏùÑÎñÑ Ïã†Ìò∏Î∞õÏúºÎ©¥ Í∑∏ÎñÑ ÌïúÎ≤àÏî© ÌïòÎäîÍ±∞ÏûÑ
 
-	auto inven = m_Inven.lock();
+	auto inven = m_inven.lock();
 	if (inven == nullptr)
 		return;
 
 	auto& items = inven->Get_InventoryItem();
-	_float2 slotSize = m_Slot[0]->GetUITransform()->Get_FinalSize();
+	_float2 slotSize = m_slot[0]->GetUITransform()->Get_FinalSize();
 
-	for (auto& UI : m_ItemUI)
+	for (auto& UI : m_itemUI)
 	{
 		UI->Set_Transparent(true);
 	}
-	for (int i = 0; i < items.size(); i++)
+
+	// ÏïÑÏù¥ÌÖú iÎ≤à ‚Üî ÌíÄ iÎ≤àÏùÑ Î∞îÎ°ú ÎåÄÏùë (Îπà UIÎ•º Îß§Î≤à Ï≤òÏùåÎ∂ÄÌÑ∞ Ï∞æÏßÄ ÏïäÎäîÎã§)
+	const LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
+	const size_t drawCount = min(items.size(), m_itemUI.size());
+	for (size_t i = 0; i < drawCount; i++)
 	{
-		
+		auto& UI = m_itemUI[i];
+		const ItemDef& def = CItemDB::GetInstance()->GetItemByID(items[i].itemDefID);
+		UI->Change_Texture(items[i].cachingTexture);
 
-		LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
+		_float2 anchoredPos = Calculate_RenderPos(items[i]);
 
-		for (auto& UI : m_ItemUI)
-		{
-			if (UI->Get_Transparent() == true)
-			{
-				Item_Def def = CItemDB::GetInstance()->GetItemByID(items[i].ItemDef_ID);
-				UI->Change_Texture(items[i].pCashingTexture);
-
-				_float2 vAnchoredPos = Calculate_RenderPos(items[i]);
-
-				UI->GetUITransform()->SetAnchoredPos(vAnchoredPos);
-				UI->GetUITransform()->SetSizeDelta(
-					{ slotSize.x * def.ItemShape.Width + layout.m_Spacing.x * (def.ItemShape.Width - 1),
-					slotSize.y * def.ItemShape.Height + layout.m_Spacing.y * (def.ItemShape.Height - 1)
-					});
-				// »∏¿¸
-				UI->GetUITransform()->SetRotation(items[i].Rotation * -90.f);
-				UI->Set_Transparent(false);
-				UI->GetUITransform()->SetPivot({ 0.5f, 0.5f });
-				break;
-			}
-		}
+		UI->GetUITransform()->SetAnchoredPos(anchoredPos);
+		UI->GetUITransform()->SetSizeDelta(
+			{ slotSize.x * def.itemShape.width + layout.spacing.x * (def.itemShape.width - 1),
+			slotSize.y * def.itemShape.height + layout.spacing.y * (def.itemShape.height - 1)
+			});
+		// ÌöåÏ†Ñ
+		UI->GetUITransform()->SetRotation(items[i].rotation * -90.f);
+		UI->Set_Transparent(false);
+		UI->GetUITransform()->SetPivot({ 0.5f, 0.5f });
 	}
 
 }
 
 
-shared_ptr<CUI_Inventory> CUI_Inventory::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Inventory> CUI_Inventory::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Inventory> pInstance(new CUI_Inventory(pDevice, pContext), [](CUI_Inventory* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_Inventory> instance(new CUI_Inventory(device, context), [](CUI_Inventory* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUI_Inventory");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Inventory::Free()
 {
 	__super::Free();
-	m_ItemUI.clear();
-	m_Slot.clear();
+	m_itemUI.clear();
+	m_slot.clear();
 
 }

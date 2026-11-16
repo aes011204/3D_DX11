@@ -1,9 +1,9 @@
-#include "Collison_Manager.h"
+Ôªø#include "Collison_Manager.h"
 
 #include "GameObject.h"
 #include "Collider.h"
 
-CCollision_Manager::CCollision_Manager(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+CCollision_Manager::CCollision_Manager(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
 }
 
@@ -20,72 +20,72 @@ HRESULT CCollision_Manager::Initialize()
 void CCollision_Manager::Update()
 {
 
-	if (m_Colliders.empty())
+	if (m_colliders.empty())
 		return;
 
-	for (size_t i = 0; i < m_Colliders.size(); ++i)
+	for (size_t i = 0; i < m_colliders.size(); ++i)
 	{
-		auto collider = m_Colliders[i].lock();
+		auto collider = m_colliders[i].lock();
 		if (collider)
 			collider->Set_IsColl(false);
 	}
 
 
 
-	for (_uint i = 0; i < m_Colliders.size(); i++)
+	for (_uint i = 0; i < m_colliders.size(); i++)
 	{
-		auto Src = m_Colliders[i].lock();
-		if (Src == nullptr)
+		auto src = m_colliders[i].lock();
+		if (src == nullptr)
 			continue;
-		shared_ptr<CGameObject> ownerSrc = Src->Get_GOwner();
-		if (ownerSrc == nullptr || ownerSrc->Is_PendingDestroy()) // º“∏Í øπ¡§¿Œ æ÷µÈ¿∫ √Êµπ X
+		shared_ptr<CGameObject> ownerSrc = src->Get_GOwner();
+		if (ownerSrc == nullptr || ownerSrc->Is_PendingDestroy()) // ÏÜåÎ©∏ ÏòàÏ†ïÏù∏ Ïï†Îì§ÏùÄ Ï∂©Îèå X
 			continue;
-		for(_uint j = 0; j < m_Colliders.size(); j++)
+		for(_uint j = 0; j < m_colliders.size(); j++)
 		{
-			auto Dst = m_Colliders[j].lock();
-			if (Dst == nullptr)
+			auto dst = m_colliders[j].lock();
+			if (dst == nullptr)
 				continue;
-			shared_ptr<CGameObject> ownerDst = Dst->Get_GOwner();
-			if (ownerDst == nullptr || ownerDst->Is_PendingDestroy()) // º“∏Í øπ¡§¿Œ æ÷µÈ¿∫ √Êµπ X
+			shared_ptr<CGameObject> ownerDst = dst->Get_GOwner();
+			if (ownerDst == nullptr || ownerDst->Is_PendingDestroy()) // ÏÜåÎ©∏ ÏòàÏ†ïÏù∏ Ïï†Îì§ÏùÄ Ï∂©Îèå X
 				continue;
 
 			if (ownerSrc == ownerDst)
 				continue;
 
-			if (Src->Get_CollisionActive() == false)
+			if (src->Get_CollisionActive() == false)
 				continue;
-			if (Dst->Get_CollisionActive() == false)
-				continue;
-
-
-			if (Can_Collider(Src, Dst) == false)
+			if (dst->Get_CollisionActive() == false)
 				continue;
 
 
-			_bool isHit = Src->Intersect(Dst);
+			if (Can_Collider(src, dst) == false)
+				continue;
 
-			_bool wasOverlap = Src->Is_Overlap(Dst);
+
+			_bool isHit = src->Intersect(dst);
+
+			_bool wasOverlap = src->Is_Overlap(dst);
 
 			if(isHit)
 			{
-				Src->Set_IsColl(true);
-				Dst->Set_IsColl(true);
+				src->Set_IsColl(true);
+				dst->Set_IsColl(true);
 
 				if(!wasOverlap)
 				{
-					// √÷√  √Êµπ
-					Src->Get_GOwner()->OnBeginOverlap(Src, Dst);
-					Dst->Get_GOwner()->OnBeginOverlap(Dst,Src);
+					// ÏµúÏ¥à Ï∂©Îèå
+					src->Get_GOwner()->OnBeginOverlap(src, dst);
+					dst->Get_GOwner()->OnBeginOverlap(dst,src);
 
-					Src->Add_Overlap(Dst);
-					Dst->Add_Overlap(Src);
+					src->Add_Overlap(dst);
+					dst->Add_Overlap(src);
 
 				}
 				else
 				{
-					// ¿Ø¡ˆ
-					Src->Get_GOwner()->OnStayOverlap(Src, Dst);
-					Dst->Get_GOwner()->OnStayOverlap(Dst, Src);
+					// Ïú†ÏßÄ
+					src->Get_GOwner()->OnStayOverlap(src, dst);
+					dst->Get_GOwner()->OnStayOverlap(dst, src);
 				}
 
 			}
@@ -93,13 +93,13 @@ void CCollision_Manager::Update()
 			{
 				if(wasOverlap)
 				{
-					// ≥™∞®
+					// ÎÇòÍ∞ê
 
-					Src->Get_GOwner()->OnEndOverlap(Src, Dst);
-					Dst->Get_GOwner()->OnEndOverlap(Dst, Src);
+					src->Get_GOwner()->OnEndOverlap(src, dst);
+					dst->Get_GOwner()->OnEndOverlap(dst, src);
 
-					Src->Remove_Overlap(Dst);
-					Dst->Remove_Overlap(Src);
+					src->Remove_Overlap(dst);
+					dst->Remove_Overlap(src);
 				}
 			}
 		}
@@ -114,17 +114,17 @@ _bool CCollision_Manager::Can_Collider(shared_ptr<CCollider> src, shared_ptr<CCo
 	if (src == dst)
 		return false;
 
-	_bool bSrcCanSeeDst = (src->Get_OtherLayerMask() & dst->Get_MyLayer()) != 0;
-	_bool bDstCanSeeSrc = (dst->Get_OtherLayerMask() & src->Get_MyLayer()) != 0;
+	_bool isSrcCanSeeDst = (src->Get_OtherLayerMask() & dst->Get_MyLayer()) != 0;
+	_bool isDstCanSeeSrc = (dst->Get_OtherLayerMask() & src->Get_MyLayer()) != 0;
 
-	return bSrcCanSeeDst && bDstCanSeeSrc;
+	return isSrcCanSeeDst && isDstCanSeeSrc;
 
 }
 void CCollision_Manager::Add_Collider(shared_ptr<CCollider> coll)
 {
 	if (coll == nullptr)
 		return;
-	m_Colliders.push_back(coll);
+	m_colliders.push_back(coll);
 }
 
 void CCollision_Manager::Remove_Collider(shared_ptr<CCollider> coll)
@@ -132,16 +132,16 @@ void CCollision_Manager::Remove_Collider(shared_ptr<CCollider> coll)
 
 }
 
-unique_ptr<CCollision_Manager> CCollision_Manager::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+unique_ptr<CCollision_Manager> CCollision_Manager::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	unique_ptr<CCollision_Manager> pInstance(new CCollision_Manager(pDevice, pContext));
+	unique_ptr<CCollision_Manager> instance(new CCollision_Manager(device, context));
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CCollision_Manager");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CCollision_Manager::Free()

@@ -1,74 +1,74 @@
-#include "Level_Manager.h"
+ï»¿#include "Level_Manager.h"
 #include "GameInstance.h"
 #include "Level.h"
 
 CLevel_Manager::CLevel_Manager()
-	: m_pGameInstance(CGameInstance::GetInstance())
+	: m_gameInstance(CGameInstance::GetInstance())
 {
 
 }
 
-HRESULT CLevel_Manager::Initialize(_uint EditorIndex, _uint iNumLevel)
+HRESULT CLevel_Manager::Initialize(_uint editorIndex, _uint numLevel)
 {
-	m_iEditorIndex = EditorIndex;
+	m_editorIndex = editorIndex;
 
-	m_iNumLevel = iNumLevel;
+	m_numLevel = numLevel;
 
 	return S_OK;
 }
 
-HRESULT CLevel_Manager::Change_Level(_uint iNewLevelIndex, shared_ptr<CLevel> pNewLevel)
+HRESULT CLevel_Manager::Change_Level(_uint newLevelIndex, shared_ptr<CLevel> newLevel)
 {
-	if (m_pCurLevel != nullptr)
+	if (m_curLevel != nullptr)
 	{
 
 
-		if (m_iCurLevelIdx == m_iEditorIndex && m_iEditorIndex!=0)
+		if (m_curLevelIdx == m_editorIndex && m_editorIndex!=0)
 		{
-			for (_uint i = 1; i < m_iNumLevel;i++)
+			for (_uint i = 1; i < m_numLevel;i++)
 			{
-				//½ºÅÂÆ½·¹º§Àº 0 ¹ø ·¹º§ °íÁ¤ÀÌ¹Ç·Î 1ºÎÅÍ ½ÃÀÛ
-				m_pGameInstance.lock()->Clear_Resources(i);
+				//ìŠ¤íƒœí‹±ë ˆë²¨ì€ 0 ë²ˆ ë ˆë²¨ ê³ ì •ì´ë¯€ë¡œ 1ë¶€í„° ì‹œìž‘
+				m_gameInstance.lock()->Clear_Resources(i);
 
 			}
 		}
 		else
 		{
-			m_pGameInstance.lock()->Clear_Resources(m_iCurLevelIdx);
+			m_gameInstance.lock()->Clear_Resources(m_curLevelIdx);
 		}
 	}
 
 
-	m_pCurLevel = pNewLevel;
+	m_curLevel = newLevel;
 
-	m_iCurLevelIdx = iNewLevelIndex;
+	m_curLevelIdx = newLevelIndex;
 
-	return m_pCurLevel->Post_Initialize();
+	return m_curLevel->Post_Initialize();
 
 }
 
-void CLevel_Manager::Update(_float fTimeDelta)
+void CLevel_Manager::Update(_float timeDelta)
 {
-	if (m_pCurLevel != nullptr)
-		m_pCurLevel->Update(fTimeDelta);
+	if (m_curLevel != nullptr)
+		m_curLevel->Update(timeDelta);
 }
 
 HRESULT CLevel_Manager::Render()
 {
-	if (m_pCurLevel != nullptr)
-		m_pCurLevel->Render();
+	if (m_curLevel != nullptr)
+		m_curLevel->Render();
 
 	return S_OK;
 }
 
-unique_ptr<CLevel_Manager> CLevel_Manager::Create(_uint EditorIndex, _uint iNumLevel)
+unique_ptr<CLevel_Manager> CLevel_Manager::Create(_uint editorIndex, _uint numLevel)
 {
-	unique_ptr<CLevel_Manager> pInstance(new CLevel_Manager());
-	if (FAILED(pInstance->Initialize(EditorIndex, iNumLevel)))
+	unique_ptr<CLevel_Manager> instance(new CLevel_Manager());
+	if (FAILED(instance->Initialize(editorIndex, numLevel)))
 	{
 		MSG_BOX("Failed to Created : CLoader");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CLevel_Manager::Free()

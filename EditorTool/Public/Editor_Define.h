@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #pragma push_macro("new")
 #ifdef new
@@ -27,8 +27,8 @@ namespace Editor
 
     struct DragProtoTypeDesc
     {
-        _wstring strProtoTag = {};
-        _uint strProtoLevel = {};
+        _wstring protoTag = {};
+        _uint protoLevel = {};
     };
 
 }

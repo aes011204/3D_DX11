@@ -1,4 +1,4 @@
-#include "EmptyUObject.h"
+ï»¿#include "EmptyUObject.h"
 #include "BackGround.h"
 
 #include "GameInstance.h"
@@ -10,16 +10,16 @@
 //#include "CShader.h"
 //#include "CTexture.h"
 
-CEmptyUObject::CEmptyUObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CGameObject(pDevice, pContext)
+CEmptyUObject::CEmptyUObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CGameObject(device, context)
 {
 }
 
 CEmptyUObject::CEmptyUObject(const CEmptyUObject& prototype)
 	:CGameObject(prototype),
-	m_pShaderCom(prototype.m_pShaderCom),
-	m_pVIBufferCom(prototype.m_pVIBufferCom),
-	m_pTextureCom(prototype.m_pTextureCom)
+	m_shaderCom(prototype.m_shaderCom),
+	m_VIBufferCom(prototype.m_VIBufferCom),
+	m_textureCom(prototype.m_textureCom)
 {
 
 }
@@ -31,12 +31,12 @@ HRESULT Client::CEmptyUObject::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CEmptyUObject::Initialize(void* pArg)
+HRESULT CEmptyUObject::Initialize(void* arg)
 {
-	m_bIsSavableClass = true;
-	/* ¸â¹ö¸¦ Ã¤¿ö³Ö¾î¾ßÇÑ´Ù¸é ¿©±â¼­ Ã¤¿î´Ù. */
+	m_isSavableClass = true;
+	/* ë©¤ë²„ë¥¼ ì±„ì›Œë„£ì–´ì•¼í•œë‹¤ë©´ ì—¬ê¸°ì„œ ì±„ìš´ë‹¤. */
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -45,21 +45,21 @@ HRESULT CEmptyUObject::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CEmptyUObject::Priority_Update(_float fTimeDelta)
+void CEmptyUObject::Priority_Update(_float timeDelta)
 {
 	int a = 1;
 }
 
-void CEmptyUObject::Update(_float fTimeDelta)
+void CEmptyUObject::Update(_float timeDelta)
 {
-	if (m_bIsDirtyCom) {
-		RebindCom();      // "¹Ù²ï °Í"¸¸ ÇÑ ¹ø °»½Å
-		m_bIsDirtyCom = false;
+	if (m_isDirtyCom) {
+		RebindCom();      // "ë°”ë€ ê²ƒ"ë§Œ í•œ ë²ˆ ê°±ì‹ 
+		m_isDirtyCom = false;
 	}
 	int a = 1;
 }
 
-void CEmptyUObject::Late_Update(_float fTimeDelta)
+void CEmptyUObject::Late_Update(_float timeDelta)
 {
 	int a = 1;
 	//m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
@@ -69,25 +69,25 @@ HRESULT CEmptyUObject::Render()
 {
 
 
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_Texture", 0)))
+	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_Texture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Bind_Resources()))
+	if (FAILED(m_VIBufferCom->Bind_Resources()))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	if (FAILED(m_VIBufferCom->Render()))
 		return E_FAIL;
 
 	return S_OK;
@@ -100,48 +100,48 @@ void CEmptyUObject::OnGui()
 
 void CEmptyUObject::RebindCom()
 {
-	// ÀÌÁ¦ ¸ğµç ÄÄÆ÷³ÍÆ®´Â ³ÎÃ¼Å© ÀßÇÏ±â ¾ø´Â°æ¿ìµµ ÀÖÀ»¼ö ÀÖÀ¸´Ï±î
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
-	m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+	// ì´ì œ ëª¨ë“  ì»´í¬ë„ŒíŠ¸ëŠ” ë„ì²´í¬ ì˜í•˜ê¸° ì—†ëŠ”ê²½ìš°ë„ ìˆì„ìˆ˜ ìˆìœ¼ë‹ˆê¹Œ
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_VIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
+	m_shaderCom = Get_Component<CShader>(L"Com_Shader");
 }
 
 HRESULT CEmptyUObject::Ready_Components()
 {
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	// ì‰ì´ë”ëŠ” í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ì„
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxTex"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨ 
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_VIBuffer_Rect"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-shared_ptr<CEmptyUObject> CEmptyUObject::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CEmptyUObject> CEmptyUObject::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CEmptyUObject> pInstance(new CEmptyUObject(pDevice, pContext), [](CEmptyUObject* p) {p->Free(); delete p;});
+	shared_ptr<CEmptyUObject> instance(new CEmptyUObject(device, context), [](CEmptyUObject* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CEmptyUObject");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CEmptyUObject::Clone(void* pArg)
+shared_ptr<CGameObject> CEmptyUObject::Clone(void* arg)
 {
-	shared_ptr<CEmptyUObject> pInstance(new CEmptyUObject(*this), [](CEmptyUObject* p) {p->Free(); delete p;});
+	shared_ptr<CEmptyUObject> instance(new CEmptyUObject(*this), [](CEmptyUObject* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : BackGround");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CEmptyUObject::Free()

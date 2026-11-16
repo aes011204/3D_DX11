@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Engine_Define.h"
 
 
@@ -10,16 +10,16 @@ class ENGINE_DLL CBase abstract: public enable_shared_from_this<CBase>
 protected:
 	CBase();
 public:
-	CBase(const CBase& rhs); // ~CBase() {} ¶û °°À½
-	virtual ~CBase() = default; // ~CBase() {} ¶û °°À½
+	CBase(const CBase& rhs); // ~CBase() {} ë‘ ê°™ìŒ
+	virtual ~CBase() = default; // ~CBase() {} ë‘ ê°™ìŒ
 
 //public:
-//	// ·¹ÆÛ·±½º Ä«¿îÆ®¸¦ Áõ°¡½ÃÅ²´Ù 
-//	// ¸®ÅÏ°ª : Áõ°¡ÇÑ ·¹ÆÛ·±½º Ä«¿îÆ®
+//	// ë ˆí¼ëŸ°ìŠ¤ ì¹´ìš´íŠ¸ë¥¼ ì¦ê°€ì‹œí‚¨ë‹¤ 
+//	// ë¦¬í„´ê°’ : ì¦ê°€í•œ ë ˆí¼ëŸ°ìŠ¤ ì¹´ìš´íŠ¸
 //	unsigned int AddRef();
 //
-//	// ·¹ÆÛ·±½º Ä«¿îÆ®¸¦ °¨¼Ò½ÃÄÑÁØ´Ù or »èÁ¦ÇÑ´Ù
-//	// ¸®ÅÏ°ª : °¨¼ÒÇÏ±â ÀÌÀüÀÇ ·¹ÆÛ·±½º Ä«¿îÆ® 
+//	// ë ˆí¼ëŸ°ìŠ¤ ì¹´ìš´íŠ¸ë¥¼ ê°ì†Œì‹œì¼œì¤€ë‹¤ or ì‚­ì œí•œë‹¤
+//	// ë¦¬í„´ê°’ : ê°ì†Œí•˜ê¸° ì´ì „ì˜ ë ˆí¼ëŸ°ìŠ¤ ì¹´ìš´íŠ¸ 
 //	unsigned int Release();
 public:
 	/// IMGUI
@@ -27,33 +27,33 @@ public:
 
 	virtual void Save_ToJson(nlohmann::json& j) {};
 	virtual void Load_FromJson(nlohmann::json& j) {};
-	void Set_Name(const wstring& name) { m_Name = name; 
+	void Set_Name(const wstring& name) { m_name = name; 
 	}
-	const wstring& Get_Name() const { return m_Name; }
+	const wstring& Get_Name() const { return m_name; }
 
 	_wstring MakeDefaultNameFromTypeName(const char* rttiName);
 	_wstring MakeUniqueName(const _wstring& baseName);
 	void SetDefaultNameFromThisType();
 
-	void Set_ProtoTag(_wstring str) { m_strProtoTag = str; }
-	void Set_ProtoLevel(_uint Level) { m_strProtoLevel = Level; }
-	_wstring Get_ProtoTag() { return m_strProtoTag; }
-	_uint Get_ProtoLevel() { return m_strProtoLevel; }
+	void Set_ProtoTag(_wstring str) { m_protoTag = str; }
+	void Set_ProtoLevel(_uint Level) { m_protoLevel = Level; }
+	_wstring Get_ProtoTag() { return m_protoTag; }
+	_uint Get_ProtoLevel() { return m_protoLevel; }
 protected:
 
 
 private:
-	wstring m_Name;
+	wstring m_name;
 	///
 
-	   _wstring m_strProtoTag = {};
-	_uint m_strProtoLevel = {};
+	   _wstring m_protoTag = {};
+	_uint m_protoLevel = {};
 
 //protected:
-//	unsigned int m_iRefCnt = {};// À¯´ÏÆû ÃÊ±âÈ­, ÀÌÁ¦ long XXX
+//	unsigned int m_iRefCnt = {};// ìœ ë‹ˆí¼ ì´ˆê¸°í™”, ì´ì œ long XXX
 
 public:
-	virtual void Free() {} // ¼Ò¸êÀÚ¿¡ ÇØµµ µÇ´Âµ¥ È£Ãâ¼ø¼­¸¦ Á¶±İ ÀÚÀ²ÀûÀ¸·Î ÇÏ±â À§ÇØ
+	virtual void Free() {} // ì†Œë©¸ìì— í•´ë„ ë˜ëŠ”ë° í˜¸ì¶œìˆœì„œë¥¼ ì¡°ê¸ˆ ììœ¨ì ìœ¼ë¡œ í•˜ê¸° ìœ„í•´
 
 
 };

@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "Bone.h"
 #include "VIBuffer.h"
 
@@ -8,39 +8,39 @@ NS_BEGIN(Engine)
     public CVIBuffer
 {
 private:
-	CMesh(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CMesh(const CMesh& Prototype);
+	CMesh(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CMesh(const CMesh& prototype);
 public:
 	virtual ~CMesh() = default;
 
 
 
 public:
-	virtual HRESULT Initialize_Prototype(MODEL eType, ifstream& InFile, shared_ptr<class CModel> pModel, _fmatrix PreTransformMatrix);
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize_Prototype(EModelType type, ifstream& InFile, shared_ptr<class CModel> model, _fmatrix preTransformMatrix);
+	virtual HRESULT Initialize(void* arg);
 
 
-	_uint Get_MaterialIndex() const {return m_iMaterialIndex;}
+	_uint Get_MaterialIndex() const {return m_materialIndex;}
 
-	HRESULT Bind_BoneMatrices(shared_ptr<class CShader> shader, const _char* pConstantName, const vector<shared_ptr<CBone>>& bones);
-
-private:
-	_char m_szName[MAX_PATH] = {};
-
-	_uint m_iMaterialIndex = {};
-
-	_uint m_iNumBones = {};
-	vector<_uint> m_BoneIndices = {};
-	_float4x4 m_BoneMatrices[512] = {};
-	vector<_float4x4 > m_OffsetMatrices = {}; // vector¿Œ ¿Ã¿Ø¥¬ ª¿∞πºˆ ∏∏≈≠ ø¿«¡º¬ ∞°¡ˆ∞Ì ¿÷¿Ω
+	HRESULT Bind_BoneMatrices(shared_ptr<class CShader> shader, const _char* constantName, const vector<shared_ptr<CBone>>& bones);
 
 private:
-	HRESULT Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix PreTransformMatrix);
+	_char m_name[MAX_PATH] = {};
+
+	_uint m_materialIndex = {};
+
+	_uint m_numBones = {};
+	vector<_uint> m_boneIndices = {};
+	_float4x4 m_boneMatrices[512] = {};
+	vector<_float4x4 > m_offsetMatrices = {}; // vectorÏù∏ Ïù¥Ïú†Îäî ÎºàÍ∞ØÏàò ÎßåÌÅº Ïò§ÌîÑÏÖã Í∞ÄÏßÄÍ≥† ÏûàÏùå
+
+private:
+	HRESULT Ready_VertexBuffer_For_NonAnim(ifstream& InFile, _fmatrix preTransformMatrix);
 	HRESULT Ready_VertexBuffer_For_Anim(ifstream& InFile, shared_ptr<CModel>);
 public:
-	static shared_ptr<CMesh> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, MODEL eType, ifstream& InFile, shared_ptr<class CModel>
-	                                pModel, _fmatrix PreTransformMatrix);
-	virtual shared_ptr<CComponent> Clone(void* pArg);
+	static shared_ptr<CMesh> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, EModelType type, ifstream& InFile, shared_ptr<class CModel>
+	                                model, _fmatrix preTransformMatrix);
+	virtual shared_ptr<CComponent> Clone(void* arg);
 	virtual void Free() override;
 };
 

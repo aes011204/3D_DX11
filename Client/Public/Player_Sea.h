@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "PlayerState.h"
 
 
@@ -15,7 +15,7 @@ class CPlayer_Sea :
     public CPlayerState
 {
 private:
-    explicit CPlayer_Sea(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> pStateMachine);
+    explicit CPlayer_Sea(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> stateMachine);
     virtual ~CPlayer_Sea();
 
 public:
@@ -39,39 +39,39 @@ public:
 
 
 
-    void Location_Sea(_float fTimeDelta);
+    void Location_Sea(_float timeDelta);
    // bool Docking(_float fTimeDelta,_float3 targetPos);
-    _uint Move(_float fTimeDelta);
+    _uint Move(_float timeDelta);
 
 private:
 
-    weak_ptr<class CSea_Manager> m_pSea_Manager = {};
+    weak_ptr<class CSea_Manager> m_seaManager = {};
    
 private:
-    E_PLAYERSTATE m_NextState = E_PLAYERSTATE::SEA;
+    EPlayerState m_nextState = EPlayerState::SEA;
 
     //float m_TargetSpeed = {};
-    float m_CurSpeed = {};
-    float m_MaxSpeed = {};
-    float m_Acceleration = {};
-    float m_Deceleration = {}; // æ∆π´∞Õµµ æ»«“ãö ¡ŸæÓµÂ¥¬ æÁ
+    float m_curSpeed = {};
+    float m_maxSpeed = {};
+    float m_acceleration = {};
+    float m_deceleration = {}; // ÏïÑÎ¨¥Í≤ÉÎèÑ ÏïàÌï†ÎñÑ Ï§ÑÏñ¥ÎìúÎäî Ïñë
 
-    float m_CurTurnSpeed = {};
-    float m_MaxTurnSpeed = {};
-    float m_TurnAcceleration = {};
-    float m_TurnDeceleration = {};
+    float m_curTurnSpeed = {};
+    float m_maxTurnSpeed = {};
+    float m_turnAcceleration = {};
+    float m_turnDeceleration = {};
    ///
-    bool m_bIsDocking = false;
-    bool m_bFinDock = false;
+    bool m_isDocking = false;
+    bool m_isFinDock = false;
     _float3 m_targetPos = {};
-    weak_ptr<CLight> m_LightObj = {  };
-    bool m_OnTab = false;
-    bool On_Light = false;
-    bool bPlaying = false;
+    weak_ptr<CLight> m_lightObj = {  };
+    bool m_isOnTab = false;
+    bool m_isLightOn = false;
+    bool m_isPlaying = false;
 
-    weak_ptr<class CUI_TabContainer> m_TapUI={};
+    weak_ptr<class CUI_TabContainer> m_tabUI={};
 public:
-    static shared_ptr<CPlayer_Sea> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
+    static shared_ptr<CPlayer_Sea> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine);
 
 private:
     virtual void Free();

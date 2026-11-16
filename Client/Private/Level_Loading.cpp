@@ -1,4 +1,4 @@
-#include "Level_Loading.h"
+ï»¿#include "Level_Loading.h"
 
 #include <GameInstance.h>
 
@@ -21,25 +21,25 @@
 
 //
 
-CLevel_Loading::CLevel_Loading(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CLevel{ pDevice, pContext }
+CLevel_Loading::CLevel_Loading(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CLevel{ device, context }
 {
 }
 
-HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
+HRESULT CLevel_Loading::Initialize(ELevel nextLevelID)
 {
-	m_pGameInstance.lock()->Stop_All();
-	m_eNextLevelID = eNextLevelID;
+	m_gameInstance.lock()->Stop_All();
+	m_nextLevelID = nextLevelID;
 	
-	// ·Îµù È­¸éÀ» ±¸¼ºÇØÁÖ±â À§ÇÑ °´Ã¼µéÀ» »ı¼ºÇÑ´Ù
+	// ë¡œë”© í™”ë©´ì„ êµ¬ì„±í•´ì£¼ê¸° ìœ„í•œ ê°ì²´ë“¤ì„ ìƒì„±í•œë‹¤
 	if (FAILED(Ready_Layer_BackGround(TEXT("Layer_BackGround"))))
 		return E_FAIL;
 	if (FAILED(Ready_Layer_UI(TEXT("Layer_UI"))))
 		return E_FAIL;
 
-	// Àú °´Ã¼µéÀÌ ·ÎµùÈ­¸éÀ» ±¸¼ºÇÏ°í À¯Àú¿¡°Ô º¸¿©ÁÖ´Â µ¿¾È ÀÚ¿øÀ» ·ÎµåÇØÁÙ¼ö ÀÖ´Â (Cloader)½º·¹µå °´Ã¼¸¦ »ı¼ºÇìÁØ´Ù
-	m_pLoader = CLoader::Create(m_pDevice, m_pContext, eNextLevelID);
-	if(m_pLoader == nullptr)
+	// ì € ê°ì²´ë“¤ì´ ë¡œë”©í™”ë©´ì„ êµ¬ì„±í•˜ê³  ìœ ì €ì—ê²Œ ë³´ì—¬ì£¼ëŠ” ë™ì•ˆ ìì›ì„ ë¡œë“œí•´ì¤„ìˆ˜ ìˆëŠ” (Cloader)ìŠ¤ë ˆë“œ ê°ì²´ë¥¼ ìƒì„±í—¤ì¤€ë‹¤
+	m_loader = CLoader::Create(m_device, m_context, nextLevelID);
+	if(m_loader == nullptr)
 		return E_FAIL;
 
 
@@ -48,10 +48,10 @@ HRESULT CLevel_Loading::Initialize(LEVEL eNextLevelID)
 
 HRESULT CLevel_Loading::Post_Initialize()
 {
-	shared_ptr<CUI> lodingUI = m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"Loading");
+	shared_ptr<CUI> lodingUI = m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"Loading");
 	if(lodingUI == nullptr)
 	{
-		m_pGameInstance.lock()->UI_Push(UI_LAYER::OVERRIDE, L"Loading", true, nullptr);
+		m_gameInstance.lock()->UI_Push(EUILayer::OVERRIDE, L"Loading", true, nullptr);
 		
 
 	}
@@ -63,43 +63,43 @@ HRESULT CLevel_Loading::Post_Initialize()
 	return S_OK;
 }
 
-void CLevel_Loading::Update(_float fTimeDelta)
+void CLevel_Loading::Update(_float timeDelta)
 {
 	//
 	//m_LoadingUI->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT))
 	//&& GetKeyState(VK_RETURN) & 0x8000
 
-	if( m_pLoader->Is_Finished() == true)
+	if( m_loader->Is_Finished() == true)
 	{
 
 
-		shared_ptr<CLevel> pNextLevel = { nullptr };
+		shared_ptr<CLevel> nextLevel = { nullptr };
 
 
 		
-		switch (m_eNextLevelID)
+		switch (m_nextLevelID)
 		{
-		case LEVEL::LOGO:
-			pNextLevel = CLevel_Logo::Create(m_pDevice, m_pContext);
+		case ELevel::LOGO:
+			nextLevel = CLevel_Logo::Create(m_device, m_context);
 			break;
 
-		case LEVEL::GAMEPLAY:
-			pNextLevel = CLevel_GamePlay::Create(m_pDevice, m_pContext);
+		case ELevel::GAMEPLAY:
+			nextLevel = CLevel_GamePlay::Create(m_device, m_context);
 			break;
-		case LEVEL::EDITOR:
-			pNextLevel = CLevel_Editor::Create(m_pDevice, m_pContext);
+		case ELevel::EDITOR:
+			nextLevel = CLevel_Editor::Create(m_device, m_context);
 			break;
 		default:
 			break;
 		}
 
-		if(pNextLevel==nullptr)
+		if(nextLevel==nullptr)
 		{
 			MSG_BOX("Failed to Created : NextLevel");
 			return;
 		}
 
-		if(FAILED(m_pGameInstance.lock()->Change_Level(ETOI(m_eNextLevelID),pNextLevel)))
+		if(FAILED(m_gameInstance.lock()->Change_Level(ETOI(m_nextLevelID),nextLevel)))
 		{
 			MSG_BOX("Failed to Change : NextLevel");
 			return;
@@ -115,23 +115,23 @@ void CLevel_Loading::Update(_float fTimeDelta)
 HRESULT CLevel_Loading::Render()
 {
 #ifdef _DEBUG
-	m_pLoader->Print_LoadText();
+	m_loader->Print_LoadText();
 #endif
 
 	return S_OK;
 }
 
-HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar* pLayerTag)
+HRESULT CLevel_Loading::Ready_Layer_BackGround(const _tchar* layerTag)
 {
 
 
 	return S_OK;
 }
 
-HRESULT CLevel_Loading::Ready_Layer_UI(const _tchar* LayerTag)
+HRESULT CLevel_Loading::Ready_Layer_UI(const _tchar* layerTag)
 {
 	//CUITransform::UITRANSFORM_DESC desc ;
-	//// ÀÓ½Ã·Î UI¸Å´ÏÁ®¿¡ ui µî·Ï
+	//// ì„ì‹œë¡œ UIë§¤ë‹ˆì ¸ì— ui ë“±ë¡
 
 	//shared_ptr pInstance = CUIPanel::Create(m_pDevice, m_pContext);
 	//pInstance->Initialize(&desc);
@@ -147,15 +147,15 @@ HRESULT CLevel_Loading::Ready_Layer_UI(const _tchar* LayerTag)
 	return S_OK;
 }
 
-shared_ptr<CLevel_Loading> CLevel_Loading::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, LEVEL eNextLevelID)
+shared_ptr<CLevel_Loading> CLevel_Loading::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, ELevel nextLevelID)
 {
-	shared_ptr<CLevel_Loading> pInstance ( new CLevel_Loading(pDevice, pContext));
+	shared_ptr<CLevel_Loading> instance ( new CLevel_Loading(device, context));
 
-	if (FAILED(pInstance->Initialize(eNextLevelID)))
+	if (FAILED(instance->Initialize(nextLevelID)))
 	{
 		MSG_BOX("Failed to Created : CLevel_Loading");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CLevel_Loading::Free()

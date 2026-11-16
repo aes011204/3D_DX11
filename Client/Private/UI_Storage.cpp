@@ -1,4 +1,4 @@
-#include "UI_Storage.h"
+Ôªø#include "UI_Storage.h"
 #include "UISlot.h"
 
 #include "UIText.h"
@@ -13,8 +13,8 @@
 #include "DInput_Manager.h"
 
 
-CUI_Storage::CUI_Storage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext) :
-	CUIPanel(pDevice, pContext)
+CUI_Storage::CUI_Storage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context) :
+	CUIPanel(device, context)
 {
 }
 
@@ -24,29 +24,29 @@ CUI_Storage::CUI_Storage(const CUIPanel& prototype) :
 }
 HRESULT CUI_Storage::Initialize_Prototype()
 {
-	// ¿Ã∞« ±◊≥…  PreInitialize ¥ÎøÎ¿∏∑Œ ªÁøÎ
+	// Ïù¥Í±¥ Í∑∏ÎÉ•  PreInitialize ÎåÄÏö©ÏúºÎ°ú ÏÇ¨Ïö©
 	//
-	///πﬂ«‡¿Ã ≥™¡ﬂø° µ«æﬂ«‘ 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenStrageInit_Data>([this](const Evt_InvenStrageInit_Data& e)
+	///Î∞úÌñâÏù¥ ÎÇòÏ§ëÏóê ÎêòÏïºÌï® 
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_InvenStorageInitData>([this](const Evt_InvenStorageInitData& e)
 		{
 
-			if (e.inventype == INVENTYPE::SHOP)
+			if (e.invenType == EInvenType::SHOP)
 			{
-				if(m_shopTab == e.ShopTabType)
+				if(m_shopTab == e.shopTabType)
 				{
-					m_Inven = e.Inven_ptr;
-					if (m_Inven.lock() != nullptr)
-						Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+					m_inven = e.invenPtr;
+					if (m_inven.lock() != nullptr)
+						Rebuild_InventorySlot(m_inven.lock()->Get_W(), m_inven.lock()->Get_H(), m_inven.lock()->Get_Invenslot());
 
 					return;
 				}
 				
 			}
-			else if (e.inventype == m_inventype)
+			else if (e.invenType == m_inventype)
 			{
-				m_Inven = e.Inven_ptr;
-				if (m_Inven.lock() != nullptr)
-					Rebuild_InventorySlot(m_Inven.lock()->Get_W(), m_Inven.lock()->Get_H(), m_Inven.lock()->Get_Invenslot());
+				m_inven = e.invenPtr;
+				if (m_inven.lock() != nullptr)
+					Rebuild_InventorySlot(m_inven.lock()->Get_W(), m_inven.lock()->Get_H(), m_inven.lock()->Get_Invenslot());
 			}
 
 		});
@@ -55,38 +55,38 @@ HRESULT CUI_Storage::Initialize_Prototype()
 }
 
 
-HRESULT CUI_Storage::OnInit(void* pArg)
+HRESULT CUI_Storage::OnInit(void* arg)
 {
 
-	STORAGE_DESC* pDesc = static_cast<STORAGE_DESC*>(pArg);
-	m_inventype = pDesc->Inventype;
-	m_shopTab = pDesc->shopTab;
+	StorageDesc* desc = static_cast<StorageDesc*>(arg);
+	m_inventype = desc->invenType;
+	m_shopTab = desc->shopTab;
 
 
 	HRESULT hr = {};
 
 
 
-	///// √¢∞Ì ΩΩ∑‘ ∆–≥Œ /////
-	CUIPanel::UIPANEL_DESC Panel_Inven = {};
-	Panel_Inven.TextureProtoName = L"Prototype_Component_Texture_StorageInventoryBackground";
-	Panel_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
-	Panel_Inven.IsFullScreen = false;
-	Panel_Inven.IsTransparent = false;
-	Panel_Inven.IsUseLayout = true;
-	Panel_Inven.bUseNineSlice = false;
+	///// Ï∞ΩÍ≥† Ïä¨Î°Ø Ìå®ÎÑê /////
+	CUIPanel::UIPanelDesc panelInven = {};
+	panelInven.textureProtoName = L"Prototype_Component_Texture_StorageInventoryBackground";
+	panelInven.textureComLevel = ETOI(ELevel::STATIC);
+	panelInven.isFullScreen = false;
+	panelInven.isTransparent = false;
+	panelInven.isUseLayout = true;
+	panelInven.useNineSlice = false;
 
-	Panel_Inven.LayoutDesc.m_Spacing = { 4.f ,4.f };
-	Panel_Inven.LayoutDesc.m_Col = 7;
-	Panel_Inven.LayoutDesc.m_Row = 8;
+	panelInven.layoutDesc.spacing = { 4.f ,4.f };
+	panelInven.layoutDesc.col = 7;
+	panelInven.layoutDesc.row = 8;
 	//Panel_Inven.LayoutDesc.m_Offset = { 0.f, 0.f };
 
 
-	shared_ptr<CUIPanel> StoragePanel = CUIPanel::Create(m_pDevice, m_pContext);
-	StoragePanel->Initialize(&Panel_Inven);
-	m_InvenPanel = StoragePanel;
+	shared_ptr<CUIPanel> storagePanel = CUIPanel::Create(m_device, m_context);
+	storagePanel->Initialize(&panelInven);
+	m_invenPanel = storagePanel;
 
-	Add_Child(m_InvenPanel, L"Panel_storage", false);
+	Add_Child(m_invenPanel, L"Panel_storage", false);
 
 
 	/// slot ///
@@ -116,7 +116,7 @@ HRESULT CUI_Storage::OnInit(void* pArg)
 
 
 
-	hr = __super::OnInit(pDesc);
+	hr = __super::OnInit(desc);
 
 
 	return hr;
@@ -127,8 +127,8 @@ void CUI_Storage::OnActive()
 	__super::OnActive();
 
 	Evt_OpenInventory e;
-	e.inven = m_Inven;
-	m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+	e.inven = m_inven;
+	m_gameInstance.lock()->Get_EventBus()->Publish(e);
 
 	//m_shopTab = SHOPTAB::ENGINE;
 }
@@ -146,82 +146,82 @@ void CUI_Storage::OnDisabled()
 
 void CUI_Storage::OnUpdate(const _float& timeDelta)
 {
-    if (!m_Inven.expired() && m_InvenPanel && !m_Slot.empty())
+    if (!m_inven.expired() && m_invenPanel && !m_slot.empty())
         MousePosToSlot();
     __super::OnUpdate(timeDelta);
 }
 
 void CUI_Storage::OnPrepareRender()
 {
-    auto inventory = m_Inven.lock();
-    if (!inventory || !m_InvenPanel || m_Slot.empty())
+    auto inventory = m_inven.lock();
+    if (!inventory || !m_invenPanel || m_slot.empty())
         return;
-	auto& InvenItem = m_Inven.lock()->Get_InventoryItem();
-	auto& InvenSlot = m_Inven.lock()->Get_Invenslot();
+	auto& invenItem = m_inven.lock()->Get_InventoryItem();
+	auto& invenSlot = m_inven.lock()->Get_Invenslot();
 
-	for (_uint index = 0; index < InvenSlot.size(); index++)
+	for (_uint index = 0; index < invenSlot.size(); index++)
 	{
-		_float4 Muscolor = {};
+		_float4 slotColor = {};
 		_float4 colorReset = { 0.f,0.f,0.f,0.f };
 
-		m_Slot[index]->Set_ColorFlat(colorReset);
-		switch (InvenSlot[index].Slot_Color)
+		m_slot[index]->Set_ColorFlat(colorReset);
+		switch (invenSlot[index].slotColor)
 		{
-		case PLACE_COLOR::GREEN:
-			Muscolor = { 0.f,1.f,0.f,.8f };
+		case EPlaceColor::GREEN:
+			slotColor = { 0.f,1.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 
 			break;
-		case PLACE_COLOR::ORANGE:
-			Muscolor = { 1.0f,0.6f,0.0f,.8f };
+		case EPlaceColor::ORANGE:
+			slotColor = { 1.0f,0.6f,0.0f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 
 			break;
-		case PLACE_COLOR::RED:
-			Muscolor = { 1.f,0.f,0.f,.8f };
+		case EPlaceColor::RED:
+			slotColor = { 1.f,0.f,0.f,.8f };
 			//m_Slot[index]->Set_UseColorMix(true);
-			m_Slot[index]->Set_ColorFlat(Muscolor);
+			m_slot[index]->Set_ColorFlat(slotColor);
 			break;
-		case PLACE_COLOR::END:
+		case EPlaceColor::END:
 
 			//m_Slot[index]->Set_ColorFlat(false);
 			break;
 		}
 
-		if (InvenSlot[index].IsBroken == true)
+		if (invenSlot[index].isBroken == true)
 		{
-			m_Slot[index]->Set_TextureIndex(1);
+			m_slot[index]->Set_TextureIndex(1);
 		}
 	}
 
 
-	for (auto& invnelItem : InvenItem)
+	for (auto& invnelItem : invenItem)
 	{
 		_float4 color = {};
-		switch (invnelItem.ItemType)
+		switch (invnelItem.itemType)
 		{
-		case ITEM_TYPE::MATERIAL:
-		case ITEM_TYPE::EQUIP:
+		case EItemType::MATERIAL:
+		case EItemType::EQUIP:
 			color = { 0.23f, 0.23f, 0.21f, 1.f };
 			break;
-		case ITEM_TYPE::FISH:
+		case EItemType::FISH:
 			color = { .7f,0.2f,0.2f,1.f };
 			break;
 
 		}
 
 
-		for (_uint i = 0; i < invnelItem.CurBase.size(); i++)
+		for (_uint i = 0; i < invnelItem.curBase.size(); i++)
 		{
 
-			_uint x = invnelItem.CurBase[i].dx;
-			_uint y = invnelItem.CurBase[i].dy;
-			_uint index = y * m_Inven.lock()->Get_W() + x;
+			_uint x = invnelItem.curBase[i].dx;
+			_uint y = invnelItem.curBase[i].dy;
+			_uint index = y * m_inven.lock()->Get_W() + x;
 
-			m_Slot[index]->Set_UseColorFlat(true);
-			m_Slot[index]->Set_ColorFlat(color);
+			m_slot[index]->Set_UseColorFlat(true);
+			m_slot[index]->Set_ColorFlat(color);
 		}
 	}
 
@@ -247,35 +247,35 @@ void CUI_Storage::OnClear()
 	__super::OnClear();
 }
 
-shared_ptr<CUI_Storage> CUI_Storage::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Storage> CUI_Storage::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Storage> pInstance(new CUI_Storage(pDevice, pContext), [](CUI_Storage* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_Storage> instance(new CUI_Storage(device, context), [](CUI_Storage* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIStorage");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Storage::Free()
 {
 	__super::Free();
 
-	m_ItemUI.clear();
-	m_Slot.clear();
+	m_itemUI.clear();
+	m_slot.clear();
 
 }
 
 
 
-_bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& inven_slot)
+_bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& invenSlot)
 {
-	//∫∏∆Æ ΩΩ∑‘∏æÁ¿Ã πŸ≤Ó∏È ∂˜¥ŸµÓ¿∏∑Œ Init_InventorySlot »£√‚ 
+	//Î≥¥Ìä∏ Ïä¨Î°ØÎ™®ÏñëÏù¥ Î∞îÎÄåÎ©¥ ÎûåÎã§Îì±ÏúºÎ°ú Init_InventorySlot Ìò∏Ï∂ú 
 	//find boat back ground ->  clear boat back ground's chilren -> for{for{}} add new slot children
 
-	if (/*Inven_Contrl == nullptr||*/ m_InvenPanel == nullptr)
+	if (/*Inven_Contrl == nullptr||*/ m_invenPanel == nullptr)
 	{
 		MSG_BOX("failed  : Rebuild_InventorySlot");
 		return false;
@@ -283,60 +283,60 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 
 
 
-	m_InvenPanel->UI_Clear();
+	m_invenPanel->UI_Clear();
 
 
-	m_InvenPanel->Change_LayoutRawCol(w, h);
+	m_invenPanel->Change_LayoutRawCol(w, h);
 
 
 	/// slot ///
 
-	m_Slot.clear();
-	m_Slot.resize(h * w);
+	m_slot.clear();
+	m_slot.resize(h * w);
 
 	for (_uint i = 0; i < h; i++)
 	{
 		for (_uint j = 0; j < w; j++)
 		{
-			Engine::CUISlot::SLOT_DESC slot_Inven = {};
+			Engine::CUISlot::SlotDesc slotInven = {};
 			//slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
-			slot_Inven.TextureComLevel = ETOI(LEVEL::STATIC);
-			slot_Inven.vScale = Vector2{ 1.6f,1.6f };
-			slot_Inven.Index = i * w + j;
-			if (inven_slot[i * w + j].IsLock == true)
+			slotInven.textureComLevel = ETOI(ELevel::STATIC);
+			slotInven.scale = Vector2{ 1.6f,1.6f };
+			slotInven.index = i * w + j;
+			if (invenSlot[i * w + j].isLock == true)
 			{
-				slot_Inven.IsTransparent = true;
+				slotInven.isTransparent = true;
 			}
-			slot_Inven.slotType = ETOI(inven_slot[i * w + j].slotType);
+			slotInven.slotType = ETOI(invenSlot[i * w + j].slotType);
 
-			switch (slot_Inven.slotType)
+			switch (slotInven.slotType)
 			{
-			case ETOI(SLOT_TYPE::ENGINE):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
+			case ETOI(ESlotType::ENGINE):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_EngineEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::LIGHT):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
+			case ETOI(ESlotType::LIGHT):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_LightEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::NET):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // æÿ æ¯¥¬µÌ
+			case ETOI(ESlotType::NET):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven"; // Ïï§ ÏóÜÎäîÎìØ
 				break;
-			case ETOI(SLOT_TYPE::ROT):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
+			case ETOI(ESlotType::ROT):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_FishingEquipmentIcon";
 				break;
-			case ETOI(SLOT_TYPE::ANY):
-				slot_Inven.TextureProtoName = L"Prototype_Component_Texture_Slot_Inven";
+			case ETOI(ESlotType::ANY):
+				slotInven.textureProtoName = L"Prototype_Component_Texture_Slot_Inven";
 				break;
 			}
 
 
-			shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_pDevice, m_pContext);
-			m_pInstanceINVEN->Initialize(&slot_Inven);
+			shared_ptr<CUISlot> m_pInstanceINVEN = CUISlot::Create(m_device, m_context);
+			m_pInstanceINVEN->Initialize(&slotInven);
 
-			wstring NameTag = L"SLOT_STORAGE_" + S2W(to_string(i * w + j));
+			wstring nameTag = L"SLOT_STORAGE_" + S2W(to_string(i * w + j));
 
 
-			m_InvenPanel->Add_Layout_Child(m_pInstanceINVEN, NameTag, false);
-			m_Slot[i * w + j] = m_pInstanceINVEN;
+			m_invenPanel->Add_Layout_Child(m_pInstanceINVEN, nameTag, false);
+			m_slot[i * w + j] = m_pInstanceINVEN;
 
 			m_pInstanceINVEN->Set_ButtonState(false);
 			m_pInstanceINVEN->Set_UseDark(true);
@@ -345,27 +345,28 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 		}
 	}
 
-	m_Slot.resize(h * w);
+	m_slot.resize(h * w);
+	m_itemUI.clear(); // Ïû¨Íµ¨ÏÑ± Ïãú Ïù¥Ï†Ñ ÌíÄ(UI_ClearÎ°ú Ï†úÍ±∞Îê®)Ïù¥ ÎÇ®ÏïÑ ÎàÑÏ†ÅÎêòÏßÄ ÏïäÎèÑÎ°ù ÎπÑÏö¥Îã§
 	{
 		for (_uint i = 0; i < 30; i++)
 		{
-			CUIImage::UIIMAGE_DESC ImgItemPool = {};
-			ImgItemPool.TextureComLevel = ETOI(LEVEL::STATIC);
-			ImgItemPool.TextureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
-			ImgItemPool.ZOrder = 5;
-			ImgItemPool.IsTransparent = true;
+			CUIImage::UIImageDesc imgItemPool = {};
+			imgItemPool.textureComLevel = ETOI(ELevel::STATIC);
+			imgItemPool.textureProtoName = L"../Bin/Resources/Textures/Item/Fish/mackerel.png";
+			imgItemPool.ZOrder = 5;
+			imgItemPool.isTransparent = true;
 			//ImgDesc. = true;
 
-			shared_ptr<CUIImage> pChild = CUIImage::Create(m_pDevice, m_pContext);
-			pChild->Initialize(&ImgItemPool);
+			shared_ptr<CUIImage> child = CUIImage::Create(m_device, m_context);
+			child->Initialize(&imgItemPool);
 			//pChild->UI_InActive();
 
-			wstring NameTag = L"ITEM_STORAGE_" + S2W(to_string(i));
+			wstring nameTag = L"ITEM_STORAGE_" + S2W(to_string(i));
 
 
-			m_InvenPanel->Add_Child(pChild, NameTag, false);
+			m_invenPanel->Add_Child(child, nameTag, false);
 
-			m_ItemUI.push_back(pChild);
+			m_itemUI.push_back(child);
 		}
 	}
 
@@ -376,26 +377,26 @@ _bool CUI_Storage::Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& i
 
 _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 {
-	Evt_MouseToIndex_Data e = {};
-	e.IsOnSlot = false; // ±‚∫ª false
+	Evt_MouseToIndexData e = {};
+	e.isOnSlot = false; // Í∏∞Î≥∏ false
 
-	if (m_Inven.lock()->Get_Inventype() == INVENTYPE::PLAYER)
+	if (m_inven.lock()->Get_Inventype() == EInvenType::PLAYER)
 	{
-		e.IsPlayer = true;
+		e.isPlayer = true;
 	}
 	else
 	{
-		e.IsPlayer = false;
+		e.isPlayer = false;
 	}
 
-	LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
+	LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
 
-	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
-
-
+	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manager()->Get_MousePos();
 
 
-	for (auto& slot : m_Slot)
+
+
+	for (auto& slot : m_slot)
 	{
 		if (true == slot->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 		{
@@ -405,9 +406,9 @@ _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 			//SlotY = index % layout.m_Col;
 
 
-			e.x = index % layout.m_Col;;
-			e.y = index / layout.m_Col;;
-			e.IsOnSlot = true;
+			e.x = index % layout.col;;
+			e.y = index / layout.col;;
+			e.isOnSlot = true;
 
 			break;
 		}
@@ -415,9 +416,9 @@ _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 	}
 
 
-	if (m_InvenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
+	if (m_invenPanel->GetUITransform()->Get_WorldRect().Contains(musPos.x, musPos.y))
 	{
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndex_Data>(e);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_MouseToIndexData>(e);
 	}
 
 	return true;
@@ -425,16 +426,16 @@ _bool CUI_Storage::MousePosToSlot(/*_uint& SlotX, _uint& SlotY*/)
 }
 
 
-_float2 CUI_Storage::Calculate_RenderPos(const Item_Inst& item)
+_float2 CUI_Storage::Calculate_RenderPos(const ItemInst& item)
 {
 
 	_float minX = FLT_MAX, minY = FLT_MAX;
 	_float maxX = -FLT_MAX, maxY = -FLT_MAX;
 
-	_uint col = m_InvenPanel->Get_LayoutDesc().m_Col;
-	_uint row = m_InvenPanel->Get_LayoutDesc().m_Row;
-	// æ∆¿Ã≈€¿Ã ¡°¿Ø«— ∏µÁ ƒ≠¿ª µπ∏Èº≠ Ω«¡¶ ΩΩ∑‘µÈ¿« ¿ßƒ°∏¶ ºˆ¡˝
-	for (auto& OccCell : item.CurBase)
+	_uint col = m_invenPanel->Get_LayoutDesc().col;
+	_uint row = m_invenPanel->Get_LayoutDesc().row;
+	// ÏïÑÏù¥ÌÖúÏù¥ Ï†êÏú†Ìïú Î™®Îì† Ïπ∏ÏùÑ ÎèåÎ©¥ÏÑú Ïã§Ï†ú Ïä¨Î°ØÎì§Ïùò ÏúÑÏπòÎ•º ÏàòÏßë
+	for (auto& OccCell : item.curBase)
 	{
 		//   int index = OccCell.dy * m_w + OccCell.dx;
 		//_uint col = Get_LayoutDesc().m_Col;
@@ -445,7 +446,7 @@ _float2 CUI_Storage::Calculate_RenderPos(const Item_Inst& item)
 		//int index = y * col + x;
 		int index = OccCell.dy * col + OccCell.dx;
 
-		_float2 slotPos = m_Slot[index]->GetUITransform()->Get_AnchoredPos();
+		_float2 slotPos = m_slot[index]->GetUITransform()->Get_AnchoredPos();
 
 		minX = min(minX, slotPos.x);
 		maxX = max(maxX, slotPos.x);
@@ -457,7 +458,7 @@ _float2 CUI_Storage::Calculate_RenderPos(const Item_Inst& item)
 
 	}
 
-	// 4. ºˆ¡˝µ» ΩΩ∑‘ ¡¬«•µÈ¿« ¡§¡ﬂæ”¿ª ±∏«‘
+	// 4. ÏàòÏßëÎêú Ïä¨Î°Ø Ï¢åÌëúÎì§Ïùò Ï†ïÏ§ëÏïôÏùÑ Íµ¨Ìï®
 	_float2 center = {
 		(minX + maxX) * 0.5f,
 		(minY + maxY) * 0.5f
@@ -475,57 +476,51 @@ void CUI_Storage::Render_Item()
 {
 
 
-	//¿Ã «‘ºˆ¥¬ ¿Øæ∆¿Ã∞° √ﬂ∞°µ«∞≈≥™ ¡Ÿæ˙¿ªãö Ω≈»£πﬁ¿∏∏È ±◊ãö «—π¯æø «œ¥¬∞≈¿”
+	//Ïù¥ Ìï®ÏàòÎäî Ïú†ÏïÑÏù¥Í∞Ä Ï∂îÍ∞ÄÎêòÍ±∞ÎÇò Ï§ÑÏóàÏùÑÎñÑ Ïã†Ìò∏Î∞õÏúºÎ©¥ Í∑∏ÎñÑ ÌïúÎ≤àÏî© ÌïòÎäîÍ±∞ÏûÑ
 
-	auto inven = m_Inven.lock();
+	auto inven = m_inven.lock();
 	if (inven == nullptr)
 		return;
 
 	auto& items = inven->Get_InventoryItem();
-	_float2 slotSize = m_Slot[0]->GetUITransform()->Get_FinalSize();
+	_float2 slotSize = m_slot[0]->GetUITransform()->Get_FinalSize();
 
-	for (auto& UI : m_ItemUI)
+	for (auto& UI : m_itemUI)
 	{
 		UI->Set_Transparent(true);
 	}
-	for (int i = 0; i < items.size(); i++)
+
+	// ÏïÑÏù¥ÌÖú iÎ≤à ‚Üî ÌíÄ iÎ≤àÏùÑ Î∞îÎ°ú ÎåÄÏùë (Îπà UIÎ•º Îß§Î≤à Ï≤òÏùåÎ∂ÄÌÑ∞ Ï∞æÏßÄ ÏïäÎäîÎã§)
+	const LayoutDesc layout = m_invenPanel->Get_LayoutDesc();
+	const size_t drawCount = min(items.size(), m_itemUI.size());
+	for (size_t i = 0; i < drawCount; i++)
 	{
-
-
-		LAYOUT_DESC layout = m_InvenPanel->Get_LayoutDesc();
-
-		for (auto& UI : m_ItemUI)
+		auto& UI = m_itemUI[i];
+		const ItemDef& def = CItemDB::GetInstance()->GetItemByID(items[i].itemDefID);
+		UI->Change_Texture(items[i].cachingTexture);
+		if (items[i].cachingTexture == nullptr)
 		{
-			if (UI->Get_Transparent() == true)
-			{
-				Item_Def def = CItemDB::GetInstance()->GetItemByID(items[i].ItemDef_ID);
-				UI->Change_Texture(items[i].pCashingTexture);
-				if (items[i].pCashingTexture == nullptr)
-				{
-					MSG_BOX("Texture NULL");
-					continue;
-				}
-				_float2 vAnchoredPos = Calculate_RenderPos(items[i]);
-
-				UI->GetUITransform()->SetAnchoredPos(vAnchoredPos);
-				UI->GetUITransform()->SetSizeDelta(
-					{ slotSize.x * def.ItemShape.Width + layout.m_Spacing.x * (def.ItemShape.Width - 1),
-					slotSize.y * def.ItemShape.Height + layout.m_Spacing.y * (def.ItemShape.Height - 1)
-					});
-				// »∏¿¸
-				UI->GetUITransform()->SetRotation(items[i].Rotation * -90.f);
-				UI->Set_Transparent(false);
-				UI->GetUITransform()->SetPivot({ 0.5f, 0.5f });
-				break;
-			}
+			MSG_BOX("Texture NULL");
+			continue;
 		}
+		_float2 anchoredPos = Calculate_RenderPos(items[i]);
+
+		UI->GetUITransform()->SetAnchoredPos(anchoredPos);
+		UI->GetUITransform()->SetSizeDelta(
+			{ slotSize.x * def.itemShape.width + layout.spacing.x * (def.itemShape.width - 1),
+			slotSize.y * def.itemShape.height + layout.spacing.y * (def.itemShape.height - 1)
+			});
+		// ÌöåÏ†Ñ
+		UI->GetUITransform()->SetRotation(items[i].rotation * -90.f);
+		UI->Set_Transparent(false);
+		UI->GetUITransform()->SetPivot({ 0.5f, 0.5f });
 	}
 
 }
 
 void CUI_Storage::Set_SlotNum(_uint col, _uint row)
 {
-	Rebuild_InventorySlot(col, row, m_Inven.lock()->Get_Invenslot());
+	Rebuild_InventorySlot(col, row, m_inven.lock()->Get_Invenslot());
 }
 
 

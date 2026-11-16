@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 
@@ -14,13 +14,13 @@ NS_BEGIN(Client)
     public CUIPanel
 {
 public:
-    struct STORAGE_DESC : public CUIPanel::UIPANEL_DESC
+    struct StorageDesc : public CUIPanel::UIPanelDesc
     {
-        INVENTYPE Inventype = { INVENTYPE::NONE };
-        SHOPTAB shopTab = { SHOPTAB::NONE };
+        EInvenType invenType = { EInvenType::NONE };
+        EShopTab shopTab = { EShopTab::NONE };
     };
 private:
-    CUI_Storage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_Storage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_Storage(const CUIPanel& prototype);
     HRESULT Initialize_Prototype();
 public:
@@ -30,7 +30,7 @@ public:
 
 
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -40,28 +40,28 @@ public:
     HRESULT OnRender()override;
     void OnClear()override;
     _bool MousePosToSlot();
-    _float2 Calculate_RenderPos(const Item_Inst& item);
+    _float2 Calculate_RenderPos(const ItemInst& item);
     void Render_Item();
 
     void Set_SlotNum(_uint col, _uint row);
 
-    shared_ptr<CUIPanel> Get_InvenPanel() { return m_InvenPanel; }
+    shared_ptr<CUIPanel> Get_InvenPanel() { return m_invenPanel; }
 
 private:
-    INVENTYPE m_inventype = { INVENTYPE::NONE };
-    SHOPTAB m_shopTab = { SHOPTAB::NONE };
+    EInvenType m_inventype = { EInvenType::NONE };
+    EShopTab m_shopTab = { EShopTab::NONE };
 
-    shared_ptr<class CInventory_Controller> Inven_Contrl = { nullptr };
-    shared_ptr<CUIPanel> m_InvenPanel = { nullptr };
+    shared_ptr<class CInventory_Controller> m_invenContr = { nullptr };
+    shared_ptr<CUIPanel> m_invenPanel = { nullptr };
 
-    weak_ptr<class CInventory> m_Inven = {};
+    weak_ptr<class CInventory> m_inven = {};
 
-    vector<shared_ptr<CUIImage>> m_ItemUI = {};
-    vector<shared_ptr<CUISlot>> m_Slot = {};
+    vector<shared_ptr<CUIImage>> m_itemUI = {};
+    vector<shared_ptr<CUISlot>> m_slot = {};
 public:
-    static shared_ptr<CUI_Storage> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_Storage> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
-    _bool Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& inven_slot);
+    _bool Rebuild_InventorySlot(_uint w, _uint h, const vector<Slot>& invenSlot);
 };
 
 NS_END;

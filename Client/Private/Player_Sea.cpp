@@ -1,4 +1,4 @@
-#include "Player_Sea.h"
+﻿#include "Player_Sea.h"
 #include "DInput_Manager.h"
 #include "PlayerBoat.h"
 #include "PlayerStateMachine.h"
@@ -9,8 +9,8 @@
 #include "UI_Item.h"
 #include "UI_TabContainer.h"
 
-CPlayer_Sea::CPlayer_Sea(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
-	: CPlayerState(owner, pStateMachine)
+CPlayer_Sea::CPlayer_Sea(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> stateMachine)
+	: CPlayerState(owner, stateMachine)
 {
 }
 
@@ -24,149 +24,149 @@ void CPlayer_Sea::Enter()
 	// 留뚯??移�?�??湲곕???꾩튂?? ?꾩젣 ?꾩튂媛 ??�Ⅴ??�㈃ ??�봽
 	Evt_ChangeCam event = {};
 	
-	auto pLerp = make_shared<CAM_LERP_DESC>();
-	pLerp->eMode = LERP;
-	_vector forward = m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK);
-	pLerp->IsLerpTarget = true;
-	pLerp->fFov = 60;
-	//pLerp->m_Target = m_Owner;
-	pLerp->fDuration = 1.f;
-	event.commands.push_back(pLerp);
+	auto lerp = make_shared<CamLerpDesc>();
+	lerp->mode = ECamMode::LERP;
+	_vector forward = m_ownerTransformCom.lock()->Get_State(ETransformState::LOOK);
+	lerp->isLerpTarget = true;
+	lerp->FOV = 60;
+	//lerp->target = m_owner;
+	lerp->duration = 1.f;
+	event.commands.push_back(lerp);
 
-	auto pFow = make_shared<CAM_FOLLOW_DESC>();
-	pFow->eMode = CAM_MODE::FOLLOW;
-	pFow->fPitch = 0.f;
-	pFow->fYaw = 0.f;
+	auto fow = make_shared<CamFollowDesc>();
+	fow->mode = ECamMode::FOLLOW;
+	fow->pitch = 0.f;
+	fow->yaw = 0.f;
 
-	event.commands.push_back(pFow);
+	event.commands.push_back(fow);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 	CGameInstance::GetInstance()->Set_TimeScale(2.f);
 
-	m_Acceleration = m_Owner.lock()->Get_BoatSpeed() * 0.15f;
-	m_Deceleration = 1.f;
-	m_MaxSpeed = m_Owner.lock()->Get_BoatSpeed() * 0.25f;
+	m_acceleration = m_owner.lock()->Get_BoatSpeed() * 0.15f;
+	m_deceleration = 1.f;
+	m_maxSpeed = m_owner.lock()->Get_BoatSpeed() * 0.25f;
 
-	m_CurTurnSpeed = 0.f;
-	m_MaxTurnSpeed = XMConvertToRadians(40.f);
-	m_TurnAcceleration = m_MaxTurnSpeed * 2.5f;
-	m_TurnDeceleration = m_MaxTurnSpeed * 1.5f;
+	m_curTurnSpeed = 0.f;
+	m_maxTurnSpeed = XMConvertToRadians(40.f);
+	m_turnAcceleration = m_maxTurnSpeed * 2.5f;
+	m_turnDeceleration = m_maxTurnSpeed * 1.5f;
 
-	m_pGameInstance.lock()->Play_Loop(L"Waves_Ambience_1");
+	m_gameInstance.lock()->Play_Loop(L"Waves_Ambience_1");
 }
 
 void CPlayer_Sea::Exit()
 {
-	m_NextState = E_PLAYERSTATE::SEA;
+	m_nextState = EPlayerState::SEA;
 
-	m_pGameInstance.lock()->Stop(L"Waves_Ambience_1",2.f);
+	m_gameInstance.lock()->Stop(L"Waves_Ambience_1",2.f);
 	CPlayerState::Exit();
 }
 
 HRESULT CPlayer_Sea::Init_State()
 {
 
-	m_pSea_Manager = CSea_Manager::GetInstance();
+	m_seaManager = CSea_Manager::GetInstance();
 
 
-	m_LightObj = m_Owner.lock()->Get_Light();
+	m_lightObj = m_owner.lock()->Get_Light();
 	
 	return CPlayerState::Init_State();
 }
 
 int CPlayer_Sea::Update_State(const _float& timeDelta)
 {
-	if (m_Owner.lock() && m_Owner.lock()->IsInputBlocked())
+	if (m_owner.lock() && m_owner.lock()->IsInputBlocked())
 	{
-		m_CurSpeed = 0.f;
-		m_CurTurnSpeed = 0.f;
+		m_curSpeed = 0.f;
+		m_curTurnSpeed = 0.f;
 		Location_Sea(timeDelta);
-		return ETOI(m_NextState);
+		return ETOI(m_nextState);
 	}
 
-	if (Move(timeDelta) == ETOI(E_PLAYERSTATE::VILLAGE))
-		return ETOI(E_PLAYERSTATE::VILLAGE);
+	if (Move(timeDelta) == ETOI(EPlayerState::VILLAGE))
+		return ETOI(EPlayerState::VILLAGE);
 	Location_Sea(timeDelta);
 
 
-	if (m_Input_Manager->MouseDown(DIMB::RBUTTON) && m_LightObj.lock())
+	if (m_inputManager->MouseDown(EMouseButton::RBUTTON) && m_lightObj.lock())
 	{
-		On_Light = !On_Light;
-		m_LightObj.lock()->Set_Active(On_Light);
+		m_isLightOn = !m_isLightOn;
+		m_lightObj.lock()->Set_Active(m_isLightOn);
 
 		{
-			Evt_Boat_Light e = {};
-			e.Light = On_Light;
-			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_Boat_Light>(e);
+			Evt_BoatLight e = {};
+			e.isLightOn = m_isLightOn;
+			m_gameInstance.lock()->Get_EventBus()->Publish<Evt_BoatLight>(e);
 		}
 
 
-		if(On_Light)
-		m_pGameInstance.lock()->Play_Once(L"light_on");
+		if(m_isLightOn)
+		m_gameInstance.lock()->Play_Once(L"light_on");
 		else
-			m_pGameInstance.lock()->Play_Once(L"light_off");
+			m_gameInstance.lock()->Play_Once(L"light_off");
 
 	}
-	if (m_LightObj.lock()->Get_Active() == true)
+	if (m_lightObj.lock()->Get_Active() == true)
 	{
-		XMVECTOR vPos = m_pOwnerTransformCom.lock()->Get_Position();
-		XMVECTOR vLook = XMVector3Normalize(m_pOwnerTransformCom.lock()->Get_State(STATE::LOOK));
+		XMVECTOR pos = m_ownerTransformCom.lock()->Get_Position();
+		XMVECTOR look = XMVector3Normalize(m_ownerTransformCom.lock()->Get_State(ETransformState::LOOK));
 
-		XMVECTOR vFinal = vPos + vLook * 1.5f + XMVectorSet(0.f, 0.9f, 0.f, 0.f);
+		XMVECTOR final = pos + look * 1.5f + XMVectorSet(0.f, 0.9f, 0.f, 0.f);
 		_float3 finalPos;
-		XMStoreFloat3(&finalPos, vFinal);
+		XMStoreFloat3(&finalPos, final);
 
-		m_LightObj.lock()->Set_Position(finalPos.x, finalPos.y, finalPos.z);
+		m_lightObj.lock()->Set_Position(finalPos.x, finalPos.y, finalPos.z);
 	}
 
 
 
-	if(m_Input_Manager->KeyDown(DIK_F) && m_pStateMachine.lock()->Get_TargetShared()!= nullptr)
+	if(m_inputManager->KeyDown(DIK_F) && m_stateMachine.lock()->Get_TargetShared()!= nullptr)
 	{
 
-		if(auto Target =dynamic_pointer_cast<CFish>(m_pStateMachine.lock()->Get_TargetShared()))
+		if(auto Target =dynamic_pointer_cast<CFish>(m_stateMachine.lock()->Get_TargetShared()))
 		{
-			Target->Change_Cam(m_Owner.lock());
+			Target->Change_Cam(m_owner.lock());
 
-				m_CurSpeed = 0.f;
+				m_curSpeed = 0.f;
 
 
 				Evt_FishingData e = {};
-				e.Fish_ID = Target->Get_fish_DefID();
-				e.Fish = Target;
-				e.RodSpeed = m_Owner.lock()->Get_RodSpeed();
-				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+				e.fishID = Target->Get_FishDefID();
+				e.fish = Target;
+				e.rodSpeed = m_owner.lock()->Get_RodSpeed();
+				m_gameInstance.lock()->Get_EventBus()->Publish(e);
 
 
-				return ETOI(E_PLAYERSTATE::FISHING);
+				return ETOI(EPlayerState::FISHING);
 		}
 
 	}
 
 
-	if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_TAB)) 
+	if (m_gameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_TAB)) 
 	{
-		if (m_OnTab == false) 
+		if (m_isOnTab == false) 
 		{
-			m_TapUI = dynamic_pointer_cast<CUI_TabContainer>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::WINDOW, L"TabContainer"));
-			m_TapUI.lock()->UI_PanelActive(ETOI(TAB::INVEN), TAB::INVEN);
+			m_tabUI = dynamic_pointer_cast<CUI_TabContainer>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::WINDOW, L"TabContainer"));
+			m_tabUI.lock()->UI_PanelActive(ETOI(ETab::INVEN), ETab::INVEN);
 
-			auto m_HoldItem = dynamic_pointer_cast<CUI_Item>(m_pGameInstance.lock()->Find_UI_InCurLevel(UI_LAYER::OVERRIDE, L"HoldItem"));
-			m_HoldItem->UI_Active();
+			auto m_holdItem = dynamic_pointer_cast<CUI_Item>(m_gameInstance.lock()->Find_UI_InCurLevel(EUILayer::OVERRIDE, L"HoldItem"));
+			m_holdItem->UI_Active();
 
 
-			m_OnTab = true;
+			m_isOnTab = true;
 		}
 		else
 		{
-			m_TapUI.lock()->UI_InActive();
+			m_tabUI.lock()->UI_InActive();
 
-			m_OnTab = false;
+			m_isOnTab = false;
 		}
 	}
 
 
-	return ETOI(m_NextState);
+	return ETOI(m_nextState);
 }
 
 void CPlayer_Sea::LateUpdate_State(const _float& timeDelta)
@@ -186,57 +186,57 @@ void CPlayer_Sea::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollide
 
 void CPlayer_Sea::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-	m_pStateMachine.lock()->Set_Target(nullptr);
+	m_stateMachine.lock()->Set_Target(nullptr);
 }
 
 void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
 
-	if (other->Get_MyLayer() == COLLISION_LAYER::FISH)
+	if (other->Get_MyLayer() == ECollisionLayer::FISH)
 	{
 		
-		m_pStateMachine.lock()->Set_Target(other->Get_GOwner());// = other->Get_GOwner();
+		m_stateMachine.lock()->Set_Target(other->Get_GOwner());// = other->Get_GOwner();
 	}
 	
-	if (m_Input_Manager->KeyDown(DIK_F) && !m_bIsDocking && other->Get_MyLayer() == TRIGGER)
+	if (m_inputManager->KeyDown(DIK_F) && !m_isDocking && other->Get_MyLayer() == TRIGGER)
 	{
-		_float3 vTargetCenter = other->Get_WorldCenter();
+		_float3 targetCenter = other->Get_WorldCenter();
 
-		m_pOwnerTransformCom.lock()->Start_Lerp(
-			XMLoadFloat3(&vTargetCenter),
+		m_ownerTransformCom.lock()->Start_Lerp(
+			XMLoadFloat3(&targetCenter),
 			_float3(0.f, -180.f, 0.f),
 			2.f
 		);
 
 
 		Evt_ChangeCam event = {};
-		auto pLerp = make_shared<CAM_DESC>();
-		pLerp->eMode = CAM_MODE::STOP;
+		auto lerp = make_shared<CamDesc>();
+		lerp->mode = ECamMode::STOP;
 		
-		event.commands.push_back(pLerp);
+		event.commands.push_back(lerp);
 
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
 
-		m_bIsDocking = true;
+		m_isDocking = true;
 	}
 
-	if(m_Input_Manager->KeyUp(DIK_F))
+	if(m_inputManager->KeyUp(DIK_F))
 	{
 		Evt_ChangeCam event = {};
-		auto pfollow = make_shared<CAM_DESC>();
-		pfollow->eMode = CAM_MODE::FOLLOW;
+		auto pfollow = make_shared<CamDesc>();
+		pfollow->mode = ECamMode::FOLLOW;
 
 		event.commands.push_back(pfollow);
 
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 	}
 
-	if (other->Get_MyLayer() == COLLISION_LAYER::ITEM)
+	if (other->Get_MyLayer() == ECollisionLayer::ITEM)
 	{
-		if (m_Input_Manager->KeyDown(DIK_F))
+		if (m_inputManager->KeyDown(DIK_F))
 		{
-			m_NextState = E_PLAYERSTATE::INTERACT;
+			m_nextState = EPlayerState::INTERACT;
 		}
 	}
 
@@ -244,21 +244,21 @@ void CPlayer_Sea::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider
 }
 
 
-void CPlayer_Sea::Location_Sea(_float fTimeDelta)
+void CPlayer_Sea::Location_Sea(_float timeDelta)
 {
-	auto m_pTransformCom = m_pOwnerTransformCom.lock();
+	auto m_transformCom = m_ownerTransformCom.lock();
 	
-	auto Sea = m_pSea_Manager.lock();
-	_vector CurPos = m_pTransformCom->Get_Position();
+	auto sea = m_seaManager.lock();
+	_vector curPos = m_transformCom->Get_Position();
 
 	//以묒???�줈 y ?꾩튂
 	//{
-	_float fFinalPosY = {};
+	_float finalPosY = {};
 
-	//m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fFinalPosY);
-	_float3 fianlPos = { XMVectorGetX(CurPos), Sea->Get_GlobalY(), XMVectorGetZ(CurPos) };
-	fianlPos.y = Sea->Calculate_GerstnerWavePosition(fianlPos).y;
-	m_pTransformCom->Set_Position(XMLoadFloat3(&fianlPos));
+	//m_gameInstance.lock()->Compute_HeightOnTerrain(CurPos, &finalPosY);
+	_float3 fianlPos = { XMVectorGetX(curPos), sea->Get_GlobalY(), XMVectorGetZ(curPos) };
+	fianlPos.y = sea->Calculate_GerstnerWavePosition(fianlPos).y;
+	m_transformCom->Set_Position(XMLoadFloat3(&fianlPos));
 	//	
 	//}
 
@@ -267,7 +267,7 @@ void CPlayer_Sea::Location_Sea(_float fTimeDelta)
 	{
 		//_float3 FRBL[4] = { { 0.f,  0.f,1.f }, { 0.5f,0.f,0.f} , { 0.f, 0.f,-1.f }, { -0.5f, 0.f, 0.f, } };
 		_float3 FRBL[4] = {};
-		_vector flatLook = XMVectorSetY(m_pTransformCom->Get_State(STATE::LOOK), 0.f);
+		_vector flatLook = XMVectorSetY(m_transformCom->Get_State(ETransformState::LOOK), 0.f);
 		flatLook = XMVector3Normalize(flatLook);
 		const _vector worldUp = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 		_vector flatRight = XMVector3Normalize(XMVector3Cross(worldUp, flatLook));
@@ -287,87 +287,87 @@ void CPlayer_Sea::Location_Sea(_float fTimeDelta)
 		for (_uint i = 0; i < 4; i++)
 		{
 
-			fianlPosFRBL[i] = Sea->Calculate_GerstnerWavePosition(Pos[i]);
+			fianlPosFRBL[i] = sea->Calculate_GerstnerWavePosition(Pos[i]);
 		}
 
 		_vector forwordDir = XMLoadFloat3(&fianlPosFRBL[0]) - XMLoadFloat3(&fianlPosFRBL[2]);
-		_vector RightDir = XMLoadFloat3(&fianlPosFRBL[1]) - XMLoadFloat3(&fianlPosFRBL[3]);
+		_vector rightDir = XMLoadFloat3(&fianlPosFRBL[1]) - XMLoadFloat3(&fianlPosFRBL[3]);
 
 		forwordDir = XMVector3Normalize(forwordDir);
-		RightDir = XMVector3Normalize(RightDir);
+		rightDir = XMVector3Normalize(rightDir);
 
-		_vector FinalUpDir = XMVector3Normalize(XMVector3Cross(forwordDir, RightDir));
+		_vector finalUpDir = XMVector3Normalize(XMVector3Cross(forwordDir, rightDir));
 
-		_vector FinalRightDir = XMVector3Normalize(XMVector3Cross(FinalUpDir, flatLook));
+		_vector finalRightDir = XMVector3Normalize(XMVector3Cross(finalUpDir, flatLook));
 
-		_vector FinalLookDir = XMVector3Normalize(XMVector3Cross(FinalRightDir, FinalUpDir));
+		_vector finalLookDir = XMVector3Normalize(XMVector3Cross(finalRightDir, finalUpDir));
 
-		_matrix NewRotationMatrix;
-		NewRotationMatrix.r[0] = FinalRightDir;
-		NewRotationMatrix.r[1] = FinalUpDir;
-		NewRotationMatrix.r[2] = FinalLookDir;
-		NewRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
+		_matrix newRotationMatrix;
+		newRotationMatrix.r[0] = finalRightDir;
+		newRotationMatrix.r[1] = finalUpDir;
+		newRotationMatrix.r[2] = finalLookDir;
+		newRotationMatrix.r[3] = XMVectorSet(0, 0, 0, 1);
 
-		_vector targetQuat = XMQuaternionRotationMatrix(NewRotationMatrix);
+		_vector targetQuat = XMQuaternionRotationMatrix(newRotationMatrix);
 		targetQuat = XMQuaternionNormalize(targetQuat);
-		_vector currentQuat = m_pTransformCom->Get_Quaternion();
+		_vector currentQuat = m_transformCom->Get_Quaternion();
 
-		_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 4.f * fTimeDelta);
+		_vector smoothQuat = XMQuaternionSlerp(currentQuat, targetQuat, 4.f * timeDelta);
 
-		/*m_pTransformCom->Set_Quaternion(smoothQuat);*/
-		if (!m_bIsDocking)
+		/*m_transformCom->Set_Quaternion(smoothQuat);*/
+		if (!m_isDocking)
 		{
-			m_pTransformCom->Set_Quaternion(smoothQuat);
+			m_transformCom->Set_Quaternion(smoothQuat);
 		}
 	}
 
 
-	/*_vector CurPo3 = m_pTransformCom->Get_Position();
+	/*_vector CurPo3 = m_transformCom->Get_Position();
 	_float fOut3 = {};
-	m_pGameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fOut3);*/
+	m_gameInstance.lock()->Compute_HeightOnTerrain(CurPos, &fOut3);*/
 
-	m_pTransformCom->Update_WorldMatrix();
+	m_transformCom->Update_WorldMatrix();
 
 
-	//m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	//m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 
 }
 
 
-_uint CPlayer_Sea::Move(_float fTimeDelta)
+_uint CPlayer_Sea::Move(_float timeDelta)
 {
-	//if (m_bIsDocking == true)
+	//if (m_isDocking == true)
 	//{
-	//	m_pOwnerTransformCom.lock()->Lerp_To(fTimeDelta);
-	//	if (m_pOwnerTransformCom.lock()->GetIsLerp() == false)
+	//	m_ownerTransformCom.lock()->Lerp_To(timeDelta);
+	//	if (m_ownerTransformCom.lock()->GetIsLerp() == false)
 	//	{
-	//		m_bFinDock = true;
-	//		//m_bIsDocking = false;
+	//		m_isFinDock = true;
+	//		//m_isDocking = false;
 
 	//	}
 	//	return;
 	//}
 
-	if (m_bIsDocking)
+	if (m_isDocking)
 	{
-		bool isPress = m_Input_Manager->KeyPress(DIK_F);
+		bool isPress = m_inputManager->KeyPress(DIK_F);
 		float dt = 0.f;
 		if (isPress)
 		{
-			if (!bPlaying)
+			if (!m_isPlaying)
 			{
-				m_pGameInstance.lock()->Play_Loop(L"Dock_Progress");
-				bPlaying = true;
+				m_gameInstance.lock()->Play_Loop(L"Dock_Progress");
+				m_isPlaying = true;
 			}
 
-			dt = fTimeDelta;
+			dt = timeDelta;
 		}
 		else
 		{
-			if (bPlaying)
+			if (m_isPlaying)
 			{
-				m_pGameInstance.lock()->Stop(L"Dock_Progress");
-				bPlaying = false;
+				m_gameInstance.lock()->Stop(L"Dock_Progress");
+				m_isPlaying = false;
 			}
 
 			dt = 0.f;
@@ -375,78 +375,78 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 
 
 
-		m_pOwnerTransformCom.lock()->Lerp_To(dt);
+		m_ownerTransformCom.lock()->Lerp_To(dt);
 
-		if (m_pOwnerTransformCom.lock()->GetIsLerp() == false)
+		if (m_ownerTransformCom.lock()->GetIsLerp() == false)
 		{
 			/*Evt_ChangeCam event = {};
-					auto pLerp = make_shared<CAM_LERP_DESC>();
-					pLerp->eMode = CAM_MODE::LERP ;
-					pLerp->vTargetPos = _float3(8.2f, 3.f, 7.6f);
-					pLerp->vTargetRot = _float3(5.f, -130.f, 0.f);
-					pLerp->fDuration = 2.0f;
+					auto lerp = make_shared<CamLerpDesc>();
+					lerp->eMode = ECamMode::LERP ;
+					lerp->vTargetPos = _float3(8.2f, 3.f, 7.6f);
+					lerp->vTargetRot = _float3(5.f, -130.f, 0.f);
+					lerp->fDuration = 2.0f;
 					
-					event.commands.push_back(pLerp);
+					event.commands.push_back(lerp);
 
 					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);*/
 
-					//m_pStateMachine.lock()->Change_State(ETOI(E_PLAYERSTATE::VILLAGE));
-					m_CurSpeed = 0.f;
-			m_bFinDock = true;
-			m_bIsDocking = false;
+					//m_stateMachine.lock()->Change_State(ETOI(EPlayerState::VILLAGE));
+					m_curSpeed = 0.f;
+			m_isFinDock = true;
+			m_isDocking = false;
 			isPress = false;
-			m_pGameInstance.lock()->Stop(L"Dock_Progress");
-			m_pGameInstance.lock()->Play_Once(L"Docked");
+			m_gameInstance.lock()->Stop(L"Dock_Progress");
+			m_gameInstance.lock()->Play_Once(L"Docked");
 
-			/*m_NextState = E_PLAYERSTATE::VILLAGE;*/
-			return ETOI(E_PLAYERSTATE::VILLAGE);
+			/*m_nextState = EPlayerState::VILLAGE;*/
+			return ETOI(EPlayerState::VILLAGE);
 		}
-		return ETOI(E_PLAYERSTATE::SEA);
+		return ETOI(EPlayerState::SEA);
 	}
-	auto m_pTransformCom = m_pOwnerTransformCom.lock();
-	auto dinput = m_Input_Manager;
+	auto m_transformCom = m_ownerTransformCom.lock();
+	auto dinput = m_inputManager;
 
 	_float4 upDir = { 0.f, 1.f, 0.f, 0.f };
 	bool isInput = false;
 
 	if (dinput->KeyPress(DIK_W))
 	{
-		m_CurSpeed += m_Acceleration * fTimeDelta;
+		m_curSpeed += m_acceleration * timeDelta;
 		isInput = true;
 	}
 	if (dinput->KeyPress(DIK_S))
 	{
-		m_CurSpeed -= m_Acceleration * fTimeDelta;
+		m_curSpeed -= m_acceleration * timeDelta;
 		isInput = true;
 	}
 	if (!isInput)
 	{
 
-		if (m_CurSpeed > 0.f)
+		if (m_curSpeed > 0.f)
 		{
-			m_CurSpeed -= m_Deceleration * fTimeDelta;
-			if (m_CurSpeed < 0.f)
-				m_CurSpeed = 0.f;
+			m_curSpeed -= m_deceleration * timeDelta;
+			if (m_curSpeed < 0.f)
+				m_curSpeed = 0.f;
 		}
-		if (m_CurSpeed < 0.f)
+		if (m_curSpeed < 0.f)
 		{
-			m_CurSpeed += m_Deceleration * fTimeDelta;
-			if (m_CurSpeed > 0.f)
-				m_CurSpeed = 0.f;
+			m_curSpeed += m_deceleration * timeDelta;
+			if (m_curSpeed > 0.f)
+				m_curSpeed = 0.f;
 		}
 	}
-	m_CurSpeed = clamp(m_CurSpeed, -m_MaxSpeed * 0.5f, m_MaxSpeed);
-	float move = m_CurSpeed * fTimeDelta;
-	if (m_CurSpeed > 0.f)
+	m_curSpeed = clamp(m_curSpeed, -m_maxSpeed * 0.5f, m_maxSpeed);
+	float move = m_curSpeed * timeDelta;
+	if (m_curSpeed > 0.f)
 	{
 
-		m_pTransformCom->Go_Forward_Distanace((move));
+		m_transformCom->Go_Forward_Distanace((move));
 
 	}
-	if (m_CurSpeed < 0.f)
+	if (m_curSpeed < 0.f)
 	{
 
-		m_pTransformCom->Go_Backward_Distanace(abs(move));
+		m_transformCom->Go_Backward_Distanace(abs(move));
 
 	}
 
@@ -459,37 +459,37 @@ _uint CPlayer_Sea::Move(_float fTimeDelta)
 
 	if (turnInput != 0.f)
 	{
-		m_CurTurnSpeed += turnInput * m_TurnAcceleration * fTimeDelta;
-		m_CurTurnSpeed = clamp(m_CurTurnSpeed, -m_MaxTurnSpeed, m_MaxTurnSpeed);
+		m_curTurnSpeed += turnInput * m_turnAcceleration * timeDelta;
+		m_curTurnSpeed = clamp(m_curTurnSpeed, -m_maxTurnSpeed, m_maxTurnSpeed);
 	}
 	else
 	{
-		const float turnDeceleration = m_TurnDeceleration * fTimeDelta;
-		if (m_CurTurnSpeed > 0.f)
-			m_CurTurnSpeed = max(0.f, m_CurTurnSpeed - turnDeceleration);
-		else if (m_CurTurnSpeed < 0.f)
-			m_CurTurnSpeed = min(0.f, m_CurTurnSpeed + turnDeceleration);
+		const float turnDeceleration = m_turnDeceleration * timeDelta;
+		if (m_curTurnSpeed > 0.f)
+			m_curTurnSpeed = max(0.f, m_curTurnSpeed - turnDeceleration);
+		else if (m_curTurnSpeed < 0.f)
+			m_curTurnSpeed = min(0.f, m_curTurnSpeed + turnDeceleration);
 	}
 
-	if (abs(m_CurTurnSpeed) > 0.0001f)
+	if (abs(m_curTurnSpeed) > 0.0001f)
 	{
-		m_pTransformCom->Set_RadianSpeed(abs(m_CurTurnSpeed));
-		m_pTransformCom->Turn(XMLoadFloat4(&upDir), m_CurTurnSpeed > 0.f ? fTimeDelta : -fTimeDelta);
+		m_transformCom->Set_RadianSpeed(abs(m_curTurnSpeed));
+		m_transformCom->Turn(XMLoadFloat4(&upDir), m_curTurnSpeed > 0.f ? timeDelta : -timeDelta);
 	}
 
-return 	ETOI(E_PLAYERSTATE::SEA);
+return 	ETOI(EPlayerState::SEA);
 }
 
-shared_ptr<CPlayer_Sea> CPlayer_Sea::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
+shared_ptr<CPlayer_Sea> CPlayer_Sea::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine)
 {
-	shared_ptr<CPlayer_Sea> pInstance(new CPlayer_Sea(owner, pStateMachine), [](CPlayer_Sea* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_Sea> instance(new CPlayer_Sea(owner, stateMachine), [](CPlayer_Sea* p) {p->Free(); delete(p); });
 
-	//if (FAILED(pInstance->Init_State()))
+	//if (FAILED(instance->Init_State()))
 	//{
 	//	MSG_BOX("Failed to Created : CUIPanel");
 	//
 	//}
-	return pInstance;
+	return instance;
 }
 
 void CPlayer_Sea::Free()

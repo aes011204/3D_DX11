@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "PlayerState.h"
 
 
@@ -11,7 +11,7 @@ class CPlayer_Village :
     public CPlayerState
 {
 private:
-    explicit CPlayer_Village(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> pStateMachine);
+    explicit CPlayer_Village(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> stateMachine);
     virtual ~CPlayer_Village();
 
 public:
@@ -29,16 +29,16 @@ public:
 
 private:
 
-    E_PLAYERSTATE eNextState = E_PLAYERSTATE::VILLAGE;
+    EPlayerState m_nextState = EPlayerState::VILLAGE;
 
-    _float m_Acc = {};
+    _float m_acc = {};
     //weak_ptr<class CSea_Manager> m_pSea_Manager = {};
-    _bool IsSleep = { false };
+    _bool m_isSleep = { false };
 public:
-    static shared_ptr<CPlayer_Village> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
+    static shared_ptr<CPlayer_Village> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine);
    
 private:
-    _bool  m_Flag = false;
+    _bool  m_isFlag = false;
 
 private:
     virtual void Free();

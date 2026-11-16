@@ -1,10 +1,10 @@
-#include "Camera_Manager.h"
+ï»¿#include "Camera_Manager.h"
 #include "Camera.h"
 #include "GameInstance.h"
 #include "Engine_Helper.h"
 
 CCamera_Manager::CCamera_Manager() :
-	m_pGameInstance{ CGameInstance::GetInstance() }
+	m_gameInstance{ CGameInstance::GetInstance() }
 {
 }
 
@@ -13,42 +13,42 @@ CCamera_Manager::~CCamera_Manager()
 	Free();
 }
 
-HRESULT CCamera_Manager::Initialize(_uint iNumLevels)
+HRESULT CCamera_Manager::Initialize(_uint numLevels)
 {
-	m_iNumLevel = iNumLevels;
-	m_Cameras = new map<const _wstring, shared_ptr<class CCamera>>[iNumLevels];
+	m_numLevel = numLevels;
+	m_cameras = new map<const _wstring, shared_ptr<class CCamera>>[numLevels];
 
 	return S_OK;
 
 }
 
-void CCamera_Manager::Update_AfterTarget(_float fTimeDelta)
+void CCamera_Manager::Update_AfterTarget(_float timeDelta)
 {
-	auto camera = m_CurCam;
+	auto camera = m_curCam;
 	if (camera)
-		camera->Update_AfterTarget(fTimeDelta);
+		camera->Update_AfterTarget(timeDelta);
 }
 
 void CCamera_Manager::Apply_To_PipeLine()
 {
 
-	if (!m_CurCam)
+	if (!m_curCam)
 	{
 		return;
 	}
 
-	m_pGameInstance.lock()->Set_Transform(D3DTS::VIEW,
-		XMLoadFloat4x4(m_CurCam->Get_CamTSMatrices(D3DTS::VIEW)));
+	m_gameInstance.lock()->Set_Transform(ED3DTS::VIEW,
+		XMLoadFloat4x4(m_curCam->Get_CamTSMatrices(ED3DTS::VIEW)));
 
-	m_pGameInstance.lock()->Set_Transform(D3DTS::PROJ,
-		XMLoadFloat4x4(m_CurCam->Get_CamTSMatrices(D3DTS::PROJ)));
+	m_gameInstance.lock()->Set_Transform(ED3DTS::PROJ,
+		XMLoadFloat4x4(m_curCam->Get_CamTSMatrices(ED3DTS::PROJ)));
 }
 
 float CCamera_Manager::Get_Far()
 {
-	if (m_CurCam != nullptr)
+	if (m_curCam != nullptr)
 	{
-		return m_CurCam->Get_Far();
+		return m_curCam->Get_Far();
 	}
 	else
 		return 500.f;
@@ -59,32 +59,32 @@ void CCamera_Manager::OnGui()
 	
 
 	
-	// 2. ¸Ê ÁÖ¼ÒµéÀ» ¹è¿­¿¡ ´ã±â (Áß°ıÈ£ ¼¼¹ÌÄİ·Ğ ÁÖÀÇ!)
+	// 2. ë§µ ì£¼ì†Œë“¤ì„ ë°°ì—´ì— ë‹´ê¸° (ì¤‘ê´„í˜¸ ì„¸ë¯¸ì½œë¡  ì£¼ì˜!)
 
-	for (_uint i = 0; i < m_iNumLevel; i++)
+	for (_uint i = 0; i < m_numLevel; i++)
 	{
-		if (m_Cameras[i].empty()) continue;
+		if (m_cameras[i].empty()) continue;
 
-		for (auto& pair : m_Cameras[i])
+		for (auto& pair : m_cameras[i])
 		{
-			// wstring -> string º¯È¯
-			string  strBtnName = W2S(pair.first);
+			// wstring -> string ë³€í™˜
+			string  btnName = W2S(pair.first);
 
-			// È°¼ºÈ­ ÇÏÀÌ¶óÀÌÆ® Ã¼Å©
-			bool bIsActive = (m_CurCam == pair.second);
+			// í™œì„±í™” í•˜ì´ë¼ì´íŠ¸ ì²´í¬
+			bool isActive = (m_curCam == pair.second);
 
-			if (bIsActive)
+			if (isActive)
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.7f, 0.2f, 1.0f));
 
-			if (ImGui::Button(strBtnName.c_str()))
+			if (ImGui::Button(btnName.c_str()))
 				CGameInstance::GetInstance()->Change_Camera(pair.first);
 
-			if (bIsActive)
+			if (isActive)
 				ImGui::PopStyleColor();
 
 			ImGui::SameLine();
 		}
-		// ±¸¿ª ±¸ºĞ¿ë °ø¹é
+		// êµ¬ì—­ êµ¬ë¶„ìš© ê³µë°±
         ImGui::Text("|");
 
     ImGui::NewLine();
@@ -93,10 +93,10 @@ void CCamera_Manager::OnGui()
 
 shared_ptr<class CCamera> CCamera_Manager::Find_Camera(_wstring key)
 {
-	for (_uint i = 0; i < m_iNumLevel; i++)
+	for (_uint i = 0; i < m_numLevel; i++)
 	{
-	auto it = m_Cameras[i].find(key);
-	if (it != m_Cameras[i].end())
+	auto it = m_cameras[i].find(key);
+	if (it != m_cameras[i].end())
 	{
 		return it->second;
 	}
@@ -110,14 +110,14 @@ shared_ptr<class CCamera> CCamera_Manager::Find_Camera(_wstring key)
 HRESULT CCamera_Manager::Add_Camera(_uint camLevel, _wstring key, shared_ptr<CCamera> cam)
 {
 
-	auto FindCam = Find_Camera(key);
-	if (FindCam != nullptr)
+	auto findCam = Find_Camera(key);
+	if (findCam != nullptr)
 	{
 		return E_FAIL;
-		// °°Àº ÀÌ¸§À» °¡Áø°´Ã¼°¡ ÀÖÀ½
+		// ê°™ì€ ì´ë¦„ì„ ê°€ì§„ê°ì²´ê°€ ìˆìŒ
 	}
 
-	m_Cameras[camLevel].emplace(key, cam);
+	m_cameras[camLevel].emplace(key, cam);
 	
 		
 	return S_OK;
@@ -128,10 +128,10 @@ HRESULT CCamera_Manager::Add_Camera(_uint camLevel, _wstring key, shared_ptr<CCa
 _bool CCamera_Manager::Change_Camera(_wstring key)
 {
 
-	auto FindCam = Find_Camera(key);
-	if (FindCam)
+	auto findCam = Find_Camera(key);
+	if (findCam)
 	{
-		m_CurCam = FindCam;
+		m_curCam = findCam;
 		return true;
 	}
 
@@ -142,28 +142,28 @@ _bool CCamera_Manager::Change_Camera(_wstring key)
 HRESULT CCamera_Manager::Clear_Camera(_uint level )
 {
 
-	m_Cameras[level].clear();
-	m_CurCam = nullptr; // ÀÏ´Ü ÀÌ·¸°Ô free Ä«¸Ş¶ó·Î ¹Ù²ãÁÙ±î??
+	m_cameras[level].clear();
+	m_curCam = nullptr; // ì¼ë‹¨ ì´ë ‡ê²Œ free ì¹´ë©”ë¼ë¡œ ë°”ê¿”ì¤„ê¹Œ??
 	return S_OK;
 }
 
 
-unique_ptr<CCamera_Manager> CCamera_Manager::Create(_uint iNumLevels)
+unique_ptr<CCamera_Manager> CCamera_Manager::Create(_uint numLevels)
 {
-	unique_ptr<CCamera_Manager> pInstance(new CCamera_Manager());
+	unique_ptr<CCamera_Manager> instance(new CCamera_Manager());
 
-	if (FAILED(pInstance->Initialize(iNumLevels)))
+	if (FAILED(instance->Initialize(numLevels)))
 	{
 		MSG_BOX("Failed to Cloned : CCamera_Manager");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CCamera_Manager::Free()
 {
-	for (_uint i = 0; i <m_iNumLevel; i++)
+	for (_uint i = 0; i <m_numLevel; i++)
 	{
-		m_Cameras[i].clear();
+		m_cameras[i].clear();
 	}
-	delete[] m_Cameras;
+	delete[] m_cameras;
 }

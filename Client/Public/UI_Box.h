@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <UIPanel.h>
 
 
@@ -23,20 +23,20 @@ class CUI_Box :
 {
 public:
 
-	struct BOX_DESC : public CUIPanel::UIPANEL_DESC
+	struct BoxDesc : public CUIPanel::UIPanelDesc
 	{
 
 	};
 protected:
-	CUI_Box(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CUI_Box(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CUI_Box(const CUIPanel& prototype);
 public:
 	~CUI_Box() = default;
 
 public:
-	void UI_PanelActive(_bool IsStorage, _bool IsBox = false, _uint BoxNum = 0);
-	virtual void UI_Active() override; //  UI È°¼ºÈ°½Ã È£ÃâµÇ´Â ÇÔ¼ö// ÀÌ ÆĞ³ÎÀº ´Ù ÄÑÁö¸é ¾ÈµÇ±â‹š¹®¿¡ ¿À¹ö¶óÀÌµùÀ¸·Î È£Ãâ–P°í ¿©±â¼­ Ã³¸®
-	HRESULT OnInit(void* pArg) override;
+	void UI_PanelActive(_bool isStorage, _bool isBox = false, _uint boxNum = 0);
+	virtual void UI_Active() override; //  UI í™œì„±í™œì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜// ì´ íŒ¨ë„ì€ ë‹¤ ì¼œì§€ë©´ ì•ˆë˜ê¸°ë–„ë¬¸ì— ì˜¤ë²„ë¼ì´ë”©ìœ¼ë¡œ í˜¸ì¶œë»‡ê³  ì—¬ê¸°ì„œ ì²˜ë¦¬
+	HRESULT OnInit(void* arg) override;
 	void OnActive()override;
 	void OnInActive()override;
 	void OnDisabled()override;
@@ -45,7 +45,7 @@ public:
 	HRESULT OnRender()override;
 	void OnClear()override;
 
-	void SetActiveTab(TAB tab);
+	void SetActiveTab(ETab tab);
 public:
 
 
@@ -53,26 +53,26 @@ private:
 	//TAB m_Active = TAB::NONE;
 
 	//shared_ptr<CUIImage> m_Line = {};
-	shared_ptr<CUIImage> m_NameBase = {};
+	shared_ptr<CUIImage> m_nameBase = {};
 
-	shared_ptr<CUIText> m_Name_Text = {};
+	shared_ptr<CUIText> m_nameText = {};
 
 	/*shared_ptr<CUIButton> m_ButtonContents[32] = {};*/
 	//shared_ptr<CUIPanel> m_TabContents[32] = {};
-	shared_ptr<CUIPanel> m_Storage = {};
-	shared_ptr<class CUI_Storage> m_Box = {};
+	shared_ptr<CUIPanel> m_storage = {};
+	shared_ptr<class CUI_Storage> m_box = {};
 
 
 	Vector2 m_vecAni = {};
-	_bool m_bStart = false;
-	float m_TimeAcc = {};
-	float m_fDuration = {};
+	_bool m_isStart = false;
+	float m_timeAcc = {};
+	float m_duration = {};
 
 
 	//weak_ptr<CPlayerBoat> m_PlayerBoat = {  };
 
 public:
-	static shared_ptr<CUI_Box> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUI_Box> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	void Free() override;
 };
 

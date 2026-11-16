@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 
@@ -18,23 +18,23 @@ class CMiniGame_Logic;
 {
 public:
 	
-	struct MINIGAEMEPANEL_DESC : public CUIPanel::UIPANEL_DESC
+	struct MiniGamePanelDesc : public CUIPanel::UIPanelDesc
 	{
 
 	};
 protected:
-	CUI_MiniGame(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CUI_MiniGame(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CUI_MiniGame(const CUIPanel& prototype);
 public:
 	~CUI_MiniGame() = default;
 
 public:
-	void SetMiniGameLogic(shared_ptr<CMiniGame> logic) { m_Logic = logic; }
+	void SetMiniGameLogic(shared_ptr<CMiniGame> logic) { m_logic = logic; }
 
 	void UI_PanelActive();
 
-	HRESULT OnInit(void* pArg) override;
-	void Is_OnZoon(_bool IsOnZoon);
+	HRESULT OnInit(void* arg) override;
+	void Is_OnZoon(_bool isOnZone);
 	void OnActive()override;
 	void OnInActive()override;
 	void OnDisabled()override;
@@ -56,57 +56,57 @@ public:
 
 	///
 	bool m_changeColor = { false };
-	float m_AccTime2 = { 0 };
-	float colortime = { 0 };
+	float m_accTime2 = { 0 };
+	float m_colorTime = { 0 };
 
 	///
 	float m_prograssBar01 = { 0 };
-	float m_RodSpeed = {};
+	float m_rodSpeed = {};
 
 
-	// °øÅë
-	_uint m_DefID = { ID_Absence };
-	_bool m_bFin = { false };
+	// ê³µí†µ
+	_uint m_defID = { kIDAbsence };
+	_bool m_isFinished = { false };
 
 	//
-	_uint m_FishCount = {};
+	_uint m_fishCount = {};
 
-	MINIGAME m_MiniGameState = {};
+	EMiniGameType m_miniGameState = {};
 private:
 	shared_ptr<CUIText> m_nameTex = { nullptr };//
 	shared_ptr<CUIText> m_amountTex = { nullptr };//
 	shared_ptr<CUIText> m_locationTex = { nullptr };//
-	shared_ptr<CUIImage> m_FishIcon = { nullptr }; //
+	shared_ptr<CUIImage> m_fishIcon = { nullptr }; //
 
-	shared_ptr<CUIImage> m_pCircleEff = { nullptr };//
-	shared_ptr<CUIImage> m_PrograssIcon = { nullptr };//
+	shared_ptr<CUIImage> m_circleEff = { nullptr };//
+	shared_ptr<CUIImage> m_progressIcon = { nullptr };//
 
 
-	shared_ptr<CUIButton> m_Button = { nullptr };
-	shared_ptr<CUIImage> m_Base = { nullptr };
-	shared_ptr<CUIImage> m_Depth = { nullptr };
+	shared_ptr<CUIButton> m_button = { nullptr };
+	shared_ptr<CUIImage> m_base = { nullptr };
+	shared_ptr<CUIImage> m_depth = { nullptr };
 
-	shared_ptr<CUIImage> m_pCircle = { nullptr };
-	shared_ptr<CUIImage> m_Spinner = { nullptr };
+	shared_ptr<CUIImage> m_circle = { nullptr };
+	shared_ptr<CUIImage> m_spinner = { nullptr };
 
 	//Diamond
 
-	shared_ptr<CUIImage> m_pSizeCircleIn = { nullptr };//
-	shared_ptr<CUIImage> m_pSizeCircle = { nullptr };//
+	shared_ptr<CUIImage> m_sizeCircleIn = { nullptr };//
+	shared_ptr<CUIImage> m_sizeCircle = { nullptr };//
 
     //Ball
-	shared_ptr<CUIImage> m_pBallCircle = { nullptr };//
-	shared_ptr<CUIImage> m_pBall = { nullptr };//
+	shared_ptr<CUIImage> m_ballCircle = { nullptr };//
+	shared_ptr<CUIImage> m_ball = { nullptr };//
 
 	private:
-	shared_ptr<CShader> m_CircleShader = { nullptr };
+	shared_ptr<CShader> m_circleShader = { nullptr };
 
-	shared_ptr<class CMiniGame> m_Logic = { nullptr };
+	shared_ptr<class CMiniGame> m_logic = { nullptr };
 	//shared_ptr<class CMiniGame_Logic> m_LogicCashingCircle = { nullptr };
 	//shared_ptr<class CMiniGame_Logic_Ball> m_LogicCashingBall = { nullptr };
 	//shared_ptr<class CMiniGame_Logic_Diamond> m_LogicCashingDiamond = {nullptr};
 public:
-	static shared_ptr<CUI_MiniGame> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUI_MiniGame> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
 	void Free() override;
 };

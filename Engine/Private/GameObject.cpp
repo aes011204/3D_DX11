@@ -1,10 +1,10 @@
-#include "GameObject.h"
+﻿#include "GameObject.h"
 #include "Transform.h"
 #include "Shader.h"
 
 
-CGameObject::CGameObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CEntity( pDevice ,pContext )
+CGameObject::CGameObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CEntity( device ,context )
 {
 	
 }
@@ -21,7 +21,7 @@ HRESULT CGameObject::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CGameObject::Initialize(void* pArg)
+HRESULT CGameObject::Initialize(void* arg)
 {
 	//m_fX = pDesc->fX;
 	//m_fY = pDesc->fY;
@@ -32,38 +32,38 @@ HRESULT CGameObject::Initialize(void* pArg)
 
 
 
-	m_pTransformCom = CTransform::Create(m_pDevice, m_pContext);
-	if (nullptr == m_pTransformCom)
+	m_transformCom = CTransform::Create(m_device, m_context);
+	if (nullptr == m_transformCom)
 		return E_FAIL;
 
-	if (FAILED(m_pTransformCom->Initialize(pArg)))
+	if (FAILED(m_transformCom->Initialize(arg)))
 		return E_FAIL;
 
-	m_pTransformCom->SetDefaultNameFromThisType();
+	m_transformCom->SetDefaultNameFromThisType();
 
 	if (nullptr == Get_Component(g_strTransformTag))
 	{
-		m_Components.emplace(g_strTransformTag, m_pTransformCom);
+		m_components.emplace(g_strTransformTag, m_transformCom);
 		
 	}
 
-	if (nullptr != pArg)
+	if (nullptr != arg)
 	{
-		GAMEOBJECT_DESC* pDesc = static_cast<GAMEOBJECT_DESC*> (pArg);
+		GameObjectDesc* desc = static_cast<GameObjectDesc*> (arg);
 	}
 
 	return S_OK;
 }
 
-void CGameObject::Priority_Update(_float fTimeDelta)
+void CGameObject::Priority_Update(_float timeDelta)
 {
 }
 
-void CGameObject::Update(_float fTimeDelta)
+void CGameObject::Update(_float timeDelta)
 {
 }
 
-void CGameObject::Late_Update(_float fTimeDelta)
+void CGameObject::Late_Update(_float timeDelta)
 {
 }
 

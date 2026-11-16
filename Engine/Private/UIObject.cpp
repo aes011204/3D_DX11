@@ -1,8 +1,8 @@
-#include "UIObject.h"
+ï»¿#include "UIObject.h"
 #include "Shader.h"
 
-CUIObject::CUIObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject { pDevice, pContext }
+CUIObject::CUIObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject { device, context }
 {
 }
 
@@ -16,47 +16,47 @@ HRESULT CUIObject::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CUIObject::Initialize(void* pArg)
+HRESULT CUIObject::Initialize(void* arg)
 {
-	UI_DESC* pDesc = static_cast<UI_DESC*>(pArg);
+	UIDesc* desc = static_cast<UIDesc*>(arg);
 
-	m_fX = pDesc->fX;
-	m_fY = pDesc->fY;
-	m_fSizeX = pDesc->fSizeX;
-	m_fSizeY = pDesc->fSizeY;
+	m_x = desc->x;
+	m_y = desc->y;
+	m_sizeX = desc->sizeX;
+	m_sizeY = desc->sizeY;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
-	/* Á÷±³Åõ¿µ */
-	D3D11_VIEWPORT			ViewPortDesc{};
-	_uint					iNumViewports = { 1 };
-	m_pContext->RSGetViewports(&iNumViewports, &ViewPortDesc);
+	/* ì§êµíˆ¬ì˜ */
+	D3D11_VIEWPORT			viewPortDesc{};
+	_uint					numViewports = { 1 };
+	m_context->RSGetViewports(&numViewports, &viewPortDesc);
 
-	m_fViewportWidth = ViewPortDesc.Width;
-	m_fViewportHeight = ViewPortDesc.Height;
+	m_viewportWidth = viewPortDesc.Width;
+	m_viewportHeight = viewPortDesc.Height;
 
-	/* Æ®·£½ºÆûÀÌ µé°í ÀÖ´Â ¿ùµåÇà·Ä¿¡ À§ÀÇ ³×°³»óÅÂ¸¦ Ç¥ÇöÇÒ ¼ö ÀÖµµ·Ï “ÐÇüÇÑ´Ù. */	
+	/* íŠ¸ëžœìŠ¤í¼ì´ ë“¤ê³  ìžˆëŠ” ì›”ë“œí–‰ë ¬ì— ìœ„ì˜ ë„¤ê°œìƒíƒœë¥¼ í‘œí˜„í•  ìˆ˜ ìžˆë„ë¡ ë³‚í˜•í•œë‹¤. */	
 	Update_Transform();
 
-	/* Ç×µî ºä. */	
-	XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::VIEW)], XMMatrixIdentity());
+	/* í•­ë“± ë·°. */	
+	XMStoreFloat4x4(&m_transformationMatrices[ETOI(ED3DTS::VIEW)], XMMatrixIdentity());
 
 	
-	XMStoreFloat4x4(&m_TransformationMatrices[ETOI(D3DTS::PROJ)], XMMatrixOrthographicLH(m_fViewportWidth, m_fViewportHeight, 0.f, 1.f));
+	XMStoreFloat4x4(&m_transformationMatrices[ETOI(ED3DTS::PROJ)], XMMatrixOrthographicLH(m_viewportWidth, m_viewportHeight, 0.f, 1.f));
 
 	return S_OK;
 }
 
-void CUIObject::Priority_Update(_float fTimeDelta)
+void CUIObject::Priority_Update(_float timeDelta)
 {
 }
 
-void CUIObject::Update(_float fTimeDelta)
+void CUIObject::Update(_float timeDelta)
 {
 }
 
-void CUIObject::Late_Update(_float fTimeDelta)
+void CUIObject::Late_Update(_float timeDelta)
 {
 
 }
@@ -69,14 +69,14 @@ HRESULT CUIObject::Render()
 
 void CUIObject::Update_Transform()
 {
-	m_pTransformCom->SetUp_Scale(m_fSizeX, m_fSizeY, 1.f);
-	m_pTransformCom->Set_Position(
-		XMVectorSet(m_fX - m_fViewportWidth * 0.5f, -m_fY + m_fViewportHeight * 0.5f, 0.f, 1.f));
+	m_transformCom->SetUp_Scale(m_sizeX, m_sizeY, 1.f);
+	m_transformCom->Set_Position(
+		XMVectorSet(m_x - m_viewportWidth * 0.5f, -m_y + m_viewportHeight * 0.5f, 0.f, 1.f));
 }
 
-HRESULT CUIObject::Bind_ShaderResource(shared_ptr<class CShader> pShader, const _char* pConstantName, D3DTS eTransformState)
+HRESULT CUIObject::Bind_ShaderResource(shared_ptr<class CShader> shader, const _char* constantName, ED3DTS transformState)
 {
-	return pShader->Bind_Matrix(pConstantName, &m_TransformationMatrices[ETOI(eTransformState)]);	
+	return shader->Bind_Matrix(constantName, &m_transformationMatrices[ETOI(transformState)]);	
 }
 
 void CUIObject::Free()

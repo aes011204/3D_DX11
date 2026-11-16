@@ -1,4 +1,4 @@
-#include "Camera.h"
+ï»¿#include "Camera.h"
 
 #include "GameObject.h"
 #include "Transform.h"
@@ -6,8 +6,8 @@
 #include "Shader.h"
 
 
-CCamera::CCamera(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject(pDevice, pContext)
+CCamera::CCamera(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject(device, context)
 {
 
 }
@@ -22,29 +22,29 @@ HRESULT CCamera::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CCamera::Initialize(void* pArg)
+HRESULT CCamera::Initialize(void* arg)
 {
-	if (pArg == nullptr)
-		return E_FAIL; // ÀÌ°Ç ¾÷À¸¸é Àß¸øµÈ°ÅÀÓ
+	if (arg == nullptr)
+		return E_FAIL; // ì´ê±´ ì—…ìœ¼ë©´ ìž˜ëª»ëœê±°ìž„
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 
 
-	_uint iNumViewports = { 1 };
-	D3D11_VIEWPORT  ViewportDesc = {};
-	m_pContext->RSGetViewports(&iNumViewports, &ViewportDesc);
+	_uint numViewports = { 1 };
+	D3D11_VIEWPORT  viewportDesc = {};
+	m_context->RSGetViewports(&numViewports, &viewportDesc);
 
-	CAMERA_DESC* pDesc = static_cast<CAMERA_DESC*>(pArg);
+	CameraDesc* desc = static_cast<CameraDesc*>(arg);
 
-	m_pTransformCom->Set_State(STATE::POSITION, XMLoadFloat4(&pDesc->vEyes));
-	m_pTransformCom->LookAt(XMLoadFloat4(&pDesc->vAt));
+	m_transformCom->Set_State(ETransformState::POSITION, XMLoadFloat4(&desc->eyes));
+	m_transformCom->LookAt(XMLoadFloat4(&desc->at));
 
-	m_fFovy = pDesc->fFovY;
-	m_fNear = pDesc->fNear;
-	m_fFar = pDesc->fFar;
-	m_fAspect = ViewportDesc.Width / ViewportDesc.Height;
+	m_fovy = desc->fovY;
+	m_near = desc->nearZ;
+	m_far = desc->farZ;
+	m_aspect = viewportDesc.Width / viewportDesc.Height;
 	
 
 	Update_TransformMatrices();
@@ -53,15 +53,15 @@ HRESULT CCamera::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CCamera::Priority_Update(_float fTimeDelta)
+void CCamera::Priority_Update(_float timeDelta)
 {
 }
 
-void CCamera::Update(_float fTimeDelta)
+void CCamera::Update(_float timeDelta)
 {
 }
 
-void CCamera::Late_Update(_float fTimeDelta)
+void CCamera::Late_Update(_float timeDelta)
 {
 }
 
@@ -74,31 +74,31 @@ HRESULT CCamera::Render()
 void CCamera::Update_TransformMatrices()
 {
 
-	XMStoreFloat4x4(&m_CamTSMatrices[ETOI(D3DTS::VIEW)],XMMatrixInverse(nullptr, XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix())));
+	XMStoreFloat4x4(&m_camTSMatrices[ETOI(ED3DTS::VIEW)],XMMatrixInverse(nullptr, XMLoadFloat4x4(m_transformCom->Get_WorldMatrix())));
 
-	XMStoreFloat4x4(&m_CamTSMatrices[ETOI(D3DTS::PROJ)],XMMatrixPerspectiveFovLH(m_fFovy, m_fAspect, m_fNear, m_fFar));
+	XMStoreFloat4x4(&m_camTSMatrices[ETOI(ED3DTS::PROJ)],XMMatrixPerspectiveFovLH(m_fovy, m_aspect, m_near, m_far));
 }
 
-shared_ptr<CCamera> CCamera::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CCamera> CCamera::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CCamera> pInstance(new CCamera(pDevice, pContext), [](CCamera* p) {p->Free(); delete p;});
+	shared_ptr<CCamera> instance(new CCamera(device, context), [](CCamera* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CCamera");
 	}
-	return pInstance;
+	return instance;
 }
 
-shared_ptr<CGameObject> CCamera::Clone(void* pArg)
+shared_ptr<CGameObject> CCamera::Clone(void* arg)
 {
-	shared_ptr<CCamera> pInstance(new CCamera(*this), [](CCamera* p) {p->Free(); delete p;});
+	shared_ptr<CCamera> instance(new CCamera(*this), [](CCamera* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CCamera");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CCamera::Free()

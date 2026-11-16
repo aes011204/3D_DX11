@@ -1,10 +1,10 @@
-#include "UIButton.h"
+ï»¿#include "UIButton.h"
 #include "GameInstance.h"
 #include "DInput_Manager.h"
 
 
-CUIButton::CUIButton(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CUIRenderable(pDevice, pContext)
+CUIButton::CUIButton(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CUIRenderable(device, context)
 {
 }
 
@@ -13,14 +13,14 @@ CUIButton::CUIButton(const CUIButton& prototype)
 {
 }
 
-HRESULT CUIButton::OnInit(void* pArg)
+HRESULT CUIButton::OnInit(void* arg)
 {
 
-    UIBUTTON_DESC* pDesc = static_cast<UIBUTTON_DESC*>(pArg);
-    m_ClickEvent = pDesc->ClickEvent;
-    m_OverlapStartEvent = pDesc->OverlapStartEvent;
-    m_OverlapEndEvent = pDesc->OverlapEndEvent;
-    m_TypeIndex = pDesc->TypeIndex;
+    UIButtonDesc* desc = static_cast<UIButtonDesc*>(arg);
+    m_clickEvent = desc->ClickEvent;
+    m_overlapStartEvent = desc->OverlapStartEvent;
+    m_overlapEndEvent = desc->OverlapEndEvent;
+    m_typeIndex = desc->typeIndex;
    // m_TextureComLevel = pDesc->TextureComLevel;
 
 
@@ -35,7 +35,7 @@ HRESULT CUIButton::OnInit(void* pArg)
 
     
 
-    return __super::OnInit(pDesc);;
+    return __super::OnInit(desc);;
 
 }
 
@@ -48,14 +48,14 @@ void CUIButton::OnActive()
 void CUIButton::OnInActive()
 {
 
-    if (m_UIState == BUTTON_STATE::HOVER || m_UIState == BUTTON_STATE::CLICK)
+    if (m_UIState == EButtonState::HOVER || m_UIState == EButtonState::CLICK)
     {
-        if (m_OverlapEndEvent)
-            m_OverlapEndEvent(this);
+        if (m_overlapEndEvent)
+            m_overlapEndEvent(this);
     }
 
-    m_UIState = BUTTON_STATE::NORMAL;
-    m_ClickInside = false;
+    m_UIState = EButtonState::NORMAL;
+    m_isClickInside = false;
 
     __super::OnInActive();
 
@@ -64,14 +64,14 @@ void CUIButton::OnInActive()
 
 void CUIButton::OnDisabled()
 {
-    m_UIState = BUTTON_STATE::DISABLE;
+    m_UIState = EButtonState::DISABLE;
     __super::OnDisabled();
 
 }
 
 void CUIButton::OnUpdate(const _float& timeDelta)
 {
-    _bool bUseDark = Get_IsDark();
+    _bool useDark = Get_IsDark();
 
     ProcessInput();
   /*  if(!m_bUseSelect)
@@ -83,31 +83,31 @@ void CUIButton::OnUpdate(const _float& timeDelta)
         }
     }*/
 
-    if (m_bButtonState == true)
+    if (m_isButtonState == true)
     {
         switch (m_UIState)
         {
-        case BUTTON_STATE::CLICK:
-            if (bUseDark)
+        case EButtonState::CLICK:
+            if (useDark)
                 Set_Dark01(0.f);
 
             break;
 
-        case BUTTON_STATE::SELECT:
-            if (bUseDark)
+        case EButtonState::SELECT:
+            if (useDark)
                 Set_Dark01(0.f);
         
             break;
-        case BUTTON_STATE::HOVER:
-            if (bUseDark)
+        case EButtonState::HOVER:
+            if (useDark)
                 Set_Dark01(0.6f);
 
             break;
-        case BUTTON_STATE::NORMAL:
-            if (bUseDark)
+        case EButtonState::NORMAL:
+            if (useDark)
                 Set_Dark01(0.8f);
             break;
-        case BUTTON_STATE::DISABLE: // »óÁ¡µî¿¡¼­ º¸ÀÌ´Âµ¥ µ·ÀÌ ¾ø¾î¼­ Å¬¸¯ ÇÒ¼ö ¾ø´Â »óÅÂ
+        case EButtonState::DISABLE: // ìƒì ë“±ì—ì„œ ë³´ì´ëŠ”ë° ëˆì´ ì—†ì–´ì„œ í´ë¦­ í• ìˆ˜ ì—†ëŠ” ìƒíƒœ
             break;
 
         }
@@ -162,17 +162,17 @@ void CUIButton::ProcessInput()
 {
    /* m_bHovered = false;
 
-    Vector2 mousePos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
+    Vector2 mousePos = m_pGameInstance.lock()->Get_DInput_Manager()->Get_MousePos();
     if (true == m_pUITransformCom->Get_WorldRect().Contains(mousePos.x, mousePos.y))
     {
         m_bHovered = true;
     }*/
 
-    bool mouseDown = m_pGameInstance.lock()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON);
-    bool mouseUp = m_pGameInstance.lock()->Get_DInput_Manger()->MouseUp(DIMB::LBUTTON);
+    bool mouseDown = m_gameInstance.lock()->Get_DInput_Manager()->MouseDown(EMouseButton::LBUTTON);
+    bool mouseUp = m_gameInstance.lock()->Get_DInput_Manager()->MouseUp(EMouseButton::LBUTTON);
 
     
-        if (m_UIState == BUTTON_STATE::DISABLE)
+        if (m_UIState == EButtonState::DISABLE)
         {
             return;
         }
@@ -184,47 +184,47 @@ void CUIButton::ProcessInput()
 
     //CLog_Manager::GetInstance()->Add_Log_F(LOG_LEVEL::INFO, "CurState %d", ETOI(m_UIState));
 
-    if (m_bHovered) // Á©ÃÖ»óÀ§¿¡¼­ Ã³¸®
+    if (m_isHovered) // ì ¤ìµœìƒìœ„ì—ì„œ ì²˜ë¦¬
     {
-        if (mouseUp && m_ClickInside) // ¾È¿¡¼­ Å¬¸¯ÇÑ »óÅÂ¿¡¼­ ¾È¿¡¼­ ¶Â´ÂÁö
+        if (mouseUp && m_isClickInside) // ì•ˆì—ì„œ í´ë¦­í•œ ìƒíƒœì—ì„œ ì•ˆì—ì„œ ë—ëŠ”ì§€
         {
-            m_ClickInside = false;
-            if (m_bUseSelect)
+            m_isClickInside = false;
+            if (m_useSelect)
             {
-                m_UIState = BUTTON_STATE::SELECT;
+                m_UIState = EButtonState::SELECT;
 	            
             }
             else
             {
-                if (m_OverlapEndEvent) // Äİ¹é ½ÇÇà
-                    m_OverlapEndEvent(this);
+                if (m_overlapEndEvent) // ì½œë°± ì‹¤í–‰
+                    m_overlapEndEvent(this);
 	            
-                m_UIState = BUTTON_STATE::NORMAL; // ¶Ç´Â NORMAL
+                m_UIState = EButtonState::NORMAL; // ë˜ëŠ” NORMAL
             }
 
-            if (m_ClickEvent) // Äİ¹é ½ÇÇà
+            if (m_clickEvent) // ì½œë°± ì‹¤í–‰
             {
-                m_ClickEvent(this);
+                m_clickEvent(this);
 
             }
           
             
             return;
         }
-        if (mouseDown&&m_UIState != BUTTON_STATE::CLICK&& m_UIState != BUTTON_STATE::SELECT) // ¹æ±İ Å¬¸¯
+        if (mouseDown&&m_UIState != EButtonState::CLICK&& m_UIState != EButtonState::SELECT) // ë°©ê¸ˆ í´ë¦­
         {
-            m_ClickInside = true;
-            m_UIState = BUTTON_STATE::CLICK;
+            m_isClickInside = true;
+            m_UIState = EButtonState::CLICK;
             return;
         }
-        if (!mouseDown && !mouseUp && m_UIState == BUTTON_STATE::NORMAL /* && m_UIState != BUTTON_STATE::HOVER && m_UIState != BUTTON_STATE::SELECT*/) // È£¹ö¸µ ÁßÀÎ°¡
+        if (!mouseDown && !mouseUp && m_UIState == EButtonState::NORMAL /* && m_UIState != BUTTON_STATE::HOVER && m_UIState != BUTTON_STATE::SELECT*/) // í˜¸ë²„ë§ ì¤‘ì¸ê°€
         {
-            m_UIState = BUTTON_STATE::HOVER;
+            m_UIState = EButtonState::HOVER;
 
         // CLog_Manager::GetInstance()->Add_Log(LOG_LEVEL::INFO, "Exited at");
-            if (m_OverlapStartEvent) // Äİ¹é ½ÇÇà
+            if (m_overlapStartEvent) // ì½œë°± ì‹¤í–‰
             {
-                m_OverlapStartEvent(this);
+                m_overlapStartEvent(this);
             }
             return;
         }
@@ -232,20 +232,20 @@ void CUIButton::ProcessInput()
     else
     {
 
-        if (m_UIState != BUTTON_STATE::NORMAL && m_UIState != BUTTON_STATE::SELECT)
+        if (m_UIState != EButtonState::NORMAL && m_UIState != EButtonState::SELECT)
         {
             if (mouseUp)
             {
-                m_ClickInside = false;
+                m_isClickInside = false;
 
                
             }
 
-            m_UIState = BUTTON_STATE::NORMAL;
+            m_UIState = EButtonState::NORMAL;
            
-            if (m_OverlapEndEvent) // Äİ¹é ½ÇÇà
+            if (m_overlapEndEvent) // ì½œë°± ì‹¤í–‰
             {
-                m_OverlapEndEvent(this);
+                m_overlapEndEvent(this);
             }
 
         }
@@ -254,7 +254,7 @@ void CUIButton::ProcessInput()
 
 }
 
-void CUIButton::ChangeState(BUTTON_STATE next)
+void CUIButton::ChangeState(EButtonState next)
 {
     m_UIState = next;
 }
@@ -273,7 +273,7 @@ void CUIButton::ChangeState(BUTTON_STATE next)
 //
 //void CUIButton::RebindCom()
 //{
-//    // ÀÌÁ¦ ¸ğµç ÄÄÆ÷³ÍÆ®´Â ³ÎÃ¼Å© ÀßÇÏ±â ¾ø´Â°æ¿ìµµ ÀÖÀ»¼ö ÀÖÀ¸´Ï±î
+//    // ì´ì œ ëª¨ë“  ì»´í¬ë„ŒíŠ¸ëŠ” ë„ì²´í¬ ì˜í•˜ê¸° ì—†ëŠ”ê²½ìš°ë„ ìˆì„ìˆ˜ ìˆìœ¼ë‹ˆê¹Œ
 //    m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
 //    m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 //    m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
@@ -295,19 +295,19 @@ void CUIButton::Load_FromJson(nlohmann::json& j)
 
 _uint CUIButton::Get_TypeIndex()
 {
-    return m_TypeIndex; 
+    return m_typeIndex; 
 }
 
 
-shared_ptr<CUIButton> CUIButton::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUIButton> CUIButton::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-    shared_ptr<CUIButton> pInstance (new CUIButton(pDevice, pContext), [](CUIButton* p) {p->Free();delete(p);});
+    shared_ptr<CUIButton> instance (new CUIButton(device, context), [](CUIButton* p) {p->Free();delete(p);});
 
-    if (FAILED(pInstance->Initialize_Prototype()))
+    if (FAILED(instance->Initialize_Prototype()))
     {
         MSG_BOX("Failed to Created : CUIButton");
     }
-    return pInstance;
+    return instance;
 }
 
 void CUIButton::Free()

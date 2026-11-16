@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include "Client_Define.h"
 #include "Level.h"
 
-// 1. ·Îµù Àå¸éÀ» ±¸¼º ÇØÁÖ±â À§ÇÑ °´Ã¼¸¦ »ı¼ºÇØÁÖ°í ¾÷µ¥ÀÌÆ®¿Í ·»´õÀÇ ¹İº¹ÀûÀÎ ¼öÇà
-// 2. ·Î´ç ´ÙÀ½¿¡ µîÀåÇÒ ·¹º§À» À§ÇÑ ÀÚ¿øÀ» ·Îµå ÇØÁØ´Ù (CLoader) == ·Î´õ¸¦ »ı¼ºÇØÁØ´Ù
+// 1. ë¡œë”© ì¥ë©´ì„ êµ¬ì„± í•´ì£¼ê¸° ìœ„í•œ ê°ì²´ë¥¼ ìƒì„±í•´ì£¼ê³  ì—…ë°ì´íŠ¸ì™€ ë Œë”ì˜ ë°˜ë³µì ì¸ ìˆ˜í–‰
+// 2. ë¡œë‹¹ ë‹¤ìŒì— ë“±ì¥í•  ë ˆë²¨ì„ ìœ„í•œ ìì›ì„ ë¡œë“œ í•´ì¤€ë‹¤ (CLoader) == ë¡œë”ë¥¼ ìƒì„±í•´ì¤€ë‹¤
 NS_BEGIN(Engine)
 class CUI;
 NS_END
@@ -12,29 +12,29 @@ NS_BEGIN(Client)
 class CLevel_Loading final : public CLevel
 {
 private:
-	CLevel_Loading(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CLevel_Loading(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
 	virtual ~CLevel_Loading() = default;
 
 public:
-	virtual HRESULT Initialize(LEVEL eNextLevelID) ;
+	virtual HRESULT Initialize(ELevel nextLevelID) ;
 	virtual HRESULT Post_Initialize()override;
-	virtual void Update(_float fTimeDelta) override;
+	virtual void Update(_float timeDelta) override;
 	virtual HRESULT Render() override;
 
 
 
 private:
-	class shared_ptr<class CLoader> m_pLoader = { nullptr };
-	LEVEL m_eNextLevelID = { LEVEL::END };
+	class shared_ptr<class CLoader> m_loader = { nullptr };
+	ELevel m_nextLevelID = { ELevel::END };
 
 	//ko m_LoadingUI = {};
 private:
-	HRESULT Ready_Layer_BackGround(const _tchar* pLayerTag);
-	HRESULT Ready_Layer_UI(const _tchar* LayerTag);
+	HRESULT Ready_Layer_BackGround(const _tchar* layerTag);
+	HRESULT Ready_Layer_UI(const _tchar* layerTag);
 
 public:
-	static shared_ptr<CLevel_Loading> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, LEVEL eNextLevel);
+	static shared_ptr<CLevel_Loading> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, ELevel eNextLevel);
 	virtual void Free() override;
 };
 

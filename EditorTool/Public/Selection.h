@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Editor_Define.h"
 
 namespace Engine
@@ -30,12 +30,12 @@ public:
     void SetEntity(const shared_ptr<CEntity>& entity);
     shared_ptr<CEntity> GetEntity() const;
 
-    bool HasSelection() const { return m_Type != ESelectType::NONE; }
-    ESelectType GetType() const { return m_Type; }
+    bool HasSelection() const { return m_type != ESelectType::NONE; }
+    ESelectType GetType() const { return m_type; }
 
 private:
-    ESelectType m_Type = ESelectType::NONE;
-    weak_ptr<CEntity> m_Entity;
+    ESelectType m_type = ESelectType::NONE;
+    weak_ptr<CEntity> m_entity;
 };
 
 NS_END

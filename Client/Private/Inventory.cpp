@@ -1,4 +1,4 @@
-#include "Inventory.h"
+ï»¿#include "Inventory.h"
 
 #include "GameInstance.h"
 #include "EventBus.h"
@@ -7,10 +7,10 @@
 #include "PlayerBoat.h"
 
 
-static _uint Num = { 1 };
+static _uint num = { 1 };
 
-CInventory::CInventory(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CComponent(pDevice, pContext)
+CInventory::CInventory(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CComponent(device, context)
 {
 }
 
@@ -21,36 +21,36 @@ HRESULT CInventory::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CInventory::Initialize(void* pArg)
+HRESULT CInventory::Initialize(void* arg)
 {
 
-	INVEN_DESC* inven_desc = static_cast<INVEN_DESC*>(pArg);
-	m_InvenType = inven_desc->invenType;
+	InvenDesc* invenDesc = static_cast<InvenDesc*>(arg);
+	m_invenType = invenDesc->invenType;
 
-	if (pArg != nullptr)
+	if (arg != nullptr)
 	{
 
-		switch (inven_desc->invenType)
+		switch (invenDesc->invenType)
 		{
-		case INVENTYPE::PLAYER:
+		case EInvenType::PLAYER:
 		{
 			Init_BoatUpgrade();
 			Upgrade_Boat(0);
 			break;
 		}
-		case INVENTYPE::SHOP:
+		case EInvenType::SHOP:
 		{
 			m_w = 8;
 			m_h = 8;
 			break;
 		}
-		case INVENTYPE::STORAGE:
+		case EInvenType::STORAGE:
 		{
 			m_w = 7;
 			m_h = 8;
 			break;
 		}
-		case INVENTYPE::CHEST:
+		case EInvenType::CHEST:
 		{
 			m_w = 3;
 			m_h = 3;
@@ -65,26 +65,26 @@ HRESULT CInventory::Initialize(void* pArg)
 
 
 
-	// ¾ÆÀÌÅÛ °¹¼ö±âÁØ
-	m_Inventory.reserve(m_w * m_h);
+	// ì•„ì´í…œ ê°¯ìˆ˜ê¸°ì¤€
+	m_inventory.reserve(m_w * m_h);
 
-	// ½½·Ô±âÁØ (ÃÖ´ë ÀÎ¹ê)
-	m_InvenSlot.resize(m_w * m_h);
+	// ìŠ¬ë¡¯ê¸°ì¤€ (ìµœëŒ€ ì¸ë°´)
+	m_invenSlot.resize(m_w * m_h);
 
 
 	/*Evt_InvenPlayerInit_Data e = {};
 	e.Inven_ptr = static_pointer_cast<CInventory>(shared_from_this());
 
 	m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenPlayerInit_Data>(e);*/
-	// ÀÌ°Å ÇÃ·¹ÀÌ¾î º¸Æ®·Î ¿Å±è 
+	// ì´ê±° í”Œë ˆì´ì–´ ë³´íŠ¸ë¡œ ì˜®ê¹€ 
 
 
-	switch (inven_desc->invenType)
+	switch (invenDesc->invenType)
 	{
-	case INVENTYPE::PLAYER:
+	case EInvenType::PLAYER:
 	{
-		Fish_Inst instfish = {};
-		Item_Inst inst1 = Create_ItemInstance(1001, instfish, 3);
+		FishInst instfish = {};
+		ItemInst inst1 = Create_ItemInstance(1001, instfish, 3);
 
 		/*inst1.BaseXY = { 2,2 };
 		AddItem(inst1, 2, 2);
@@ -100,59 +100,59 @@ HRESULT CInventory::Initialize(void* pArg)
 		AddItem(inst2, 2, 0);*/
 
 
-		Equip_Inst instEquip = {};
-		Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
+		EquipInst instEquip = {};
+		ItemInst inst3 = Create_ItemInstance(2001, instEquip, 0);
 		AddItem(inst3, 2, 6);
 
-		Item_Inst inst4 = Create_ItemInstance(2003, instEquip, 1);
+		ItemInst inst4 = Create_ItemInstance(2003, instEquip, 1);
 		AddItem(inst4, 5, 3);
 		break;
 	}
-	case INVENTYPE::SHOP:
+	case EInvenType::SHOP:
 	{
 
-		Equip_Inst instEquip = {};
+		EquipInst instEquip = {};
 
-		if (inven_desc->EquipType == EQUIP_TYPE::ENGINE)
+		if (invenDesc->equipType == EEquipType::ENGINE)
 		{
-			Item_Inst inst3 = Create_ItemInstance(2001, instEquip, 0);
+			ItemInst inst3 = Create_ItemInstance(2001, instEquip, 0);
 			AddItem(inst3, 0, 0);
 
-			Item_Inst inst4 = Create_ItemInstance(2006, instEquip, 0);
+			ItemInst inst4 = Create_ItemInstance(2006, instEquip, 0);
 			AddItem(inst4, 1, 0);
 
-			Item_Inst inst5 = Create_ItemInstance(2007, instEquip, 0);
+			ItemInst inst5 = Create_ItemInstance(2007, instEquip, 0);
 			AddItem(inst5, 3, 0);
 
 			
 		}
-		else if (inven_desc->EquipType == EQUIP_TYPE::LIGHT)
+		else if (invenDesc->equipType == EEquipType::LIGHT)
 		{
-			Item_Inst inst3 = Create_ItemInstance(2002, instEquip, 0);
+			ItemInst inst3 = Create_ItemInstance(2002, instEquip, 0);
 			AddItem(inst3, 0, 0);
 
-			Item_Inst inst4 = Create_ItemInstance(2008, instEquip, 0);
+			ItemInst inst4 = Create_ItemInstance(2008, instEquip, 0);
 			AddItem(inst4, 1, 0);
 
-			Item_Inst inst5 = Create_ItemInstance(2009, instEquip, 0);
+			ItemInst inst5 = Create_ItemInstance(2009, instEquip, 0);
 			AddItem(inst5, 2, 0);
 
-			Item_Inst inst6 = Create_ItemInstance(2010, instEquip, 0);
+			ItemInst inst6 = Create_ItemInstance(2010, instEquip, 0);
 			AddItem(inst6, 4, 0);
 		}
-		else if (inven_desc->EquipType == EQUIP_TYPE::NET)
+		else if (invenDesc->equipType == EEquipType::NET)
 		{
 
 		}
-		else if (inven_desc->EquipType == EQUIP_TYPE::ROD)
+		else if (invenDesc->equipType == EEquipType::ROD)
 		{
-			Item_Inst inst3 = Create_ItemInstance(2003, instEquip, 0);
+			ItemInst inst3 = Create_ItemInstance(2003, instEquip, 0);
 			AddItem(inst3, 0, 0);
 
-			Item_Inst inst4 = Create_ItemInstance(2011, instEquip, 0);
+			ItemInst inst4 = Create_ItemInstance(2011, instEquip, 0);
 			AddItem(inst4, 2, 0);
 
-			Item_Inst inst5 = Create_ItemInstance(2012, instEquip, 0);
+			ItemInst inst5 = Create_ItemInstance(2012, instEquip, 0);
 			AddItem(inst5, 4, 0);
 
 		}
@@ -160,7 +160,7 @@ HRESULT CInventory::Initialize(void* pArg)
 	
 		break;
 	}
-	case INVENTYPE::STORAGE:
+	case EInvenType::STORAGE:
 	{
 		
 		/*Fish_Inst instfish = {};
@@ -172,10 +172,10 @@ HRESULT CInventory::Initialize(void* pArg)
 		Item_Inst inst = Create_ItemInstance(1001, instfish, 1);*/
 		break;
 	}
-	case INVENTYPE::CHEST:
+	case EInvenType::CHEST:
 	{
 		
-		Item_Inst inst3 = Create_ItemInstance(3001, monostate{}, 0);
+		ItemInst inst3 = Create_ItemInstance(3001, monostate{}, 0);
 		AddItem(inst3, 0, 0);
 
 		inst3 = Create_ItemInstance(3003, monostate{}, 1);
@@ -200,33 +200,33 @@ HRESULT CInventory::Initialize(void* pArg)
 	
 	return S_OK;
 }
-Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, variant<monostate, Fish_Inst, Equip_Inst>  TypeDefInst, int rot)
+ItemInst CInventory::Create_ItemInstance(IDType itemDefID, variant<monostate, FishInst, EquipInst>  typeDefInst, int rot)
 {
 
-	const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemDefID);
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemDefID);
 
 
-	Item_Inst newInst;
-	newInst.ItemDef_ID = def.ItemID;
-	newInst.ItemInst_ID = Num++/*Generate_Unique_ID()*/;
-	newInst.ItemType = def.ItemType;
+	ItemInst newInst;
+	newInst.itemDefID = def.itemID;
+	newInst.itemInstID = num++/*Generate_Unique_ID()*/;
+	newInst.itemType = def.itemType;
 
-	newInst.Rotation = rot;
+	newInst.rotation = rot;
 
-	newInst.TypeDef = TypeDefInst;;
-	newInst.pCashingTexture = def.pTexture;
+	newInst.typeDef = typeDefInst;;
+	newInst.cachingTexture = def.texture;
 
-	if (auto pFish = get_if<Fish_Inst>(&TypeDefInst))
+	if (auto fish = get_if<FishInst>(&typeDefInst))
 	{
-		const Fish_Def& fishDef = get<Fish_Def>(def.TypeDef);
-		const int mutationIndex = static_cast<int>(pFish->mutation_ID) - 1;
+		const FishDef& fishDef = get<FishDef>(def.typeDef);
+		const int mutationIndex = static_cast<int>(fish->mutationID) - 1;
 
-		if (mutationIndex >= 0 && mutationIndex < static_cast<int>(fishDef.vec_Mutation.size()))
+		if (mutationIndex >= 0 && mutationIndex < static_cast<int>(fishDef.vecMutation.size()))
 		{
-			const Mutation& mut = fishDef.vec_Mutation[mutationIndex];
-			newInst.MutaionCashing = mut;
-			newInst.IsMutaion = true;
-			newInst.pCashingTexture = mut.pTexture;
+			const Mutation& mut = fishDef.vecMutation[mutationIndex];
+			newInst.mutationCaching = mut;
+			newInst.isMutation = true;
+			newInst.cachingTexture = mut.texture;
 
 		}
 	}
@@ -252,67 +252,65 @@ Item_Inst CInventory::Create_ItemInstance(ID_uint itemDefID, variant<monostate, 
 
 	return newInst;
 }
-void CInventory::Update(_float fTimeDelta)
+void CInventory::Update(_float timeDelta)
 {
 
 }
 
-Item_Inst CInventory::AddItem(Item_Inst itemInst, _int BaseX, _int BaseY)
+ItemInst CInventory::AddItem(ItemInst itemInst, _int baseX, _int baseY)
 {
-	// ¹Ø¿¡ ¾ÆÀÌÅÛ ÇÑ°³¶û ¹Ù²ãÄ¡±â °¡´É : ÁÖÈ² / ºÒ°¡´É : »¡°­ / °¡´É : ÃÊ·Ï
-	PLACE_COLOR color = {};
-	int instID = CanPlace(itemInst, BaseX, BaseY, color); // ¿©±â¼­ ÇÑ¹ø ´õ ÇÒÇÊ¿ä°¡ ÀÖ³ª?
-	Item_Inst holdInst = {};
+	// ë°‘ì— ì•„ì´í…œ í•œê°œë‘ ë°”ê¿”ì¹˜ê¸° ê°€ëŠ¥ : ì£¼í™© / ë¶ˆê°€ëŠ¥ : ë¹¨ê°• / ê°€ëŠ¥ : ì´ˆë¡
+	EPlaceColor color = {};
+	int instID = CanPlace(itemInst, baseX, baseY, color); // ì—¬ê¸°ì„œ í•œë²ˆ ë” í• í•„ìš”ê°€ ìˆë‚˜?
+	ItemInst holdInst = {};
 
 	switch (color)
 	{
-	case PLACE_COLOR::GREEN:
+	case EPlaceColor::GREEN:
 	{
-		if (instID != ID_Absence)
+		if (instID != kIDAbsence)
 			MSG_BOX("Wrong Item");
 
-		// ÀÎ¹ê¿¡ ¹Ù·Î µé¾î°¨
-		PlaceOn_Inven(itemInst, BaseX, BaseY);
-		m_Dirty = true;
-		return holdInst; // ÃÊ±âÈ­µÈ ºóÀÎ½ºÅÏ½º
+		// ì¸ë°´ì— ë°”ë¡œ ë“¤ì–´ê°
+		PlaceOn_Inven(itemInst, baseX, baseY);
+		m_isDirty = true;
+		return holdInst; // ì´ˆê¸°í™”ëœ ë¹ˆì¸ìŠ¤í„´ìŠ¤
 
 	}
-	case PLACE_COLOR::ORANGE:
+	case EPlaceColor::ORANGE:
 	{
-		// ³ÖÀ»·Á°í ÇÏ´Â ¾ÆÀÌÅÛ°ú ¿ø·¡ ÀÖ´ø ÇÏ³ªÀÇ ¾ÆÀÌÅÛ ½º¿Ò
-		// ±âÁ¸ ÀÎ¹ê¿¡ ÀÖ´ø inst Á¦°Å
+		// ë„£ì„ë ¤ê³  í•˜ëŠ” ì•„ì´í…œê³¼ ì›ë˜ ìˆë˜ í•˜ë‚˜ì˜ ì•„ì´í…œ ìŠ¤ì™‘
+		// ê¸°ì¡´ ì¸ë°´ì— ìˆë˜ inst ì œê±°
 		holdInst = RemoveFrom_Inven(instID);
 		//
-		PlaceOn_Inven(itemInst, BaseX, BaseY);
-		m_Dirty = true;
-		return holdInst; // ½º¿ÒµÈ ÀÎ½ºÅÏ½º 
+		PlaceOn_Inven(itemInst, baseX, baseY);
+		m_isDirty = true;
+		return holdInst; // ìŠ¤ì™‘ëœ ì¸ìŠ¤í„´ìŠ¤ 
 	}
-	case PLACE_COLOR::RED:
+	case EPlaceColor::RED:
 	{
 		if (instID != -1)
 			MSG_BOX("Wrong Item");
-		// ºÒ°¡´É 
-		return itemInst; // ¿ø·¡ ¹Ş¾Æ¿Â ÀÎ½ºÅÏ½º ±×´ë·Î 
+		// ë¶ˆê°€ëŠ¥ 
+		return itemInst; // ì›ë˜ ë°›ì•„ì˜¨ ì¸ìŠ¤í„´ìŠ¤ ê·¸ëŒ€ë¡œ 
 
 	}
 	}
 
-
-
-	// ÃÊ·Ï
+	return itemInst; // switch ë°–ìœ¼ë¡œ ë‚˜ì˜¤ëŠ” ê²½ìš°(END ë“±): ê·¸ëŒ€ë¡œ ë°˜ë ¤
 }
 
-_bool CInventory::Auto_Add(Item_Inst& itemInst)
+_bool CInventory::Auto_Add(ItemInst& itemInst)
 {
-	for (int i = 0; i < m_h; i++)     // y ¸ÕÀú
+	for (int i = 0; i < m_h; i++)     // y ë¨¼ì €
 	{
 		for (int j = 0; j < m_w; j++)
 		{
-			if (m_InvenSlot[i * m_w + j].ItemInst_ID == ID_Absence)
+			if (m_invenSlot[i * m_w + j].itemInstID == kIDAbsence)
 			{
-				PLACE_COLOR color = {};
+				EPlaceColor color = {};
 				CanPlace(itemInst, j, i, color);
-				if (color == PLACE_COLOR::GREEN)
+				if (color == EPlaceColor::GREEN)
 				{
 					AddItem(itemInst, j, i);
 					return true;
@@ -326,21 +324,21 @@ _bool CInventory::Auto_Add(Item_Inst& itemInst)
 	return false;
 }
 
-_bool CInventory::Auto_Move_To(weak_ptr<CInventory> OtherInven, _uint BaseX, _uint BaseY)
+_bool CInventory::Auto_Move_To(weak_ptr<CInventory> otherInven, _uint baseX, _uint baseY)
 {
 	//m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID
-		if (m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID != ID_Absence)
+		if (m_invenSlot[baseY * m_w + baseX].itemInstID != kIDAbsence)
 	{
-		for (auto& item : m_Inventory)
+		for (auto& item : m_inventory)
 		{
-			if (m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID == item.ItemInst_ID)
+			if (m_invenSlot[baseY * m_w + baseX].itemInstID == item.itemInstID)
 			{
-				_bool result = OtherInven.lock()->Auto_Add(item);
+				_bool result = otherInven.lock()->Auto_Add(item);
 
 
 				if(result == true)
 				{
-				RemoveFrom_Inven(item.ItemInst_ID);
+				RemoveFrom_Inven(item.itemInstID);
 				return true;
 				}
 				else
@@ -354,68 +352,66 @@ _bool CInventory::Auto_Move_To(weak_ptr<CInventory> OtherInven, _uint BaseX, _ui
 		
 		return false;
 }
-_int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_COLOR& color)
+_int CInventory::CanPlace(const ItemInst& itemInst, _int baseX, _int baseY, EPlaceColor& color)
 {
-	// ÇØ´ç ¾ÆÀÌÅÛÀÇ ¸ğ¾ç + BaseX,Y
-	const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
+	// í•´ë‹¹ ì•„ì´í…œì˜ ëª¨ì–‘ + BaseX,Y
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
 	_bool hasOverlap = false;
 	int overlapID = {};
-	int absenceNum = {};
-	_uint ID_First = {};
-	_uint rot = itemInst.Rotation % 4;
-	for (int i = 0; i < def.ItemShape.Occ[rot].size(); i++)
+	size_t absenceNum = {};
+	_uint rot = itemInst.rotation % 4;
+	for (size_t i = 0; i < def.itemShape.occ[rot].size(); i++)
 	{
-		_int fx = def.ItemShape.Occ[rot][i].dx + BaseX;
-		_int fy = def.ItemShape.Occ[rot][i].dy + BaseY;
+		_int fx = static_cast<_int>(def.itemShape.occ[rot][i].dx) + baseX;
+		_int fy = static_cast<_int>(def.itemShape.occ[rot][i].dy) + baseY;
 		// finalCells.push_back({ fx,fy });
 
 		if (fx < 0 || fx >= m_w || fy < 0 || fy >= m_h) {
-			color = PLACE_COLOR::RED;
+			color = EPlaceColor::RED;
 			return -1;
 		}
-		// ¶ôÀÌ¶û °ãÄ¡´ÂÁö, ¹Ø¾ÆÀÌÅÛ ÇÏ³ª¶û °ãÄ¡´ÂÁö , ¹Ù·Î ³õÀ» ¼ö ÀÖ´ÂÁö
+		// ë½ì´ë‘ ê²¹ì¹˜ëŠ”ì§€, ë°‘ì•„ì´í…œ í•˜ë‚˜ë‘ ê²¹ì¹˜ëŠ”ì§€ , ë°”ë¡œ ë†“ì„ ìˆ˜ ìˆëŠ”ì§€
 
-		const Slot& the_Slot = m_InvenSlot[fy * m_w + fx];
-		ID_First = the_Slot.ItemInst_ID;
+		const Slot& theSlot = m_invenSlot[fy * m_w + fx];
 
 
-		if (the_Slot.IsLock == true || the_Slot.IsBroken == true)
+		if (theSlot.isLock == true || theSlot.isBroken == true)
 		{
-			//ÇÏ³ª¶óµµ ¶ôÀÌ¶û °ãÄ¡¸é ºÒ°¡ - »¡°­
-			color = PLACE_COLOR::RED;
+			//í•˜ë‚˜ë¼ë„ ë½ì´ë‘ ê²¹ì¹˜ë©´ ë¶ˆê°€ - ë¹¨ê°•
+			color = EPlaceColor::RED;
 			return -1;
 		}
-		if (itemInst.ItemType == ITEM_TYPE::EQUIP&&INVENTYPE::PLAYER==m_InvenType)
+		if (itemInst.itemType == EItemType::EQUIP&&EInvenType::PLAYER==m_invenType)
 		{
-			if (auto equip = get_if<Equip_Def>(&def.TypeDef))
+			if (auto equip = get_if<EquipDef>(&def.typeDef))
 			{
-				switch (equip->EquipType_Effect.index())
+				switch (equip->equipTypeEffect.index())
 				{
 				case 0: // Equip_Engine
-					if(the_Slot.slotType!=SLOT_TYPE::ENGINE)
+					if(theSlot.slotType!=ESlotType::ENGINE)
 					{
-						color = PLACE_COLOR::RED;
+						color = EPlaceColor::RED;
 						return -1;
 					}
 					break;
 				case 1: // Equip_Light
-					if (the_Slot.slotType != SLOT_TYPE::LIGHT)
+					if (theSlot.slotType != ESlotType::LIGHT)
 					{
-						color = PLACE_COLOR::RED;
+						color = EPlaceColor::RED;
 						return -1;
 					}
 					break;
 				case 2: // Equip_Rod
-					if (the_Slot.slotType != SLOT_TYPE::ROT)
+					if (theSlot.slotType != ESlotType::ROT)
 					{
-						color = PLACE_COLOR::RED;
+						color = EPlaceColor::RED;
 						return -1;
 					}
 					break;
 				case 3: // Equip_Net
-					if (the_Slot.slotType != SLOT_TYPE::NET)
+					if (theSlot.slotType != ESlotType::NET)
 					{
-						color = PLACE_COLOR::RED;
+						color = EPlaceColor::RED;
 						return -1;
 					}
 					break;
@@ -425,104 +421,104 @@ _int CInventory::CanPlace(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_C
 			}
 		}
 
-		if (the_Slot.ItemInst_ID == ID_Absence)
+		if (theSlot.itemInstID == kIDAbsence)
 		{
 			absenceNum++;
 		}
 		/* if (the_Slot.ItemInst_ID != ID_First)*/
 		else {
-			////´Ù¸¥ Á¾·ùÀÇ ¾ÆÀÌÅÛÀÌ 2 °³ ÀÌ»ó °ãÃÄ ÀÖ´Ù - place ºÒ°¡ - »¡°£
+			////ë‹¤ë¥¸ ì¢…ë¥˜ì˜ ì•„ì´í…œì´ 2 ê°œ ì´ìƒ ê²¹ì³ ìˆë‹¤ - place ë¶ˆê°€ - ë¹¨ê°„
 			//color = PLACE_COLOR::RED;
 			//return -1;
 			if (!hasOverlap)
 			{
-				//Ã¹ ¹øÂ° °ãÄ£ ¾ÆÀÌÅÛ
-				overlapID = the_Slot.ItemInst_ID;
+				//ì²« ë²ˆì§¸ ê²¹ì¹œ ì•„ì´í…œ
+				overlapID = theSlot.itemInstID;
 				hasOverlap = true;
 			}
-			else if (the_Slot.ItemInst_ID != overlapID)
+			else if (theSlot.itemInstID != overlapID)
 			{
 
-				color = PLACE_COLOR::RED;
+				color = EPlaceColor::RED;
 				return -1;
 			}
 		}
 	}
 
-	if (absenceNum == def.ItemShape.Occ[rot].size())
+	if (absenceNum == def.itemShape.occ[rot].size())
 	{
-		// ÇØ´ç Ä­ ÀüºÎ ºóÄ­ÀÌ¸é - ±×¸°
-		color = PLACE_COLOR::GREEN;
-		return ID_Absence;
+		// í•´ë‹¹ ì¹¸ ì „ë¶€ ë¹ˆì¹¸ì´ë©´ - ê·¸ë¦°
+		color = EPlaceColor::GREEN;
+		return kIDAbsence;
 	}
 
 
 
-	// °ãÄ¡´Â ¾ÆÀÌÅÛÀÌ ÀÖ±äÇÑµ¥ µ¿ÀÏÇÑ ¾ÆÀÌÅÛÀÌ´Ù µé°í ÀÖ´Â°Å¶û ½ºÀ§Ä¡ °¡´É - ÁÖÈ²
-	color = PLACE_COLOR::ORANGE;
+	// ê²¹ì¹˜ëŠ” ì•„ì´í…œì´ ìˆê¸´í•œë° ë™ì¼í•œ ì•„ì´í…œì´ë‹¤ ë“¤ê³  ìˆëŠ”ê±°ë‘ ìŠ¤ìœ„ì¹˜ ê°€ëŠ¥ - ì£¼í™©
+	color = EPlaceColor::ORANGE;
 	return static_cast<_int>(overlapID);
 }
 
-Item_Inst CInventory::RemoveFrom_Inven(int inst_id)
+ItemInst CInventory::RemoveFrom_Inven(int instID)
 {
 
-	Item_Inst inst = {};
-	// ÀÎ¹ê¿¡¼­ Áö¿ì±â
-	for (auto it = m_Inventory.begin(); it != m_Inventory.end(); it++) // ÇÏ³ª Áö¿ì°í ¹Ù·Î ³ª°¥²¨¶ó ¤¡¤º
+	ItemInst inst = {};
+	// ì¸ë°´ì—ì„œ ì§€ìš°ê¸°
+	for (auto it = m_inventory.begin(); it != m_inventory.end(); it++) // í•˜ë‚˜ ì§€ìš°ê³  ë°”ë¡œ ë‚˜ê°ˆêº¼ë¼ ã„±ã…Š
 	{
-		if ((*it).ItemInst_ID == inst_id)
+		if ((*it).itemInstID == instID)
 		{
 			inst = ((*it));
-			m_Inventory.erase(it);
+			m_inventory.erase(it);
 			break;
 		}
 	}
 
-	// ÀÎ¹ê½½·Ô¿¡¼­ Áö¿ì±â
+	// ì¸ë°´ìŠ¬ë¡¯ì—ì„œ ì§€ìš°ê¸°
 
   //  for (int i = 0;i < m_InvenSlot.size(); i++)
   //  {
-		////ÀüÃ¼ ¼øÈ¸ÇÏ¸é¼­ ÇØ´ç ÀÎ½ºÅÏ½º ¾ÆÀÌµğ ´Ù Áö¿ì±â
+		////ì „ì²´ ìˆœíšŒí•˜ë©´ì„œ í•´ë‹¹ ì¸ìŠ¤í„´ìŠ¤ ì•„ì´ë”” ë‹¤ ì§€ìš°ê¸°
   //      if(m_InvenSlot[i].ItemInst_ID== inst_id)
   //      {
-  //          m_InvenSlot[i].ItemInst_ID = 0;// 0 ÀÌ ¾Æ¹«°Íµµ ¾øÀ½ 
+  //          m_InvenSlot[i].ItemInst_ID = 0;// 0 ì´ ì•„ë¬´ê²ƒë„ ì—†ìŒ 
   //      }
   //  }
 
-	for (int i = 0; i < inst.CurBase.size(); i++)
+	for (size_t i = 0; i < inst.curBase.size(); i++)
 	{
-		m_InvenSlot[inst.CurBase[i].dy * m_w + inst.CurBase[i].dx].ItemInst_ID = 0;
+		m_invenSlot[inst.curBase[i].dy * m_w + inst.curBase[i].dx].itemInstID = kIDAbsence;
 	}
 
-	m_Dirty = true;
+	m_isDirty = true;
 
 	return inst;
 }
 
-Item_Inst CInventory::Peek_Item(_uint MusX, _uint MusY)
+ItemInst CInventory::Peek_Item(_uint musX, _uint musY)
 {
-	if (MusX >= m_w || MusY >= m_h)
+	if (musX >= m_w || musY >= m_h)
 	{
-		Item_Inst emptyItem = {};
-		emptyItem.ItemInst_ID = ID_Absence;
+		ItemInst emptyItem = {};
+		emptyItem.itemInstID = kIDAbsence;
 		return emptyItem;
 	}
 
-	_uint SlotIndex = MusY * m_w + MusX;
+	_uint slotIndex = musY * m_w + musX;
 
-	Slot& CurrentSlot = m_InvenSlot[SlotIndex];
+	Slot& currentSlot = m_invenSlot[slotIndex];
 
-	if (CurrentSlot.ItemInst_ID != ID_Absence)
+	if (currentSlot.itemInstID != kIDAbsence)
 	{
-		for (auto& item : m_Inventory)
+		for (auto& item : m_inventory)
 		{
-			if (item.ItemInst_ID == CurrentSlot.ItemInst_ID)
+			if (item.itemInstID == currentSlot.itemInstID)
 				return item;
 		}
 	}
 
-	Item_Inst emptyItem = {};
-	emptyItem.ItemInst_ID = ID_Absence;
+	ItemInst emptyItem = {};
+	emptyItem.itemInstID = kIDAbsence;
 	return emptyItem;
 }
 
@@ -530,14 +526,14 @@ void CInventory::OnGui()
 {
 
 	ImGui::Text("Size: %d x %d", m_w, m_h);
-	ImGui::Text("Item Count: %d", (int)m_Inventory.size());
+	ImGui::Text("Item Count: %d", (int)m_inventory.size());
 
 	if (ImGui::BeginTabBar("InvenTabs"))
 	{
-		// --- Tab 1: °İÀÚ ½Ã°¢È­ (Slot View) ---
+		// --- Tab 1: ê²©ì ì‹œê°í™” (Slot View) ---
 		if (ImGui::BeginTabItem("Grid View"))
 		{
-			// °İÀÚ ±×¸®±â ½ÃÀÛ
+			// ê²©ì ê·¸ë¦¬ê¸° ì‹œì‘
 			if (ImGui::BeginTable("InvenGrid", m_w, ImGuiTableFlags_Borders | ImGuiTableFlags_SizingFixedFit))
 			{
 				for (int row = 0; row < m_h; row++)
@@ -548,25 +544,25 @@ void CInventory::OnGui()
 						ImGui::TableSetColumnIndex(col);
 
 						int slotIndex = row * m_w + col;
-						Slot& slot = m_InvenSlot[slotIndex];
+						Slot& slot = m_invenSlot[slotIndex];
 
-						// ½½·Ô »óÅÂ¿¡ µû¸¥ »ö»ó ÁöÁ¤
-						ImVec4 color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // ±âº» ºóÄ­ (¾îµÎ¿î È¸»ö)
+						// ìŠ¬ë¡¯ ìƒíƒœì— ë”°ë¥¸ ìƒ‰ìƒ ì§€ì •
+						ImVec4 color = ImVec4(0.2f, 0.2f, 0.2f, 1.0f); // ê¸°ë³¸ ë¹ˆì¹¸ (ì–´ë‘ìš´ íšŒìƒ‰)
 
-						if (slot.IsLock) color = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);      // Àá±İ (°ËÁ¤)
-						else if (slot.IsBroken) color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f); // ÆÄ¼Õ (»¡°­)
-						else if (slot.ItemInst_ID != 0) color = ImVec4(0.2f, 0.7f, 0.2f, 1.0f); // ¾ÆÀÌÅÛ Á¸Àç (ÃÊ·Ï)
+						if (slot.isLock) color = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);      // ì ê¸ˆ (ê²€ì •)
+						else if (slot.isBroken) color = ImVec4(0.8f, 0.2f, 0.2f, 1.0f); // íŒŒì† (ë¹¨ê°•)
+						else if (slot.itemInstID != 0) color = ImVec4(0.2f, 0.7f, 0.2f, 1.0f); // ì•„ì´í…œ ì¡´ì¬ (ì´ˆë¡)
 
-						// ÇØ´ç »ö»óÀ¸·Î ¹öÆ° Ãâ·Â (³»ºÎ¿¡´Â ID Ç¥½Ã)
+						// í•´ë‹¹ ìƒ‰ìƒìœ¼ë¡œ ë²„íŠ¼ ì¶œë ¥ (ë‚´ë¶€ì—ëŠ” ID í‘œì‹œ)
 						ImGui::PushStyleColor(ImGuiCol_Button, color);
-						string slotLabel = to_string(slot.ItemInst_ID) + "##" + to_string(slotIndex);
+						string slotLabel = to_string(slot.itemInstID) + "##" + to_string(slotIndex);
 						ImGui::Button(slotLabel.c_str(), ImVec2(35, 35));
 
-						// ¸¶¿ì½º ¿Ã¸®¸é ÅøÆÁÀ¸·Î »ó¼¼ Á¤º¸ Ç¥½Ã
+						// ë§ˆìš°ìŠ¤ ì˜¬ë¦¬ë©´ íˆ´íŒìœ¼ë¡œ ìƒì„¸ ì •ë³´ í‘œì‹œ
 						if (ImGui::IsItemHovered()) {
 							ImGui::BeginTooltip();
 							ImGui::Text("Index: %d (x:%d, y:%d)", slotIndex, col, row);
-							ImGui::Text("ItemInstID: %d", slot.ItemInst_ID);
+							ImGui::Text("ItemInstID: %d", slot.itemInstID);
 							ImGui::Text("Type: %d", (int)slot.slotType);
 							ImGui::EndTooltip();
 						}
@@ -578,22 +574,22 @@ void CInventory::OnGui()
 			ImGui::EndTabItem();
 		}
 
-		// --- Tab 2: ¾ÆÀÌÅÛ ¸®½ºÆ® (Data View) ---
+		// --- Tab 2: ì•„ì´í…œ ë¦¬ìŠ¤íŠ¸ (Data View) ---
 		if (ImGui::BeginTabItem("Item List"))
 		{
-			for (auto& item : m_Inventory)
+			for (auto& item : m_inventory)
 			{
-				string headerLabel = "InstID: " + to_string(item.ItemInst_ID) + " (DefID: " + to_string(item.ItemDef_ID) + ")";
+				string headerLabel = "InstID: " + to_string(item.itemInstID) + " (DefID: " + to_string(item.itemDefID) + ")";
 				if (ImGui::CollapsingHeader(headerLabel.c_str()))
 				{
-					ImGui::BulletText("Type: %d", (int)item.ItemType);
-					ImGui::BulletText("Rotation: %d", item.Rotation);
-					ImGui::BulletText("Base Pos: %d, %d", item.BaseXY.x, item.BaseXY.y);
+					ImGui::BulletText("Type: %d", (int)item.itemType);
+					ImGui::BulletText("Rotation: %d", item.rotation);
+					ImGui::BulletText("Base Pos: %d, %d", item.baseXY.x, item.baseXY.y);
 
 					if (ImGui::TreeNode("Occupied Cells"))
 					{
-						for (auto& occ : item.CurBase)
-							ImGui::Text(" - dx: %d, dy: %d (Global x:%d, y:%d)", occ.dx, occ.dy, item.BaseXY.x + occ.dx, item.BaseXY.y + occ.dy);
+						for (auto& occ : item.curBase)
+							ImGui::Text(" - dx: %d, dy: %d (Global x:%d, y:%d)", occ.dx, occ.dy, item.baseXY.x + occ.dx, item.baseXY.y + occ.dy);
 						ImGui::TreePop();
 					}
 				}
@@ -611,30 +607,30 @@ Evt_ShipStat CInventory::CalculateEquip()
 	Evt_ShipStat stat = {};
 
 	auto DB = CItemDB::GetInstance();
-	for (_uint i = 0; i < m_Inventory.size(); i++)
+	for (_uint i = 0; i < m_inventory.size(); i++)
 	{
-		if (m_Inventory[i].ItemType == ITEM_TYPE::EQUIP)
+		if (m_inventory[i].itemType == EItemType::EQUIP)
 		{
-			Item_Def def = DB->GetItemByID(m_Inventory[i].ItemDef_ID);
+			const ItemDef& def = DB->GetItemByID(m_inventory[i].itemDefID);
 
-			if (Equip_Def* pEquip = get_if<Equip_Def>(&def.TypeDef))
+			if (const EquipDef* equip = get_if<EquipDef>(&def.typeDef))
 			{
-				int cost = pEquip->Cost;
-				_uint installTime = pEquip->InstallTime;
-				EQUIP_TYPE EquipType = pEquip->EquipType;
+				int cost = equip->cost;
+				_uint installTime = equip->installTime;
+				EEquipType equipType = equip->equipType;
 
-				if (Equip_Engine* Engine = get_if<Equip_Engine>(&pEquip->EquipType_Effect))
+				if (const EquipEngine* engine = get_if<EquipEngine>(&equip->equipTypeEffect))
 				{
-					stat.EngineSpeed += Engine->Speed_Kn;
+					stat.engineSpeed += engine->speedKn;
 				}
-				else if (Equip_Light* Light = get_if<Equip_Light>(&pEquip->EquipType_Effect))
+				else if (const EquipLight* light = get_if<EquipLight>(&equip->equipTypeEffect))
 				{
-					stat.LightIntensity += Light->Lumen;
+					stat.lightIntensity += light->lumen;
 				}
-				else if (Equip_Rod* Rod = get_if<Equip_Rod>(&pEquip->EquipType_Effect))
+				else if (const EquipRod* rod = get_if<EquipRod>(&equip->equipTypeEffect))
 				{
-					stat.FishingSpeed += Rod->Speed_Per;
-					stat.SeaMask |= Rod->SeaType_Mask;
+					stat.fishingSpeed += rod->speedPer;
+					stat.seaMask |= rod->seaTypeMask;
 
 				}
 				/*  else if (Equip_Net* Net = get_if<Equip_Net>(&pEquip->EquipType_Effect))
@@ -645,24 +641,6 @@ Evt_ShipStat CInventory::CalculateEquip()
 				  {
 
 				  }*/
-			}
-			if (m_Inventory[i].ItemType == ITEM_TYPE::FISH)
-			{
-				Item_Def def = DB->GetItemByID(m_Inventory[i].ItemDef_ID);
-				if (Fish_Def* pFish = get_if<Fish_Def>(&def.TypeDef))
-				{
-
-					if (m_Inventory[i].IsMutaion == false)
-					{
-						stat.InvenMoney += pFish->Cost;
-
-					}
-					else
-					{
-						stat.InvenMoney += m_Inventory[i].MutaionCashing.MutCost;
-					}
-				}
-	
 			}
 		}
 
@@ -683,86 +661,87 @@ Evt_ShipStat CInventory::CalculateEquip()
 
 void CInventory::Get_Damage()
 {
-	// »çÀÌÁî°¡ ¸Æ½º·Î ·£´ı ÀÎµ«½º
-	int RandIndex = { -1 };
-	RandIndex = static_cast<int>(m_pGameInstance.lock()->Random(0, m_InvenSlot.size()-1));
-	// ÀüÃ¼ ¼øÈ¸ -> ¸¸ÀÏ ÀÌ¹Ì °íÀå³­ Ä­ÀÌ°Å³ª Åõ¸íÄ­ÀÌ¸é ´Ù½Ã ·»´ı
-	while(m_InvenSlot[RandIndex].IsBroken == true || m_InvenSlot[RandIndex].IsLock == true|| (m_InvenSlot[RandIndex].slotType != SLOT_TYPE::END && m_InvenSlot[RandIndex].slotType != SLOT_TYPE::ANY))
+	// ì‚¬ì´ì¦ˆê°€ ë§¥ìŠ¤ë¡œ ëœë¤ ì¸ëƒìŠ¤
+	int randIndex = { -1 };
+	randIndex = static_cast<int>(m_gameInstance.lock()->Random(0, m_invenSlot.size()-1));
+	// ì „ì²´ ìˆœíšŒ -> ë§Œì¼ ì´ë¯¸ ê³ ì¥ë‚œ ì¹¸ì´ê±°ë‚˜ íˆ¬ëª…ì¹¸ì´ë©´ ë‹¤ì‹œ ë Œë¤
+	while(m_invenSlot[randIndex].isBroken == true || m_invenSlot[randIndex].isLock == true|| (m_invenSlot[randIndex].slotType != ESlotType::END && m_invenSlot[randIndex].slotType != ESlotType::ANY))
 	{
-		RandIndex = (m_pGameInstance.lock()->RandomInt(0, m_InvenSlot.size()-1));
+		randIndex = (m_gameInstance.lock()->RandomInt(0, m_invenSlot.size()-1));
 	}
 
-	// Àåºñ°¡ ÀÖÀ»‹š -> Àåºñ ÀÌ°Íµµ ±×³É ¹ö·Á¹ö·Á?? ÀÏ´ÜÀº ¹ö·Á
-	// ¹°°í±â°¡ ÀÖÀ» ‹š -> ¹°°í±â ¹ö¸®±â ->Ä­ x·Î º¯È¯
-	if(m_InvenSlot[RandIndex].ItemInst_ID!= ID_Absence)
+	// ì¥ë¹„ê°€ ìˆì„ë–„ -> ì¥ë¹„ ì´ê²ƒë„ ê·¸ëƒ¥ ë²„ë ¤ë²„ë ¤?? ì¼ë‹¨ì€ ë²„ë ¤
+	// ë¬¼ê³ ê¸°ê°€ ìˆì„ ë–„ -> ë¬¼ê³ ê¸° ë²„ë¦¬ê¸° ->ì¹¸ xë¡œ ë³€í™˜
+	if(m_invenSlot[randIndex].itemInstID!= kIDAbsence)
 	{
-		//ThrowAwayFrom_Inven() // ÀÌ°Ç À§Ä¡ 
-		RemoveFrom_Inven(m_InvenSlot[RandIndex].ItemInst_ID); // ¾ÆÀÌµğ·Î
+		//ThrowAwayFrom_Inven() // ì´ê±´ ìœ„ì¹˜ 
+		RemoveFrom_Inven(m_invenSlot[randIndex].itemInstID); // ì•„ì´ë””ë¡œ
 	}
-		m_InvenSlot[RandIndex].IsBroken = true;
+		m_invenSlot[randIndex].isBroken = true;
 
 		return;
 }
 
-void CInventory::PlaceOn_Inven(Item_Inst itemInst, _int BaseX, _int BaseY)
+void CInventory::PlaceOn_Inven(ItemInst itemInst, _int baseX, _int baseY)
 {
-	itemInst.BaseXY = _float2{ static_cast<_float>(BaseX), static_cast<_float>(BaseY) };
+	itemInst.baseXY = _float2{ static_cast<_float>(baseX), static_cast<_float>(baseY) };
 
-	itemInst.CurBase.clear();
+	itemInst.curBase.clear();
 
-	// ÀÎ¹ê¿¡ ³Ö±â
-	m_Inventory.push_back(itemInst);
-	Item_Inst& stored = m_Inventory.back();
-	// ÀÎ¹ê½½·Ô¿¡ ³Ö±â
-	const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
-	_uint rot = itemInst.Rotation % 4;
+	// ì¸ë°´ì— ë„£ê¸°
+	m_inventory.push_back(itemInst);
+	ItemInst& stored = m_inventory.back();
+	// ì¸ë°´ìŠ¬ë¡¯ì— ë„£ê¸°
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
+	_uint rot = itemInst.rotation % 4;
 
 
-	for (int i = 0; i < def.ItemShape.Occ[rot].size(); i++)
+	for (size_t i = 0; i < def.itemShape.occ[rot].size(); i++)
 	{
-		_uint fx = (def.ItemShape.Occ[rot][i].dx) + BaseX;
-		_uint fy = (def.ItemShape.Occ[rot][i].dy) + BaseY;
+		// baseX, baseYëŠ” CanPlaceì—ì„œ ë²”ìœ„ ê²€ì¦ì´ ëë‚œ ê°’
+		_uint fx = def.itemShape.occ[rot][i].dx + static_cast<_uint>(baseX);
+		_uint fy = def.itemShape.occ[rot][i].dy + static_cast<_uint>(baseY);
 		// finalCells.push_back({ fx,fy });
 
-	  // ¶ôÀÌ¶û °ãÄ¡´ÂÁö, ¹Ø¾ÆÀÌÅÛ ÇÏ³ª¶û °ãÄ¡´ÂÁö , ¹Ù·Î ³õÀ» ¼ö ÀÖ´ÂÁö
+	  // ë½ì´ë‘ ê²¹ì¹˜ëŠ”ì§€, ë°‘ì•„ì´í…œ í•˜ë‚˜ë‘ ê²¹ì¹˜ëŠ”ì§€ , ë°”ë¡œ ë†“ì„ ìˆ˜ ìˆëŠ”ì§€
 		//LOG_F(LOG_LEVEL::INFO, "fx:%d fy:%d w:%d h:%d", fx, fy, m_w, m_h);
-		m_InvenSlot[fy * m_w + fx].ItemInst_ID = itemInst.ItemInst_ID;
+		m_invenSlot[fy * m_w + fx].itemInstID = itemInst.itemInstID;
 
-		stored.CurBase.push_back({ fx,fy });
+		stored.curBase.push_back({ fx,fy });
 	}
 
-	m_Dirty = true;
+	m_isDirty = true;
 
 }
 
-Item_Inst CInventory::TryMove_Item(_uint BaseX, _uint BaseY)
+ItemInst CInventory::TryMove_Item(_uint baseX, _uint baseY)
 {
-	ID_uint id = m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID;
+	IDType id = m_invenSlot[baseY * m_w + baseX].itemInstID;
 
-	Item_Inst holdInst = RemoveFrom_Inven(id);
+	ItemInst holdInst = RemoveFrom_Inven(id);
 
 
 	return holdInst;
 
 }
 
-void CInventory::ThrowAwayFrom_Inven(_uint BaseX, _uint BaseY)
+void CInventory::ThrowAwayFrom_Inven(_uint baseX, _uint baseY)
 {
-	//Áı°í ÀÖÀ»‹š¶û / ÀÎ¹ê¿¡ ÀÖÀ»‹š µÑ´Ù ¹ö¸±¼ö ÀÖÀ½
+	//ì§‘ê³  ìˆì„ë–„ë‘ / ì¸ë°´ì— ìˆì„ë–„ ë‘˜ë‹¤ ë²„ë¦´ìˆ˜ ìˆìŒ
 
-	// Áı°í ÀÖ´Â°Å ¹ö¸®´Â°Ç ÄÁÆ®·Ñ·¯¿¡¼­ (Áı°í ÀÖ´Â ¾ÆÀÌÅÛÀÇ °ü¸®´Â ÄÁÆ®·Î·¯)
+	// ì§‘ê³  ìˆëŠ”ê±° ë²„ë¦¬ëŠ”ê±´ ì»¨íŠ¸ë¡¤ëŸ¬ì—ì„œ (ì§‘ê³  ìˆëŠ” ì•„ì´í…œì˜ ê´€ë¦¬ëŠ” ì»¨íŠ¸ë¡œëŸ¬)
 
-	ID_uint id = m_InvenSlot[BaseY * m_w + BaseX].ItemInst_ID;
+	IDType id = m_invenSlot[baseY * m_w + baseX].itemInstID;
 
 	RemoveFrom_Inven(id);
-	m_Dirty = true;
+	m_isDirty = true;
 
 }
 void CInventory::ClearHighlightArea()
 {
-	for (auto& slot : m_InvenSlot)
+	for (auto& slot : m_invenSlot)
 	{
-		slot.Slot_Color = PLACE_COLOR::END;
+		slot.slotColor = EPlaceColor::END;
 	}
 }
 void CInventory::Apply_BaseMask(vector<Slot>& vecSlot)
@@ -774,10 +753,10 @@ void CInventory::Apply_BaseMask(vector<Slot>& vecSlot)
 void CInventory::Init_BoatUpgrade()
 {
 
-	_uint tw = m_BoatUpgrade_type[0].m_width = 6;
-	_uint th = m_BoatUpgrade_type[0].m_height = 8;
-	m_BoatUpgrade_type[0].m_type.resize(m_w * m_h);
-	m_BoatUpgrade_type[0].m_type = {
+	_uint tw = m_boatUpgradeType[0].width = 6;
+	_uint th = m_boatUpgradeType[0].height = 8;
+	m_boatUpgradeType[0].type.resize(m_w * m_h);
+	m_boatUpgradeType[0].type = {
 	'O','A','A','L','O','O',
 	'O','A','A','A','A','O',
 	'A','A','A','A','A','A',
@@ -788,10 +767,10 @@ void CInventory::Init_BoatUpgrade()
 	'O','O','E','E','O','O',
 	};
 
-	tw = m_BoatUpgrade_type[1].m_width = 7;
-	th = m_BoatUpgrade_type[1].m_height = 9;
-	m_BoatUpgrade_type[1].m_type.resize(m_w * m_h);
-	m_BoatUpgrade_type[1].m_type = {
+	tw = m_boatUpgradeType[1].width = 7;
+	th = m_boatUpgradeType[1].height = 9;
+	m_boatUpgradeType[1].type.resize(m_w * m_h);
+	m_boatUpgradeType[1].type = {
 	'O','O','A','L','O','O','O',
 	'O','A','A','A','A','O','O',
 	'A','A','A','A','A','A','A',
@@ -803,10 +782,10 @@ void CInventory::Init_BoatUpgrade()
 	'O','O','E','E','O','O','O',
 	};
 
-	tw = m_BoatUpgrade_type[2].m_width = 9;
-	th = m_BoatUpgrade_type[2].m_height = 11;
-	m_BoatUpgrade_type[2].m_type.resize(m_w * m_h);
-	m_BoatUpgrade_type[2].m_type = {
+	tw = m_boatUpgradeType[2].width = 9;
+	th = m_boatUpgradeType[2].height = 11;
+	m_boatUpgradeType[2].type.resize(m_w * m_h);
+	m_boatUpgradeType[2].type = {
 	'O','O','O','L','L','L','O','O','O',
 	'O','O','A','A','A','A','A','O','O',
 	'O','A','A','A','A','A','A','A','O',
@@ -825,11 +804,11 @@ void CInventory::Init_BoatUpgrade()
 void CInventory::Upgrade_Boat(_uint index)
 {
 
-	m_h = m_BoatUpgrade_type[index].m_height;
-	m_w = m_BoatUpgrade_type[index].m_width;
+	m_h = m_boatUpgradeType[index].height;
+	m_w = m_boatUpgradeType[index].width;
 
-	m_Inventory.reserve(m_w * m_h);
-	m_InvenSlot.resize(m_w * m_h);
+	m_inventory.reserve(m_w * m_h);
+	m_invenSlot.resize(m_w * m_h);
 
 	//
 
@@ -837,41 +816,41 @@ void CInventory::Upgrade_Boat(_uint index)
 	{
 		for (int tw = 0; tw < m_w; tw++)
 		{
-			_int tmp = static_cast<_int>(m_BoatUpgrade_type[index].m_type[th * m_w + tw]);
+			_int tmp = static_cast<_int>(m_boatUpgradeType[index].type[th * m_w + tw]);
 			switch (tmp)
 			{
 			case  static_cast<_int>('O'):
-				m_InvenSlot[th * m_w + tw].IsLock = true;
-				m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::END;
+				m_invenSlot[th * m_w + tw].isLock = true;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::END;
 				break;
 			case static_cast<_int>('A'):
-				m_InvenSlot[th * m_w + tw].IsLock = false;
-				m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::ANY;
+				m_invenSlot[th * m_w + tw].isLock = false;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::ANY;
 				break;
 			case static_cast<_int>('E'):
-				m_InvenSlot[th * m_w + tw].IsLock = false;
-				m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::ENGINE;
+				m_invenSlot[th * m_w + tw].isLock = false;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::ENGINE;
 				break;
 			case static_cast<_int>('L'):
-				m_InvenSlot[th * m_w + tw].IsLock = false;
-				m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::LIGHT;
+				m_invenSlot[th * m_w + tw].isLock = false;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::LIGHT;
 				break;
 			case static_cast<_int>('R'):
-				m_InvenSlot[th * m_w + tw].IsLock = false;
-				m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::ROT;
+				m_invenSlot[th * m_w + tw].isLock = false;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::ROT;
 				break;
 			case static_cast<_int>('N'):
-				m_InvenSlot[th * m_w + tw].IsLock = false;
-				m_InvenSlot[th * m_w + tw].slotType = SLOT_TYPE::NET;
+				m_invenSlot[th * m_w + tw].isLock = false;
+				m_invenSlot[th * m_w + tw].slotType = ESlotType::NET;
 				break;
 			}
-			// ¾Æ ºñÆ® ÇÃ·¹±× ÇØ¾ß ÇÏ³ª...
+			// ì•„ ë¹„íŠ¸ í”Œë ˆê·¸ í•´ì•¼ í•˜ë‚˜...
 		}
 	}
 
 }
 
-void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY, PLACE_COLOR color)
+void CInventory::SetHighlightArea(ItemInst& itemInst, _uint baseX, _uint baseY, EPlaceColor color)
 {
 	//const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
 	//_bool hasOverlap = false;
@@ -883,26 +862,26 @@ void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY,
 
 
 
-	const Item_Def& def = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
-	_uint rot = itemInst.Rotation % 4;
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
+	_uint rot = itemInst.rotation % 4;
 
 
 
-	for (auto& slot : m_InvenSlot)
+	for (auto& slot : m_invenSlot)
 	{
-		slot.Slot_Color = PLACE_COLOR::END;
+		slot.slotColor = EPlaceColor::END;
 	}
 
-	for (int i = 0; i < def.ItemShape.Occ[rot].size(); i++)
+	for (int i = 0; i < def.itemShape.occ[rot].size(); i++)
 	{
 
-		_uint fx = (def.ItemShape.Occ[rot][i].dx) + BaseX;
-		_uint fy = (def.ItemShape.Occ[rot][i].dy) + BaseY;
+		_uint fx = (def.itemShape.occ[rot][i].dx) + baseX;
+		_uint fy = (def.itemShape.occ[rot][i].dy) + baseY;
 
 		if (fx < 0 || fx >= (int)m_w || fy < 0 || fy >= (int)m_h)
 		{
-			//TODO::³ª°£°Íµµ »¡°£»ö
-			color = PLACE_COLOR::RED;
+			//TODO::ë‚˜ê°„ê²ƒë„ ë¹¨ê°„ìƒ‰
+			color = EPlaceColor::RED;
 			continue;;
 
 		}
@@ -910,24 +889,24 @@ void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY,
 
 		switch (color)
 		{
-		case PLACE_COLOR::GREEN:
+		case EPlaceColor::GREEN:
 
 		{
-			Slot& slot = m_InvenSlot[fy * m_w + fx];
-			slot.Slot_Color = PLACE_COLOR::GREEN;
+			Slot& slot = m_invenSlot[fy * m_w + fx];
+			slot.slotColor = EPlaceColor::GREEN;
 		}
 		break;
-		case PLACE_COLOR::ORANGE:
+		case EPlaceColor::ORANGE:
 		{
-			Slot& slot = m_InvenSlot[fy * m_w + fx];
-			slot.Slot_Color = PLACE_COLOR::ORANGE;
+			Slot& slot = m_invenSlot[fy * m_w + fx];
+			slot.slotColor = EPlaceColor::ORANGE;
 		}
 		break;
 
-		case PLACE_COLOR::RED:
+		case EPlaceColor::RED:
 		{
-			Slot& slot = m_InvenSlot[fy * m_w + fx];
-			slot.Slot_Color = PLACE_COLOR::RED;
+			Slot& slot = m_invenSlot[fy * m_w + fx];
+			slot.slotColor = EPlaceColor::RED;
 		}
 		break;
 		}
@@ -939,35 +918,35 @@ void CInventory::SetHighlightArea(Item_Inst& itemInst, _uint BaseX, _uint BaseY,
 
 void CInventory::FixAll()
 {
-	for(auto& it : m_InvenSlot)
+	for(auto& it : m_invenSlot)
 	{
-		it.IsBroken = false;
+		it.isBroken = false;
 	}
-	dynamic_pointer_cast<CPlayerBoat>(m_pGOwner.lock())->SetHPFull();
+	dynamic_pointer_cast<CPlayerBoat>(m_GOwner.lock())->SetHPFull();
 }
 
-shared_ptr<CInventory> CInventory::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CInventory> CInventory::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CInventory> pInstance(new CInventory(pDevice, pContext), [](CInventory* p) {p->Free(); delete p; });
+	shared_ptr<CInventory> instance(new CInventory(device, context), [](CInventory* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CInventory");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CComponent> CInventory::Clone(void* pArg)
+shared_ptr<CComponent> CInventory::Clone(void* arg)
 {
-	shared_ptr<CInventory> pInstance(new CInventory(*this), [](CInventory* p) {p->Free(); delete p; });
+	shared_ptr<CInventory> instance(new CInventory(*this), [](CInventory* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CInventory");
 		return nullptr;
 	}
-	return pInstance;
+	return instance;
 }
 void CInventory::Free()
 {

@@ -1,53 +1,53 @@
-#include "Assimp_Bone.h"
+ï»¿#include "Assimp_Bone.h"
 
 CAssimp_Bone::CAssimp_Bone()
 {
 }
 
-HRESULT CAssimp_Bone::Initialize(const aiNode* pAINode, _int iParentBoneIndex)
+HRESULT CAssimp_Bone::Initialize(const aiNode* srcAINode, _int parentBoneIndex)
 {
-    strcpy_s(m_szName, pAINode->mName.data);
+    strcpy_s(m_name, srcAINode->mName.data);
 
-    m_iParentBoneIndex = iParentBoneIndex;
+    m_parentBoneIndex = parentBoneIndex;
 
-    memcpy(&m_TransformationMatrix, &pAINode->mTransformation, sizeof(_float4x4));
-    XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
-    // ÀüÄ¡ ÇÊ¼ö
+    memcpy(&m_transformationMatrix, &srcAINode->mTransformation, sizeof(_float4x4));
+    XMStoreFloat4x4(&m_transformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_transformationMatrix)));
+    // ì „ì¹˜ í•„ìˆ˜
 
-    XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&m_combinedTransformationMatrix, XMMatrixIdentity());
 
     return S_OK;
 }
 
-void CAssimp_Bone::Update_CombinedTransformMatrix(const vector<shared_ptr<CAssimp_Bone>> Bones, _fmatrix PreTransformMatrix)
+void CAssimp_Bone::Update_CombinedTransformMatrix(const vector<shared_ptr<CAssimp_Bone>> Bones, _fmatrix preTransformMatrix)
 {
-    if(-1 == m_iParentBoneIndex)
+    if(-1 == m_parentBoneIndex)
     {
-        XMStoreFloat4x4(&m_CombinedTransformationMatrix,
-            XMLoadFloat4x4(&m_TransformationMatrix) * PreTransformMatrix);
+        XMStoreFloat4x4(&m_combinedTransformationMatrix,
+            XMLoadFloat4x4(&m_transformationMatrix) * preTransformMatrix);
     }
     else
     {
-        XMStoreFloat4x4(&m_CombinedTransformationMatrix,
-            XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&Bones[m_iParentBoneIndex]->m_CombinedTransformationMatrix));
+        XMStoreFloat4x4(&m_combinedTransformationMatrix,
+            XMLoadFloat4x4(&m_transformationMatrix) * XMLoadFloat4x4(&Bones[m_parentBoneIndex]->m_combinedTransformationMatrix));
     }
 }
 
-void CAssimp_Bone::Update_TransformationMatrix(_fmatrix TransformMatrix)
+void CAssimp_Bone::Update_TransformationMatrix(_fmatrix transformMatrix)
 {
-    XMStoreFloat4x4(&m_TransformationMatrix, TransformMatrix);
+    XMStoreFloat4x4(&m_transformationMatrix, transformMatrix);
 }
 
 
-shared_ptr<CAssimp_Bone> CAssimp_Bone::Create(const aiNode* pAINode, _int iParentBoneIndex)
+shared_ptr<CAssimp_Bone> CAssimp_Bone::Create(const aiNode* srcAINode, _int parentBoneIndex)
 {
-    shared_ptr<CAssimp_Bone> pInstance(new CAssimp_Bone(), [](CAssimp_Bone* p) {p->Free(); delete p; });
+    shared_ptr<CAssimp_Bone> instance(new CAssimp_Bone(), [](CAssimp_Bone* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pAINode, iParentBoneIndex)))
+    if (FAILED(instance->Initialize(srcAINode, parentBoneIndex)))
     {
         MSG_BOX("Failed to Created : CMesh");
     }
-    return pInstance;
+    return instance;
 
 }
 

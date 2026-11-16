@@ -32,7 +32,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow)
+	_In_ int       cmdShow)
 {
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -53,7 +53,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MyRegisterClass(hInstance);
 
 	// 애플리케이션 초기화를 수행합니다:
-	if (!InitInstance(hInstance, nCmdShow)) //WIN handle 생성 // 이 이후  create MainApp
+	if (!InitInstance(hInstance, cmdShow)) //WIN handle 생성 // 이 이후  create MainApp
 	{
 		return FALSE;
 	}
@@ -63,21 +63,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MSG msg;
 
 
-	unique_ptr<CMainApp> pMainApp = CMainApp::Create();
-	if (nullptr == pMainApp)
+	unique_ptr<CMainApp> mainApp = CMainApp::Create();
+	if (nullptr == mainApp)
 		return FALSE;
 
-	weak_ptr<CGameInstance> GameInstance = CGameInstance::GetInstance();
-	if (nullptr == GameInstance.lock())
+	weak_ptr<CGameInstance> gameInstance = CGameInstance::GetInstance();
+	if (nullptr == gameInstance.lock())
 		return FALSE;
 
-	weak_ptr<CEditorInstance> EditorInstance = CEditorInstance::GetInstance();
-	if (nullptr == EditorInstance.lock())
+	weak_ptr<CEditorInstance> editorInstance = CEditorInstance::GetInstance();
+	if (nullptr == editorInstance.lock())
 		return FALSE;
 
-	if (FAILED(GameInstance.lock()->Add_Timer(TEXT("Timer_Default"))))
+	if (FAILED(gameInstance.lock()->Add_Timer(TEXT("Timer_Default"))))
 		return FALSE;
-	if (FAILED(GameInstance.lock()->Add_Timer(TEXT("Timer_60"))))
+	if (FAILED(gameInstance.lock()->Add_Timer(TEXT("Timer_60"))))
 		return FALSE;
 
 
@@ -110,7 +110,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (g_RsizeWidth != 0 && g_RsizeHeight != 0)
 			{
 
-				GameInstance.lock()->Resize(g_RsizeWidth, g_RsizeHeight);
+				gameInstance.lock()->Resize(g_RsizeWidth, g_RsizeHeight);
 		
 				// ImGui의 디스플레이 사이즈를 강제로 맞춰줌
 				if (ImGui::GetCurrentContext()) {
@@ -125,8 +125,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		//deltaTime
 
-		pMainApp->Update(GameInstance.lock()->Compute_TimeDelta(TEXT("Timer_60")));
-		pMainApp->Render();
+		mainApp->Update(gameInstance.lock()->Compute_TimeDelta(TEXT("Timer_60")));
+		mainApp->Render();
 	}
 
 	return (int)msg.wParam;
@@ -171,7 +171,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 //        이 함수를 통해 인스턴스 핸들을 전역 변수에 저장하고
 //        주 프로그램 창을 만든 다음 표시합니다.
 //
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(HINSTANCE hInstance, int cmdShow)
 {
 	g_hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
@@ -208,7 +208,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	g_hWnd = hWnd;
 
-	ShowWindow(hWnd, nCmdShow);
+	ShowWindow(hWnd, cmdShow);
 	UpdateWindow(hWnd);
 
 	return TRUE;
@@ -270,9 +270,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 	{
-		int wmId = LOWORD(wParam);
+		int wmID = LOWORD(wParam);
 		// 메뉴 선택을 구문 분석합니다:
-		switch (wmId)
+		switch (wmID)
 		{
 
 		case IDM_EXIT:

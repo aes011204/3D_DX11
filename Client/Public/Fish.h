@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #pragma once
 #include "GameObject.h"
@@ -11,73 +11,73 @@ class CMiniGame;
     public CGameObject
 {
 public:
-    struct FISH_DESC : public CGameObject::GAMEOBJECT_DESC
+    struct FishDesc : public CGameObject::GameObjectDesc
     {
-        _uint FishCount = {};
+        _uint fishCount = {};
 
-        _float2 Height = {};
-        _float2 Size = {};
-        float InitPosRad = {};
-        _float2 AlphaTime = {};
-        _float2 Speed = {};
-        _float2 Radius = {};
+        _float2 height = {};
+        _float2 size = {};
+        float initPosRad = {};
+        _float2 alphaTime = {};
+        _float2 speed = {};
+        _float2 radius = {};
 
-        _uint fish_DefID = {};
-        MINIGAME MiniGameType = {};
+        _uint fishDefID = {};
+        EMiniGameType miniGameType = {};
 
     };
 
 
-    struct  FishSData
+    struct  FishData
     {
-        _float4x4 FishMatrices={};
+        _float4x4 fishMatrices={};
 
-        float Height = {};
-        float Size = {};
-        float InitPosRad = {};
-        float Alpha = {};
-        float Speed = {};
-        float Radius = {};
+        float height = {};
+        float size = {};
+        float initPosRad = {};
+        float alpha = {};
+        float speed = {};
+        float radius = {};
        
     };
 
 
 private:
-    CFish(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CFish(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CFish(const CFish& prototype);
 public:
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnGui() override;
 
-    int GetInitFishCount() const { return m_InitFishCount; }
+    int GetInitFishCount() const { return m_initFishCount; }
     int GetCurFishCount() const {
-        if (m_MiniGame_Logic == nullptr)
+        if (m_miniGameLogic == nullptr)
             return -1;
 
-        return m_MiniGame_Logic->GetFishCount();
+        return m_miniGameLogic->GetFishCount();
     }
-    shared_ptr<CMiniGame> GetMiniGameLogic() const {return m_MiniGame_Logic;}
-    void SetMiniGameLogic(shared_ptr<class CMiniGame> logic) {m_MiniGame_Logic = logic;}
+    shared_ptr<CMiniGame> GetMiniGameLogic() const {return m_miniGameLogic;}
+    void SetMiniGameLogic(shared_ptr<class CMiniGame> logic) {m_miniGameLogic = logic;}
 
 	virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
     virtual void OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
 
-    MINIGAME GetMiniGameType() const{return m_MiniGameType;}
+    EMiniGameType GetMiniGameType() const{return m_miniGameType;}
 
-    void Change_Cam(shared_ptr<CGameObject> m_Player);
+    void Change_Cam(shared_ptr<CGameObject> m_player);
 
     virtual void RebindCom();
     HRESULT Bind_ShaderResources();
-    _uint Get_fish_DefID() { return fish_DefID; };
+    _uint Get_FishDefID() { return m_fishDefID; };
 
     //void Set_FishCount(_uint cunt) { m_CurFishCount = cunt; };
 
@@ -85,26 +85,26 @@ protected:
     HRESULT Ready_Components();
 private:
 
-    shared_ptr<CShader> m_pShaderCom = {nullptr};
-    shared_ptr<CModel> m_pModelCom = {nullptr};
-    shared_ptr<CCollider> m_pColliderCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = {nullptr};
+    shared_ptr<CModel> m_modelCom = {nullptr};
+    shared_ptr<CCollider> m_colliderCom = { nullptr };
 
 private:
 
-    MINIGAME m_MiniGameType = {};
+    EMiniGameType m_miniGameType = {};
    //_uint m_CurFishCount = {};
 
-    _uint m_InitFishCount = {};
+    _uint m_initFishCount = {};
     float m_acc = {};
-    vector<FishSData> m_Fishs = {};
-    _uint fish_DefID = {};
+    vector<FishData> m_fishes = {};
+    _uint m_fishDefID = {};
 
 
-    shared_ptr<class CMiniGame> m_MiniGame_Logic = { nullptr };
+    shared_ptr<class CMiniGame> m_miniGameLogic = { nullptr };
 
 public:
-    static shared_ptr<CFish> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CFish> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

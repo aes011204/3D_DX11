@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Client_Define.h"
 #include "Camera.h"
 
@@ -11,84 +11,84 @@ class CCamera_Play final:
 public:
 
 
-    struct CAMERAPLAY_DESC : public CCamera::CAMERA_DESC
+    struct CameraPlayDesc : public CCamera::CameraDesc
     {
-        _float	fMouseSensor = {};
+        _float	mouseSensor = {};
     	weak_ptr<CGameObject> target = { };
-        _float3 vDir = {};
+        _float3 dir = {};
 
     };
 protected:
-    CCamera_Play(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CCamera_Play(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CCamera_Play(const CCamera& prototype);
 public:
     virtual ~CCamera_Play() = default;
 public:
     virtual HRESULT Initialize_Prototype();
-    virtual HRESULT Initialize(void* pArg);
-    virtual void Priority_Update(_float fTimeDelta);
-    void Update_AfterTarget(_float fTimeDelta) override;
-    void Change_CamMode(CAM_MODE m_ChangeMode, CAM_MODE m_NextMode);
+    virtual HRESULT Initialize(void* arg);
+    virtual void Priority_Update(_float timeDelta);
+    void Update_AfterTarget(_float timeDelta) override;
+    void Change_CamMode(ECamMode m_changeMode, ECamMode m_nextMode);
     void SetTarget(weak_ptr<CGameObject> target, _float startPitchAngle, _float startYawAngle, _float startDistance,
-                   _float fTimeDelta);
-    virtual void Update(_float fTimeDelta);
-    virtual void Late_Update(_float fTimeDelta);
+                   _float timeDelta);
+    virtual void Update(_float timeDelta);
+    virtual void Late_Update(_float timeDelta);
     virtual HRESULT Render();
 
-    void Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
-    bool Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC> pDesc);
-    void Get_Target_PosLook(_float3& camPos, _float3& vTargetRot);
-    _float3 Shake_Cam(_float fTimeDelta);
+    void Update_Follow(_float timeDelta, shared_ptr<CamDesc> desc);
+    bool Update_Lerp(_float timeDelta, shared_ptr<CamDesc> desc);
+    void Get_Target_PosLook(_float3& camPos, _float3& targetRot);
+    _float3 Shake_Cam(_float timeDelta);
 private:
     void Start_Targetting(_float4 startPos, _float degree, _float distance);
 
 private:
-    //shared_ptr<CAM_DESC> m_pCurrentDesc = nullptr; // µ¥ÀÌÅÍ ¾È¿¡ ¸ğµå Á¤º¸°¡ ÀÖÀ½
-    //shared_ptr<CAM_DESC> m_pNextDesc = nullptr; // ´ÙÀ½ ¿¹¾à¼®
+    //shared_ptr<CAM_DESC> m_pCurrentDesc = nullptr; // ë°ì´í„° ì•ˆì— ëª¨ë“œ ì •ë³´ê°€ ìˆìŒ
+    //shared_ptr<CAM_DESC> m_pNextDesc = nullptr; // ë‹¤ìŒ ì˜ˆì•½ì„
 
-    _float3 m_BasePos; // ÇØ´ç ÇÁ·¹ÀÓ¿¡ Ã³À½ À§Ä¡
+    _float3 m_basePos; // í•´ë‹¹ í”„ë ˆì„ì— ì²˜ìŒ ìœ„ì¹˜
 
     _bool m_isShack = false;
-    float m_ShakeTime = {};
-    float    m_ShakePower = {};
-    float    m_DeAc = {};
+    float m_shakeTime = {};
+    float    m_shakePower = {};
+    float    m_shakeDecay = {};
 
     //
 
-    float  m_fStartFovy = 0.f;
-    float m_Acc = 0.f;
+    float  m_startFOVY = 0.f;
+    float m_acc = 0.f;
 
-    deque<shared_ptr<CAM_DESC>> m_CamCommands;
+    deque<shared_ptr<CamDesc>> m_camCommands;
 
-    _bool m_bFinish = false;
-    _bool m_bChange = false;
+    _bool m_isFinish = false;
+    _bool m_isChange = false;
 
 private:
-    _float	m_fMouseSensor = {};
-    weak_ptr<CGameObject> m_pTarget = {  };
-    weak_ptr<CTransform> m_pTargetTransform = {  };
+    _float	m_mouseSensor = {};
+    weak_ptr<CGameObject> m_target = {  };
+    weak_ptr<CTransform> m_targetTransform = {  };
 
 
-    _float m_MinPitch = 5.f;
-    _float m_MaxPitch = 90.f;
+    _float m_minPitch = 5.f;
+    _float m_maxPitch = 90.f;
 
-    _float m_MinDistance = 5.f;
-    _float m_MaxDistance = 90.f;
+    _float m_minDistance = 5.f;
+    _float m_maxDistance = 90.f;
 
-    _float m_Yaw = {};
-    _float m_Pitch = {};
-    _float m_fDistance = {};
+    _float m_yaw = {};
+    _float m_pitch = {};
+    _float m_distance = {};
     _float m_followTargetY = 0.f;
     _float m_time = {};
     //
     //_vector m_vTargetPos={};
     //_float3 m_vTargetQut={};
     //_float  m_fDuration={};
-    _bool m_FirstFlag = {false};
+    _bool m_isFirstFlag = {false};
 public:
-    //void* pArg : »çº»°´Ã¼ÀÇ Ãß°¡ÀûÀÎ ÃÊ±âÈ­°¡ ÇÊ¿ä ÇÒ¼ö ÀÖÀ½ ·±Å¸ÀÓ ÇÒ´ç µÇ´Â ÁÖ¼Ò °°Àº°Å
-    static shared_ptr<CCamera_Play> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    virtual shared_ptr<CGameObject> Clone(void* pArg) override;
+    //void* pArg : ì‚¬ë³¸ê°ì²´ì˜ ì¶”ê°€ì ì¸ ì´ˆê¸°í™”ê°€ í•„ìš” í• ìˆ˜ ìˆìŒ ëŸ°íƒ€ì„ í• ë‹¹ ë˜ëŠ” ì£¼ì†Œ ê°™ì€ê±°
+    static shared_ptr<CCamera_Play> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    virtual shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

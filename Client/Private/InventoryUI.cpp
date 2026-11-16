@@ -1,4 +1,4 @@
-#include "InventoryUI.h"
+﻿#include "InventoryUI.h"
 #include "Inventory_Controller.h"
 
 CInventoryUI::CInventoryUI()
@@ -21,13 +21,13 @@ bool CInventoryUI::MousePosToSlot(_uint& returnSlotX, _uint& returnSlotY)
 
 shared_ptr<CInventoryUI> CInventoryUI::Create()
 {
-	shared_ptr<CInventoryUI> pInstance ( new CInventoryUI());
+	shared_ptr<CInventoryUI> instance ( new CInventoryUI());
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CInventoryUI");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CInventoryUI::Free()

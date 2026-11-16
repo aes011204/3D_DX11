@@ -1,4 +1,4 @@
-#include "ManagerWin.h"
+ï»¿#include "ManagerWin.h"
 #include "EditorInstance.h"
 #include "GameInstance.h"
 #include "Engine_Helper.h"
@@ -20,9 +20,9 @@ HRESULT CManagerWin::Initialize()
 {
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtTerrainPicking>([this](const EvtTerrainPicking& p)
-		{   this-> m_PickMode = true;
-			m_iSelectedLevel = p.iLevel;
-			m_strSelectedTag = p.Tag;
+		{   this-> m_isPickMode = true;
+			m_selectedLevel = p.level;
+			m_selectedTag = p.tag;
 		
 		});
 
@@ -31,7 +31,7 @@ HRESULT CManagerWin::Initialize()
 	return S_OK;
 }
 
-void CManagerWin::Update(float fTimeDelta)
+void CManagerWin::Update(float timeDelta)
 {
 }
 
@@ -96,12 +96,12 @@ void CManagerWin::Render()
 	{
 		for (auto& pair : Manager)
 		{
-			_string strLayerTag = W2S(pair.first);
+			_string layerTag = W2S(pair.first);
 
 			if (!pair.second)
 				continue;
 
-			if (ImGui::TreeNodeEx(strLayerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNodeEx(layerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 			{
 
 
@@ -144,8 +144,8 @@ void CManagerWin::Render()
 
 	//		}
 
-	//		// ¸¸ÀÏ ¸¶¿ì½º Å¬¸¯À»ÇÏ¸é ³¡
-	//		if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::LBUTTON))
+	//		// ë§Œì¼ ë§ˆìš°ìŠ¤ í´ë¦­ì„í•˜ë©´ ë
+	//		if (CGameInstance::GetInstance()->Get_DInput_Manager()->MouseDown(DIMB::LBUTTON))
 	//		{
 
 	//			m_PickMode = false;
@@ -153,40 +153,40 @@ void CManagerWin::Render()
 	//		}
 
 	//	}
-	//	if (CGameInstance::GetInstance()->Get_DInput_Manger()->MouseDown(DIMB::RBUTTON))
+	//	if (CGameInstance::GetInstance()->Get_DInput_Manager()->MouseDown(DIMB::RBUTTON))
 	//	{
 	//		m_PickMode = false;
 	//		m_pPreview = nullptr;
 	//	}
 	//}
-	if (m_PickMode == true)
+	if (m_isPickMode == true)
 	{
-		_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
+		_uint currentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
 
-		if (m_pPreview == nullptr)
+		if (m_preview == nullptr)
 		{
-			m_pPreview = CGameInstance::GetInstance()->Add_GameObject(
-				m_iSelectedLevel,
-				m_strSelectedTag,
-				iCurrentLevel,
+			m_preview = CGameInstance::GetInstance()->Add_GameObject(
+				m_selectedLevel,
+				m_selectedTag,
+				currentLevel,
 				L"Static"
 			);
 
-			if (m_PickMode == true)
+			if (m_isPickMode == true)
 			{
-				_uint iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
+				_uint currentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
 
 				CGameInstance::GetInstance()->Add_GameObject(
-					m_iSelectedLevel,
-					m_strSelectedTag,
-					iCurrentLevel,
+					m_selectedLevel,
+					m_selectedTag,
+					currentLevel,
 					L"Static"
 				);
 
-				m_PickMode = false;
+				m_isPickMode = false;
 			}
 
-			m_pPreview = nullptr;
+			m_preview = nullptr;
 		}
 	}
 	ImGui::End();
@@ -196,12 +196,12 @@ void CManagerWin::Render()
 
 shared_ptr<CManagerWin> CManagerWin::Create()
 {
-	shared_ptr<CManagerWin> pInstance(new CManagerWin());
+	shared_ptr<CManagerWin> instance(new CManagerWin());
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Cloned : CManagerWin");
 	}
-	return pInstance;
+	return instance;
 }
 

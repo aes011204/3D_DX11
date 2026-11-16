@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "UIImage.h"
 #include "Client_Define.h"
 #include "Client_Enum.h"
 
-//ÀÎ¹êÀÌ Çª½Ã µÇ¸é ¾ÆÀÌÅÛµµ Çª½Ã
-// ÀÏ´Ü ¾Èº¸ÀÌ°Ô ÇÏ°í È¦µå µÇ¸é º¸ÀÌ°Ô
+//ì¸ë°´ì´ í‘¸ì‹œ ë˜ë©´ ì•„ì´í…œë„ í‘¸ì‹œ
+// ì¼ë‹¨ ì•ˆë³´ì´ê²Œ í•˜ê³  í™€ë“œ ë˜ë©´ ë³´ì´ê²Œ
 NS_BEGIN(Engine)
 class CUIImage;
 class CUISlot;
@@ -15,28 +15,28 @@ class CUI_Item :
     public CUIImage
 {
 public:
-    struct ITEM_DESC : public CUIImage::UIIMAGE_DESC
+    struct ItemDesc : public CUIImage::UIImageDesc
     {
         
     };
 private:
-    CUI_Item(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_Item(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_Item(const CUI_Item& prototype);
 public:
     ~CUI_Item() = default;
 
 public:
-    void Set_Rotation(_uint rot) { m_HoldItem.Rotation = rot; };
+    void Set_Rotation(_uint rot) { m_holdItem.rotation = rot; };
 
-    void HoldItem(Item_Inst HoldItemInst);
+    void HoldItem(ItemInst holdItemInst);
 
     void ReleaseItem();
 
-    Item_Inst& Get_HoldItem() { return m_HoldItem; }
+    ItemInst& Get_HoldItem() { return m_holdItem; }
 
-    void Set_HoldItem(const Item_Inst& _item) { m_HoldItem = _item; }
+    void Set_HoldItem(const ItemInst& _item) { m_holdItem = _item; }
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -48,10 +48,10 @@ public:
 
 
 private:
-    bool m_bIsHold = {};
-    Item_Inst m_HoldItem = {};
+    bool m_isHold = {};
+    ItemInst m_holdItem = {};
 public:
-    static shared_ptr<CUI_Item> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_Item> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     virtual void Free() override;
 };
 

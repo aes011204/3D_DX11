@@ -1,9 +1,9 @@
-#include "EmptyGObject.h"
+ï»¿#include "EmptyGObject.h"
 #include "GameInstance.h"
 #include "Model.h"
 
-CEmptyGObject::CEmptyGObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CEmptyGObject::CEmptyGObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -17,12 +17,12 @@ HRESULT CEmptyGObject::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CEmptyGObject::Initialize(void* pArg)
+HRESULT CEmptyGObject::Initialize(void* arg)
 {
 
-	m_bIsSavableClass = true;
+	m_isSavableClass = true;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -31,24 +31,24 @@ HRESULT CEmptyGObject::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CEmptyGObject::Priority_Update(_float fTimeDelta)
+void CEmptyGObject::Priority_Update(_float timeDelta)
 {
 }
 
-void CEmptyGObject::Update(_float fTimeDelta)
+void CEmptyGObject::Update(_float timeDelta)
 {
-	if (m_bIsDirtyCom) {
-		RebindCom();      // "¹Ù²ï °Í"¸¸ ÇÑ ¹ø °»½Å
-		m_bIsDirtyCom = false;
+	if (m_isDirtyCom) {
+		RebindCom();      // "ë°”ë€ ê²ƒ"ë§Œ í•œ ë²ˆ ê°±ì‹ 
+		m_isDirtyCom = false;
 	}
 	int a = 1;
 
 	//m_pModelCom->Play_Animation(fTimeDelta);
 }
 
-void CEmptyGObject::Late_Update(_float fTimeDelta)
+void CEmptyGObject::Late_Update(_float timeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CEmptyGObject::Render()
@@ -56,18 +56,18 @@ HRESULT CEmptyGObject::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->Render(i)))
+	if (FAILED(m_modelCom->Render(i)))
 		return E_FAIL;
 	}
 
@@ -79,13 +79,13 @@ HRESULT CEmptyGObject::Render()
 
 void CEmptyGObject::OnGui()
 {
-	ImGui::Checkbox("Custom Shader", &m_bCustomS);
+	ImGui::Checkbox("Custom Shader", &m_isCustomS);
 
-	if (m_bCustomS == false)
+	if (m_isCustomS == false)
 		return;
-	ImGui::DragFloat("Lamp 1 Intensity", &m_ColorLamp1, 0.1f, 0.0f, 0.0f, "%.2f");
+	ImGui::DragFloat("Lamp 1 Intensity", &m_colorLamp1, 0.1f, 0.0f, 0.0f, "%.2f");
 
-	ImGui::SliderFloat("Lamp 2 Intensity", &m_ColorLamp2, 0.0f, 1.0f, "%.3f");
+	ImGui::SliderFloat("Lamp 2 Intensity", &m_colorLamp2, 0.0f, 1.0f, "%.3f");
 
 	ImGui::Separator();
 
@@ -93,11 +93,11 @@ void CEmptyGObject::OnGui()
 
 	ImGui::Text("Terrain Colors (RGBA)");
 
-	ImGui::ColorEdit4("Sand Color", (float*)&m_SandColor);
+	ImGui::ColorEdit4("Sand Color", (float*)&m_sandColor);
 
-	ImGui::ColorEdit4("Rock Color", (float*)&m_RockColor);
+	ImGui::ColorEdit4("Rock Color", (float*)&m_rockColor);
 
-	ImGui::ColorEdit4("Grass Color", (float*)&m_GrassColor);
+	ImGui::ColorEdit4("Grass Color", (float*)&m_grassColor);
 
 }
 
@@ -106,15 +106,15 @@ void CEmptyGObject::Save_ToJson(nlohmann::json& j)
 
 	CGameObject::Save_ToJson(j);
 
-	if (m_bCustomS == false)
+	if (m_isCustomS == false)
 		return;
-	j["bool_CustomShader"] = m_bCustomS;
-	j["ColorLamp1"] = m_ColorLamp1;
-	j["ColorLamp2"] = m_ColorLamp2;
+	j["bool_CustomShader"] = m_isCustomS;
+	j["ColorLamp1"] = m_colorLamp1;
+	j["ColorLamp2"] = m_colorLamp2;
 
-	j["SandColor"] = { m_SandColor.x, m_SandColor.y, m_SandColor.z, m_SandColor.w };
-	j["RockColor"] = { m_RockColor.x, m_RockColor.y, m_RockColor.z, m_RockColor.w };
-	j["GrassColor"] = { m_GrassColor.x, m_GrassColor.y, m_GrassColor.z, m_GrassColor.w };
+	j["SandColor"] = { m_sandColor.x, m_sandColor.y, m_sandColor.z, m_sandColor.w };
+	j["RockColor"] = { m_rockColor.x, m_rockColor.y, m_rockColor.z, m_rockColor.w };
+	j["GrassColor"] = { m_grassColor.x, m_grassColor.y, m_grassColor.z, m_grassColor.w };
 
 }
 
@@ -123,49 +123,49 @@ void CEmptyGObject::Load_FromJson(nlohmann::json& j)
 
 	CGameObject::Load_FromJson(j);
 
-	if (m_bCustomS == false)
+	if (m_isCustomS == false)
 		return;
-	m_bCustomS = j["bool_CustomShader"];
+	m_isCustomS = j["bool_CustomShader"];
 
-	m_ColorLamp1 = j["ColorLamp1"];
-	m_ColorLamp2 = j["ColorLamp2"];
+	m_colorLamp1 = j["ColorLamp1"];
+	m_colorLamp2 = j["ColorLamp2"];
 
 	auto sand = j["SandColor"];
-	m_SandColor = { sand[0], sand[1], sand[2], sand[3] };
+	m_sandColor = { sand[0], sand[1], sand[2], sand[3] };
 
 	auto rock = j["RockColor"];
-	m_RockColor = { rock[0], rock[1], rock[2], rock[3] };
+	m_rockColor = { rock[0], rock[1], rock[2], rock[3] };
 
 	auto grass = j["GrassColor"];
-	m_GrassColor = { grass[0], grass[1], grass[2], grass[3] };
+	m_grassColor = { grass[0], grass[1], grass[2], grass[3] };
 
 
 }
 void CEmptyGObject::RebindCom()
 {
-	// ÀÌÁ¦ ¸ğµç ÄÄÆ÷³ÍÆ®´Â ³ÎÃ¼Å© ÀßÇÏ±â ¾ø´Â°æ¿ìµµ ÀÖÀ»¼ö ÀÖÀ¸´Ï±î
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	// ì´ì œ ëª¨ë“  ì»´í¬ë„ŒíŠ¸ëŠ” ë„ì²´í¬ ì˜í•˜ê¸° ì—†ëŠ”ê²½ìš°ë„ ìˆì„ìˆ˜ ìˆìœ¼ë‹ˆê¹Œ
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_modelCom = Get_Component<CModel>(L"Com_Model");
 	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
-	m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
+	m_shaderCom = Get_Component<CShader>(L"Com_Shader");
 
 
 }
 
 HRESULT CEmptyGObject::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -181,27 +181,27 @@ HRESULT CEmptyGObject::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far",&fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far",&farZ, sizeof(_float))))
 		return E_FAIL;
 
 
-	if (m_bCustomS == true)
+	if (m_isCustomS == true)
 	{
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorLamp1", &m_ColorLamp1, sizeof(_float))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_ColorLamp1", &m_colorLamp1, sizeof(_float))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_ColorLamp2", &m_ColorLamp2, sizeof(_float))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_ColorLamp2", &m_colorLamp2, sizeof(_float))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_SandColor", &m_SandColor, sizeof(_float4))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_SandColor", &m_sandColor, sizeof(_float4))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_RockColor", &m_RockColor, sizeof(_float4))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_RockColor", &m_rockColor, sizeof(_float4))))
 			return E_FAIL;
-		if (FAILED(m_pShaderCom->Bind_RawValue("g_GrassColor", &m_GrassColor, sizeof(_float4))))
+		if (FAILED(m_shaderCom->Bind_RawValue("g_GrassColor", &m_grassColor, sizeof(_float4))))
 			return E_FAIL;
 	}
 
 	float emissive =1.f;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
 		return E_FAIL;
 		
 	
@@ -218,10 +218,10 @@ HRESULT CEmptyGObject::Ready_Components()
 	//	TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	//	return E_FAIL;
 
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	// ì‰ì´ë”ëŠ” í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ì„
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìˆì–´ì•¼ í•˜ì§€ë§Œ í´ë˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìˆì–´ì•¼ í•¨ 
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Model_ForkLift"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
 	//	return E_FAIL;
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
@@ -231,27 +231,27 @@ HRESULT CEmptyGObject::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CEmptyGObject> CEmptyGObject::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CEmptyGObject> CEmptyGObject::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CEmptyGObject> pInstance(new CEmptyGObject(pDevice, pContext), [](CEmptyGObject* p) {p->Free(); delete p;});
+	shared_ptr<CEmptyGObject> instance(new CEmptyGObject(device, context), [](CEmptyGObject* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CEmptyGObject");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CEmptyGObject::Clone(void* pArg)
+shared_ptr<CGameObject> CEmptyGObject::Clone(void* arg)
 {
-	shared_ptr<CEmptyGObject> pInstance(new CEmptyGObject(*this), [](CEmptyGObject* p) {p->Free(); delete p;});
+	shared_ptr<CEmptyGObject> instance(new CEmptyGObject(*this), [](CEmptyGObject* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CEmptyGObject");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CEmptyGObject::Free()

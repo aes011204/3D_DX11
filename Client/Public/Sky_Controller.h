@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 
 
@@ -21,24 +21,24 @@ public:
     virtual ~CSky_Controller();
 
 public:
-    HRESULT Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    HRESULT Initialize(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
-    void Update(float TimeDelta);
+    void Update(float timeDelta);
 
  virtual void OnGui() override;
- const _float4& Get_Direction() const { return m_Direction; }
- const _float4& Get_Diffuse()   const { return m_Diffuse; }
- const _float4& Get_Ambient()   const { return m_Ambient; }
- const _float4& Get_Specular()  const { return m_Specular; }
- const _float3& Get_SkyColor()  const { return m_SkyColor; }
+ const _float4& Get_Direction() const { return m_direction; }
+ const _float4& Get_Diffuse()   const { return m_diffuse; }
+ const _float4& Get_Ambient()   const { return m_ambient; }
+ const _float4& Get_Specular()  const { return m_specular; }
+ const _float3& Get_SkyColor()  const { return m_skyColor; }
 
 private:
 
-    _float4 m_Direction = {};
-    _float4 m_Diffuse = { 1.f, 1.f, 1.f, 1.f };//»ö
-    _float4 m_Ambient = { 0.4f, 0.4f, 0.4f, 1.f };//È¯°æ ±¤ ÀüÃ¼ ¹à±â
-    _float4 m_Specular = { 1.f, 1.f, 1.f, 1.f }; // ÇÏÀÌ¶óÀÌÆ® ¹ã¿¡ 0 ³·Àº ¾àÇÏ°Ô ÀÖÀ½
-    _float3 m_SkyColor = { 1.f, 1.f, 1.f};
+    _float4 m_direction = {};
+    _float4 m_diffuse = { 1.f, 1.f, 1.f, 1.f };//ìƒ‰
+    _float4 m_ambient = { 0.4f, 0.4f, 0.4f, 1.f };//í™˜ê²½ ê´‘ ì „ì²´ ë°ê¸°
+    _float4 m_specular = { 1.f, 1.f, 1.f, 1.f }; // í•˜ì´ë¼ì´íŠ¸ ë°¤ì— 0 ë‚®ì€ ì•½í•˜ê²Œ ìˆìŒ
+    _float3 m_skyColor = { 1.f, 1.f, 1.f};
 
 
 
@@ -47,29 +47,29 @@ private:
 
     //
 
-    //_float2 NightT = _float2(0.f, 0.30);	//0.00 ~0.20 : ¹ã
-    //_float2 MidNightT = _float2(0.15f, 0.45);	//0.20 ~0.35 : »õº®(¹ã ¡æ ³·)
-    //_float2 DayT = _float2(0.35f, 0.65);	//0.35 ~0.65 : ³·
-    //_float2 SunsetT = _float2(0.65f, 0.85);	//0.65 ~0.80 : ³ëÀ»(³· ¡æ ³ëÀ»)
-    //_float2 AfterSunsetT = _float2(0.80f, .95f);	//0.80 ~1.00 : ¹ã(³ëÀ» ¡æ ¹ã)
+    //_float2 NightT = _float2(0.f, 0.30);	//0.00 ~0.20 : ë°¤
+    //_float2 MidNightT = _float2(0.15f, 0.45);	//0.20 ~0.35 : ìƒˆë²½(ë°¤ â†’ ë‚®)
+    //_float2 DayT = _float2(0.35f, 0.65);	//0.35 ~0.65 : ë‚®
+    //_float2 SunsetT = _float2(0.65f, 0.85);	//0.65 ~0.80 : ë…¸ì„(ë‚® â†’ ë…¸ì„)
+    //_float2 AfterSunsetT = _float2(0.80f, .95f);	//0.80 ~1.00 : ë°¤(ë…¸ì„ â†’ ë°¤)
     //_float2 NightT2 = _float2(0.85f, 1.0f);
-    _float2 NightT = _float2(0.00f, 0.25f);
-    _float2 MidNightT = _float2(0.15f, 0.40f);
-    _float2 DayT = _float2(0.35f, 0.70f);
-    _float2 SunsetT = _float2(0.60f, 0.80f);
-    _float2 AfterSunsetT = _float2(0.75f, 0.92f);
-    _float2 NightT2 = _float2(0.85f, 1.00f);
+    _float2 m_nightRange = _float2(0.00f, 0.25f);
+    _float2 m_midNightRange = _float2(0.15f, 0.40f);
+    _float2 m_dayRange = _float2(0.35f, 0.70f);
+    _float2 m_sunsetRange = _float2(0.60f, 0.80f);
+    _float2 m_afterSunsetRange = _float2(0.75f, 0.92f);
+    _float2 m_nightRange2 = _float2(0.85f, 1.00f);
 
 
-    _float3 Night = _float3(0.05, 0.08, 0.15);
-    _float3 MidNight = _float3(0.25, 0.45, 0.65);
-    _float3 Day = _float3(0.45, 0.70, 0.90);
-    _float3 Sunset = _float3(1.0, 0.55, 0.25);
-    _float3 AfterSunset = _float3(0.35, 0.25, 0.45);
+    _float3 m_nightColor = _float3(0.05, 0.08, 0.15);
+    _float3 m_midNightColor = _float3(0.25, 0.45, 0.65);
+    _float3 m_dayColor = _float3(0.45, 0.70, 0.90);
+    _float3 m_sunsetColor = _float3(1.0, 0.55, 0.25);
+    _float3 m_afterSunsetColor = _float3(0.35, 0.25, 0.45);
 private:
-    ComPtr<ID3D11Device> m_pDevice = { nullptr };
-    ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-    weak_ptr<class CGameInstance> m_pGameInstance = { };
+    ComPtr<ID3D11Device> m_device = { nullptr };
+    ComPtr<ID3D11DeviceContext> m_context = { nullptr };
+    weak_ptr<class CGameInstance> m_gameInstance = { };
 
 
 public:

@@ -1,4 +1,4 @@
-#include "UI_TabContainer.h"
+Ôªø#include "UI_TabContainer.h"
 
 #include <UIText.h>
 
@@ -10,8 +10,8 @@
 #include "EventBus.h"
 
 
-CUI_TabContainer::CUI_TabContainer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_TabContainer::CUI_TabContainer(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -42,50 +42,50 @@ void CUI_TabContainer::UI_Active()
 
 }
 
-void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
+void CUI_TabContainer::UI_PanelActive(_uint tabfig, ETab Active)
 {
 	//m_Children.clear();
 	_uint numPanel = {};
-	// ¿œ¥‹ ±‚∫ª¿˚¿∏∑Œ ∆–≥Œ ¿∫ ¥Ÿ inactive, πˆ∆∞¿∫ iTabfig ø° µ˚∂Û active
-	//::OnActive() ø°º≠ ≈¨∏Ø«— ∞≈∏∏ »∞º∫»≠
-	if (iTabfig & ETOI(TAB::INVEN))
+	// ÏùºÎã® Í∏∞Î≥∏Ï†ÅÏúºÎ°ú Ìå®ÎÑê ÏùÄ Îã§ inactive, Î≤ÑÌäºÏùÄ iTabfig Ïóê Îî∞Îùº active
+	//::OnActive() ÏóêÏÑú ÌÅ¥Î¶≠Ìïú Í±∞Îßå ÌôúÏÑ±Ìôî
+	if (tabfig & ETOI(ETab::INVEN))
 	{
 		//Add_Child(m_ButtonContents[ETOI(TAB::INVEN)], L"BUTTON_INVEN", false);
-		(m_ButtonContents[ETOI(TAB::INVEN)]->UI_Active());
+		(m_buttonContents[ETOI(ETab::INVEN)]->UI_Active());
 		//Add_Child(m_TabContents[ETOI(TAB::INVEN)], L"INVEN", false);
-		m_TabContents[ETOI(TAB::INVEN)]->UI_InActive();
+		m_tabContents[ETOI(ETab::INVEN)]->UI_InActive();
 		numPanel++;
 	}
-	if (iTabfig & ETOI(TAB::STORAGE))
+	if (tabfig & ETOI(ETab::STORAGE))
 	{
 		//(m_ButtonContents[ETOI(TAB::STORAGE)], L"BUTTON_STORAGE", false);
-		(m_ButtonContents[ETOI(TAB::STORAGE)]->UI_Active());
+		(m_buttonContents[ETOI(ETab::STORAGE)]->UI_Active());
 		//Add_Child(m_TabContents[ETOI(TAB::STORAGE)], L"STORAGE", false);
-		m_TabContents[ETOI(TAB::STORAGE)]->UI_InActive();
+		m_tabContents[ETOI(ETab::STORAGE)]->UI_InActive();
 		numPanel++;
 
 	}
-	if (iTabfig & ETOI(TAB::ETC))
+	if (tabfig & ETOI(ETab::ETC))
 	{
 		//(m_ButtonContents[ETOI(TAB::ETC)], L"BUTTON_ETC", false);
-		m_ButtonContents[ETOI(TAB::ETC)]->UI_Active();
+		m_buttonContents[ETOI(ETab::ETC)]->UI_Active();
 		//Add_Child(m_TabContents[ETOI(TAB::ETC)], L"ETC", false);
-		m_TabContents[ETOI(TAB::ETC)]->UI_InActive();
+		m_tabContents[ETOI(ETab::ETC)]->UI_InActive();
 		numPanel++;
 	}
-	m_Line->UI_Active();
-	m_TextIMG->UI_Active();
+	m_line->UI_Active();
+	m_textImg->UI_Active();
 
 	Change_LayoutRawCol( numPanel,1);
 
-	m_Active = Active;
+	m_active = Active;
 
 	Set_ActiveForCustom();
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 	
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 	
 	//m_bInteractable = true;
 	OnActive();
@@ -103,162 +103,162 @@ void CUI_TabContainer::UI_PanelActive(_uint iTabfig, TAB Active)
 	//	it->UI_InActive();
 }
 
-HRESULT CUI_TabContainer::OnInit(void* pArg)
+HRESULT CUI_TabContainer::OnInit(void* arg)
 {
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_AddMoney>([this](const Evt_AddMoney& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_AddMoney>([this](const Evt_AddMoney& e)
 		{
 			
-			wstring strMoney = format(L"${:.2f}", e.money);
+			wstring moneyText = format(L"${:.2f}", e.money);
 			//wstring strM = L"$";
-			this->m_TextFont->Set_Text(/*strM +*/ strMoney);
+			this->m_textFont->Set_Text(/*strM +*/ moneyText);
 		});
 
 
 
 	HRESULT hr = E_FAIL;
-	TABCONTAINER_DESC* TABpDesc = static_cast<TABCONTAINER_DESC*>(pArg);
+	TabContainerDesc* TABpDesc = static_cast<TabContainerDesc*>(arg);
 	//TABCONTAINER_DESC pDesc = {};
-	TABpDesc->IsFullScreen = false;
-	TABpDesc->IsTransparent = false;
-	TABpDesc->TextureComLevel = ETOI(LEVEL::STATIC);
-	TABpDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
-	TABpDesc->IsUseLayout = true;
-	//pDesc.vAnchorPoint = ¿œ¥‹ ∆–Ω∫
+	TABpDesc->isFullScreen = false;
+	TABpDesc->isTransparent = false;
+	TABpDesc->textureComLevel = ETOI(ELevel::STATIC);
+	TABpDesc->textureProtoName = L"Prototype_Component_Texture_TabContainer";
+	TABpDesc->isUseLayout = true;
+	//pDesc.vAnchorPoint = ÏùºÎã® Ìå®Ïä§
 	//	pDesc.vPivot
 	//	pDesc.vAnchoredPos
 
 	hr = CUIPanel::OnInit(TABpDesc);
 
 
-	CUIImage::UIIMAGE_DESC img = {};
-	img.TextureComLevel = ETOI(LEVEL::STATIC);
-	img.TextureProtoName = L"Prototype_Component_Texture_TabDivider";
-	img.bUseNineSlice = true;
-	shared_ptr<CUIImage> Line = CUIImage::Create(m_pDevice, m_pContext);
+	CUIImage::UIImageDesc img = {};
+	img.textureComLevel = ETOI(ELevel::STATIC);
+	img.textureProtoName = L"Prototype_Component_Texture_TabDivider";
+	img.useNineSlice = true;
+	shared_ptr<CUIImage> Line = CUIImage::Create(m_device, m_context);
 	Line->Initialize(&img);
 	Line->Set_Zorder(1);
 
 	Add_Child(Line, L"Line", false); 
-	m_Line = Line;
+	m_line = Line;
 
 	for (_uint i = 0; i < 3; i++)
 	{
-		TAB eTab = static_cast<TAB>(1 << i);
+		ETab tab = static_cast<ETab>(1 << i);
 
-		/// πˆ∆∞
-		CUIButton::UIBUTTON_DESC ButDesc = {};
-		ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
+		/// Î≤ÑÌäº
+		CUIButton::UIButtonDesc butDesc = {};
+		butDesc.textureComLevel = ETOI(ELevel::STATIC);
+		butDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 		//ButDesc.vAnchoredPos = Vector2{ 0.f,16.7f + (98.f ) };
-		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// æ»∞«µÂ∑¡µµ µ  ≈ÿΩ∫√ƒø°º≠ √ ±‚»≠ øπ¡§
+		//ButDesc.vSizeDelta = Vector2{ 50.f,50.f };// ÏïàÍ±¥ÎìúÎ†§ÎèÑ Îê® ÌÖçÏä§Ï≥êÏóêÏÑú Ï¥àÍ∏∞Ìôî ÏòàÏ†ï
 		//ButDesc.vAnchorPoint = Vector2{ 0.254f,0.5f };
 		//ButDesc.vPivot = Vector2{ 0.5f, 0.5f };
 		//ButDesc.vScale = Vector2{ 1.3f, 1.0f };
-		ButDesc.TypeIndex = ETOI(eTab);
-		ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
+		butDesc.typeIndex = ETOI(tab);
+		butDesc.OverlapStartEvent = [this](CUIButton* self)
 		{
-				m_pGameInstance.lock()->Play_Once(L"Hover");
+				m_gameInstance.lock()->Play_Once(L"Hover");
 		};
-		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
-		ButDesc.ClickEvent = [this](CUIButton* pThis)
+		butDesc.OverlapEndEvent = [](CUIButton* self) {};
+		butDesc.ClickEvent = [this](CUIButton* self)
 			{
-				SetActiveTab(static_cast<TAB>(pThis->Get_TypeIndex()));
-				m_pGameInstance.lock()->Play_Once(L"Click");
+				SetActiveTab(static_cast<ETab>(self->Get_TypeIndex()));
+				m_gameInstance.lock()->Play_Once(L"Click");
 			};
-		shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
-		button->Initialize(&ButDesc);
+		shared_ptr<CUIButton> button = CUIButton::Create(m_device, m_context);
+		button->Initialize(&butDesc);
 		button->Set_Zorder(2);
 		button->UI_InActive();
 
 		{
 			wstring name = {};
-			switch (eTab)
+			switch (tab)
 			{
-			case TAB::INVEN:
-				name = L"»≠π∞";
+			case ETab::INVEN:
+				name = L"ÌôîÎ¨º";
 				break;
-			case TAB::STORAGE:
-				name = L"√¢∞Ì";
+			case ETab::STORAGE:
+				name = L"Ï∞ΩÍ≥†";
 
 				break;
-			case TAB::ETC:
-				name = L"±‚≈∏";
+			case ETab::ETC:
+				name = L"Í∏∞ÌÉÄ";
 				break;
 			}
 
-			CUIText::TEXT_DESC text_Desc = {};
-			text_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			text_Desc.strText = name;
-			shared_ptr<CUIText> Text_storage = CUIText::Create(m_pDevice, m_pContext);
-			Text_storage->Initialize(&text_Desc);
-			button->Add_Child(Text_storage, L"Text_"+S2W(string(magic_enum::enum_name(eTab))), false);
+			CUIText::TextDesc textDesc = {};
+			textDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+			textDesc.text = name;
+			shared_ptr<CUIText> textStorage = CUIText::Create(m_device, m_context);
+			textStorage->Initialize(&textDesc);
+			button->Add_Child(textStorage, L"Text_"+S2W(string(magic_enum::enum_name(tab))), false);
 		}
 
 		//Add_Child(pChild, NameTag, false);
-		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
-		Add_Layout_Child(button, NameTag, false);
-		m_ButtonContents[ETOI(eTab)] = button;
+		wstring nameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(tab)));
+		Add_Layout_Child(button, nameTag, false);
+		m_buttonContents[ETOI(tab)] = button;
 
 	}
 
 	//for (_uint i = 0; i < 3; i++)
 	{
-		TAB eTab = static_cast<TAB>(1 << 0);
-		// ¿œ¥‹ ≈◊Ω∫∆Æ ¿Œ∫• 3∞≥
-		CUI_Inventory::INVENTORY_DESC InvenDesc = {};
-		InvenDesc.IsFullScreen = false;
-		InvenDesc.IsTransparent = true;
-		InvenDesc.bSetParentSize = true;
+		ETab tab = static_cast<ETab>(1 << 0);
+		// ÏùºÎã® ÌÖåÏä§Ìä∏ Ïù∏Î≤§ 3Í∞ú
+		CUI_Inventory::InventoryDesc InvenDesc = {};
+		InvenDesc.isFullScreen = false;
+		InvenDesc.isTransparent = true;
+		InvenDesc.isSetParentSize = true;
 
-		shared_ptr<CUI_Inventory> pInven = CUI_Inventory::Create(m_pDevice, m_pContext);
-		pInven->Initialize(&InvenDesc);
+		shared_ptr<CUI_Inventory> inven = CUI_Inventory::Create(m_device, m_context);
+		inven->Initialize(&InvenDesc);
 		
-		wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-		Add_Child(pInven, NameTag, false);
-		m_TabContents[ETOI(eTab)] = pInven;
-		pInven->UI_InActive();
+		wstring nameTag = S2W(string(magic_enum::enum_name(tab)));
+		Add_Child(inven, nameTag, false);
+		m_tabContents[ETOI(tab)] = inven;
+		inven->UI_InActive();
 	}
 		{
-			TAB eTab = static_cast<TAB>(1 << 1);
-			// ¿œ¥‹ ≈◊Ω∫∆Æ ¿Œ∫• 3∞≥
-			CUI_Storage::STORAGE_DESC StorageDesc = {};
-			StorageDesc.IsFullScreen = false;
-			StorageDesc.IsTransparent = true;
-			StorageDesc.bSetParentSize = true;
-			StorageDesc.Inventype = INVENTYPE::STORAGE;
+			ETab tab = static_cast<ETab>(1 << 1);
+			// ÏùºÎã® ÌÖåÏä§Ìä∏ Ïù∏Î≤§ 3Í∞ú
+			CUI_Storage::StorageDesc storageDesc = {};
+			storageDesc.isFullScreen = false;
+			storageDesc.isTransparent = true;
+			storageDesc.isSetParentSize = true;
+			storageDesc.invenType = EInvenType::STORAGE;
 
-			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
-			pStorage->Initialize(&StorageDesc);
+			shared_ptr<CUI_Storage> storage = CUI_Storage::Create(m_device, m_context);
+			storage->Initialize(&storageDesc);
 
 			
 
 
-			wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-			Add_Child(pStorage, NameTag, false);
-			m_TabContents[ETOI(eTab)] = pStorage;
-			pStorage->UI_InActive();
+			wstring nameTag = S2W(string(magic_enum::enum_name(tab)));
+			Add_Child(storage, nameTag, false);
+			m_tabContents[ETOI(tab)] = storage;
+			storage->UI_InActive();
 		}
 
-		///µ∑///
+		///Îèà///
 
 	{
-		CUIImage::UIIMAGE_DESC moneyDesc = {};
-		moneyDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		moneyDesc.TextureProtoName = L"Prototype_Component_Texture_Button";
-		shared_ptr<CUIImage> money = CUIImage::Create(m_pDevice, m_pContext);
+		CUIImage::UIImageDesc moneyDesc = {};
+		moneyDesc.textureComLevel = ETOI(ELevel::STATIC);
+		moneyDesc.textureProtoName = L"Prototype_Component_Texture_Button";
+		shared_ptr<CUIImage> money = CUIImage::Create(m_device, m_context);
 		money->Initialize(&moneyDesc);
 		{
-			CUIText::TEXT_DESC MoneyTexDesc = {};
-			MoneyTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
-			MoneyTexDesc.strText = L"$0";
-			MoneyTexDesc.fontaline = CUIText::FONTALINE::RIGHT;
-			shared_ptr<CUIText> MoneyTex = CUIText::Create(m_pDevice, m_pContext);
-			MoneyTex->Initialize(&MoneyTexDesc);
-			money->Add_Child(MoneyTex, L"MoneyTex", false);
-			m_TextFont = MoneyTex;
+			CUIText::TextDesc moneyTexDesc = {};
+			moneyTexDesc.fontTag = L"Noto_Sans_CJK_SC";
+			moneyTexDesc.text = L"$0";
+			moneyTexDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+			shared_ptr<CUIText> moneyTex = CUIText::Create(m_device, m_context);
+			moneyTex->Initialize(&moneyTexDesc);
+			money->Add_Child(moneyTex, L"MoneyTex", false);
+			m_textFont = moneyTex;
 		}
 		Add_Child(money, L"MONEY", false);
-		m_TextIMG = money;
+		m_textImg = money;
 	}
 
 	return hr;
@@ -266,29 +266,29 @@ HRESULT CUI_TabContainer::OnInit(void* pArg)
 
 void CUI_TabContainer::OnActive()
 {
-	m_TabContents[ETOI(m_Active)]->UI_Active();
-	m_ButtonContents[ETOI(m_Active)]->ChangeState(BUTTON_STATE::SELECT);
+	m_tabContents[ETOI(m_active)]->UI_Active();
+	m_buttonContents[ETOI(m_active)]->ChangeState(EButtonState::SELECT);
 
 	//m_TabContents[ETOI(m_Active)]->GetUITransform()->SetLocalScale(GetUITransform()->Get_LocalScale());
 	//m_TabContents[ETOI(m_Active)]->GetUITransform()->SetSizeDelta(GetUITransform()->Get_SizeDelta());
 
-	m_ButtonContents[ETOI(m_Active)]->Set_Zorder(2);
+	m_buttonContents[ETOI(m_active)]->Set_Zorder(2);
 
 	GetUITransform()->SetAnchoredPos(Vector2{ GetUITransform()->Get_FinalSize().x, 0.f });
 	m_vecAni = Vector2{ GetUITransform()->Get_FinalSize().x, 0.f };
-	m_bStart = true;
-	m_fDuration = 1.5f;
+	m_isStart = true;
+	m_duration = 1.5f;
 
-	m_pGameInstance.lock()->Play_Once(L"Pursuits_OpenIndividual");
+	m_gameInstance.lock()->Play_Once(L"Pursuits_OpenIndividual");
 
 	CUIPanel::OnActive();
 }
 
 void CUI_TabContainer::OnInActive()
 {
-	m_bStart = false;
-	m_TimeAcc = 0;
-	m_Active = TAB::NONE;
+	m_isStart = false;
+	m_timeAcc = 0;
+	m_active = ETab::NONE;
 	CUIPanel::OnInActive();
 }
 
@@ -300,12 +300,12 @@ void CUI_TabContainer::OnDisabled()
 
 void CUI_TabContainer::OnUpdate(const _float& timeDelta)
 {
-	// ø©±‚ø°º≠ æ»∫∏ø¥¥Ÿ∞° øÕæﬂ«‘
-	if (m_bStart == true)
+	// Ïó¨Í∏∞ÏóêÏÑú ÏïàÎ≥¥ÏòÄÎã§Í∞Ä ÏôÄÏïºÌï®
+	if (m_isStart == true)
 	{
-		m_TimeAcc += timeDelta;
+		m_timeAcc += timeDelta;
 
-		float t = m_TimeAcc / m_fDuration;
+		float t = m_timeAcc / m_duration;
 
 		if (t >= 1.f) t = 1.f;
 
@@ -314,8 +314,8 @@ void CUI_TabContainer::OnUpdate(const _float& timeDelta)
 		//LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
 
 		if (t >= 1.f) {
-			m_bStart = false;
-			m_TimeAcc = 0;
+			m_isStart = false;
+			m_timeAcc = 0;
 		}
 	}
 
@@ -337,45 +337,45 @@ void CUI_TabContainer::OnClear()
 	CUIPanel::OnClear();
 }
 
-void CUI_TabContainer::SetActiveTab(TAB tab)
+void CUI_TabContainer::SetActiveTab(ETab tab)
 {
-	m_Active = tab;
+	m_active = tab;
 
 	for (int i = 0; i < 32; i++)
 	{
-		if (m_TabContents[i])
-			m_TabContents[i]->UI_InActive(); // ≈«¿∫ ¿Œø¢∆º∫Í∏¶ «ÿæﬂ«œ∞Ì 
+		if (m_tabContents[i])
+			m_tabContents[i]->UI_InActive(); // ÌÉ≠ÏùÄ Ïù∏ÏóëÌã∞Î∏åÎ•º Ìï¥ÏïºÌïòÍ≥† 
 
-		if (m_ButtonContents[i])
-			m_ButtonContents[i]->ChangeState(BUTTON_STATE::NORMAL); // πˆ∆∞¿∫ æºø∑∫∆Æ 
+		if (m_buttonContents[i])
+			m_buttonContents[i]->ChangeState(EButtonState::NORMAL); // Î≤ÑÌäºÏùÄ Ïñ∏ÏÖÄÎ†âÌä∏ 
 	}
 
-	if (m_TabContents[ETOI(tab)])
-		m_TabContents[ETOI(tab)]->UI_Active(); // «ÿ¥Á ∆–≥Œ »∞º∫»≠
+	if (m_tabContents[ETOI(tab)])
+		m_tabContents[ETOI(tab)]->UI_Active(); // Ìï¥Îãπ Ìå®ÎÑê ÌôúÏÑ±Ìôî
 
-	if (m_ButtonContents[ETOI(tab)])
-		m_ButtonContents[ETOI(tab)]->ChangeState(BUTTON_STATE::SELECT); // ºø∑∫∆Æ
+	if (m_buttonContents[ETOI(tab)])
+		m_buttonContents[ETOI(tab)]->ChangeState(EButtonState::SELECT); // ÏÖÄÎ†âÌä∏
 }
 
-shared_ptr<CUI_TabContainer> CUI_TabContainer::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_TabContainer> CUI_TabContainer::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_TabContainer> pInstance(new CUI_TabContainer(pDevice, pContext), [](CUI_TabContainer* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_TabContainer> instance(new CUI_TabContainer(device, context), [](CUI_TabContainer* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_TabContainer::Free()
 {
 	for (int i = 0; i < 32; ++i)
 	{
-		m_TabContents[i].reset();
-		m_ButtonContents[i].reset();
+		m_tabContents[i].reset();
+		m_buttonContents[i].reset();
 	}
 
 	CUIPanel::Free();

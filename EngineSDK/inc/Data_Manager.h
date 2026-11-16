@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 
 NS_BEGIN(Engine)
@@ -13,13 +13,13 @@ public:
     virtual ~CData_Manager() ;
 
 public:
-    HRESULT Initialize(_uint  EditorLevel); // »ı¼º ÇÒ‹š È£Ãâ
+    HRESULT Initialize(_uint  editorLevel); // ìƒì„± í• ë–„ í˜¸ì¶œ
 public:
 
-    bool Reload(const _tchar* Path);// ÀÌ°Ç±×³É ÀÓ±¸ÀÌ¿¡¼­ ÇÏ¸é µÉµí
-    bool ClearMap(SAVETYPE eDATATYPE);
-    bool Load(SAVETYPE eDATATYPE, const string& fileName );
-    bool Save(SAVETYPE eDATATYPE, const string& fileName);
+    bool Reload(const _tchar* Path);// ì´ê±´ê·¸ëƒ¥ ì„êµ¬ì´ì—ì„œ í•˜ë©´ ë ë“¯
+    bool ClearMap(ESaveType dataType);
+    bool Load(ESaveType dataType, const string& fileName );
+    bool Save(ESaveType dataType, const string& fileName);
 
 public:
     HRESULT Load_ObjData(const string& fileName);
@@ -29,11 +29,11 @@ public:
     HRESULT Save_UIData(const string& fileName);
 
 private:
-    const _tchar* CurLoadedMapPath = {};
-    weak_ptr<class CGameInstance> m_pGameInstance = {};
-    _uint  m_EditorLevel = {};
+    const _tchar* m_curLoadedMapPath = {};
+    weak_ptr<class CGameInstance> m_gameInstance = {};
+    _uint  m_editorLevel = {};
 public:
-    static unique_ptr<CData_Manager> Create(_uint  EditorLevel);
+    static unique_ptr<CData_Manager> Create(_uint  editorLevel);
     void Free() override;
 };
 

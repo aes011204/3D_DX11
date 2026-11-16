@@ -1,4 +1,4 @@
-#include "UI_MiniGame.h"
+Ôªø#include "UI_MiniGame.h"
 
 
 #include <UIButton.h>
@@ -13,8 +13,8 @@
 #include "EventBus.h"
 #include "MiniGame_Logic.h"
 
-CUI_MiniGame::CUI_MiniGame(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CUIPanel(pDevice, pContext)
+CUI_MiniGame::CUI_MiniGame(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CUIPanel(device, context)
 {
 }
 
@@ -25,11 +25,11 @@ CUI_MiniGame::CUI_MiniGame(const CUIPanel& prototype)
 
 void CUI_MiniGame::UI_PanelActive()
 {
-	_uint  m_DefID = m_Logic->Get_DefID();
-	if (m_DefID == ID_Absence)
+	_uint  m_defID = m_logic->Get_DefID();
+	if (m_defID == kIDAbsence)
 		return;
 
-	m_MiniGameState = m_Logic->Get_MiniGameType();
+	m_miniGameState = m_logic->Get_MiniGameType();
 
 
 
@@ -38,56 +38,56 @@ void CUI_MiniGame::UI_PanelActive()
 
 	////m_Children.clear();
 	//_uint numPanel = {};
-	//// ¿œ¥‹ ±‚∫ª¿˚¿∏∑Œ ∆–≥Œ ¿∫ ¥Ÿ inactive, πˆ∆∞¿∫ iTabfig ø° µ˚∂Û active
-	////::OnActive() ø°º≠ ≈¨∏Ø«— ∞≈∏∏ »∞º∫»≠
+	//// ÏùºÎã® Í∏∞Î≥∏Ï†ÅÏúºÎ°ú Ìå®ÎÑê ÏùÄ Îã§ inactive, Î≤ÑÌäºÏùÄ iTabfig Ïóê Îî∞Îùº active
+	////::OnActive() ÏóêÏÑú ÌÅ¥Î¶≠Ìïú Í±∞Îßå ÌôúÏÑ±Ìôî
 
 
 
-	if (m_MiniGameState == MINIGAME::BASIC_CIRCLE)
+	if (m_miniGameState == EMiniGameType::BASIC_CIRCLE)
 	{
-		m_Spinner->UI_Active();
-		m_pCircle->UI_Active();
-		m_pCircle->Set_Transparent(false);
+		m_spinner->UI_Active();
+		m_circle->UI_Active();
+		m_circle->Set_Transparent(false);
 	}
-	else if (m_MiniGameState == MINIGAME::DIAMOND)
+	else if (m_miniGameState == EMiniGameType::DIAMOND)
 	{
 		m_zoneCount = 0;
-		m_pSizeCircleIn->UI_Active();
-		m_pCircle->UI_Active();
-		m_pCircle->Set_Transparent(true);
+		m_sizeCircleIn->UI_Active();
+		m_circle->UI_Active();
+		m_circle->Set_Transparent(true);
 	}
-	else if (m_MiniGameState == MINIGAME::BALL)
+	else if (m_miniGameState == EMiniGameType::BALL)
 	{
-		m_pBallCircle->UI_Active();
+		m_ballCircle->UI_Active();
 
 	}
 
-	Item_Def def = CItemDB::GetInstance()->GetItemByID(m_DefID);
+	const ItemDef& def = CItemDB::GetInstance()->GetItemByID(m_defID);
 
 	m_nameTex->UI_Active();
-	m_nameTex->Set_Text(S2W(def.ItemName));
+	m_nameTex->Set_Text(S2W(def.itemName));
 	m_amountTex->UI_Active();
 	m_locationTex->UI_Active();
 
-	m_pCircleEff->UI_Active();
-	m_FishIcon->Change_Texture(def.pTexture);
-	m_FishIcon->UI_Active();
-	m_Depth->UI_Active();
+	m_circleEff->UI_Active();
+	m_fishIcon->Change_Texture(def.texture);
+	m_fishIcon->UI_Active();
+	m_depth->UI_Active();
 	//m_PrograssIcon->UI_Active();
-	m_Button->UI_Active();
-	m_Base->UI_Active();
+	m_button->UI_Active();
+	m_base->UI_Active();
 
 	Set_ActiveForCustom();
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 
 	//m_bInteractable = true;
 	OnActive();
 
-	// ¿œ¥‹ ¿Ã∞« ¿”Ω√
+	// ÏùºÎã® Ïù¥Í±¥ ÏûÑÏãú
 //	for (auto& it : m_Children)
 //	{
 //		it->UI_Active();
@@ -96,7 +96,7 @@ void CUI_MiniGame::UI_PanelActive()
 
 }
 
-HRESULT CUI_MiniGame::OnInit(void* pArg)
+HRESULT CUI_MiniGame::OnInit(void* arg)
 {
 
 
@@ -131,10 +131,10 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	//	}
 	//);
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>(
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>(
 		[this](const Evt_GetFish& e) {
-			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
-			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+			m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+			m_circleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
 
 		}
 	);
@@ -158,148 +158,148 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 
 	HRESULT hr = E_FAIL;
-	MINIGAEMEPANEL_DESC* PanelDesc = static_cast<MINIGAEMEPANEL_DESC*>(pArg);
+	MiniGamePanelDesc* panelDesc = static_cast<MiniGamePanelDesc*>(arg);
 	//TABCONTAINER_DESC pDesc = {};
-	PanelDesc->TextureComLevel = ETOI(LEVEL::STATIC);
-	PanelDesc->TextureProtoName = L"Prototype_Component_Texture_MinigamePanel";
+	panelDesc->textureComLevel = ETOI(ELevel::STATIC);
+	panelDesc->textureProtoName = L"Prototype_Component_Texture_MinigamePanel";
 
 
 
-	hr = CUIPanel::OnInit(PanelDesc);
+	hr = CUIPanel::OnInit(panelDesc);
 
 
-	CUIImage::UIIMAGE_DESC BorderDesc = {};
-	BorderDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	BorderDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUIBorders";
-	shared_ptr<CUIImage> Border = CUIImage::Create(m_pDevice, m_pContext);
-	Border->Initialize(&BorderDesc);
-	m_Base = Border;
+	CUIImage::UIImageDesc borderDesc = {};
+	borderDesc.textureComLevel = ETOI(ELevel::STATIC);
+	borderDesc.textureProtoName = L"Prototype_Component_Texture_FishingUIBorders";
+	shared_ptr<CUIImage> Border = CUIImage::Create(m_device, m_context);
+	Border->Initialize(&borderDesc);
+	m_base = Border;
 	Add_Child(Border, L"Border", false);
 
-	CUIImage::UIIMAGE_DESC CircleDesc = {};
-	CircleDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	CircleDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUICircle";
-	CircleDesc.shaderType = CUIRenderable::UIShaderType::Radial;
-	shared_ptr<CUIImage> Circle = CUIImage::Create(m_pDevice, m_pContext);
-	Circle->Initialize(&CircleDesc);
+	CUIImage::UIImageDesc circleDesc = {};
+	circleDesc.textureComLevel = ETOI(ELevel::STATIC);
+	circleDesc.textureProtoName = L"Prototype_Component_Texture_FishingUICircle";
+	circleDesc.shaderType = CUIRenderable::UIShaderType::Radial;
+	shared_ptr<CUIImage> Circle = CUIImage::Create(m_device, m_context);
+	Circle->Initialize(&circleDesc);
 	Circle->Set_BaseColor(_float4{ 81 / 255.f, 50 / 255.f, 43 / 255.f, 1.f });
 	Circle->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 
 	Add_Child(Circle, L"Circle", false);
-	m_pCircle = Circle;
-	m_CircleShader = dynamic_pointer_cast<CShader>(Circle->Get_Component(L"Com_Shader"));
+	m_circle = Circle;
+	m_circleShader = dynamic_pointer_cast<CShader>(Circle->Get_Component(L"Com_Shader"));
 
 
 	{
-		CUIImage::UIIMAGE_DESC CircleEffDesc = {};
-		CircleEffDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		CircleEffDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUICircle";
-		shared_ptr<CUIImage> CircleEff = CUIImage::Create(m_pDevice, m_pContext);
-		CircleEff->Initialize(&CircleEffDesc);
+		CUIImage::UIImageDesc circleEffDesc = {};
+		circleEffDesc.textureComLevel = ETOI(ELevel::STATIC);
+		circleEffDesc.textureProtoName = L"Prototype_Component_Texture_FishingUICircle";
+		shared_ptr<CUIImage> circleEff = CUIImage::Create(m_device, m_context);
+		circleEff->Initialize(&circleEffDesc);
 		//CircleEff->Set_BaseColor(_float4{ 81 / 255.f, 50 / 255.f, 43 / 255.f, 1.f });
 		//CircleEff->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 
-		Circle->Add_Child(CircleEff, L"CircleEff", false);
-		m_pCircleEff = CircleEff;
-		m_pCircleEff->Set_Alpha(0);
-		m_pCircleEff->Set_Zorder(4);
+		Circle->Add_Child(circleEff, L"CircleEff", false);
+		m_circleEff = circleEff;
+		m_circleEff->Set_Alpha(0);
+		m_circleEff->Set_Zorder(4);
 		//m_CircleShader = dynamic_pointer_cast<CShader>(CircleEff->Get_Component(L"Com_Shader"));
 	}
 
 
-	CUIImage::UIIMAGE_DESC SpinnerDesc = {};
-	SpinnerDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	SpinnerDesc.TextureProtoName = L"Prototype_Component_Texture_FishingUISpinner";
-	shared_ptr<CUIImage> Spinner = CUIImage::Create(m_pDevice, m_pContext);
-	Spinner->Initialize(&SpinnerDesc);
-	m_Spinner = Spinner;
-	Add_Child(Spinner, L"Spinner", false);
+	CUIImage::UIImageDesc spinnerDesc = {};
+	spinnerDesc.textureComLevel = ETOI(ELevel::STATIC);
+	spinnerDesc.textureProtoName = L"Prototype_Component_Texture_FishingUISpinner";
+	shared_ptr<CUIImage> spinner = CUIImage::Create(m_device, m_context);
+	spinner->Initialize(&spinnerDesc);
+	m_spinner = spinner;
+	Add_Child(spinner, L"Spinner", false);
 
-	CUIImage::UIIMAGE_DESC FishKindIconDesc = {};
-	FishKindIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	FishKindIconDesc.TextureProtoName = L"Prototype_Component_Texture_FishingFishIcon";
-	shared_ptr<CUIImage> FishKindIcon = CUIImage::Create(m_pDevice, m_pContext);
-	FishKindIcon->Initialize(&FishKindIconDesc);
-	FishKindIcon->Set_UseColorMix(true);
-	FishKindIcon->Set_ColorMix(_float4{ 1.f,1.f,1.f,1.f });
+	CUIImage::UIImageDesc fishKindIconDesc = {};
+	fishKindIconDesc.textureComLevel = ETOI(ELevel::STATIC);
+	fishKindIconDesc.textureProtoName = L"Prototype_Component_Texture_FishingFishIcon";
+	shared_ptr<CUIImage> fishKindIcon = CUIImage::Create(m_device, m_context);
+	fishKindIcon->Initialize(&fishKindIconDesc);
+	fishKindIcon->Set_UseColorMix(true);
+	fishKindIcon->Set_ColorMix(_float4{ 1.f,1.f,1.f,1.f });
 
-	Circle->Add_Child(FishKindIcon, L"FishKindIcon", false);
-	m_FishIcon = FishKindIcon;
-
-
-
-	CUIImage::UIIMAGE_DESC DepthBarnDesc = {};
-	DepthBarnDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	DepthBarnDesc.TextureProtoName = L"Prototype_Component_Texture_CrabPotDepthBar";
-	shared_ptr<CUIImage> DepthBar = CUIImage::Create(m_pDevice, m_pContext);
-	DepthBar->Initialize(&DepthBarnDesc);
-	m_Depth = DepthBar;
-	Add_Child(DepthBar, L"DepthBar", false);
-
-	CUIImage::UIIMAGE_DESC FishIconDesc = {};
-	FishIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	FishIconDesc.TextureProtoName = L"Prototype_Component_Texture_FishingFishIcon";
-	shared_ptr<CUIImage> FishIcon = CUIImage::Create(m_pDevice, m_pContext);
-	FishIcon->Initialize(&FishIconDesc);
-
-	DepthBar->Add_Child(FishIcon, L"FishIcon", false);
-	m_PrograssIcon = FishIcon;
+	Circle->Add_Child(fishKindIcon, L"FishKindIcon", false);
+	m_fishIcon = fishKindIcon;
 
 
 
-	/// πˆ∆∞
-	CUIButton::UIBUTTON_DESC ButDesc = {};
-	ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
-	ButDesc.bUseDark =true;
+	CUIImage::UIImageDesc depthBarDesc = {};
+	depthBarDesc.textureComLevel = ETOI(ELevel::STATIC);
+	depthBarDesc.textureProtoName = L"Prototype_Component_Texture_CrabPotDepthBar";
+	shared_ptr<CUIImage> depthBar = CUIImage::Create(m_device, m_context);
+	depthBar->Initialize(&depthBarDesc);
+	m_depth = depthBar;
+	Add_Child(depthBar, L"DepthBar", false);
 
-	ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
+	CUIImage::UIImageDesc fishIconDesc = {};
+	fishIconDesc.textureComLevel = ETOI(ELevel::STATIC);
+	fishIconDesc.textureProtoName = L"Prototype_Component_Texture_FishingFishIcon";
+	shared_ptr<CUIImage> fishIcon = CUIImage::Create(m_device, m_context);
+	fishIcon->Initialize(&fishIconDesc);
+
+	depthBar->Add_Child(fishIcon, L"FishIcon", false);
+	m_progressIcon = fishIcon;
+
+
+
+	/// Î≤ÑÌäº
+	CUIButton::UIButtonDesc butDesc = {};
+	butDesc.textureComLevel = ETOI(ELevel::STATIC);
+	butDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
+	butDesc.useDark =true;
+
+	butDesc.OverlapStartEvent = [this](CUIButton* self)
 	{
-			m_pGameInstance.lock()->Play_Once(L"Hover");
+			m_gameInstance.lock()->Play_Once(L"Hover");
 
 	};
-	ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
-	ButDesc.ClickEvent = [this](CUIButton* pThis)
+	butDesc.OverlapEndEvent = [](CUIButton* self) {};
+	butDesc.ClickEvent = [this](CUIButton* self)
 		{
-			if (m_Logic)
-				m_Logic->OnInput();
+			if (m_logic)
+				m_logic->OnInput();
 
 			//m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
 			
 		};
-	shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
-	button->Initialize(&ButDesc);
+	shared_ptr<CUIButton> button = CUIButton::Create(m_device, m_context);
+	button->Initialize(&butDesc);
 
 	button->Set_SelectState(false);
-	m_Button = button;
+	m_button = button;
 	{
-		CUIText::TEXT_DESC text_Desc = {};
-		text_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
-		text_Desc.strText = L"¥Á±‚±‚";
-		shared_ptr<CUIText> Text_storage = CUIText::Create(m_pDevice, m_pContext);
-		Text_storage->Initialize(&text_Desc);
-		button->Add_Child(Text_storage, L"Text_Pull", false);
+		CUIText::TextDesc textDesc = {};
+		textDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+		textDesc.text = L"ÎãπÍ∏∞Í∏∞";
+		shared_ptr<CUIText> textStorage = CUIText::Create(m_device, m_context);
+		textStorage->Initialize(&textDesc);
+		button->Add_Child(textStorage, L"Text_Pull", false);
 	}
 
 	//Add_Child(pChild, NameTag, false);
-	wstring NameTag = L"BUTTON";
-	Add_Layout_Child(button, NameTag, false);
+	wstring nameTag = L"BUTTON";
+	Add_Layout_Child(button, nameTag, false);
 
 
 
 
 
 
-	///µ∑///
+	///Îèà///
 
 	{
 
 		{
-			CUIText::TEXT_DESC nameDesc = {};
-			nameDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
-			nameDesc.strText = L"$0";
-			nameDesc.fontaline = CUIText::FONTALINE::RIGHT;
-			shared_ptr<CUIText> nameTex = CUIText::Create(m_pDevice, m_pContext);
+			CUIText::TextDesc nameDesc = {};
+			nameDesc.fontTag = L"Noto_Sans_CJK_SC_32";
+			nameDesc.text = L"$0";
+			nameDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+			shared_ptr<CUIText> nameTex = CUIText::Create(m_device, m_context);
 			nameTex->Initialize(&nameDesc);
 			Add_Child(nameTex, L"nameTex", false);
 			m_nameTex = nameTex;
@@ -307,22 +307,22 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 		}
 
 		{
-			CUIText::TEXT_DESC amountTexDesc = {};
-			amountTexDesc.strFontTag = L"Noto_Sans_CJK_SC";
-			amountTexDesc.strText = L"amount";
-			amountTexDesc.fontaline = CUIText::FONTALINE::RIGHT;
-			shared_ptr<CUIText> amountTex = CUIText::Create(m_pDevice, m_pContext);
+			CUIText::TextDesc amountTexDesc = {};
+			amountTexDesc.fontTag = L"Noto_Sans_CJK_SC";
+			amountTexDesc.text = L"amount";
+			amountTexDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+			shared_ptr<CUIText> amountTex = CUIText::Create(m_device, m_context);
 			amountTex->Initialize(&amountTexDesc);
 			Add_Child(amountTex, L"amountTex", false);
 			m_amountTex = amountTex;
 
 		}
 		{
-			CUIText::TEXT_DESC loacationDesc = {};
-			loacationDesc.strFontTag = L"Noto_Sans_CJK_SC";
-			loacationDesc.strText = L"loaction";
-			loacationDesc.fontaline = CUIText::FONTALINE::RIGHT;
-			shared_ptr<CUIText> locationTex = CUIText::Create(m_pDevice, m_pContext);
+			CUIText::TextDesc loacationDesc = {};
+			loacationDesc.fontTag = L"Noto_Sans_CJK_SC";
+			loacationDesc.text = L"loaction";
+			loacationDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+			shared_ptr<CUIText> locationTex = CUIText::Create(m_device, m_context);
 			locationTex->Initialize(&loacationDesc);
 			Add_Child(locationTex, L"locationTex", false);
 			m_locationTex = locationTex;
@@ -331,42 +331,42 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 	}
 	//////////////////////////////////////////////////////////
 
-	CUIImage::UIIMAGE_DESC SizeCircleInDesc = {};
-	SizeCircleInDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	SizeCircleInDesc.TextureProtoName = L"Prototype_Component_Texture_InnerTargetUI";
-	shared_ptr<CUIImage> SizeCircleIn = CUIImage::Create(m_pDevice, m_pContext);
-	SizeCircleIn->Initialize(&SizeCircleInDesc);
+	CUIImage::UIImageDesc sizeCircleInDesc = {};
+	sizeCircleInDesc.textureComLevel = ETOI(ELevel::STATIC);
+	sizeCircleInDesc.textureProtoName = L"Prototype_Component_Texture_InnerTargetUI";
+	shared_ptr<CUIImage> sizeCircleIn = CUIImage::Create(m_device, m_context);
+	sizeCircleIn->Initialize(&sizeCircleInDesc);
 
 
-	Add_Child(SizeCircleIn, L"SizeCircleIn", false);
-	m_pSizeCircleIn = SizeCircleIn;
+	Add_Child(sizeCircleIn, L"SizeCircleIn", false);
+	m_sizeCircleIn = sizeCircleIn;
 
 	{
-		CUIImage::UIIMAGE_DESC SizeCircleOutDesc = {};
-		SizeCircleOutDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		SizeCircleOutDesc.TextureProtoName = L"Prototype_Component_Texture_OuterTargetUI";
-		shared_ptr<CUIImage> SizeCircleOut = CUIImage::Create(m_pDevice, m_pContext);
-		SizeCircleOut->Initialize(&SizeCircleOutDesc);
+		CUIImage::UIImageDesc sizeCircleOutDesc = {};
+		sizeCircleOutDesc.textureComLevel = ETOI(ELevel::STATIC);
+		sizeCircleOutDesc.textureProtoName = L"Prototype_Component_Texture_OuterTargetUI";
+		shared_ptr<CUIImage> sizeCircleOut = CUIImage::Create(m_device, m_context);
+		sizeCircleOut->Initialize(&sizeCircleOutDesc);
 
 
-		SizeCircleIn->Add_Child(SizeCircleOut, L"SizeCircleOut", false);
+		sizeCircleIn->Add_Child(sizeCircleOut, L"SizeCircleOut", false);
 		//m_pSizeCircleOut = SizeCircleIn;
 
 		{
 
-			CUIImage::UIIMAGE_DESC SizeCircleDesc = {};
-			SizeCircleDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-			SizeCircleDesc.TextureProtoName = L"Prototype_Component_Texture_DiamondMinigame";
-			shared_ptr<CUIImage> SizeCircle = CUIImage::Create(m_pDevice, m_pContext);
-			SizeCircle->Initialize(&SizeCircleDesc);
+			CUIImage::UIImageDesc sizeCircleDesc = {};
+			sizeCircleDesc.textureComLevel = ETOI(ELevel::STATIC);
+			sizeCircleDesc.textureProtoName = L"Prototype_Component_Texture_DiamondMinigame";
+			shared_ptr<CUIImage> sizeCircle = CUIImage::Create(m_device, m_context);
+			sizeCircle->Initialize(&sizeCircleDesc);
 
-			SizeCircle->Set_UseColorMix(true);
-			SizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+			sizeCircle->Set_UseColorMix(true);
+			sizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 			//CircleEff->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 
-			SizeCircleOut->Add_Child(SizeCircle, L"SizeCircleEff", false);
-			m_pSizeCircle = SizeCircle;
-			m_pCircleEff->Set_Zorder(4);
+			sizeCircleOut->Add_Child(sizeCircle, L"SizeCircleEff", false);
+			m_sizeCircle = sizeCircle;
+			m_circleEff->Set_Zorder(4);
 			//m_CircleShader = dynamic_pointer_cast<CShader>(CircleEff->Get_Component(L"Com_Shader"));
 
 		}
@@ -374,43 +374,43 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 	///////////////////////////////////
 
-	CUIImage::UIIMAGE_DESC BallCircleInDesc = {};
-	BallCircleInDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	BallCircleInDesc.TextureProtoName = L"Prototype_Component_Texture_InnerTargetUI";
-	BallCircleInDesc.shaderType = CUIRenderable::UIShaderType::Radial;
-	shared_ptr<CUIImage> BallCircleIn = CUIImage::Create(m_pDevice, m_pContext);
-	BallCircleIn->Initialize(&BallCircleInDesc);
+	CUIImage::UIImageDesc ballCircleInDesc = {};
+	ballCircleInDesc.textureComLevel = ETOI(ELevel::STATIC);
+	ballCircleInDesc.textureProtoName = L"Prototype_Component_Texture_InnerTargetUI";
+	ballCircleInDesc.shaderType = CUIRenderable::UIShaderType::Radial;
+	shared_ptr<CUIImage> ballCircleIn = CUIImage::Create(m_device, m_context);
+	ballCircleIn->Initialize(&ballCircleInDesc);
 
 
-	Add_Child(BallCircleIn, L"BallCircleIn", false);
-	m_pBallCircle = BallCircleIn;
+	Add_Child(ballCircleIn, L"BallCircleIn", false);
+	m_ballCircle = ballCircleIn;
 
 	{
-		CUIImage::UIIMAGE_DESC BallStartDesc = {};
-		BallStartDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		BallStartDesc.TextureProtoName = L"Prototype_Component_Texture_OuterTargetUI";
-		BallStartDesc.shaderType = CUIRenderable::UIShaderType::Radial;
-		shared_ptr<CUIImage> BallStart = CUIImage::Create(m_pDevice, m_pContext);
-		BallStart->Initialize(&BallStartDesc);
+		CUIImage::UIImageDesc ballStartDesc = {};
+		ballStartDesc.textureComLevel = ETOI(ELevel::STATIC);
+		ballStartDesc.textureProtoName = L"Prototype_Component_Texture_OuterTargetUI";
+		ballStartDesc.shaderType = CUIRenderable::UIShaderType::Radial;
+		shared_ptr<CUIImage> ballStart = CUIImage::Create(m_device, m_context);
+		ballStart->Initialize(&ballStartDesc);
 
 
-		BallCircleIn->Add_Child(BallStart, L"BallStart", false);
+		ballCircleIn->Add_Child(ballStart, L"BallStart", false);
 		//m_pSizeCircleOut = SizeCircleIn;
 
 
 
 
-		CUIImage::UIIMAGE_DESC BallDesc = {};
-		BallDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		BallDesc.TextureProtoName = L"Prototype_Component_Texture_DiamondMinigame";
-		shared_ptr<CUIImage> Ball = CUIImage::Create(m_pDevice, m_pContext);
-		Ball->Initialize(&BallDesc);
+		CUIImage::UIImageDesc ballDesc = {};
+		ballDesc.textureComLevel = ETOI(ELevel::STATIC);
+		ballDesc.textureProtoName = L"Prototype_Component_Texture_DiamondMinigame";
+		shared_ptr<CUIImage> ball = CUIImage::Create(m_device, m_context);
+		ball->Initialize(&ballDesc);
 		
 		//CircleEff->Set_BaseColor(_float4{ 81 / 255.f, 50 / 255.f, 43 / 255.f, 1.f });
 		//CircleEff->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 
-		BallCircleIn->Add_Child(Ball, L"Ball", false);
-		m_pBall = Ball;
+		ballCircleIn->Add_Child(ball, L"Ball", false);
+		m_ball = ball;
 
 		//m_CircleShader = dynamic_pointer_cast<CShader>(CircleEff->Get_Component(L"Com_Shader"));
 
@@ -431,23 +431,23 @@ HRESULT CUI_MiniGame::OnInit(void* pArg)
 
 }
 
-void CUI_MiniGame::Is_OnZoon(_bool IsOnZoon)
+void CUI_MiniGame::Is_OnZoon(_bool isOnZone)
 {
-	if (IsOnZoon == true)
+	if (isOnZone == true)
 	{
 		m_prograssBar01 += 0.2;
-		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
-		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+		m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+		m_circleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
 
 	}
 	else
 	{
 
-		m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
-		m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
-		m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+		m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+		m_circleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+		m_circle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
 		m_changeColor = true;
-		colortime = .5f;
+		m_colorTime = .5f;
 	}
 }
 
@@ -455,9 +455,9 @@ void CUI_MiniGame::Is_OnZoon(_bool IsOnZoon)
 void CUI_MiniGame::OnActive()
 {
 
-	m_Spinner->GetUITransform()->SetRotation(0);
+	m_spinner->GetUITransform()->SetRotation(0);
 	m_prograssBar01 = 0;
-	m_bFin = false;
+	m_isFinished = false;
 
 
 
@@ -466,7 +466,7 @@ void CUI_MiniGame::OnActive()
 
 void CUI_MiniGame::OnInActive()
 {
-	m_DefID = ID_Absence;
+	m_defID = kIDAbsence;
 	CUIPanel::OnInActive();
 }
 
@@ -479,53 +479,53 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 {
 
 
-	if (!m_Logic)
+	if (!m_logic)
 		return;
 
 
-	switch(m_MiniGameState)
+	switch(m_miniGameState)
 	{
-	case MINIGAME::BASIC_CIRCLE:
+	case EMiniGameType::BASIC_CIRCLE:
 		{
-		m_zoneCount = m_Logic->GetZoneCount();
-		memcpy(m_zones, m_Logic->GetZones(), sizeof(Zone) * m_zoneCount);
+		m_zoneCount = m_logic->GetZoneCount();
+		memcpy(m_zones, m_logic->GetZones(), sizeof(Zone) * m_zoneCount);
 
 		
 
-		auto result = m_Logic->ConsumeInputResult();
-		if (result == INPUT_RESULT::SUCCESS)
+		auto result = m_logic->ConsumeInputResult();
+		if (result == EInputResult::SUCCESS)
 		{
-			// √ ∑œ »ø∞˙
+			// Ï¥àÎ°ù Ìö®Í≥º
 			m_prograssBar01 += 0.2;
 			//m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
 
-			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
-			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+			m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+			m_circleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
 		
 		}
-		else if (result == INPUT_RESULT::FAIL)
+		else if (result == EInputResult::FAIL)
 		{
 			//m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
 
-			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
-			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
-			m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+			m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+			m_circleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+			m_circle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
 			m_changeColor = true;
-			colortime = .5f;
-			// ª°∞≠ »ø∞˙
+			m_colorTime = .5f;
+			// Îπ®Í∞ï Ìö®Í≥º
 		}
 
-		m_Spinner->GetUITransform()->SetRotation(-(m_Logic->GetAngle()));
+		m_spinner->GetUITransform()->SetRotation(-(m_logic->GetAngle()));
 
 		
 		if (m_changeColor == true)
 		{
-			m_AccTime2 += timeDelta;
-			if (m_AccTime2 >= colortime)
+			m_accTime2 += timeDelta;
+			if (m_accTime2 >= m_colorTime)
 			{
-				m_AccTime2 = 0;
+				m_accTime2 = 0;
 				m_changeColor = false;
-				m_pCircle->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+				m_circle->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 
 			}
 		}
@@ -533,61 +533,61 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		}
 
 		break;
-	case MINIGAME::DIAMOND:
+	case EMiniGameType::DIAMOND:
 		{
 	
 
-			auto result = m_Logic->ConsumeInputResult();
+			auto result = m_logic->ConsumeInputResult();
 
 		
-			m_pSizeCircle->GetUITransform()->SetLocalScale(_float2{ m_Logic->GetSize(), m_Logic->GetSize() });
-		m_pSizeCircle->GetUITransform()->SetRotation(m_Logic->GetAngle());
+			m_sizeCircle->GetUITransform()->SetLocalScale(_float2{ m_logic->GetSize(), m_logic->GetSize() });
+		m_sizeCircle->GetUITransform()->SetRotation(m_logic->GetAngle());
 		
 			/*if(m_Logic->GetSize() > 1.f)
 			{
 				m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
 
 			}*/
-			if(result == INPUT_RESULT::START)
+			if(result == EInputResult::START)
 			{
-				m_pSizeCircle->UI_Active();
+				m_sizeCircle->UI_Active();
 ;				//m_pSizeCircle->GetUITransform()->SetLocalScale(_float2{ 0.f,0.f });
-				m_pSizeCircle->m_behavior.clear();
-				m_pSizeCircle->Set_Alpha(1.f);
+				m_sizeCircle->m_behavior.clear();
+				m_sizeCircle->Set_Alpha(1.f);
 
-				m_pSizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+				m_sizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 			}
 
-		if (result == INPUT_RESULT::SUCCESS)
+		if (result == EInputResult::SUCCESS)
 		{
-			// √ ∑œ »ø∞˙
+			// Ï¥àÎ°ù Ìö®Í≥º
 			m_prograssBar01 += 0.2;
-			m_pSizeCircle->m_behavior.clear();
-			m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .5f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, true));
-			m_pSizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
+			m_sizeCircle->m_behavior.clear();
+			m_sizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .5f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, true));
+			m_sizeCircle->Set_ColorMix(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 
 			//m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
-			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT,1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
-			LOG(LOG_LEVEL::INFO, "SUCCES");
+			m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT,1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+			LOG(ELogLevel::INFO, "SUCCES");
 		}
-		else if (result == INPUT_RESULT::FAIL)
+		else if (result == EInputResult::FAIL)
 		{
-			m_pSizeCircle->m_behavior.clear();
-			m_pSizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT,.5f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, true));
-			m_pSizeCircle->Set_ColorMix(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+			m_sizeCircle->m_behavior.clear();
+			m_sizeCircle->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT,.5f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, true));
+			m_sizeCircle->Set_ColorMix(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
 			//
-			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+			m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
 			m_changeColor = true;
-			colortime = .5f;
-			// ª°∞≠ »ø∞˙
+			m_colorTime = .5f;
+			// Îπ®Í∞ï Ìö®Í≥º
 		}
 
 		if (m_changeColor == true)
 		{
-			m_AccTime2 += timeDelta;
-			if (m_AccTime2 >= colortime)
+			m_accTime2 += timeDelta;
+			if (m_accTime2 >= m_colorTime)
 			{
-				m_AccTime2 = 0;
+				m_accTime2 = 0;
 				m_changeColor = false;
 				//m_pCircle->Set_ZoneColor(_float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f });
 
@@ -597,39 +597,39 @@ void CUI_MiniGame::OnUpdate(const _float& timeDelta)
 		}
 
 		break;
-	case MINIGAME::BALL:
+	case EMiniGameType::BALL:
 
-		auto result = m_Logic->ConsumeInputResult();
-		if (result == INPUT_RESULT::SUCCESS)
+		auto result = m_logic->ConsumeInputResult();
+		if (result == EInputResult::SUCCESS)
 		{
-			// √ ∑œ »ø∞˙
+			// Ï¥àÎ°ù Ìö®Í≥º
 			m_prograssBar01 += 0.2;
 
-			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
-			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
+			m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, 1.f, true, _float4{ 120 / 255.f, 185 / 255.f, 120 / 255.f, 1.f }, false));
+			m_circleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.3f, 1.f, 0.f, _float2{ 1.f,1.f }, false)));
 
 		}
-		else if (result == INPUT_RESULT::FAIL)
+		else if (result == EInputResult::FAIL)
 		{
-			m_pCircleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::FADE::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
-			m_pCircleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
-			m_pCircle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
+			m_circleEff->m_behavior.push_back(make_shared<CFadeModifier>(CFadeModifier::EFade::FADE_OUT, .6f, true, _float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f }, false));
+			m_circleEff->m_behavior.push_back((make_shared<CScaleModifier>(0.25f, .8f, 0.f, _float2{ 1.f,1.f }, false)));
+			m_circle->Set_ZoneColor(_float4{ 230 / 255.f, 46 / 255.f, 49 / 255.f, 1.f });
 			m_changeColor = true;
-			colortime = .5f;
-			// ª°∞≠ »ø∞˙
+			m_colorTime = .5f;
+			// Îπ®Í∞ï Ìö®Í≥º
 		}
 		break;
 	}
 
-	float progress = m_Logic->GetProgress01();
-	m_PrograssIcon->GetUITransform()->SetAnchoredPos(
+	float progress = m_logic->GetProgress01();
+	m_progressIcon->GetUITransform()->SetAnchoredPos(
 		_float2{
-			m_PrograssIcon->GetUITransform()->Get_AnchoredPos().x,
+			m_progressIcon->GetUITransform()->Get_AnchoredPos().x,
 			lerp(0.f, 239.f, progress)
 		}
 	);
 
-	m_amountTex->Set_Text(format(L"{}", m_Logic->GetFishCount()));
+	m_amountTex->Set_Text(format(L"{}", m_logic->GetFishCount()));
 	
 
 
@@ -643,10 +643,10 @@ void CUI_MiniGame::OnLateUpdate()
 
 HRESULT CUI_MiniGame::OnRender()
 {
-	if (m_CircleShader != nullptr)
+	if (m_circleShader != nullptr)
 	{
-		m_CircleShader->Bind_RawValue("g_zones", m_zones, sizeof(_float4) * 8);
-		m_CircleShader->Bind_RawValue("g_zoneCount", &m_zoneCount, sizeof(float));
+		m_circleShader->Bind_RawValue("g_zones", m_zones, sizeof(_float4) * 8);
+		m_circleShader->Bind_RawValue("g_zoneCount", &m_zoneCount, sizeof(float));
 
 	}
 
@@ -659,16 +659,16 @@ void CUI_MiniGame::OnClear()
 	CUIPanel::OnClear();
 }
 
-shared_ptr<CUI_MiniGame> CUI_MiniGame::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_MiniGame> CUI_MiniGame::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_MiniGame> pInstance(new CUI_MiniGame(pDevice, pContext), [](CUI_MiniGame* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_MiniGame> instance(new CUI_MiniGame(device, context), [](CUI_MiniGame* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_MiniGame::Free()

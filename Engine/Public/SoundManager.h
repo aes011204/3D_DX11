@@ -6,12 +6,12 @@ NS_BEGIN(Engine)
 class ENGINE_DLL CSoundManager final : public CBase
 {
 private:
-    using LOOP_FADE_DESC = struct tLoopFadeDesc
+    using LoopFadeDesc = struct tLoopFadeDesc
     {
-        _wstring strSoundTag{};
-        FMOD::Channel* pChannel{};
-        _float fCurrentVolume{};
-        _float fFadeSpeed{};
+        _wstring soundTag{};
+        FMOD::Channel* channel{};
+        _float currentVolume{};
+        _float fadeSpeed{};
     };
 
 public:
@@ -20,43 +20,43 @@ public:
 
 public:
     HRESULT Initialize();
-    HRESULT Register_Sounds(const std::vector<SOUND_ASSET_DESC>& vecSoundDescs);
-    void Update_Audio(_float fTimeDelta);
+    HRESULT Register_Sounds(const std::vector<SoundAssetDesc>& vecSoundDescs);
+    void Update_Audio(_float timeDelta);
 
 public:
-    void Play_Once(const _wstring& strSoundTag, _float fVolumeScale = 1.f);
-    void Play_Once_Pitched(const _wstring& strSoundTag, _float fPitch, _float fVolumeScale = 1.f);
-    void Play_Loop(const _wstring& strSoundTag, _float fVolumeScale = 1.f, _float fFadeOutDuration = 0.f);
-    void Stop_Sound(const _wstring& strSoundTag, float fadeOutTime);
+    void Play_Once(const _wstring& soundTag, _float volumeScale = 1.f);
+    void Play_Once_Pitched(const _wstring& soundTag, _float pitch, _float volumeScale = 1.f);
+    void Play_Loop(const _wstring& soundTag, _float volumeScale = 1.f, _float fadeOutDuration = 0.f);
+    void Stop_Sound(const _wstring& soundTag, float fadeOutTime);
     void Stop_AllSounds();
-    void Set_SoundCategoryVolume(SOUND_CATEGORY eCategory, _float fVolume);
+    void Set_SoundCategoryVolume(ESoundCategory category, _float volume);
 
 private:
-    FMOD::System* m_pSystem{};
-    array<FMOD::ChannelGroup*, static_cast<size_t>(SOUND_CATEGORY::END)> m_pCategoryGroups{};
-    unordered_map<_wstring, SOUND_ASSET_DESC> m_SoundDescs{};
-    unordered_map<_wstring, FMOD::Sound*> m_Sounds{};
-    unordered_map<_wstring, FMOD::Channel*> m_ActiveLoopChannels{};
-    vector<LOOP_FADE_DESC> m_FadingLoopChannels{};
+    FMOD::System* m_system{};
+    array<FMOD::ChannelGroup*, static_cast<size_t>(ESoundCategory::END)> m_categoryGroups{};
+    unordered_map<_wstring, SoundAssetDesc> m_soundDescs{};
+    unordered_map<_wstring, FMOD::Sound*> m_sounds{};
+    unordered_map<_wstring, FMOD::Channel*> m_activeLoopChannels{};
+    vector<LoopFadeDesc> m_fadingLoopChannels{};
 
 private:
-    _bool Is_ValidCategory(SOUND_CATEGORY eCategory) const;
-    _bool Is_ValidLoadMode(SOUND_LOAD_MODE eLoadMode) const;
-    FMOD::ChannelGroup* Find_CategoryGroup(SOUND_CATEGORY eCategory) const;
-    const SOUND_ASSET_DESC* Find_SoundDesc(const _wstring& strSoundTag) const;
-    FMOD::Sound* Find_Sound(const _wstring& strSoundTag) const;
+    _bool Is_ValidCategory(ESoundCategory category) const;
+    _bool Is_ValidLoadMode(ESoundLoadMode loadMode) const;
+    FMOD::ChannelGroup* Find_CategoryGroup(ESoundCategory category) const;
+    const SoundAssetDesc* Find_SoundDesc(const _wstring& soundTag) const;
+    FMOD::Sound* Find_Sound(const _wstring& soundTag) const;
 
-    HRESULT Create_Sound(const SOUND_ASSET_DESC& tSoundDesc);
+    HRESULT Create_Sound(const SoundAssetDesc& tSoundDesc);
     HRESULT Play_Sound(
-        const SOUND_ASSET_DESC& tSoundDesc,
-        FMOD_MODE eLoopMode,
-        _float fVolumeScale,
+        const SoundAssetDesc& tSoundDesc,
+        FMOD_MODE loopMode,
+        _float volumeScale,
         FMOD::Channel** ppOutChannel);
 
-    void Stop_LoopByTag(const _wstring& strSoundTag, _float fFadeOutDuration);
+    void Stop_LoopByTag(const _wstring& soundTag, _float fadeOutDuration);
     void Cleanup_FinishedLoopChannels();
     void Cleanup_FinishedFadeChannels();
-    void Clear_FadeEntries(const _wstring& strSoundTag);
+    void Clear_FadeEntries(const _wstring& soundTag);
 
 public:
     static unique_ptr<CSoundManager> Create();

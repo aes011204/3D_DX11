@@ -1,4 +1,4 @@
-#include "PlayerStateMachine.h"
+ï»¿#include "PlayerStateMachine.h"
 
 #include "PlayerBoat.h"
 #include "State.h"
@@ -12,7 +12,7 @@
 #include "Player_Village.h"
 
 CPlayerStateMachine::CPlayerStateMachine(weak_ptr<CPlayerBoat> owner)
-	: m_pOwner(owner)
+	: m_owner(owner)
 {
 }
 
@@ -24,82 +24,82 @@ HRESULT CPlayerStateMachine::Init_StateMachine()
 {
     Init_PlayerStates();
 
-    m_CurState = m_vecState[ETOI(E_PLAYERSTATE::VILLAGE)];
+    m_curState = m_vecState[ETOI(EPlayerState::VILLAGE)];
 
-    m_CurState->Enter();
+    m_curState->Enter();
 
     return S_OK;
 }
 
 _int CPlayerStateMachine::Update_StateMachine(const _float& timeDelta)
 {
-    if (m_CurState)
+    if (m_curState)
     {
-        _uint nextState = m_CurState->Update_State(timeDelta);
+        _uint nextState = m_curState->Update_State(timeDelta);
 
-        if (nextState == ETOI(E_PLAYERSTATE::END))
+        if (nextState == ETOI(EPlayerState::END))
         {
             return nextState;
         }
 
-        if (nextState < ETOI(E_PLAYERSTATE::END) && nextState != m_CurStateKey)
+        if (nextState < ETOI(EPlayerState::END) && nextState != m_curStateKey)
         {
             Change_State(nextState);
         }
     }
 
-    return m_CurStateKey;
+    return m_curStateKey;
 
 }
 
 void CPlayerStateMachine::LateUpdate_StateMachine(const _float& timeDelta)
 {
-    m_CurState->LateUpdate_State(timeDelta);
+    m_curState->LateUpdate_State(timeDelta);
 }
 
 void CPlayerStateMachine::Change_State(_uint changeStateKey)
 {
-    if (m_CurStateKey == changeStateKey)
-        return; // ÀÌÀüÀÌ¶û °°Àº »óÈ²
+    if (m_curStateKey == changeStateKey)
+        return; // ì´ì „ì´ëž‘ ê°™ì€ ìƒí™©
 
-    if (m_vecState[changeStateKey] == nullptr || changeStateKey >= ETOI(E_PLAYERSTATE::END))
-        return; // ÀÎµ¦½º ¹üÀ§ È®ÀÎ
+    if (m_vecState[changeStateKey] == nullptr || changeStateKey >= ETOI(EPlayerState::END))
+        return; // ì¸ë±ìŠ¤ ë²”ìœ„ í™•ì¸
 
-    // ÀÌÀü »óÅÂ ³ª°¡±â
-    if (m_CurState)
-        m_CurState->Exit();
+    // ì´ì „ ìƒíƒœ ë‚˜ê°€ê¸°
+    if (m_curState)
+        m_curState->Exit();
 
-    // ÀÌÀü »óÅÂ µî·Ï
+    // ì´ì „ ìƒíƒœ ë“±ë¡
     //m_pPrevState = m_CurState;
-    m_PrevStateKey = m_CurStateKey;
-    m_CurStateKey = changeStateKey;
+    m_prevStateKey = m_curStateKey;
+    m_curStateKey = changeStateKey;
 
-    // »õ »óÅÂ·Î °¡Á®¿À±â
-    m_CurState = m_vecState[changeStateKey];
-    m_CurState->Enter();
+    // ìƒˆ ìƒíƒœë¡œ ê°€ì ¸ì˜¤ê¸°
+    m_curState = m_vecState[changeStateKey];
+    m_curState->Enter();
 }
 
 void CPlayerStateMachine::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-    if (m_CurState)
-        m_CurState->OnBeginOverlap(self, other);
+    if (m_curState)
+        m_curState->OnBeginOverlap(self, other);
 }
 
 void CPlayerStateMachine::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-    if (m_CurState)
-        m_CurState->OnEndOverlap(self, other);
+    if (m_curState)
+        m_curState->OnEndOverlap(self, other);
 }
 
 void CPlayerStateMachine::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other)
 {
-    if (m_CurState)
-        m_CurState->OnStayOverlap(self, other);
+    if (m_curState)
+        m_curState->OnStayOverlap(self, other);
 }
 
 _int CPlayerStateMachine::GetCurStateNum()
 {
-    return m_CurState->Get_StateKey();
+    return m_curState->Get_StateKey();
 }
 
 shared_ptr<CPlayerState> CPlayerStateMachine::Get_State(_uint stateKey)
@@ -112,60 +112,60 @@ shared_ptr<CPlayerState> CPlayerStateMachine::Get_State(_uint stateKey)
 
 HRESULT CPlayerStateMachine::Init_PlayerStates()
 {
-    m_vecState.resize(ETOI(E_PLAYERSTATE::END));
-   shared_ptr<CPlayerState> pState = nullptr;
+    m_vecState.resize(ETOI(EPlayerState::END));
+   shared_ptr<CPlayerState> state = nullptr;
 
-    if (nullptr == (pState = CPlayer_Sea::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_Sea::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(E_PLAYERSTATE::SEA)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::SEA)] = state;
+    state->Init_State();
 
-    if (nullptr == (pState = CPlayer_MiniGame::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_MiniGame::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(E_PLAYERSTATE::FISHING)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::FISHING)] = state;
+    state->Init_State();
 
-    if (nullptr == (pState = CPlayer_Village::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_Village::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(E_PLAYERSTATE::VILLAGE)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::VILLAGE)] = state;
+    state->Init_State();
 
 
 
 
-    if (nullptr == (pState = CPlayer_Storage::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_Storage::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(E_PLAYERSTATE::STORAGE)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::STORAGE)] = state;
+    state->Init_State();
 
-        if (nullptr == (pState = CPlayer_RepairShop::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        if (nullptr == (state = CPlayer_RepairShop::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
             return E_FAIL;
-    m_vecState[ETOI(E_PLAYERSTATE::REPAIR_SHOP)] = pState;
-    pState->Init_State();;
+    m_vecState[ETOI(EPlayerState::REPAIR_SHOP)] = state;
+    state->Init_State();;
 
-        if (nullptr == (pState = CPlayer_FishShop::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+        if (nullptr == (state = CPlayer_FishShop::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
             return E_FAIL;
-    m_vecState[ETOI(E_PLAYERSTATE::FISH_SHOP)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::FISH_SHOP)] = state;
+    state->Init_State();
 
-    if (nullptr == (pState = CPlayer_Interact::Create(m_pOwner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
+    if (nullptr == (state = CPlayer_Interact::Create(m_owner.lock(), dynamic_pointer_cast<CPlayerStateMachine>(shared_from_this()))))
         return E_FAIL;
-    m_vecState[ETOI(E_PLAYERSTATE::INTERACT)] = pState;
-    pState->Init_State();
+    m_vecState[ETOI(EPlayerState::INTERACT)] = state;
+    state->Init_State();
 
     return S_OK;
 }
 
 shared_ptr<CPlayerStateMachine> CPlayerStateMachine::Create(shared_ptr<CPlayerBoat> owner)
 {
-    shared_ptr<CPlayerStateMachine> pInstance(new CPlayerStateMachine(owner), [](CPlayerStateMachine* p) {p->Free(); delete(p); });
+    shared_ptr<CPlayerStateMachine> instance(new CPlayerStateMachine(owner), [](CPlayerStateMachine* p) {p->Free(); delete(p); });
 
-    if (FAILED(pInstance->Init_StateMachine()))
+    if (FAILED(instance->Init_StateMachine()))
     {
         MSG_BOX("Failed to Created : CUIPanel");
 
     }
-    return pInstance;
+    return instance;
 }
 
 void CPlayerStateMachine::Free()

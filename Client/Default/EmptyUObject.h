@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 
 NS_BEGIN(Engine)
@@ -12,22 +12,22 @@ class CEmptyUObject final:
     public CGameObject
 {
 public:
-    struct EMPTYOBJECT_DESC final : public CGameObject::GAMEOBJECT_DESC
+    struct EmptyObjectDesc final : public CGameObject::GameObjectDesc
     {
 
     };
 private:
-    CEmptyUObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CEmptyUObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CEmptyUObject(const CEmptyUObject& prototype);
 public:
     virtual ~CEmptyUObject() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnGui() override;
@@ -41,13 +41,13 @@ private:
 
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CVIBuffer> m_pVIBufferCom = { nullptr }; // ÀÌ°Å º¸°üÀ» ÀÌ°É·Î ÇÏ´Â°Í »Ó ½ÇÁ¦´Â ÀÚ½ÄÀÌ µé¾îÀÖÀ½
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
+    shared_ptr<CVIBuffer> m_VIBufferCom = { nullptr }; // ì´ê±° ë³´ê´€ì„ ì´ê±¸ë¡œ í•˜ëŠ”ê²ƒ ë¿ ì‹¤ì œëŠ” ìì‹ì´ ë“¤ì–´ìˆìŒ
+    shared_ptr<CTexture> m_textureCom = { nullptr };
 
 public:
-    static shared_ptr<CEmptyUObject> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CEmptyUObject> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 };

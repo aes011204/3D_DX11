@@ -1,4 +1,4 @@
-#include "TimeOfDay.h"
+ï»¿#include "TimeOfDay.h"
 
 CTimeOfDay::CTimeOfDay()
 {
@@ -14,41 +14,41 @@ HRESULT CTimeOfDay::Initialize()
 	return S_OK;
 }
 
-void CTimeOfDay::Update(_float fDeltaTime)
+void CTimeOfDay::Update(_float deltaTime)
 {
-	m_Second += fDeltaTime*m_TimeScale;
-	if(m_Second >= m_SecondPerDay)
+	m_second += deltaTime*m_timeScale;
+	if(m_second >= m_secondPerDay)
 	{
-		m_Day++;
-		m_Second = fmod(m_Second, m_SecondPerDay);
+		m_day++;
+		m_second = fmod(m_second, m_secondPerDay);
 	}
-	m_fTOD01 = m_Second / m_SecondPerDay;
+	m_TOD01 = m_second / m_secondPerDay;
 
 
 	//IsNight = (m_fTOD01 >= 0.75f) || (m_fTOD01 <= 0.25f);
-	IsNight = (m_fTOD01 >= m_fSunset01) || (m_fTOD01 < m_fSunrise01);
+	m_isNight = (m_TOD01 >= m_sunset01) || (m_TOD01 < m_sunrise01);
 }
 
 void CTimeOfDay::Set_TimeScale(_float timeScale)
 {
-	m_TimeScale = timeScale;
+	m_timeScale = timeScale;
 }
 
-void CTimeOfDay::ComputeTime(_uint& iDay,_float& fHour, _float& fMinute, _float& fSecond)
+void CTimeOfDay::ComputeTime(_uint& day,_float& hour, _float& minute, _float& second)
 {
-	iDay = m_Day;
-	_float fGameSecond = m_fTOD01 * 86400.f;
+	day = m_day;
+	_float gameSecond = m_TOD01 * 86400.f;
 
-	fHour = fGameSecond / 3600.f;
-	fMinute = fmod(fGameSecond, 3600.f) / 60.f;
-	fSecond = fmod(fmod(fGameSecond, 3600.f) , 60.f);
+	hour = gameSecond / 3600.f;
+	minute = fmod(gameSecond, 3600.f) / 60.f;
+	second = fmod(fmod(gameSecond, 3600.f) , 60.f);
 }
 
 void CTimeOfDay::Set_TOD01(_float tod)
 {
 	{
-		m_fTOD01 = clamp(tod, 0.f, 1.f);
-		m_Second = m_fTOD01 * m_SecondPerDay;
+		m_TOD01 = clamp(tod, 0.f, 1.f);
+		m_second = m_TOD01 * m_secondPerDay;
 	}
 
 }
@@ -56,37 +56,37 @@ void CTimeOfDay::Set_TOD01(_float tod)
 void CTimeOfDay::OnGui()
 {
 	CBase::OnGui();
-	ImGui::DragFloat("Time Scale", &m_TimeScale, 0.01f, 0.f, 100.f, "%.2f");
+	ImGui::DragFloat("Time Scale", &m_timeScale, 0.01f, 0.f, 100.f, "%.2f");
 
-	ImGui::Separator(); // ±¸ºÐ¼±
+	ImGui::Separator(); // êµ¬ë¶„ì„ 
 	
-	ImGui::Text("Current TOD: %.3f", m_fTOD01);
+	ImGui::Text("Current TOD: %.3f", m_TOD01);
 
-	ImGui::ProgressBar(m_fTOD01, ImVec2(0.f, 0.f), "Day/Night Progress");
+	ImGui::ProgressBar(m_TOD01, ImVec2(0.f, 0.f), "Day/Night Progress");
 
-	_uint iDay;
-	_float fHour, fMin, fSec;
-	// ÀÛ¼ºÇÏ½Å ÇÔ¼ö È£Ãâ
-	ComputeTime(iDay, fHour, fMin, fSec);
+	_uint day;
+	_float hour, minValue, sec;
+	// ìž‘ì„±í•˜ì‹  í•¨ìˆ˜ í˜¸ì¶œ
+	ComputeTime(day, hour, minValue, sec);
 
 	ImGui::TextColored(ImVec4(0.2f, 1.f, 0.5f, 1.f), "[ Current Status ]");
 
-	// ³¯Â¥¿Í ½Ã:ºÐ:ÃÊ Ãâ·Â (%02d´Â µÎÀÚ¸® °íÁ¤, ¾ÕÀÚ¸®¸¦ 0À¸·Î Ã¤¿ò)
-	ImGui::Text("In-Game Date : Day %d", iDay);
-	ImGui::Text("In-Game Time : %02d : %02d : %02d", (_int)fHour, (_int)fMin, (_int)fSec);
+	// ë‚ ì§œì™€ ì‹œ:ë¶„:ì´ˆ ì¶œë ¥ (%02dëŠ” ë‘ìžë¦¬ ê³ ì •, ì•žìžë¦¬ë¥¼ 0ìœ¼ë¡œ ì±„ì›€)
+	ImGui::Text("In-Game Date : Day %d", day);
+	ImGui::Text("In-Game Time : %02d : %02d : %02d", (_int)hour, (_int)minValue, (_int)sec);
 
 
 }
 
 unique_ptr<CTimeOfDay> CTimeOfDay::Create()
 {
-	unique_ptr<CTimeOfDay> pInstance(new CTimeOfDay());
+	unique_ptr<CTimeOfDay> instance(new CTimeOfDay());
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CTimeOfDay");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CTimeOfDay::Free()

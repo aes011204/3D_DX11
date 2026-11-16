@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "UIRenderable.h"
 
 
@@ -8,29 +8,29 @@ class ENGINE_DLL CUIButton :
     public CUIRenderable
 {
 public:
-    struct UIBUTTON_DESC : public CUIRenderable::RENDERABLE_DESC
+    struct UIButtonDesc : public CUIRenderable::RenderableDesc
     {
 
         function<void(CUIButton*)> ClickEvent = { nullptr };
         function<void(CUIButton*)> OverlapStartEvent = { nullptr };
         function<void(CUIButton*)> OverlapEndEvent = { nullptr };
 
-        _uint TypeIndex = {};
+        _uint typeIndex = {};
     };
 protected:
-    CUIButton(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUIButton(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUIButton(const CUIButton& prototype);
 public:
     virtual ~CUIButton() = default;
 
-    void ChangeState(BUTTON_STATE next);
+    void ChangeState(EButtonState next);
     _uint Get_TypeIndex();
 
-    void Set_ButtonState(_bool useButtonState) { m_bButtonState = useButtonState; };
-    void Set_SelectState(_bool useSelectState) { m_bUseSelect = useSelectState; };
+    void Set_ButtonState(_bool useButtonState) { m_isButtonState = useButtonState; };
+    void Set_SelectState(_bool useSelectState) { m_useSelect = useSelectState; };
 protected:
-    // ui¿« ª˝∏Ì¡÷±‚ ¡§√•ø° µ˚∂Û æÿ¡¯ ª˝∏Ì¡÷±‚ æ»ø°º≠ »£√‚ «‘
-    HRESULT OnInit(void* pArg)override;
+    // uiÏùò ÏÉùÎ™ÖÏ£ºÍ∏∞ Ï†ïÏ±ÖÏóê Îî∞Îùº Ïï§ÏßÑ ÏÉùÎ™ÖÏ£ºÍ∏∞ ÏïàÏóêÏÑú Ìò∏Ï∂ú Ìï®
+    HRESULT OnInit(void* arg)override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -50,16 +50,16 @@ protected:
 
 private:
 
-    _bool m_bUseSelect = {true};
-    _uint m_TypeIndex = {};
+    _bool m_useSelect = {true};
+    _uint m_typeIndex = {};
 
-    bool  m_ClickInside = { false };
-    BUTTON_STATE m_UIState = BUTTON_STATE::NORMAL;
-    function<void(CUIButton*)> m_ClickEvent = { nullptr };
-    function<void(CUIButton*)> m_OverlapStartEvent = { nullptr };
-    function<void(CUIButton*)> m_OverlapEndEvent = {nullptr};
+    bool  m_isClickInside = { false };
+    EButtonState m_UIState = EButtonState::NORMAL;
+    function<void(CUIButton*)> m_clickEvent = { nullptr };
+    function<void(CUIButton*)> m_overlapStartEvent = { nullptr };
+    function<void(CUIButton*)> m_overlapEndEvent = {nullptr};
 
-    _bool  m_bButtonState = true;
+    _bool  m_isButtonState = true;
 protected:
   /*  shared_ptr<class CShader> m_pShaderCom = { nullptr };
     shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
@@ -68,7 +68,7 @@ protected:
 
 
 public:
-    static shared_ptr<CUIButton> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUIButton> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	//virtual shared_ptr<CUI> Clone(void* pArg);
     void Free()override;
 

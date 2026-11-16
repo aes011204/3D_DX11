@@ -1,7 +1,7 @@
-#pragma once
+ï»¿#pragma once
 #include "Component.h"
-// ¸ğµ¨Àº ¸Ş½¬·Î ÀÌ·ç¾îÁ®ÀÖÀ½ 
-// ÄÄÆ÷³ÍÆ®·Î ÀÏ´Ü »ó¼Ó ¹ŞÀ½ 
+// ëª¨ë¸ì€ ë©”ì‰¬ë¡œ ì´ë£¨ì–´ì ¸ìˆìŒ 
+// ì»´í¬ë„ŒíŠ¸ë¡œ ì¼ë‹¨ ìƒì† ë°›ìŒ 
 
 NS_BEGIN(Engine)
 
@@ -11,68 +11,68 @@ class CShader;
     public CComponent
 {
 protected:
-	CModel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CModel(const CModel& Prototype);
+	CModel(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CModel(const CModel& prototype);
 public:
 	virtual ~CModel() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
-	virtual HRESULT Initialize(void* pArg);
-	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Initialize_Prototype(const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix);
+	virtual HRESULT Initialize(void* arg);
+	virtual HRESULT Render(_uint meshIndex);
 
-	HRESULT Ready_Meshes(MODEL eType, ifstream& InFile);
+	HRESULT Ready_Meshes(EModelType type, ifstream& InFile);
 
 	HRESULT Ready_Material(ifstream& InFile);
-	HRESULT Bind_Material(shared_ptr<CShader> pShader, const _char* pConstantName, _uint iMeshIndex,
-		Cvt_TexType eMaterialType, _uint iTextureIndex);
+	HRESULT Bind_Material(shared_ptr<CShader> shader, const _char* constantName, _uint meshIndex,
+		Cvt_TexType materialType, _uint textureIndex);
 
 	HRESULT Ready_Bones(ifstream& InFile);
 
 	//HRESULT Ready_Bones(const aiNode* pAINode, _int iParentIndex);
-	HRESULT Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex);
+	HRESULT Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* constantNamem, _uint meshIndex);
 
 	HRESULT Ready_Animations(ifstream& InFile);
 
 
-	//HRESULT Ready_Animations(); // °¢ »ÀµéÀÌ ½Ã°£¿¡ µû¶ó¼­ ¾î¶² »óÅÂ¸¦ ¶è´Ù.
+	//HRESULT Ready_Animations(); // ê° ë¼ˆë“¤ì´ ì‹œê°„ì— ë”°ë¼ì„œ ì–´ë–¤ ìƒíƒœë¥¼ ëˆë‹¤.
 
 
-	HRESULT Play_Animation(_float fTimeDelta);
+	HRESULT Play_Animation(_float timeDelta);
 
-	void Set_Animation(_uint iIndex, _bool isLoop);
+	void Set_Animation(_uint index, _bool isLoop);
 	public:
-	size_t Get_NumMeshes() { return m_Meshes.size(); }
-	_int Get_BoneIndex(const _char* pBoneName);
-	const _float4x4* Get_BoneMatrixPtr(const _char* pBoneName);
+	size_t Get_NumMeshes() { return m_meshes.size(); }
+	_int Get_BoneIndex(const _char* boneName);
+	const _float4x4* Get_BoneMatrixPtr(const _char* boneName);
 	_bool Check_AnimFrame(_int targetFrame);
 private:
-	// ÀÌµÎ°³´Â ³»ºÎ¿¡¼­ ¾Ë¾Æ¼­ ¸Ş¸ğ¸® °ü¸® ÇØÁÜ shared_ptrÀÌ·±°Å ÇÊ¿ä x
-	// ÀÓÆ÷ÅÍ°¡ Áö¿öÁú‹š aiScene µµ ¾Ë¾Æ¼­ Áö¿öÁü ÀÓÆ÷ÅÍ´Â CModelÀÌ ¸Ş¸ğ¸®¿¡¼­ ÇØÁ¦µÉ ¶§ ÀÚµ¿À¸·Î ¼Ò¸êÀÚ È£Ãâ
+	// ì´ë‘ê°œëŠ” ë‚´ë¶€ì—ì„œ ì•Œì•„ì„œ ë©”ëª¨ë¦¬ ê´€ë¦¬ í•´ì¤Œ shared_ptrì´ëŸ°ê±° í•„ìš” x
+	// ì„í¬í„°ê°€ ì§€ì›Œì§ˆë–„ aiScene ë„ ì•Œì•„ì„œ ì§€ì›Œì§ ì„í¬í„°ëŠ” CModelì´ ë©”ëª¨ë¦¬ì—ì„œ í•´ì œë  ë•Œ ìë™ìœ¼ë¡œ ì†Œë©¸ì í˜¸ì¶œ
 	/*const aiScene* m_pAIScene = { nullptr };
 	Assimp::Importer m_Importer = {};*/
 
-	MODEL m_eType = { MODEL::END };
-	_float4x4 m_PreLocalTransformMatrix = {};
+	EModelType m_type = { EModelType::END };
+	_float4x4 m_preLocalTransformMatrix = {};
 private:
-	_uint m_iNumMeshes = {};
-	vector<shared_ptr<class CMesh>> m_Meshes ={};
+	_uint m_numMeshes = {};
+	vector<shared_ptr<class CMesh>> m_meshes ={};
 
-	_uint m_iNumMaterials = {};
-	vector<shared_ptr<class CMaterial>> m_Materials={};
+	_uint m_numMaterials = {};
+	vector<shared_ptr<class CMaterial>> m_materials={};
 
-	_uint m_iTotalNumBone = {};
-	vector< shared_ptr<class CBone>> m_Bones = {};
+	_uint m_totalNumBone = {};
+	vector< shared_ptr<class CBone>> m_bones = {};
 
 	_bool m_isAnimLoop = { false };
-	_uint m_iCurrentAnimIndex = {};
-	_uint m_BlendIndex = {};
-	_uint m_iNumAnimations = {};
-	_bool m_IsBlending = {};
-	_float m_fBlendTime = {1.f};
-	_float m_fBlendElapsed = {};
-	_bool m_BlendIsLoop = {};
-	vector<shared_ptr<class CAnimation>> m_Animations;
+	_uint m_currentAnimIndex = {};
+	_uint m_blendIndex = {};
+	_uint m_numAnimations = {};
+	_bool m_isBlending = {};
+	_float m_blendTime = {1.f};
+	_float m_blendElapsed = {};
+	_bool m_isBlendLoop = {};
+	vector<shared_ptr<class CAnimation>> m_animations;
 
 
 
@@ -84,11 +84,11 @@ private:
 		_bool m_isFinish = false;
 
 	private:
-	_int m_iPrevFrame = 0;
+	_int m_prevFrame = 0;
 	
 public:
-	static shared_ptr<CModel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix);
-	virtual shared_ptr<CComponent> Clone(void* pArg);
+	static shared_ptr<CModel> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix);
+	virtual shared_ptr<CComponent> Clone(void* arg);
 	virtual void Free() override;
 };
 

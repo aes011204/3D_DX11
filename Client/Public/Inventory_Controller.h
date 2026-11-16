@@ -1,11 +1,11 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
 #include "Client_Enum.h"
 #include "Inventory.h"
 
-// ½Ì±ÛÅæ or Àü¿ª ¸¶¿ì½ºÄ¿¼­¿Í ºñ½ÁÇÏ°Ô»ç¿ë
-// °ÔÀÓ ¿ÀºêÁ§Æ® ÀÎµ¥ 1°³¸¸ ¸¸µé°ÅÀÓ
+// ì‹±ê¸€í†¤ or ì „ì—­ ë§ˆìš°ìŠ¤ì»¤ì„œì™€ ë¹„ìŠ·í•˜ê²Œì‚¬ìš©
+// ê²Œì„ ì˜¤ë¸Œì íŠ¸ ì¸ë° 1ê°œë§Œ ë§Œë“¤ê±°ì„
 NS_BEGIN(Engine)
 class CGameInstance;
 NS_END
@@ -17,14 +17,14 @@ class CInventory_Controller :
     public CGameObject
 {
     //DECLARE_SINGLETON(CInventory_Controller)
-    CInventory_Controller(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CInventory_Controller(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
 public:
     virtual ~CInventory_Controller() = default;
 
 public:
-    HRESULT Initialize(weak_ptr<CInventory> Inven, shared_ptr<class CUI_Item> UIHoldItem);
-    void Update(float TimeDelta);
+    HRESULT Initialize(weak_ptr<CInventory> inven, shared_ptr<class CUI_Item> UIHoldItem);
+    void Update(float timeDelta);
 private:
     void Refresh_Hover();
     Evt_ItemHovered m_hoverState = {};
@@ -32,12 +32,12 @@ private:
     bool m_hoverValid = false;
     bool m_hoverDirty = false;
 public:
-    void Make_Hold(Item_Inst inst);
+    void Make_Hold(ItemInst inst);
     shared_ptr<CInventory> Get_CurrentInven();
 
-    void Set_Inven(weak_ptr<class CInventory> inventory) { m_PlayerInven = inventory; }
+    void Set_Inven(weak_ptr<class CInventory> inventory) { m_playerInven = inventory; }
 
-    bool Is_Dragging() { return m_bDragging; }
+    bool Is_Dragging() { return m_isDragging; }
     //_bool PickUp_Item(Item_Inst HoldItem) {
     //    m_HoldItem = HoldItem; m_bDragging = true;
     //    m_Inven.lock()->RemoveFrom_Inven(m_HoldItem.ItemInst_ID);
@@ -50,41 +50,41 @@ public:
     //HRESULT Create_HoldItem(Item_Inst HoldItem) { m_HoldItem = HoldItem};
 private:
     //Item_Inst m_HoldItem = {};
-    vector<_float2> m_OffSet = {};
-    /*_float m_Rotaion = {};*/ // ÀÌ°Å ÀÎ½ºÅÏ½º ¾È¿¡ ÀÖÀ½
+    vector<_float2> m_offset = {};
+    /*_float m_Rotaion = {};*/ // ì´ê±° ì¸ìŠ¤í„´ìŠ¤ ì•ˆì— ìˆìŒ
 
-    _uint m_prevItemInstId = {};//ÅøÆÁ¿ë Ã¼Å©
+    _uint m_prevItemInstID = {};//íˆ´íŒìš© ì²´í¬
     //bool prevMouseOnSlot = { false };
-    bool m_bDragging = false;
-    bool m_PrevDragging = false;
-    _uint m_SlotX, m_SlotY = {};
-    _uint m_PrevSlotX, m_PrevSlotY = {};
-    _bool m_bIsOnSlot = { false };
+    bool m_isDragging = false;
+    bool m_isPrevDragging = false;
+    _uint m_slotX = {}, m_slotY = {};
+    _uint m_prevSlotX = {}, m_prevSlotY = {};
+    _bool m_isOnSlot = { false };
 
 
-    _bool m_bPrevOnSlot = { false };
+    _bool m_isPrevOnSlot = { false };
 
-    // »óÁ¡ µîµîÀ» À§ÇÑ ÀÎ¹ê µ¥ÀÌÅÍµµ ÇÊ¿äÇÔ
-     weak_ptr<class CInventory> m_PlayerInven = {}; // ·ÎÁ÷
-    weak_ptr<CInventory> m_TargetInven;
+    // ìƒì  ë“±ë“±ì„ ìœ„í•œ ì¸ë°´ ë°ì´í„°ë„ í•„ìš”í•¨
+     weak_ptr<class CInventory> m_playerInven = {}; // ë¡œì§
+    weak_ptr<CInventory> m_targetInven;
 
 
-    weak_ptr<CInventory> m_SourceInven;
-    weak_ptr<CInventory> m_DestInven;
+    weak_ptr<CInventory> m_sourceInven;
+    weak_ptr<CInventory> m_destInven;
 
-    _bool m_IsPlayerSlot = false;
+    _bool m_isPlayerSlot = false;
 
    // class shared_ptr<class CUI_Inventory> m_UIInven = { nullptr }; // UI
-   shared_ptr<class CUI_Item> m_UIHoldItem = { nullptr };
-   weak_ptr<CGameInstance>m_pGameInstance = { };
-   INVENTYPE m_HoldItemFrom;
+   shared_ptr<class CUI_Item> m_uiHoldItem = { nullptr };
+   weak_ptr<CGameInstance>m_gameInstance = { };
+   EInvenType m_holdItemFrom;
 
 
 public:
-    static shared_ptr<CInventory_Controller> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven,shared_ptr<CUI_Item> UIHoldItem);
+    static shared_ptr<CInventory_Controller> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, weak_ptr<CInventory> inven,shared_ptr<CUI_Item> UIHoldItem);
     virtual void Free() override;
 
-    shared_ptr<CGameObject> Clone(void* pArg) { return shared_ptr<CGameObject>{}; };
+    shared_ptr<CGameObject> Clone(void* arg) { return shared_ptr<CGameObject>{}; };
 };
 
 

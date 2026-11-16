@@ -1,4 +1,4 @@
-#include "Player_Interact.h"
+﻿#include "Player_Interact.h"
 #include <UI.h>
 
 #include "DialogueDB.h"
@@ -7,8 +7,8 @@
 #include "Sea_Manager.h"
 #include "EventBus.h"
 
-CPlayer_Interact::CPlayer_Interact(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine)
-	: CPlayerState(owner, pStateMachine)
+CPlayer_Interact::CPlayer_Interact(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> stateMachine)
+	: CPlayerState(owner, stateMachine)
 {
 }
 
@@ -34,17 +34,17 @@ void CPlayer_Interact::Enter()
 	//};
 	//event.commands.push_back(pLerp);
 
-	auto pStop = make_shared<CAM_DESC>();
-	pStop->eMode = CAM_MODE::STOP;
-	event.commands.push_back(pStop);
+	auto stop = make_shared<CamDesc>();
+	stop->mode = ECamMode::STOP;
+	event.commands.push_back(stop);
 
 	CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-	Evt_Cam_Arrived e = {};
-		e.playerstate = E_PLAYERSTATE::INTERACT;
+	Evt_CamArrived e = {};
+		e.playerstate = EPlayerState::INTERACT;
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(e);
 
-	eNextState = E_PLAYERSTATE::INTERACT;
+	m_nextState = EPlayerState::INTERACT;
 
 
 	/*Evt_OpenInventory e;
@@ -65,7 +65,7 @@ void CPlayer_Interact::Exit()
 
 
 	Evt_CloseInventory close;
-	m_pGameInstance.lock()->Get_EventBus()->Publish(close);
+	m_gameInstance.lock()->Get_EventBus()->Publish(close);
 
 
 
@@ -79,7 +79,7 @@ HRESULT CPlayer_Interact::Init_State()
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeState>([this](const Evt_ChangeState& e)
 		{
-			eNextState = e.playerstate;
+			m_nextState = e.playerstate;
 		});
 
 
@@ -89,14 +89,14 @@ HRESULT CPlayer_Interact::Init_State()
 int CPlayer_Interact::Update_State(const _float& timeDelta)
 {
 
-	if(m_Input_Manager->KeyDown(DIK_X))
+	if(m_inputManager->KeyDown(DIK_X))
 	{
 
-		return  ETOI(E_PLAYERSTATE::SEA);
+		return  ETOI(EPlayerState::SEA);
 	}
 
 
-	return ETOI(eNextState);
+	return ETOI(m_nextState);
 }
 
 
@@ -110,12 +110,12 @@ void CPlayer_Interact::Render_State()
 	
 }
 
-shared_ptr<CPlayer_Interact> CPlayer_Interact::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine)
+shared_ptr<CPlayer_Interact> CPlayer_Interact::Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine)
 {
-	shared_ptr<CPlayer_Interact> pInstance(new CPlayer_Interact(owner,pStateMachine), [](CPlayer_Interact* p) {p->Free(); delete(p); });
+	shared_ptr<CPlayer_Interact> instance(new CPlayer_Interact(owner,stateMachine), [](CPlayer_Interact* p) {p->Free(); delete(p); });
 
 
-	return pInstance;
+	return instance;
 }
 
 void CPlayer_Interact::Free()

@@ -1,4 +1,4 @@
-#include "Client_Define.h"
+Ôªø#include "Client_Define.h"
 //#include"Engine_Define.h"
 #include "Level_Editor.h"
 
@@ -8,8 +8,8 @@
 #include "Level_Loading.h"
 #include "Event_Struct.h"
 
-CLevel_Editor::CLevel_Editor(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CLevel(pDevice, pContext)
+CLevel_Editor::CLevel_Editor(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CLevel(device, context)
 {
 }
 
@@ -20,10 +20,10 @@ HRESULT CLevel_Editor::Initialize()
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<EvtCloneProto>([this](const EvtCloneProto& e)
 		{
-			if (CGameInstance::GetInstance()->Get_Current_LevelIdx() == ETOI(LEVEL::EDITOR)) 
+			if (CGameInstance::GetInstance()->Get_Current_LevelIdx() == ETOI(ELevel::EDITOR)) 
 			{
-				m_pGameInstance.lock()->Add_GameObject(e.iLevel, e.Tag,
-					ETOI(LEVEL::EDITOR), L"GameObject",nullptr);
+				m_gameInstance.lock()->Add_GameObject(e.level, e.tag,
+					ETOI(ELevel::EDITOR), L"GameObject",nullptr);
 			}
 		});
 
@@ -42,11 +42,11 @@ HRESULT CLevel_Editor::Initialize()
     return S_OK;
 }
 
-void CLevel_Editor::Update(_float fTimeDelta)
+void CLevel_Editor::Update(_float timeDelta)
 {
 	if (GetKeyState(VK_NUMPAD1) & 0x8000)
 	{
-		if (FAILED(m_pGameInstance.lock()->Change_Level(ETOI(LEVEL::LOADING), CLevel_Loading::Create(m_pDevice, m_pContext, LEVEL::LOGO))))
+		if (FAILED(m_gameInstance.lock()->Change_Level(ETOI(ELevel::LOADING), CLevel_Loading::Create(m_device, m_context, ELevel::LOGO))))
 			return;
 	}
 	int a = 10;
@@ -62,31 +62,31 @@ void CLevel_Editor::Update(_float fTimeDelta)
 HRESULT CLevel_Editor::Ready_Lights()
 {
 
-	LIGHT_DESC LightDesc{};
+	LightDesc lightDesc{};
 
-	LightDesc.eType = LIGHT::DIRECTIONAL;
+	lightDesc.type = ELightType::DIRECTIONAL;
 
-	LightDesc.vDirection = _float4(1.f, -1.f, 1.f, 0.f);
-	LightDesc.vDiffuse = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vAmbient = _float4(1.f, 1.f, 1.f, 1.f);
-	LightDesc.vSpecular = _float4(1.f, 1.f, 1.f, 1.f);
+	lightDesc.direction = _float4(1.f, -1.f, 1.f, 0.f);
+	lightDesc.diffuse = _float4(1.f, 1.f, 1.f, 1.f);
+	lightDesc.ambient = _float4(1.f, 1.f, 1.f, 1.f);
+	lightDesc.specular = _float4(1.f, 1.f, 1.f, 1.f);
 
-	if (nullptr==(m_pGameInstance.lock()->Add_Light(LightDesc)))
+	if (nullptr==(m_gameInstance.lock()->Add_Light(lightDesc)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CLevel_Editor::Ready_Layer_BackGround(const _wstring& strLayerTag)
+HRESULT CLevel_Editor::Ready_Layer_BackGround(const _wstring& layerTag)
 {
-	if (nullptr == (m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
-		ETOI(LEVEL::GAMEPLAY), strLayerTag)))
+	if (nullptr == (m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_GameObject_Terrain"),
+		ETOI(ELevel::GAMEPLAY), layerTag)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& strLayerTag)
+HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& layerTag)
 {
 
 	/*CCamera_Play::CAMERAPLAY_DESC CLCamDesc = {};
@@ -110,22 +110,22 @@ HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& strLayerTag)
 
 
 
-	CCamera_Free::CAMERAFREE_DESC FRCamDesc = {};
-	FRCamDesc.fFar = 500.f;
-	FRCamDesc.fNear = 0.1f;
-	FRCamDesc.fFovY = XMConvertToRadians(60.f);
-	FRCamDesc.vEyes = _float4(0.f, 10.f, -7.f, 1.f);
-	FRCamDesc.vAt = _float4(0.f, 0.f, 0.f, 1.f);
-	FRCamDesc.fSpeedPerSec = 10.f;
-	FRCamDesc.fDegreePerSec = 180.f;
-	FRCamDesc.fMouseSensor = 0.01f;
+	CCamera_Free::CameraFreeDesc FRCamDesc = {};
+	FRCamDesc.farZ = 500.f;
+	FRCamDesc.nearZ = 0.1f;
+	FRCamDesc.fovY = XMConvertToRadians(60.f);
+	FRCamDesc.eyes = _float4(0.f, 10.f, -7.f, 1.f);
+	FRCamDesc.at = _float4(0.f, 0.f, 0.f, 1.f);
+	FRCamDesc.speedPerSec = 10.f;
+	FRCamDesc.degreePerSec = 180.f;
+	FRCamDesc.mouseSensor = 0.01f;
 
-	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_pGameInstance.lock()->Add_GameObject(ETOI(LEVEL::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
-		ETOI(LEVEL::STATIC), strLayerTag, &FRCamDesc));
+	shared_ptr<CCamera> freeCamera = dynamic_pointer_cast<CCamera>(m_gameInstance.lock()->Add_GameObject(ETOI(ELevel::STATIC), TEXT("Prototype_GameObject_Camera_Free"),
+		ETOI(ELevel::STATIC), layerTag, &FRCamDesc));
 
 	if (nullptr == freeCamera)
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Camera(ETOI(LEVEL::STATIC), L"FREE_CAM", freeCamera);
+	m_gameInstance.lock()->Add_Camera(ETOI(ELevel::STATIC), L"FREE_CAM", freeCamera);
 
 
 
@@ -136,7 +136,7 @@ HRESULT CLevel_Editor::Ready_Layer_Camera(const _wstring& strLayerTag)
 HRESULT CLevel_Editor::Render()
 {
 #ifdef _DEBUG
-	SetWindowText(g_hWnd, TEXT("«ˆ¿Á ø°µ≈Õ∑π∫ß ±∏µø ¡ﬂ"));
+	SetWindowText(g_hWnd, TEXT("ÌòÑÏû¨ ÏóêÎîîÌÑ∞Î†àÎ≤® Íµ¨Îèô Ï§ë"));
 #endif
     return S_OK;
 }
@@ -147,15 +147,15 @@ void CLevel_Editor::OnGui()
 
 }
 
-shared_ptr<CLevel_Editor> CLevel_Editor::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CLevel_Editor> CLevel_Editor::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CLevel_Editor> pInstance(new CLevel_Editor(pDevice, pContext), [](CLevel_Editor* p) {p->Free();delete p;});
+	shared_ptr<CLevel_Editor> instance(new CLevel_Editor(device, context), [](CLevel_Editor* p) {p->Free();delete p;});
 
-	if (FAILED(pInstance->Initialize()))
+	if (FAILED(instance->Initialize()))
 	{
 		MSG_BOX("Failed to Created : CLevel_Editor");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CLevel_Editor::Free()

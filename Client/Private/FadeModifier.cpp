@@ -1,15 +1,15 @@
-#include "FadeModifier.h"
+Ôªø#include "FadeModifier.h"
 #include "UIRenderable.h"
 
 
 
-CFadeModifier::CFadeModifier(FADE fadeType, _float duration, _bool useColor, _float4 color, _bool Inactive)
-	: m_fadeType(fadeType),m_Duration(duration), m_useColor(useColor), m_color(color), m_Inactive(Inactive), m_AccTime(0.f)
+CFadeModifier::CFadeModifier(EFade fadeType, _float duration, _bool useColor, _float4 color, _bool Inactive)
+	: m_fadeType(fadeType),m_duration(duration), m_useColor(useColor), m_color(color), m_isInactive(Inactive), m_accTime(0.f)
 {
 	if (m_fadeType == FADE_IN)
-		m_Alpha = 0.f;
+		m_alpha = 0.f;
 	else if (m_fadeType == FADE_OUT)
-		m_Alpha = 1.f;
+		m_alpha = 1.f;
 
 }
 
@@ -19,51 +19,51 @@ CFadeModifier::~CFadeModifier()
 	//m_This->Set_Alpha(1);
 }
 
-void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
+void CFadeModifier::Tick(float deltaTime, CUI* owner)
 {
-	if(m_This == nullptr)
+	if(m_self == nullptr)
 	{
-		m_This = dynamic_cast<CUIRenderable*>(pOwner);
+		m_self = dynamic_cast<CUIRenderable*>(owner);
 
 
 
 		if(m_useColor == true)
 		{
-			m_This->Set_UseColorMix(true);
+			m_self->Set_UseColorMix(true);
 			
 		}
 
 	
 	}
 
-	m_AccTime += fDeltaTime;
+	m_accTime += deltaTime;
 
 	if (m_fadeType == FADE_OUT)
 	{
 	
 	
 
-		_float fRatio = m_AccTime / m_Duration;
+		_float ratio = m_accTime / m_duration;
 		//LOG_F(LOG_LEVEL::INFO, "Time: %.4f / Duration: %.4f / Ratio: %.4f", m_AccTime, m_Duration, m_AccTime / m_Duration);
 
-		if (fRatio > 1) fRatio = 1.f;
+		if (ratio > 1) ratio = 1.f;
 
-		m_Alpha = 1 - fRatio;
+		m_alpha = 1 - ratio;
 
 		if (m_useColor == true)
 		{
-			m_This->Set_ColorMix(m_color);
+			m_self->Set_ColorMix(m_color);
 
 		}
 
-		m_This->Set_Alpha(m_Alpha);
+		m_self->Set_Alpha(m_alpha);
 
-		if (m_Alpha <= 0.01f)
+		if (m_alpha <= 0.01f)
 		{
-			if(m_Inactive ==true)
-				pOwner->UI_InActive(); // UI ≤Ù±‚
+			if(m_isInactive ==true)
+				owner->UI_InActive(); // UI ÎÅÑÍ∏∞
 
-			m_Finished = true;
+			m_isFinished = true;
 		}
 
 
@@ -72,43 +72,43 @@ void CFadeModifier::Tick(float fDeltaTime, CUI* pOwner)
 		
 	else if (m_fadeType == FADE_IN)
 	{
-		_float fRatio = m_AccTime / m_Duration;
+		_float ratio = m_accTime / m_duration;
 
-		if (fRatio > 1) fRatio = 1.f;
+		if (ratio > 1) ratio = 1.f;
 
-		m_Alpha = fRatio;
+		m_alpha = ratio;
 
 		if (m_useColor == true)
 		{
-			float lerpRadio = 1 - m_Alpha;
+			float lerpRadio = 1 - m_alpha;
 			_float4 colorWAlpha = { m_color.x, m_color.y, m_color.z, lerpRadio };
-			m_This->Set_ColorMix(m_color);
+			m_self->Set_ColorMix(m_color);
 
 		}
 
-		m_This->Set_Alpha(m_Alpha);
+		m_self->Set_Alpha(m_alpha);
 
-		if (fRatio >= 1.f)
+		if (ratio >= 1.f)
 		{
-			m_This->Set_Alpha(1.f);
+			m_self->Set_Alpha(1.f);
 			if(EndEvent != nullptr )
 			{
 				EndEvent();
 			}
-			//pOwner->UI_InActive(); // UI ≤Ù±‚
+			//pOwner->UI_InActive(); // UI ÎÅÑÍ∏∞
 
-			m_Finished = true;
+			m_isFinished = true;
 		}
 	}
 		
 
 }
 
-void CFadeModifier::OnAppear(float fDeltaTime, CUI* pOwner)
+void CFadeModifier::OnAppear(float deltaTime, CUI* owner)
 {
 }
 
-void CFadeModifier::OnDisappear(float fDeltaTime, CUI* pOwner)
+void CFadeModifier::OnDisappear(float deltaTime, CUI* owner)
 {
 	;
 }

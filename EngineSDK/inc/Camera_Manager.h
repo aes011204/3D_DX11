@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 class CCamera_Manager :
@@ -12,9 +12,9 @@ public:
  
 public:
 
-    HRESULT Initialize(_uint iNumLevels);
+    HRESULT Initialize(_uint numLevels);
     void Apply_To_PipeLine();
-    void Update_AfterTarget(_float fTimeDelta);
+    void Update_AfterTarget(_float timeDelta);
     float Get_Far();
 public:
 
@@ -32,16 +32,16 @@ protected:
 
 
 private:
-    _uint  m_iNumLevel = {};
-    shared_ptr<class CCamera> m_CurCam = {};
-    map<const _wstring, shared_ptr<class CCamera>>* m_Cameras = {};
+    _uint  m_numLevel = {};
+    shared_ptr<class CCamera> m_curCam = {};
+    map<const _wstring, shared_ptr<class CCamera>>* m_cameras = {};
   
 private:
 
-    weak_ptr<class CGameInstance> m_pGameInstance = {};
+    weak_ptr<class CGameInstance> m_gameInstance = {};
 public:
 
-    static unique_ptr<CCamera_Manager> Create(_uint iNumLevels);
+    static unique_ptr<CCamera_Manager> Create(_uint numLevels);
     void Free() override;
 };
 

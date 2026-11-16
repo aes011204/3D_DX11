@@ -1,4 +1,4 @@
-#include "UI_Top.h"
+Ôªø#include "UI_Top.h"
 
 #include <UIText.h>
 
@@ -6,8 +6,8 @@
 #include "UIImage.h"
 #include "UI_MainMenu.h"
 
-CUI_Top::CUI_Top(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_Top::CUI_Top(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -16,75 +16,75 @@ CUI_Top::CUI_Top(const CUIPanel& prototype)
 {
 }
 
-HRESULT CUI_Top::OnInit(void* pArg)
+HRESULT CUI_Top::OnInit(void* arg)
 {
 
 	{
-		CUIImage::UIIMAGE_DESC Time_BaseDesc = {};
-		Time_BaseDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		Time_BaseDesc.TextureProtoName = L"Prototype_Component_Texture_HorizontalUITray";
-		shared_ptr<CUIImage> Time_Base = CUIImage::Create(m_pDevice, m_pContext);
-		Time_Base->Initialize(&Time_BaseDesc);
-		Add_Child(Time_Base, L"Time_Base", false);
+		CUIImage::UIImageDesc timeBaseDesc = {};
+		timeBaseDesc.textureComLevel = ETOI(ELevel::STATIC);
+		timeBaseDesc.textureProtoName = L"Prototype_Component_Texture_HorizontalUITray";
+		shared_ptr<CUIImage> timeBase = CUIImage::Create(m_device, m_context);
+		timeBase->Initialize(&timeBaseDesc);
+		Add_Child(timeBase, L"Time_Base", false);
 
 		{
-			CUIText::TEXT_DESC textDay_Desc = {};
-			textDay_Desc.strFontTag = L"Noto_Sans_CJK_SC";
-			textDay_Desc.strText = L"ø˘ø‰¿œ , 1¿œ¬˜";
-			shared_ptr<CUIText> Text_Day = CUIText::Create(m_pDevice, m_pContext);
-			Text_Day->Initialize(&textDay_Desc);
-			Time_Base->Add_Child(Text_Day, L"Text_Day", false);
-			m_DayText = Text_Day;
+			CUIText::TextDesc textDayDesc = {};
+			textDayDesc.fontTag = L"Noto_Sans_CJK_SC";
+			textDayDesc.text = L"ÏõîÏöîÏùº , 1ÏùºÏ∞®";
+			shared_ptr<CUIText> textDay = CUIText::Create(m_device, m_context);
+			textDay->Initialize(&textDayDesc);
+			timeBase->Add_Child(textDay, L"Text_Day", false);
+			m_dayText = textDay;
 
 
-			CUIText::TEXT_DESC textTime_Desc = {};
-			textTime_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			textTime_Desc.strText = L"12:34";
-			shared_ptr<CUIText> Text_Time = CUIText::Create(m_pDevice, m_pContext);
-			Text_Time->Initialize(&textTime_Desc);
-			Time_Base->Add_Child(Text_Time, L"Text_Time", false);
-			m_TimeText = Text_Time;
+			CUIText::TextDesc textTimeDesc = {};
+			textTimeDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+			textTimeDesc.text = L"12:34";
+			shared_ptr<CUIText> textTime = CUIText::Create(m_device, m_context);
+			textTime->Initialize(&textTimeDesc);
+			timeBase->Add_Child(textTime, L"Text_Time", false);
+			m_timeText = textTime;
 
 		}
 
-		CUIImage::UIIMAGE_DESC TimeWheelDesc = {};
-		TimeWheelDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		TimeWheelDesc.TextureProtoName = L"Prototype_Component_Texture_TimeOfDayWheel";
-		shared_ptr<CUIImage> Time_Wheel = CUIImage::Create(m_pDevice, m_pContext);
-		Time_Wheel->Initialize(&TimeWheelDesc);
-		Add_Child(Time_Wheel, L"Time_Wheel", false);
-		m_DayCircle = Time_Wheel;
+		CUIImage::UIImageDesc timeWheelDesc = {};
+		timeWheelDesc.textureComLevel = ETOI(ELevel::STATIC);
+		timeWheelDesc.textureProtoName = L"Prototype_Component_Texture_TimeOfDayWheel";
+		shared_ptr<CUIImage> timeWheel = CUIImage::Create(m_device, m_context);
+		timeWheel->Initialize(&timeWheelDesc);
+		Add_Child(timeWheel, L"Time_Wheel", false);
+		m_dayCircle = timeWheel;
 
-		CUIImage::UIIMAGE_DESC TimePointerDesc = {};
-		TimePointerDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		TimePointerDesc.TextureProtoName = L"Prototype_Component_Texture_TimeOfDayPointer";
-		shared_ptr<CUIImage> TimePointer = CUIImage::Create(m_pDevice, m_pContext);
-		TimePointer->Initialize(&TimePointerDesc);
-		Time_Wheel->Add_Child(TimePointer, L"TimePointer", false);
+		CUIImage::UIImageDesc timePointerDesc = {};
+		timePointerDesc.textureComLevel = ETOI(ELevel::STATIC);
+		timePointerDesc.textureProtoName = L"Prototype_Component_Texture_TimeOfDayPointer";
+		shared_ptr<CUIImage> timePointer = CUIImage::Create(m_device, m_context);
+		timePointer->Initialize(&timePointerDesc);
+		timeWheel->Add_Child(timePointer, L"TimePointer", false);
 
 
 	}
 
 	{
-		CUIImage::UIIMAGE_DESC CompassDesc = {};
-		CompassDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		CompassDesc.TextureProtoName = L"Prototype_Component_Texture_Compass";
-		shared_ptr<CUIImage> Compass = CUIImage::Create(m_pDevice, m_pContext);
-		Compass->Initialize(&CompassDesc);
-		Add_Child(Compass, L"Compass", false);
+		CUIImage::UIImageDesc compassDesc = {};
+		compassDesc.textureComLevel = ETOI(ELevel::STATIC);
+		compassDesc.textureProtoName = L"Prototype_Component_Texture_Compass";
+		shared_ptr<CUIImage> compass = CUIImage::Create(m_device, m_context);
+		compass->Initialize(&compassDesc);
+		Add_Child(compass, L"Compass", false);
 
 
-		CUIImage::UIIMAGE_DESC CompassRingDesc = {};
-		CompassRingDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		CompassRingDesc.TextureProtoName = L"Prototype_Component_Texture_CompassRing";
-		shared_ptr<CUIImage> CompassRing = CUIImage::Create(m_pDevice, m_pContext);
-		CompassRing->Initialize(&CompassRingDesc);
-		Add_Child(CompassRing, L"CompassRing", false);
+		CUIImage::UIImageDesc compassRingDesc = {};
+		compassRingDesc.textureComLevel = ETOI(ELevel::STATIC);
+		compassRingDesc.textureProtoName = L"Prototype_Component_Texture_CompassRing";
+		shared_ptr<CUIImage> compassRing = CUIImage::Create(m_device, m_context);
+		compassRing->Initialize(&compassRingDesc);
+		Add_Child(compassRing, L"CompassRing", false);
 
 	}
 
 
-	return __super::OnInit(pArg);
+	return __super::OnInit(arg);
 }
 
 void CUI_Top::OnActive()
@@ -104,56 +104,56 @@ void CUI_Top::OnDisabled()
 
 void CUI_Top::OnUpdate(const _float& timeDelta)
 {
-	_uint iDay = 0;
-	_float fHour = 0;
-	_float fMinute = 0;
-	_float fSecond = 0;
-	m_pGameInstance.lock()->ComputeTime(iDay, fHour, fMinute, fSecond);
-	if (fMinute != preMin)
+	_uint day = 0;
+	_float hour = 0;
+	_float minute = 0;
+	_float second = 0;
+	m_gameInstance.lock()->ComputeTime(day, hour, minute, second);
+	if (minute != m_preMin)
 	{
 
-		m_TimeText->Set_Text(format(L"{:02.0f}:{:02.0f}", fHour, fMinute));
+		m_timeText->Set_Text(format(L"{:02.0f}:{:02.0f}", hour, minute));
 
 	}
-	if (preDay != iDay)
+	if (m_preDay != day)
 	{
-		wstring strDay = L"";
-		_uint iday = iDay % 7;
+		wstring dayText = L"";
+		_uint iday = day % 7;
 		switch (iday)
 		{
 		case 0:
-			strDay = L"ø˘ø‰¿œ";
+			dayText = L"ÏõîÏöîÏùº";
 			break;
 		case 1:
-			strDay = L"»≠ø‰¿œ";
+			dayText = L"ÌôîÏöîÏùº";
 			break;
 		case 2:
-			strDay = L"ºˆø‰¿œ";
+			dayText = L"ÏàòÏöîÏùº";
 			break;
 		case 3:
-			strDay = L"∏Òø‰¿œ";
+			dayText = L"Î™©ÏöîÏùº";
 			break;
 		case 4:
-			strDay = L"±›ø‰¿œ";
+			dayText = L"Í∏àÏöîÏùº";
 			break;
 		case 5:
-			strDay = L"≈‰ø‰¿œ";
+			dayText = L"ÌÜ†ÏöîÏùº";
 			break;
 		case 6:
-			strDay = L"¿œø‰¿œ";
+			dayText = L"ÏùºÏöîÏùº";
 			break;
 		default:
 			break;
 		}
-		m_DayText->Set_Text(format(L"{}, {}¿œ ¬˜", strDay, iDay));
+		m_dayText->Set_Text(format(L"{}, {}Ïùº Ï∞®", dayText, day));
 	}
 
-	preDay = iDay;
-	preMin = fMinute;
+	m_preDay = day;
+	m_preMin = minute;
 
 
-	float circel = m_pGameInstance.lock()->Get_TOD01() * -360.f;
-	m_DayCircle->GetUITransform()->SetRotation(circel);
+	float circel = m_gameInstance.lock()->Get_TOD01() * -360.f;
+	m_dayCircle->GetUITransform()->SetRotation(circel);
 
 
 	__super::OnUpdate(timeDelta);
@@ -174,16 +174,16 @@ void CUI_Top::OnClear()
 	__super::OnClear();
 }
 
-shared_ptr<CUI_Top> CUI_Top::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Top> CUI_Top::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Top> pInstance(new CUI_Top(pDevice, pContext), [](CUI_Top* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_Top> instance(new CUI_Top(device, context), [](CUI_Top* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUI_Top");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Top::Free()

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Define.h"
 #include "Base.h"
 NS_BEGIN(Engine)
@@ -18,43 +18,43 @@ public:
 
 public:
     HRESULT Initialize(/*ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext*/);
-    void Update(float TimeDelta);
-    _float3 Calculate_GerstnerWavePosition(_float3 Pos);
+    void Update(float timeDelta);
+    _float3 Calculate_GerstnerWavePosition(_float3 pos);
 
     virtual void OnGui() override;
 
-    float Get_AccTime() { return m_AccTime; };
-    int Get_WaveCount() { return m_WaveCount; }
+    float Get_AccTime() { return m_accTime; };
+    int Get_WaveCount() { return m_waveCount; }
     //float Get_DepthMask01(){ return m_depthMask01; }
-    const Wave_Desc* Get_WaveDescArray() const { return m_waveDesc; }
-    const Wave_Desc* Get_Pos() const {}
-    float Get_GlobalY() { return m_GlobalY; }
-    void Set_TerrainBuffer(shared_ptr<class CVIBuffer_Terrain> pBuffer)
+    const WaveDesc* Get_WaveDescArray() const { return m_waveDesc; }
+    const WaveDesc* Get_Pos() const {}
+    float Get_GlobalY() { return m_globalY; }
+    void Set_TerrainBuffer(shared_ptr<class CVIBuffer_Terrain> buffer)
     {
-        terrain_buffer = pBuffer;
+        m_terrainBuffer = buffer;
     }
-   _float3 TerrainPos={-750.f,0.f,-750.f};
-   _float TerrainSize={1500.f};
-    _float3 deepColor = _float3(0.094f, 0.137f, 0.302f); // Deep wave color
-    _float3 shallowColor = _float3(0.114f, 0.176f, 0.365f); // Shallow wave color
+   _float3 m_terrainPos={-750.f,0.f,-750.f};
+   _float m_terrainSize={1500.f};
+    _float3 m_deepColor = _float3(0.094f, 0.137f, 0.302f); // Deep wave color
+    _float3 m_shallowColor = _float3(0.114f, 0.176f, 0.365f); // Shallow wave color
 
 private:
-    ComPtr<ID3D11Device> m_pDevice = { nullptr };
-    ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-    weak_ptr<class CGameInstance> m_pGameInstance = { };
+    ComPtr<ID3D11Device> m_device = { nullptr };
+    ComPtr<ID3D11DeviceContext> m_context = { nullptr };
+    weak_ptr<class CGameInstance> m_gameInstance = { };
 
 private:
 
 
 
-    float m_GlobalY = {};
+    float m_globalY = {};
 
-    float m_AccTime = {};
-    int m_WaveCount = {};
+    float m_accTime = {};
+    int m_waveCount = {};
    
-    Wave_Desc m_waveDesc[10] = {};
+    WaveDesc m_waveDesc[10] = {};
 
-   weak_ptr<CVIBuffer_Terrain> terrain_buffer = {  };
+   weak_ptr<CVIBuffer_Terrain> m_terrainBuffer = {  };
     ///
 public:
  /*   static shared_ptr<CSea_Manager> Create();*/

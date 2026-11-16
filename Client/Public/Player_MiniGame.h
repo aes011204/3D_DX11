@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "PlayerState.h"
 
 
@@ -10,7 +10,7 @@ class CPlayer_MiniGame :
     public CPlayerState
 {
 private:
-    explicit CPlayer_MiniGame(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> pStateMachine);
+    explicit CPlayer_MiniGame(shared_ptr<CPlayerBoat> owner,shared_ptr <CPlayerStateMachine> stateMachine);
     virtual ~CPlayer_MiniGame();
 
 public:
@@ -30,7 +30,7 @@ private:
  
  
 public:
-    static shared_ptr<CPlayer_MiniGame> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> pStateMachine);
+    static shared_ptr<CPlayer_MiniGame> Create(shared_ptr<CPlayerBoat> owner, shared_ptr<CPlayerStateMachine> stateMachine);
    
 private:
    

@@ -1,5 +1,5 @@
-#pragma once
-//#include "Base.h" // º£ÀÌ½º°¡ ÀÖ¾î¾ß ÇÏ´ÂÁö ¸ğ¸£°ÚÀ¸´Ï±î ÀÏ´Ü ÆĞ½º
+ï»¿#pragma once
+//#include "Base.h" // ë² ì´ìŠ¤ê°€ ìˆì–´ì•¼ í•˜ëŠ”ì§€ ëª¨ë¥´ê² ìœ¼ë‹ˆê¹Œ ì¼ë‹¨ íŒ¨ìŠ¤
 #include "Engine_Define.h"
 #include "Event_Struct.h"
 #include <typeindex>
@@ -8,7 +8,7 @@
 
 NS_BEGIN(Engine)
 
-class ENGINE_DLL CEventBus 
+class CEventBus 
 {
 public:
 	CEventBus();
@@ -20,12 +20,12 @@ public:
 	using SubscriptionId = std::uint64_t;
 	struct Subscription { SubscriptionId id; anyHandler handler; };
 
-	struct QueuedEvent { type_index m_TypeIndex; shared_ptr<void> data; };
+	struct QueuedEvent { type_index typeIndex; shared_ptr<void> data; };
 public:
 	template<typename EventT>
 	SubscriptionId Subscribe(function<void(const EventT&)> func)
 	{
-		SubscriptionId id = m_NextId++;
+		SubscriptionId id = m_nextId++;
 		m_handlers[typeid(EventT)].push_back({
 			id, [func](const void* e) { func(*static_cast<const EventT*>(e)); }
 		});
@@ -62,18 +62,18 @@ public:
 	template<typename EventT>
 	void EnQueue(const EventT& e)
 	{
-		m_EventQueue.push({ typeid(EventT),make_shared<EventT>(e) });
-		// make_shared<EventT>(e) : ÀÌº¥Æ® º¹»çº»À» ¾ÈÀüÇÏ°Ô Å¥¿¡ º¸°ü
+		m_eventQueue.push({ typeid(EventT),make_shared<EventT>(e) });
+		// make_shared<EventT>(e) : ì´ë²¤íŠ¸ ë³µì‚¬ë³¸ì„ ì•ˆì „í•˜ê²Œ íì— ë³´ê´€
 	}
 
 
 	void pump()
 	{
-		while (!m_EventQueue.empty())
+		while (!m_eventQueue.empty())
 		{
-			QueuedEvent event = m_EventQueue.front();
-			m_EventQueue.pop();
-			auto it = m_handlers.find(event.m_TypeIndex);
+			QueuedEvent event = m_eventQueue.front();
+			m_eventQueue.pop();
+			auto it = m_handlers.find(event.typeIndex);
 			if (it != m_handlers.end())
 			{
 				auto handlers = it->second;
@@ -86,11 +86,11 @@ public:
 
 private:
 
-	unordered_map<type_index, vector<Subscription>> m_handlers; // ÀÌ¹êÆ®µéÀ» ÀúÀåÇÏ´Â ÀúÀå¼Ò
+	unordered_map<type_index, vector<Subscription>> m_handlers; // ì´ë°´íŠ¸ë“¤ì„ ì €ì¥í•˜ëŠ” ì €ì¥ì†Œ
 
-	SubscriptionId m_NextId = 1;
+	SubscriptionId m_nextId = 1;
 
-	queue<QueuedEvent> m_EventQueue = {};
+	queue<QueuedEvent> m_eventQueue = {};
 
 public:
 	static unique_ptr<CEventBus> Create();
@@ -99,26 +99,26 @@ public:
 
 
 
-/* »ç¿ëÇÏ´Â ÂÊ
+/* ì‚¬ìš©í•˜ëŠ” ìª½
 
-// ÆÛºí¸®½¬(½ÅÈ£ÁÖ±â)
-	 // ¹Ù·Î»ç¿ë
+// í¼ë¸”ë¦¬ì‰¬(ì‹ í˜¸ì£¼ê¸°)
+	 // ë°”ë¡œì‚¬ìš©
 	 struct EvtUIOpen {
 	  int uiId;
 	  bool modal;
 	 };
 	 
-	 EvtUIOpen ev = {};'// »ı¼º
-	 bus.Publish(ev); //bus.Publish(EvtUIOpen ev{}); ÀÓ½Ã°´Ã¼µµ °¡´É
-	 //Å¥À×
+	 EvtUIOpen ev = {};'// ìƒì„±
+	 bus.Publish(ev); //bus.Publish(EvtUIOpen ev{}); ì„ì‹œê°ì²´ë„ ê°€ëŠ¥
+	 //íì‰
 	 bus.EnQueue(ev);
 	 
-// ±¸µ¶
+// êµ¬ë…
 	 CSound
 	 bus.Subscribe<EvtUIOpen>([this](EvtUIOpen& e){ this->PlaySound()})
-	 soundÀÇ ¼ö¸íÀÌ EventBusº¸´Ù ±æ¾î¾ß ÇÔ
+	 soundì˜ ìˆ˜ëª…ì´ EventBusë³´ë‹¤ ê¸¸ì–´ì•¼ í•¨
 
-	 auto sound = make_shared<CSound>();ÀÌ·¸°Ô ÇÏ¸é ¾ÈÀüÇÔ
+	 auto sound = make_shared<CSound>();ì´ë ‡ê²Œ í•˜ë©´ ì•ˆì „í•¨
 
  */
 

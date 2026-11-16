@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Editor_Win.h"
 
 NS_BEGIN(Engine)
@@ -19,19 +19,19 @@ public:
 
 public:
     virtual HRESULT Initialize() override;
-    virtual void Update(float fTimeDelta) override;
+    virtual void Update(float timeDelta) override;
     virtual void Render() override;
 
-    void DrawUITree(const Engine::CBase& ui);
+    void DrawUITree(const Engine::CBase& UI);
 
     bool Picking();
 
 private:
-    _uint m_iSelectedLevel = {};
-    wstring m_strSelectedTag = {};
+    _uint m_selectedLevel = {};
+    wstring m_selectedTag = {};
 
-    _bool m_PickMode = false;
-    shared_ptr<CGameObject> m_pPreview = {};
+    _bool m_isPickMode = false;
+    shared_ptr<CGameObject> m_preview = {};
 public:
     static shared_ptr<CManagerWin> Create();
 

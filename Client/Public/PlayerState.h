@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "State.h"
 #include "Client_Define.h"
 
@@ -21,7 +21,7 @@ class CPlayerState :
 	public CState
 {
 protected:
-	explicit CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> pStateMachine);
+	explicit CPlayerState(shared_ptr<CPlayerBoat> owner, shared_ptr < CPlayerStateMachine> stateMachine);
 public:
 	virtual ~CPlayerState();
 
@@ -40,22 +40,22 @@ protected:
 	virtual void    Find_Player();
 protected:
 
-	_bool       DoneAnim = false;
+	_bool       m_isAnimDone = false;
 
-	weak_ptr<CPlayerBoat> m_Owner = {};
-	weak_ptr<CGameInstance> m_pGameInstance;
-	weak_ptr < CPlayerStateMachine> m_pStateMachine = { };
+	weak_ptr<CPlayerBoat> m_owner = {};
+	weak_ptr<CGameInstance> m_gameInstance;
+	weak_ptr < CPlayerStateMachine> m_stateMachine = { };
 
-	weak_ptr<CTransform> m_pOwnerTransformCom = { };
+	weak_ptr<CTransform> m_ownerTransformCom = { };
 	
-	CDInput_Manager* m_Input_Manager = { nullptr };
+	CDInput_Manager* m_inputManager = { nullptr };
 
 
 
 
-	list<string> m_VecDialogue;
+	list<string> m_dialogueList;
 private:
-	// CBaseÀ»(¸¦) ÅëÇØ »ó¼ÓµÊ
+	// CBaseì„(ë¥¼) í†µí•´ ìƒì†ë¨
 	//void Free() override;
 
 };

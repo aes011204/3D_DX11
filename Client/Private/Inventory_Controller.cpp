@@ -1,4 +1,4 @@
-#include "Inventory_Controller.h"
+ï»¿#include "Inventory_Controller.h"
 
 #include <numbers>
 
@@ -17,78 +17,78 @@
 
 //IMPLEMENT_SINGLETON(CInventory_Controller)
 
-CInventory_Controller::CInventory_Controller(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject(pDevice, pContext),
-	m_pGameInstance(CGameInstance::GetInstance())
+CInventory_Controller::CInventory_Controller(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject(device, context),
+	m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
-HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr<CUI_Item> UIHoldItem)
+HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> inven, shared_ptr<CUI_Item> UIHoldItem)
 {
 
-	m_PlayerInven = Inven;
-	m_UIHoldItem = UIHoldItem;
+	m_playerInven = inven;
+	m_uiHoldItem = UIHoldItem;
 	////m_Inven = CInventory::Create();
 	//
-	////m_Inven->Upgrade_Boat(0); // Á© Ã³À½
+	////m_Inven->Upgrade_Boat(0); // ì ¤ ì²˜ìŒ
 	///
-    m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_ItemSold>(
+    m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_ItemSold>(
         [this](const Evt_ItemSold& event)
         {
-            if (m_UIHoldItem &&
-                m_UIHoldItem->Get_HoldItem().ItemInst_ID == event.itemInstId)
+            if (m_uiHoldItem &&
+                m_uiHoldItem->Get_HoldItem().itemInstID == event.itemInstID)
             {
-                m_UIHoldItem->ReleaseItem();
-                m_bDragging = false;
+                m_uiHoldItem->ReleaseItem();
+                m_isDragging = false;
             }
-            for (auto inventory : { m_PlayerInven.lock(), m_TargetInven.lock() })
+            for (auto inventory : { m_playerInven.lock(), m_targetInven.lock() })
             {
                 if (!inventory)
                     continue;
                 const auto& items = inventory->Get_InventoryItem();
                 const auto found = find_if(items.begin(), items.end(),
-                    [&](const Item_Inst& item) { return item.ItemInst_ID == event.itemInstId; });
+                    [&](const ItemInst& item) { return item.itemInstID == event.itemInstID; });
                 if (found != items.end())
-                    inventory->RemoveFrom_Inven(event.itemInstId);
+                    inventory->RemoveFrom_Inven(event.itemInstID);
                 inventory->ClearHighlightArea();
             }
             m_hoverDirty = true;
             CUI_Controller::GetInstance()->CloseToolTip();
         });
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_OpenInventory>(
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_OpenInventory>(
 		[this](const Evt_OpenInventory& e)
 		{
-			m_TargetInven = e.inven;
+			m_targetInven = e.inven;
 
 		});
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_CloseInventory>(
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_CloseInventory>(
 		[this](const Evt_CloseInventory&)
 		{
 
 			CUI_Controller::GetInstance()->CloseToolTip();
 			CUI_Controller::GetInstance()->InActiveHover();
-			m_TargetInven.reset();
+			m_targetInven.reset();
 
 		});
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_MouseToIndex_Data>([this](const Evt_MouseToIndex_Data& e) {m_SlotX = e.x; m_SlotY = e.y; m_bIsOnSlot = e.IsOnSlot;  m_IsPlayerSlot = e.IsPlayer;  });
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_MouseToIndexData>([this](const Evt_MouseToIndexData& e) {m_slotX = e.x; m_slotY = e.y; m_isOnSlot = e.isOnSlot;  m_isPlayerSlot = e.isPlayer;  });
 
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>([this](const Evt_GetFish& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_GetFish>([this](const Evt_GetFish& e)
 		{
-			Make_Hold(m_PlayerInven.lock()->Create_ItemInstance(e.DefID, e.fishInst));
-
-		});
-
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_Demage>([this](const Evt_Demage& e)
-		{
-			m_PlayerInven.lock()->Get_Damage();
+			Make_Hold(m_playerInven.lock()->Create_ItemInstance(e.defID, e.fishInst));
 
 		});
 
-
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_MoveTo_Storage>([this](const Evt_MoveTo_Storage e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_Damage>([this](const Evt_Damage& e)
 		{
-			auto playerInven = m_PlayerInven.lock();
+			m_playerInven.lock()->Get_Damage();
+
+		});
+
+
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_MoveToStorage>([this](const Evt_MoveToStorage e)
+		{
+			auto playerInven = m_playerInven.lock();
 			if (playerInven == nullptr)
 				return;
 
@@ -100,24 +100,24 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 			if (storage == nullptr)
 				return;
 
-			//  ÇÃ·¹ÀÌ¾î ÀÎº¥¿¡¼­ ÁýÀº È¦µå ¾ÆÀÌÅÛÀÌ ÀÖÀ¸¸é ±×°É ¸ÕÀú Ã¢°í·Î º¸³¿
-			if (m_bDragging == true &&
-				m_HoldItemFrom == INVENTYPE::PLAYER &&
-				m_UIHoldItem != nullptr)
+			//  í”Œë ˆì´ì–´ ì¸ë²¤ì—ì„œ ì§‘ì€ í™€ë“œ ì•„ì´í…œì´ ìžˆìœ¼ë©´ ê·¸ê±¸ ë¨¼ì € ì°½ê³ ë¡œ ë³´ëƒ„
+			if (m_isDragging == true &&
+				m_holdItemFrom == EInvenType::PLAYER &&
+				m_uiHoldItem != nullptr)
 			{
-				Item_Inst& holdItem = m_UIHoldItem->Get_HoldItem();
+				ItemInst& holdItem = m_uiHoldItem->Get_HoldItem();
 
-				if (holdItem.ItemInst_ID != ID_Absence)
+				if (holdItem.itemInstID != kIDAbsence)
 				{
 					if (storage->Auto_Add(holdItem))
 					{
-						if (holdItem.ItemType == ITEM_TYPE::FISH)
-							m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
+						if (holdItem.itemType == EItemType::FISH)
+							m_gameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 						else
-							m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
+							m_gameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
 
-						m_UIHoldItem->ReleaseItem();
-						m_bDragging = false;
+						m_uiHoldItem->ReleaseItem();
+						m_isDragging = false;
 						playerInven->ClearHighlightArea();
 					}
 
@@ -125,33 +125,33 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 				}
 			}
 
-			Item_Inst hoveredItem = playerInven->Peek_Item(m_SlotX, m_SlotY);
-			if (hoveredItem.ItemInst_ID == ID_Absence)
+			ItemInst hoveredItem = playerInven->Peek_Item(m_slotX, m_slotY);
+			if (hoveredItem.itemInstID == kIDAbsence)
 				return;
 
-			if (hoveredItem.ItemType == ITEM_TYPE::FISH)
-				m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
+			if (hoveredItem.itemType == EItemType::FISH)
+				m_gameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 			else
-				m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
+				m_gameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
 
-			playerInven->Auto_Move_To(player->Get_StorageCom(), m_SlotX, m_SlotY);
+			playerInven->Auto_Move_To(player->Get_StorageCom(), m_slotX, m_slotY);
 			playerInven->ClearHighlightArea();
 		});
 	
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_FixAll>([this](const Evt_FixAll& e)
 		{
-			auto player = dynamic_pointer_cast<CPlayerBoat>(m_PlayerInven.lock()->Get_GOwner());
-			if (player->GetMoney() >= player->Get_DemageFixPrice())
+			auto player = dynamic_pointer_cast<CPlayerBoat>(m_playerInven.lock()->Get_GOwner());
+			if (player->GetMoney() >= player->Get_DamageFixPrice())
 			{
-				player->MinusMoney(player->Get_DemageFixPrice());
-				m_PlayerInven.lock()->FixAll();
+				player->MinusMoney(player->Get_DamageFixPrice());
+				m_playerInven.lock()->FixAll();
 
-				Evt_FixAll_Done event{};
+				Evt_FixAllDone event{};
 
 				CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 
-				m_pGameInstance.lock()->Play_Once(L"Repair_Kit");
+				m_gameInstance.lock()->Play_Once(L"Repair_Kit");
 
 
 			}
@@ -160,41 +160,41 @@ HRESULT CInventory_Controller::Initialize(weak_ptr<CInventory> Inven, shared_ptr
 
 	return S_OK;
 }
-void CInventory_Controller::Make_Hold(Item_Inst inst)
+void CInventory_Controller::Make_Hold(ItemInst inst)
 {
 
-	m_UIHoldItem->HoldItem(inst);
-	m_HoldItemFrom = INVENTYPE::NONE;
-	m_bDragging = true;
+	m_uiHoldItem->HoldItem(inst);
+	m_holdItemFrom = EInvenType::NONE;
+	m_isDragging = true;
 
 	///
 
 }
 shared_ptr<CInventory>  CInventory_Controller::Get_CurrentInven()
 {
-	if (m_IsPlayerSlot)
-		return m_PlayerInven.lock();
+	if (m_isPlayerSlot)
+		return m_playerInven.lock();
 	else
-		return m_TargetInven.lock();
+		return m_targetInven.lock();
 }
-void CInventory_Controller::Update(float TimeDelta)
+void CInventory_Controller::Update(float timeDelta)
 {
     auto refreshFinalHover = [this]()
     {
         Refresh_Hover();
-        m_bIsOnSlot = false;
+        m_isOnSlot = false;
     };
     struct FinalHoverRefresh
     {
         decltype(refreshFinalHover)& refresh;
         ~FinalHoverRefresh() { refresh(); }
     } finalHoverRefresh{ refreshFinalHover };
-	auto dInput = m_pGameInstance.lock()->Get_DInput_Manger();
+	auto input = m_gameInstance.lock()->Get_DInput_Manager();
 	//	->MouseDown(DIMB::LBUTTON);
 
 
-	auto CurInven = Get_CurrentInven();
-	if (CurInven == nullptr)
+	auto curInven = Get_CurrentInven();
+	if (curInven == nullptr)
 	{
 		return;
 	}
@@ -203,140 +203,140 @@ void CInventory_Controller::Update(float TimeDelta)
 
 
 
-	if (m_bIsOnSlot == true/*m_UIInven->MousePosToSlot(SlotX, SlotY)*/)/*ui ¿¡¼­ ¸¶¿ì½º°¡ ¾î´À Ä­À» °¡¸£Å°°í ÀÖ´ÂÁö ¹ÝÈ¯ , -¸é Ä­ ÀÌ ¾Æ´Ñ°ÅÀÓ*/
+	if (m_isOnSlot == true/*m_UIInven->MousePosToSlot(SlotX, SlotY)*/)/*ui ì—ì„œ ë§ˆìš°ìŠ¤ê°€ ì–´ëŠ ì¹¸ì„ ê°€ë¥´í‚¤ê³  ìžˆëŠ”ì§€ ë°˜í™˜ , -ë©´ ì¹¸ ì´ ì•„ë‹Œê±°ìž„*/
 	{
-		m_bPrevOnSlot = true;
-		// ¸¶¿ì½º°¡ ±×¸®µå ¾È¿¡ µé¾î¿Í ÀÖ´Ù
-		Item_Inst tmpInst = {};
+		m_isPrevOnSlot = true;
+		// ë§ˆìš°ìŠ¤ê°€ ê·¸ë¦¬ë“œ ì•ˆì— ë“¤ì–´ì™€ ìžˆë‹¤
+		ItemInst tmpInst = {};
 
 
-		if (/*m_HoldItem.ItemInst_ID == ID_Absence &&*/ m_bDragging == false /* + ui °¡ Å¬¸¯Àº ¹ÝÈ¯*/)
+		if (/*m_HoldItem.ItemInst_ID == ID_Absence &&*/ m_isDragging == false /* + ui ê°€ í´ë¦­ì€ ë°˜í™˜*/)
 		{
-			m_PrevDragging = false;
-			if (dInput->MouseDown(DIMB::LBUTTON) /* + ui °¡ Å¬¸¯Àº ¹ÝÈ¯*/)
+			m_isPrevDragging = false;
+			if (input->MouseDown(EMouseButton::LBUTTON) /* + ui ê°€ í´ë¦­ì€ ë°˜í™˜*/)
 			{
-				//Àâ°í ÀÖ´Â ¾ÆÀÌÅÛÀÌ ¾øÀ»°æ¿ì
+				//ìž¡ê³  ìžˆëŠ” ì•„ì´í…œì´ ì—†ì„ê²½ìš°
 				//
-				if (CurInven->Get_Inventype() == INVENTYPE::SHOP)
+				if (curInven->Get_Inventype() == EInvenType::SHOP)
 				{
-					Item_Inst inst = CurInven->Peek_Item(m_SlotX, m_SlotY);
-					if (inst.ItemInst_ID != 0)
+					ItemInst inst = curInven->Peek_Item(m_slotX, m_slotY);
+					if (inst.itemInstID != 0)
 					{
 
-						const Item_Def def = CItemDB::GetInstance()->GetItemByID(inst.ItemDef_ID);
+						const ItemDef& def = CItemDB::GetInstance()->GetItemByID(inst.itemDefID);
 
-						if (auto* equip = get_if<Equip_Def>(&def.TypeDef))
+						if (auto* equip = get_if<EquipDef>(&def.typeDef))
 						{
-							auto player = dynamic_pointer_cast<CPlayerBoat>(m_PlayerInven.lock()->Get_GOwner());
-							if (player->GetMoney() >= equip->Cost)
+							auto player = dynamic_pointer_cast<CPlayerBoat>(m_playerInven.lock()->Get_GOwner());
+							if (player->GetMoney() >= equip->cost)
 							{
-								player->MinusMoney(equip->Cost);
-								// Áý±â
-								tmpInst = CurInven->TryMove_Item(m_SlotX, m_SlotY);
+								player->MinusMoney(equip->cost);
+								// ì§‘ê¸°
+								tmpInst = curInven->TryMove_Item(m_slotX, m_slotY);
 
-								if (tmpInst.ItemInst_ID == ID_Absence)
+								if (tmpInst.itemInstID == kIDAbsence)
 									return;
 								//MSG_BOX("Faild : TryMove_Item");
 
 							//m_HoldItem = tmpInst;
-								m_UIHoldItem->HoldItem(tmpInst);
-								m_HoldItemFrom = CurInven->Get_Inventype();
-								m_bDragging = true;
+								m_uiHoldItem->HoldItem(tmpInst);
+								m_holdItemFrom = curInven->Get_Inventype();
+								m_isDragging = true;
 							}
 						}
 					}
 				}
 				else
 				{
-					// Áý±â
-					tmpInst = CurInven->TryMove_Item(m_SlotX, m_SlotY);
+					// ì§‘ê¸°
+					tmpInst = curInven->TryMove_Item(m_slotX, m_slotY);
 
-					if (tmpInst.ItemInst_ID == ID_Absence)
+					if (tmpInst.itemInstID == kIDAbsence)
 						return;
 					//MSG_BOX("Faild : TryMove_Item");
 
 				//m_HoldItem = tmpInst;
-					m_UIHoldItem->HoldItem(tmpInst);
-					m_HoldItemFrom = CurInven->Get_Inventype();
-					m_bDragging = true;
+					m_uiHoldItem->HoldItem(tmpInst);
+					m_holdItemFrom = curInven->Get_Inventype();
+					m_isDragging = true;
 				}
 
 			}
-			else if (dInput->KeyDown(DIK_Z) /* + ÀÏÁ¤ ½Ã°£ ÀÌ»ó ´©¸£°í ÀÖÀ»‹š*/)
+			else if (input->KeyDown(DIK_Z) /* + ì¼ì • ì‹œê°„ ì´ìƒ ëˆ„ë¥´ê³  ìžˆì„ë–„*/)
 			{
-				//ÀÎ¹ê¿¡ ÀÖ´Â°Å ¹ö¸®±â
-				CurInven->ThrowAwayFrom_Inven(m_SlotX, m_SlotY);
+				//ì¸ë°´ì— ìžˆëŠ”ê±° ë²„ë¦¬ê¸°
+				curInven->ThrowAwayFrom_Inven(m_slotX, m_slotY);
 			}
 			//auto Inven = m_PlayerInven.lock();
-			Item_Inst inst = CurInven->Peek_Item(m_SlotX, m_SlotY);
-			if (m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY || inst.ItemInst_ID != m_prevItemInstId)
+			ItemInst inst = curInven->Peek_Item(m_slotX, m_slotY);
+			if (m_prevSlotX != m_slotX || m_prevSlotY != m_slotY || inst.itemInstID != m_prevItemInstID)
 			{
 				Evt_ItemHovered e = {};
 				e.isHold = false;
 				e.itemInst = inst;
-				if (Get_CurrentInven() == m_PlayerInven.lock())
+				if (Get_CurrentInven() == m_playerInven.lock())
 				{
-					e.IsPlayer = true;
+					e.isPlayer = true;
 				}
 				else
 				{
-					e.IsPlayer = false;
+					e.isPlayer = false;
 				}
-				m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+				m_gameInstance.lock()->Get_EventBus()->Publish(e);
                 m_hoverDirty = true;
 
-				m_PrevSlotX = m_SlotX;
-				m_PrevSlotY = m_SlotY;
-				m_prevItemInstId = inst.ItemInst_ID;
+				m_prevSlotX = m_slotX;
+				m_prevSlotY = m_slotY;
+				m_prevItemInstID = inst.itemInstID;
 
 			}
 
 		}
-		else if (m_bDragging == true && m_bIsOnSlot == true)
+		else if (m_isDragging == true && m_isOnSlot == true)
 		{
 
-			// Àâ°íÀÖ´Â ¾ÆÀÌÅÛÀÌ ÀÖ´Â°æ¿ì
-			PLACE_COLOR color = PLACE_COLOR::END;
+			// ìž¡ê³ ìžˆëŠ” ì•„ì´í…œì´ ìžˆëŠ”ê²½ìš°
+			EPlaceColor color = EPlaceColor::END;
 
-			CurInven->CanPlace(/*m_HoldItem*/m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY, color);
+			curInven->CanPlace(/*m_HoldItem*/m_uiHoldItem->Get_HoldItem(), m_slotX, m_slotY, color);
 
-			CurInven->SetHighlightArea(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY, color);
-
-
+			curInven->SetHighlightArea(m_uiHoldItem->Get_HoldItem(), m_slotX, m_slotY, color);
 
 
-			if (dInput->MouseDown(DIMB::LBUTTON))
+
+
+			if (input->MouseDown(EMouseButton::LBUTTON))
 			{
-				auto DestInven = Get_CurrentInven();
+				auto destInven = Get_CurrentInven();
 				switch (color)
 				{
-				case PLACE_COLOR::GREEN:
-					tmpInst = DestInven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
-					//m_HoldItem = tmpInst;// ÀÌ°Ç ºó ÀÎ½ºÅÏ½º
+				case EPlaceColor::GREEN:
+					tmpInst = destInven->AddItem(m_uiHoldItem->Get_HoldItem(), m_slotX, m_slotY);
+					//m_HoldItem = tmpInst;// ì´ê±´ ë¹ˆ ì¸ìŠ¤í„´ìŠ¤
 
-					if (DestInven->Get_Inventype() == INVENTYPE::PLAYER && m_HoldItemFrom == INVENTYPE::SHOP)
+					if (destInven->Get_Inventype() == EInvenType::PLAYER && m_holdItemFrom == EInvenType::SHOP)
 					{
-						if (m_UIHoldItem->Get_HoldItem().ItemType == ITEM_TYPE::EQUIP)
+						if (m_uiHoldItem->Get_HoldItem().itemType == EItemType::EQUIP)
 						{
 
-							auto curitem = CItemDB::GetInstance()->GetItemByID(m_UIHoldItem->Get_HoldItem().ItemDef_ID);
-							if (auto pEquipDef = get_if<Equip_Def>(&curitem.TypeDef))
+							auto curitem = CItemDB::GetInstance()->GetItemByID(m_uiHoldItem->Get_HoldItem().itemDefID);
+							if (auto equipDef = get_if<EquipDef>(&curitem.typeDef))
 							{
-								CUI_Controller::GetInstance()->ActiveTime(pEquipDef->InstallTime, false);
+								CUI_Controller::GetInstance()->ActiveTime(equipDef->installTime, false);
 							}
 						}
 					}
-					m_UIHoldItem->ReleaseItem();
-					m_bDragging = false;
+					m_uiHoldItem->ReleaseItem();
+					m_isDragging = false;
 
-					CurInven->ClearHighlightArea();
+					curInven->ClearHighlightArea();
 
 
 
 
 
 					break;
-				case PLACE_COLOR::ORANGE:
+				case EPlaceColor::ORANGE:
 				{
 				//	tmpInst = DestInven->AddItem(m_UIHoldItem->Get_HoldItem(), m_SlotX, m_SlotY);
 		
@@ -368,44 +368,44 @@ void CInventory_Controller::Update(float TimeDelta)
 				//	m_pGameInstance.lock()->Get_EventBus()->Publish(evt);
 
 					
-					Item_Inst placedItem = m_UIHoldItem->Get_HoldItem();
+					ItemInst placedItem = m_uiHoldItem->Get_HoldItem();
 
-					tmpInst = DestInven->AddItem(placedItem, m_SlotX, m_SlotY);
+					tmpInst = destInven->AddItem(placedItem, m_slotX, m_slotY);
 
-					if (tmpInst.ItemInst_ID == ID_Absence)
+					if (tmpInst.itemInstID == kIDAbsence)
 						return;
 
-					// ¸ÕÀú "¹æ±Ý ³õÀº ¾ÆÀÌÅÛ" ±âÁØÀ¸·Î ActiveTime ÆÇÁ¤
-					if (DestInven->Get_Inventype() == INVENTYPE::PLAYER && m_HoldItemFrom == INVENTYPE::SHOP)
+					// ë¨¼ì € "ë°©ê¸ˆ ë†“ì€ ì•„ì´í…œ" ê¸°ì¤€ìœ¼ë¡œ ActiveTime íŒì •
+					if (destInven->Get_Inventype() == EInvenType::PLAYER && m_holdItemFrom == EInvenType::SHOP)
 					{
-						if (placedItem.ItemType == ITEM_TYPE::EQUIP)
+						if (placedItem.itemType == EItemType::EQUIP)
 						{
-							auto curitem = CItemDB::GetInstance()->GetItemByID(placedItem.ItemDef_ID);
-							if (auto pEquipDef = get_if<Equip_Def>(&curitem.TypeDef))
+							auto curitem = CItemDB::GetInstance()->GetItemByID(placedItem.itemDefID);
+							if (auto equipDef = get_if<EquipDef>(&curitem.typeDef))
 							{
-								CUI_Controller::GetInstance()->ActiveTime(pEquipDef->InstallTime, false);
+								CUI_Controller::GetInstance()->ActiveTime(equipDef->installTime, false);
 							}
 						}
 					}
 
-					// ±× ´ÙÀ½ È¦µå ¾ÆÀÌÅÛÀ» ±³Ã¼ ÈÄ ¾ÆÀÌÅÛÀ¸·Î °»½Å
-					m_UIHoldItem->HoldItem(tmpInst);
-					m_HoldItemFrom = DestInven->Get_Inventype();
-					m_bDragging = true;
+					// ê·¸ ë‹¤ìŒ í™€ë“œ ì•„ì´í…œì„ êµì²´ í›„ ì•„ì´í…œìœ¼ë¡œ ê°±ì‹ 
+					m_uiHoldItem->HoldItem(tmpInst);
+					m_holdItemFrom = destInven->Get_Inventype();
+					m_isDragging = true;
 
-					// »õ È¦µå ¾ÆÀÌÅÛ ÅøÆÁ °»½Å
+					// ìƒˆ í™€ë“œ ì•„ì´í…œ íˆ´íŒ ê°±ì‹ 
 					Evt_ItemHovered e = {};
 					e.isHold = true;
-					e.itemInst = m_UIHoldItem->Get_HoldItem();
+					e.itemInst = m_uiHoldItem->Get_HoldItem();
 					CUI_Controller::GetInstance()->CacheToolTip(e);
 
 					break;
 					break;
 				}
-				case PLACE_COLOR::RED:
-					// ·¹µå ÀÏ¶§ ¾Ö´Ï¸ÞÀÌ¼Ç ¹¹ ±×·±°Å ÇÒ°Å ÀÖÀ½ ¿©±â
-					// È¦µå ¾ÆÀÌÅÛÀº ±×´ë·Î
-					m_bDragging = true;
+				case EPlaceColor::RED:
+					// ë ˆë“œ ì¼ë•Œ ì• ë‹ˆë©”ì´ì…˜ ë­ ê·¸ëŸ°ê±° í• ê±° ìžˆìŒ ì—¬ê¸°
+					// í™€ë“œ ì•„ì´í…œì€ ê·¸ëŒ€ë¡œ
+					m_isDragging = true;
 
 					break;
 				}
@@ -415,10 +415,10 @@ void CInventory_Controller::Update(float TimeDelta)
 
 			}
 
-			//»ö¹ÝÈ¯ µå·¹±× ÁßÀÌ¸é
+			//ìƒ‰ë°˜í™˜ ë“œë ˆê·¸ ì¤‘ì´ë©´
 			{
-				// ui ¿¡ »ö ¹ÝÈ¯
-				//ui-colorÀü´Þ
+				// ui ì— ìƒ‰ ë°˜í™˜
+				//ui-colorì „ë‹¬
 			}
 
 		}
@@ -427,100 +427,100 @@ void CInventory_Controller::Update(float TimeDelta)
 	}
 	else
 	{
-		// ¹ÛÀ¸·Î ³ª°«À»¶§
+		// ë°–ìœ¼ë¡œ ë‚˜ê°“ì„ë•Œ
 		//if (prevMouseOnSlot == true)
 		//{
 			//if( m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY)
-		if (m_bPrevOnSlot == true && m_bDragging == false)
+		if (m_isPrevOnSlot == true && m_isDragging == false)
 		{
-			Item_Inst emptyinst = {};
+			ItemInst emptyinst = {};
 
 			Evt_ItemHovered e = {};
 			e.isHold = false;
 			e.itemInst = emptyinst;
-			if (Get_CurrentInven() == m_PlayerInven.lock())
+			if (Get_CurrentInven() == m_playerInven.lock())
 			{
-				e.IsPlayer = true;
+				e.isPlayer = true;
 				//m_PlayerInven.lock()->ClearHighlightArea();
 				//m_TargetInven.lock()->ClearHighlightArea();
 			}
 			else
 			{
-				e.IsPlayer = false;
+				e.isPlayer = false;
 				//m_TargetInven.lock()->ClearHighlightArea();
 				//m_PlayerInven.lock()->ClearHighlightArea();
 			}
 
 
-			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+			m_gameInstance.lock()->Get_EventBus()->Publish(e);
                 m_hoverDirty = true;
 
-			m_PrevSlotX = 99;
-			m_PrevSlotY = 99;
+			m_prevSlotX = 99;
+			m_prevSlotY = 99;
 
 		}
-		m_bPrevOnSlot = false;
+		m_isPrevOnSlot = false;
 		//prevMouseOnSlot = false;
 
 	//}
 	}
 
-	if (m_bDragging == true)
+	if (m_isDragging == true)
 	{
 
-		if (dInput->MouseDown(DIMB::RBUTTON)/*dInput->MouseDown(DIMB::RBUTTON)*/ /* + ui °¡ ¿ìÅ¬¸¯Àº ¹ÝÈ¯*/)
+		if (input->MouseDown(EMouseButton::RBUTTON)/*dInput->MouseDown(DIMB::RBUTTON)*/ /* + ui ê°€ ìš°í´ë¦­ì€ ë°˜í™˜*/)
 		{
-			//È¸Àü
-			_uint rot = m_UIHoldItem->Get_HoldItem().Rotation;
-			m_UIHoldItem->Set_Rotation(++rot);
-			m_pGameInstance.lock()->Play_Once(L"Rotate");
+			//íšŒì „
+			_uint rot = m_uiHoldItem->Get_HoldItem().rotation;
+			m_uiHoldItem->Set_Rotation(++rot);
+			m_gameInstance.lock()->Play_Once(L"Rotate");
 		}
-		if (dInput->KeyDown(DIK_Z)/* + ÀÏÁ¤ ½Ã°£ ÀÌ»ó ´©¸£°í ÀÖÀ»‹š */)
+		if (input->KeyDown(DIK_Z)/* + ì¼ì • ì‹œê°„ ì´ìƒ ëˆ„ë¥´ê³  ìžˆì„ë–„ */)
 		{
-			//µé°í ÀÖ´Â°Å ¹ö¸®±â
+			//ë“¤ê³  ìžˆëŠ”ê±° ë²„ë¦¬ê¸°
 			//Item_Inst NoInst = {};
 			//m_HoldItem = NoInst;
 
-			m_bDragging = false;
-			m_UIHoldItem->ReleaseItem();
-			//»öÄ¥ÇÑ°Å Áö¿ö¾ßÇÔ
+			m_isDragging = false;
+			m_uiHoldItem->ReleaseItem();
+			//ìƒ‰ì¹ í•œê±° ì§€ì›Œì•¼í•¨
 			//auto inven = Get_CurrentInven();
-			CurInven->ClearHighlightArea();
+			curInven->ClearHighlightArea();
 		}
-		if (m_bIsOnSlot == false)
+		if (m_isOnSlot == false)
 		{
 
 			//auto inven = Get_CurrentInven();
-			if (auto p = m_PlayerInven.lock()) p->ClearHighlightArea();
-			if (auto t = m_TargetInven.lock()) t->ClearHighlightArea();
+			if (auto p = m_playerInven.lock()) p->ClearHighlightArea();
+			if (auto t = m_targetInven.lock()) t->ClearHighlightArea();
 		}
 
-		if (m_bDragging != m_PrevDragging/* m_PrevDragging != m_bDragging*/ /*|| m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY*/)
+		if (m_isDragging != m_isPrevDragging/* m_PrevDragging != m_bDragging*/ /*|| m_PrevSlotX != m_SlotX || m_PrevSlotY != m_SlotY*/)
 		{
-			//if (m_PrevDragging == false) // Ã³À½ µé¾úÀ» ¶§¸¸
+			//if (m_PrevDragging == false) // ì²˜ìŒ ë“¤ì—ˆì„ ë•Œë§Œ
 			//{
 			Evt_ItemHovered e = {};
 			e.isHold = true;
-			e.itemInst = m_UIHoldItem->Get_HoldItem();
+			e.itemInst = m_uiHoldItem->Get_HoldItem();
 
-			m_pGameInstance.lock()->Get_EventBus()->Publish(e);
+			m_gameInstance.lock()->Get_EventBus()->Publish(e);
                 m_hoverDirty = true;
 
-			m_PrevDragging = m_bDragging;
+			m_isPrevDragging = m_isDragging;
 			//m_PrevSlotX = m_SlotX;
 			//m_PrevSlotY = m_SlotY;
 		}
 
 	}
-	auto cur = CurInven;
-	auto player = m_PlayerInven.lock();
+	auto cur = curInven;
+	auto player = m_playerInven.lock();
 
 	if (cur && player && cur.get() == player.get() && player->Get_Dirty())
 	{
 
 		player->Set_Dirty(false);
 		Evt_ShipStat stat = player->CalculateEquip();
-		dynamic_pointer_cast<CPlayerBoat>(player->Get_GOwner())->Set_ShipStats(stat.EngineSpeed, stat.FishingSpeed, stat.LightIntensity, stat.SeaMask, stat.InvenMoney);
+		dynamic_pointer_cast<CPlayerBoat>(player->Get_GOwner())->Set_ShipStats(stat.engineSpeed, stat.fishingSpeed, stat.lightIntensity, stat.seaMask);
 
 	}
 
@@ -531,22 +531,22 @@ void CInventory_Controller::Update(float TimeDelta)
 void CInventory_Controller::Refresh_Hover()
 {
     auto inventory = Get_CurrentInven();
-    auto playerInventory = m_PlayerInven.lock();
+    auto playerInventory = m_playerInven.lock();
     Evt_ItemHovered event = {};
-    event.isHold = m_bDragging;
-    event.IsPlayer = inventory && inventory == playerInventory;
+    event.isHold = m_isDragging;
+    event.isPlayer = inventory && inventory == playerInventory;
 
-    if (m_bDragging && m_UIHoldItem)
-        event.itemInst = m_UIHoldItem->Get_HoldItem();
-    else if (m_bIsOnSlot && inventory)
-        event.itemInst = inventory->Peek_Item(m_SlotX, m_SlotY);
+    if (m_isDragging && m_uiHoldItem)
+        event.itemInst = m_uiHoldItem->Get_HoldItem();
+    else if (m_isOnSlot && inventory)
+        event.itemInst = inventory->Peek_Item(m_slotX, m_slotY);
 
     const bool changed = !m_hoverValid || m_hoverDirty ||
         m_hoverInventory.lock() != inventory ||
         m_hoverState.isHold != event.isHold ||
-        m_hoverState.IsPlayer != event.IsPlayer ||
-        m_hoverState.itemInst.ItemInst_ID != event.itemInst.ItemInst_ID ||
-        m_hoverState.itemInst.Rotation != event.itemInst.Rotation;
+        m_hoverState.isPlayer != event.isPlayer ||
+        m_hoverState.itemInst.itemInstID != event.itemInst.itemInstID ||
+        m_hoverState.itemInst.rotation != event.itemInst.rotation;
     if (!changed)
         return;
 
@@ -554,19 +554,19 @@ void CInventory_Controller::Refresh_Hover()
     m_hoverInventory = inventory;
     m_hoverValid = true;
     m_hoverDirty = false;
-    m_pGameInstance.lock()->Get_EventBus()->Publish(event);
+    m_gameInstance.lock()->Get_EventBus()->Publish(event);
 }
 
-shared_ptr<CInventory_Controller> CInventory_Controller::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, weak_ptr<CInventory> Inven, shared_ptr<CUI_Item> UIHoldItem)
+shared_ptr<CInventory_Controller> CInventory_Controller::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, weak_ptr<CInventory> inven, shared_ptr<CUI_Item> UIHoldItem)
 {
-	shared_ptr<CInventory_Controller> pInstance(new CInventory_Controller(pDevice, pContext),
+	shared_ptr<CInventory_Controller> instance(new CInventory_Controller(device, context),
 		[](CInventory_Controller* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(Inven, UIHoldItem)))
+	if (FAILED(instance->Initialize(inven, UIHoldItem)))
 	{
 		MSG_BOX("Failed to Created : CInventory_Controller");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CInventory_Controller::Free()

@@ -1,32 +1,32 @@
-#pragma once
+Ôªø#pragma once
 #include "UIRenderable.h"
-// ∆–≥Œ¿« ø™«“ : ∆–≥Œ¿« πÈ ¿ÃπÃ¡ˆ, ∑π¿Ãæ∆øÙ, 
+// Ìå®ÎÑêÏùò Ïó≠Ìï† : Ìå®ÎÑêÏùò Î∞± Ïù¥ÎØ∏ÏßÄ, Î†àÏù¥ÏïÑÏõÉ, 
 NS_BEGIN(Engine)
 
 class ENGINE_DLL CUIPanel :
     public CUIRenderable
 {
 public:
-    struct UIPANEL_DESC : public CUIRenderable::RENDERABLE_DESC
+    struct UIPanelDesc : public CUIRenderable::RenderableDesc
     {
        /* _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";*/
 
         //_bool IsTransparent = { false };
-        _bool IsFullScreen = { false };
-        _bool IsUseLayout = { false };
+        _bool isFullScreen = { false };
+        _bool isUseLayout = { false };
 
-        LAYOUT_DESC LayoutDesc;
+        LayoutDesc layoutDesc;
     };
 protected:
-    CUIPanel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUIPanel(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CUIPanel(const CUIPanel& prototype);
 public:
     ~CUIPanel() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -43,7 +43,7 @@ public:
     void Save_ToJson(nlohmann::json& j)override;
     void Load_FromJson(nlohmann::json& j)override;
 
-	const LAYOUT_DESC& Get_LayoutDesc() { return m_LayoutDesc; }
+	const LayoutDesc& Get_LayoutDesc() { return m_layoutDesc; }
 
     /// <IMGUI>
     virtual void OnGui() override;
@@ -51,25 +51,25 @@ public:
     /// </summary>
 public:
     void Layout();
-    HRESULT Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool KeepWorldRect);
-    void Change_LayoutRawCol(_uint col, _uint row) { Layout(); m_IsUseLayout = true; m_LayoutDesc.m_Col = col; m_LayoutDesc.m_Row = row;   }
+    HRESULT Add_Layout_Child(shared_ptr<CUI> child, _wstring UITag, _bool keepWorldRect);
+    void Change_LayoutRawCol(_uint col, _uint row) { Layout(); m_isUseLayout = true; m_layoutDesc.col = col; m_layoutDesc.row = row;   }
 private:
-    // ≥ª∫Œ ∞ËªÍ øÎ
-    int index = 0;
+    // ÎÇ¥Î∂Ä Í≥ÑÏÇ∞ Ïö©
+    int m_index = 0;
 
-    LAYOUT_DESC m_LayoutDesc ;
+    LayoutDesc m_layoutDesc ;
   
 
     //_bool m_IsTransparent = {};
-    _bool m_IsFullScreen = {};
-    _bool m_IsUseLayout = {};
+    _bool m_isFullScreen = {};
+    _bool m_isUseLayout = {};
 
 protected:
   /*  shared_ptr<class CShader> m_pShaderCom = { nullptr };
     shared_ptr<class CVIBuffer> m_pVIBufferCom = { nullptr };
     shared_ptr<class CTexture> m_pTextureCom = { nullptr };*/
 public:
-	static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUIPanel> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 
     void Free() override;
 };

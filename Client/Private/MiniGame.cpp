@@ -1,7 +1,7 @@
-#include "MiniGame.h"
+ï»¿#include "MiniGame.h"
 #include "GameInstance.h"
 
-CMiniGame::CMiniGame() : m_pGameInstance(CGameInstance::GetInstance())
+CMiniGame::CMiniGame() : m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -10,21 +10,21 @@ HRESULT CMiniGame::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMiniGame::Initialize(void* pArg)
+HRESULT CMiniGame::Initialize(void* arg)
 {
 
-	MINIGAEME_L_DESC* pDesc = static_cast<MINIGAEME_L_DESC*>(pArg);
+	MiniGameDesc* desc = static_cast<MiniGameDesc*>(arg);
 
-	m_DefID = pDesc->DefID;
-	m_RodSpeed = pDesc->RodSpeed;
-	m_FishCount = pDesc->FishCount;
-	m_MiniGameType = pDesc->MiniGameType;
-	m_InvenCtrl = pDesc->pInvenCtrl;
+	m_defID = desc->defID;
+	m_rodSpeed = desc->rodSpeed;
+	m_fishCount = desc->fishCount;
+	m_miniGameType = desc->miniGameType;
+	m_invenCtrl = desc->invenCtrl;
 
 	return S_OK;
 }
 
-HRESULT CMiniGame::Render(_uint iMeshIndex)
+HRESULT CMiniGame::Render(_uint meshIndex)
 {
 	return S_OK;
 
@@ -33,41 +33,41 @@ HRESULT CMiniGame::Render(_uint iMeshIndex)
 void CMiniGame::Update(const _float& timeDelta)
 {
 }
-_uint CMiniGame::SelectMutationRandom(const Fish_Def& fishDef)
+_uint CMiniGame::SelectMutationRandom(const FishDef& fishDef)
 {
-    vector<ID_uint> candidates;
-    candidates.push_back(ID_Absence);
+    vector<IDType> candidates;
+    candidates.push_back(kIDAbsence);
 
-    for (const Mutation& mut : fishDef.vec_Mutation)
-        candidates.push_back(mut.Mutation_ID);
+    for (const Mutation& mut : fishDef.vecMutation)
+        candidates.push_back(mut.mutationID);
 
-    int index = m_pGameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
+    int index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
     return candidates[index];
 }
-_uint CMiniGame::SelectMutationNoRepeat(const Fish_Def& fishDef)
+_uint CMiniGame::SelectMutationNoRepeat(const FishDef& fishDef)
 {
-    vector<ID_uint> candidates;
-    candidates.push_back(ID_Absence); // ±âº»Çü Æ÷ÇÔ
+    vector<IDType> candidates;
+    candidates.push_back(kIDAbsence); // ê¸°ë³¸í˜• í¬í•¨
 
-    for (const Mutation& mut : fishDef.vec_Mutation)
-        candidates.push_back(mut.Mutation_ID);
+    for (const Mutation& mut : fishDef.vecMutation)
+        candidates.push_back(mut.mutationID);
 
     if (candidates.empty())
-        return ID_Absence;
+        return kIDAbsence;
 
     if (candidates.size() == 1)
         return candidates[0];
 
-    int index = m_pGameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
-    ID_uint pickedID = candidates[index];
+    int index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
+    IDType pickedID = candidates[index];
 
-    while (pickedID == m_PrevFishID)
+    while (pickedID == m_prevFishID)
     {
-        index = m_pGameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
+        index = m_gameInstance.lock()->RandomInt(0, static_cast<int>(candidates.size()) - 1);
         pickedID = candidates[index];
     }
 
-    m_PrevFishID = pickedID;
+    m_prevFishID = pickedID;
     return pickedID;
 }
 

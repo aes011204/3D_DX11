@@ -1,11 +1,11 @@
-#include "Monster_Tantacle.h"
+ï»¿#include "Monster_Tantacle.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "Collider.h"
 
 
-CMonster_Tantacle::CMonster_Tantacle(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CMonster_Tantacle::CMonster_Tantacle(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -19,18 +19,18 @@ HRESULT CMonster_Tantacle::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMonster_Tantacle::Initialize(void* pArg)
+HRESULT CMonster_Tantacle::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 
-	m_AnimIndex = 1;
-	m_pModelCom->Set_Animation(m_AnimIndex, true);
-	m_State = STATE::IDLE;
+	m_animIndex = 1;
+	m_modelCom->Set_Animation(m_animIndex, true);
+	m_state = EState::IDLE;
 
 
 
@@ -39,44 +39,44 @@ HRESULT CMonster_Tantacle::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CMonster_Tantacle::Priority_Update(_float fTimeDelta)
+void CMonster_Tantacle::Priority_Update(_float timeDelta)
 {
 }
 
-void CMonster_Tantacle::Update(_float fTimeDelta)
+void CMonster_Tantacle::Update(_float timeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(timeDelta);
 
 
-	if(m_pModelCom->Get_IsFinishAnim() == true)
+	if(m_modelCom->Get_IsFinishAnim() == true)
 	{
 		int i = 0;
 	}
 
-	if(m_State == ATTACK && m_pModelCom->Get_IsFinishAnim()==true)
+	if(m_state == ATTACK && m_modelCom->Get_IsFinishAnim()==true)
 	{
-		m_AnimIndex = 2;
-		m_pModelCom->Set_Animation(m_AnimIndex, false);
-		m_State = STATE::RELEASE;
+		m_animIndex = 2;
+		m_modelCom->Set_Animation(m_animIndex, false);
+		m_state = EState::RELEASE;
 	}
-	else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
+	else if(m_state == RELEASE && m_modelCom->Get_IsFinishAnim() == true)
 	{
-		m_AnimIndex = 1;
-		m_pModelCom->Set_Animation(m_AnimIndex, true);
-		m_State = STATE::IDLE;
+		m_animIndex = 1;
+		m_modelCom->Set_Animation(m_animIndex, true);
+		m_state = EState::IDLE;
 	}
 
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 
 
-	m_Attack_Col->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_pSocketMatrix_AttackPoint)));
+	m_attackCol->Update(CombinedWorldMatrix(XMLoadFloat4x4(m_socketMatrixAttackPoint)));
 	
 	
 }
 
-void CMonster_Tantacle::Late_Update(_float fTimeDelta)
+void CMonster_Tantacle::Late_Update(_float timeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CMonster_Tantacle::Render()
@@ -88,27 +88,27 @@ HRESULT CMonster_Tantacle::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_modelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->Render(i)))
+	if (FAILED(m_modelCom->Render(i)))
 		return E_FAIL;
 	}
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_Attack_Col);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_colliderCom);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_attackCol);
 
 
 #endif
@@ -123,9 +123,9 @@ void CMonster_Tantacle::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CC
 
 
 
-	if(m_State == ATTACK)
+	if(m_state == ATTACK)
 	{
-		if (self == m_Attack_Col)
+		if (self == m_attackCol)
 		{
 			int i = 0;
 		}
@@ -156,25 +156,25 @@ void CMonster_Tantacle::OnGui()
 void CMonster_Tantacle::RebindCom()
 {
 
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_modelCom = Get_Component<CModel>(L"Com_Model");
 
 }
 
 HRESULT CMonster_Tantacle::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -190,8 +190,8 @@ HRESULT CMonster_Tantacle::Bind_ShaderResources()
 	if (FAILED(m_pShaderCom->Bind_RawValue("g_vLightSpecular", &pLightDesc->vSpecular, sizeof(_float4))))
 		return E_FAIL;*/
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 
 	return S_OK;
 }
@@ -199,34 +199,34 @@ HRESULT CMonster_Tantacle::Bind_ShaderResources()
 HRESULT CMonster_Tantacle::Ready_Components()
 {
 
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	// ì‰ì´ë”ëŠ” í´ëž˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ìž„
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìžˆì–´ì•¼ í•˜ì§€ë§Œ í´ëž˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìžˆì–´ì•¼ í•¨ 
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Model_FullBoatCrab"), TEXT("Com_Model"), &m_modelCom, nullptr)))
 		return E_FAIL;
 
 
-	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
-	OBBDesc.vExtents = _float3(2.f, 1.f, 2.f);
-	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
-	OBBDesc.vCenter = _float3(0.f, 0.f, 5.f);
-	OBBDesc.MyLayer = COLLISION_LAYER::TRIGGER;
-	OBBDesc.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
+	CBounding_OBB::BoundingOBBDesc		OBBDesc{};
+	OBBDesc.extents = _float3(2.f, 1.f, 2.f);
+	OBBDesc.radians = _float3(0.f, 0.f, 0.f);
+	OBBDesc.center = _float3(0.f, 0.f, 5.f);
+	OBBDesc.myLayer = ECollisionLayer::TRIGGER;
+	OBBDesc.otherMask = ECollisionLayer::PLAYER;
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_colliderCom, &OBBDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+	m_gameInstance.lock()->Add_Collider(m_colliderCom);
 
-	CBounding_Sphere::BOUNDING_SPHERE_DESC		SPhereDesc{};
+	CBounding_Sphere::BoundingSphereDesc		SPhereDesc{};
 	
-	SPhereDesc.fRadius = 2.f;
-	SPhereDesc.vCenter = _float3(0.f, 0.f,0.f);
-	SPhereDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
-	SPhereDesc.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(__super::Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
-		TEXT("Com_Hand_Collider_1"), &m_Attack_Col, &SPhereDesc)))
+	SPhereDesc.radius = 2.f;
+	SPhereDesc.center = _float3(0.f, 0.f,0.f);
+	SPhereDesc.myLayer = ECollisionLayer::MONSTERATT;
+	SPhereDesc.otherMask = ECollisionLayer::PLAYER;
+	if (FAILED(__super::Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_Sphere"),
+		TEXT("Com_Hand_Collider_1"), &m_attackCol, &SPhereDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_Attack_Col);
+	m_gameInstance.lock()->Add_Collider(m_attackCol);
 
 	
 
@@ -234,27 +234,27 @@ HRESULT CMonster_Tantacle::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CMonster_Tantacle> CMonster_Tantacle::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CMonster_Tantacle> CMonster_Tantacle::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CMonster_Tantacle> pInstance(new CMonster_Tantacle(pDevice, pContext), [](CMonster_Tantacle* p) {p->Free(); delete p;});
+	shared_ptr<CMonster_Tantacle> instance(new CMonster_Tantacle(device, context), [](CMonster_Tantacle* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CMonster_Tantacle");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CMonster_Tantacle::Clone(void* pArg)
+shared_ptr<CGameObject> CMonster_Tantacle::Clone(void* arg)
 {
-	shared_ptr<CMonster_Tantacle> pInstance(new CMonster_Tantacle(*this), [](CMonster_Tantacle* p) {p->Free(); delete p;});
+	shared_ptr<CMonster_Tantacle> instance(new CMonster_Tantacle(*this), [](CMonster_Tantacle* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CMonster_Tantacle");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMonster_Tantacle::Free()

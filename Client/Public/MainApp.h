@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Define.h"
 #include "Base.h"
 
@@ -23,7 +23,7 @@ public:
 
 public:
 	HRESULT Initialize();
-	int Update(_float fTimeDelta);
+	int Update(_float timeDelta);
 
 	HRESULT Render();
 
@@ -36,18 +36,18 @@ public:
 
 private:
 	HRESULT Ready_Fonts();
-	HRESULT Ready_StartLevel(LEVEL eStartLevelID);
+	HRESULT Ready_StartLevel(ELevel startLevelID);
 	HRESULT Ready_Prototype_For_Static_Level();
 	HRESULT Ready_Menu_Prototype_For_Static_Level();
 	HRESULT Ready_Sound();
 	
 	//HRESULT Ready_UI();
-	shared_ptr<class CInventory_Controller> m_Contr = {};
+	shared_ptr<class CInventory_Controller> m_invenContr = {};
 private:
-	weak_ptr<CGameInstance> m_pGameInstance = {};
-	ComPtr<ID3D11Device> m_pDevice = { nullptr };
-	ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-	weak_ptr<Editor::CEditorInstance> m_pEditorInstance = { };
+	weak_ptr<CGameInstance> m_gameInstance = {};
+	ComPtr<ID3D11Device> m_device = { nullptr };
+	ComPtr<ID3D11DeviceContext> m_context = { nullptr };
+	weak_ptr<Editor::CEditorInstance> m_editorInstance = { };
 
 };
 

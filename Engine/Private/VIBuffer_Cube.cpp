@@ -1,7 +1,7 @@
-#include "VIBuffer_Cube.h"
+ï»¿#include "VIBuffer_Cube.h"
 
-CVIBuffer_Cube::CVIBuffer_Cube(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CVIBuffer(pDevice, pContext)
+CVIBuffer_Cube::CVIBuffer_Cube(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CVIBuffer(device, context)
 {
 }
 
@@ -12,136 +12,136 @@ CVIBuffer_Cube::CVIBuffer_Cube(const CVIBuffer_Cube& Prototype)
 
 HRESULT CVIBuffer_Cube::Initialize_Prototype()
 {
-	m_iNumVertexBuffers = 1; // ¹öÅÃ½º ¹öÆÛ°¡ ¸î°µÁö »ç°¢Çü±×¸®´Â °Å´Ï±î 1°³
+	m_numVertexBuffers = 1; // ë²„íƒìŠ¤ ë²„í¼ê°€ ëª‡ê° ì§€ ì‚¬ê°í˜•ê·¸ë¦¬ëŠ” ê±°ë‹ˆê¹Œ 1ê°œ
 
-	m_iNumVertices = 8;
-	m_iVertexStride = sizeof(VTXCUBE);
+	m_numVertices = 8;
+	m_vertexStride = sizeof(VTXCUBE);
 
-	m_iNumIndices = 36;
-	m_iIndexStride = 2; // 2¹ÙÀÌÆ®¶û 4¹ÙÀÌÆ® Áß ÅÃ1
+	m_numIndices = 36;
+	m_indexStride = 2; // 2ë°”ì´íŠ¸ëž‘ 4ë°”ì´íŠ¸ ì¤‘ íƒ1
 
-	m_ePrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_primitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	// Vertex Buffer
 
-	D3D11_BUFFER_DESC VertexBufferDesc{};
-	VertexBufferDesc.ByteWidth = m_iVertexStride * m_iNumVertices;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	VertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.StructureByteStride = m_iVertexStride;
+	D3D11_BUFFER_DESC vertexBufferDesc{};
+	vertexBufferDesc.ByteWidth = m_vertexStride * m_numVertices;
+	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vertexBufferDesc.StructureByteStride = m_vertexStride;
 
-	VertexBufferDesc.CPUAccessFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
-	VertexBufferDesc.MiscFlags = 0; // µ¿Àû ¹öÆÛÇÒ‹š ÀÇ¹Ì ÀÖÀ½
-
-
-	VTXCUBE* pVertices = new VTXCUBE[m_iNumVertices];
-	pVertices[0].vPosition = _float3(-0.5f, 0.5f, -0.5f);
-	pVertices[0].vTexcoord = pVertices[0].vPosition;
-
-	pVertices[1].vPosition = _float3(0.5f, 0.5f, -0.5f);
-	pVertices[1].vTexcoord = pVertices[1].vPosition;
-
-	pVertices[2].vPosition = _float3(0.5f, -0.5f, -0.5f);
-	pVertices[2].vTexcoord = pVertices[2].vPosition;
-
-	pVertices[3].vPosition = _float3(-0.5f, -0.5f, -0.5f);
-	pVertices[3].vTexcoord = pVertices[3].vPosition;
+	vertexBufferDesc.CPUAccessFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìžˆìŒ
+	vertexBufferDesc.MiscFlags = 0; // ë™ì  ë²„í¼í• ë–„ ì˜ë¯¸ ìžˆìŒ
 
 
-	pVertices[4].vPosition = _float3(-0.5f, 0.5f, 0.5f);
-	pVertices[4].vTexcoord = pVertices[4].vPosition;
+	VTXCUBE* vertices = new VTXCUBE[m_numVertices];
+	vertices[0].position = _float3(-0.5f, 0.5f, -0.5f);
+	vertices[0].texcoord = vertices[0].position;
 
-	pVertices[5].vPosition = _float3(0.5f, 0.5f, 0.5f);
-	pVertices[5].vTexcoord = pVertices[5].vPosition;
+	vertices[1].position = _float3(0.5f, 0.5f, -0.5f);
+	vertices[1].texcoord = vertices[1].position;
 
-	pVertices[6].vPosition = _float3(0.5f, -0.5f, 0.5f);
-	pVertices[6].vTexcoord = pVertices[6].vPosition;
+	vertices[2].position = _float3(0.5f, -0.5f, -0.5f);
+	vertices[2].texcoord = vertices[2].position;
 
-	pVertices[7].vPosition = _float3(-0.5f, -0.5f, 0.5f);
-	pVertices[7].vTexcoord = pVertices[7].vPosition;
+	vertices[3].position = _float3(-0.5f, -0.5f, -0.5f);
+	vertices[3].texcoord = vertices[3].position;
 
 
-	D3D11_SUBRESOURCE_DATA			VertexInitialData{};
-	VertexInitialData.pSysMem = pVertices;
+	vertices[4].position = _float3(-0.5f, 0.5f, 0.5f);
+	vertices[4].texcoord = vertices[4].position;
 
-	if (FAILED(m_pDevice->CreateBuffer(&VertexBufferDesc, &VertexInitialData, &m_pVB)))
+	vertices[5].position = _float3(0.5f, 0.5f, 0.5f);
+	vertices[5].texcoord = vertices[5].position;
+
+	vertices[6].position = _float3(0.5f, -0.5f, 0.5f);
+	vertices[6].texcoord = vertices[6].position;
+
+	vertices[7].position = _float3(-0.5f, -0.5f, 0.5f);
+	vertices[7].texcoord = vertices[7].position;
+
+
+	D3D11_SUBRESOURCE_DATA			vertexInitialData{};
+	vertexInitialData.pSysMem = vertices;
+
+	if (FAILED(m_device->CreateBuffer(&vertexBufferDesc, &vertexInitialData, &m_VB)))
 		return E_FAIL;
 
 
 	//Index Buffer
 
-	D3D11_BUFFER_DESC	IndexBufferDesc{};
-	IndexBufferDesc.ByteWidth = m_iIndexStride * m_iNumIndices;
-	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	IndexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.StructureByteStride = m_iIndexStride;
-	IndexBufferDesc.CPUAccessFlags = 0;
-	IndexBufferDesc.MiscFlags = 0;
+	D3D11_BUFFER_DESC	indexBufferDesc{};
+	indexBufferDesc.ByteWidth = m_indexStride * m_numIndices;
+	indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	indexBufferDesc.StructureByteStride = m_indexStride;
+	indexBufferDesc.CPUAccessFlags = 0;
+	indexBufferDesc.MiscFlags = 0;
 
-	_ushort* pIndices = new _ushort[m_iNumIndices];
+	_ushort* indices = new _ushort[m_numIndices];
 	
-	pIndices[0] = 1; pIndices[1] = 5; pIndices[2] = 6;
-	pIndices[3] = 1; pIndices[4] = 6; pIndices[5] = 2;
+	indices[0] = 1; indices[1] = 5; indices[2] = 6;
+	indices[3] = 1; indices[4] = 6; indices[5] = 2;
 
-	pIndices[6] = 4; pIndices[7] = 0; pIndices[8] = 3;
-	pIndices[9] = 4; pIndices[10] = 3; pIndices[11] = 7;
+	indices[6] = 4; indices[7] = 0; indices[8] = 3;
+	indices[9] = 4; indices[10] = 3; indices[11] = 7;
 
-	pIndices[12] = 4; pIndices[13] = 5; pIndices[14] = 1;
-	pIndices[15] = 4; pIndices[16] = 1; pIndices[17] = 0;
+	indices[12] = 4; indices[13] = 5; indices[14] = 1;
+	indices[15] = 4; indices[16] = 1; indices[17] = 0;
 
-	pIndices[18] = 3; pIndices[19] = 2; pIndices[20] = 6;
-	pIndices[21] = 3; pIndices[22] = 6; pIndices[23] = 7;
+	indices[18] = 3; indices[19] = 2; indices[20] = 6;
+	indices[21] = 3; indices[22] = 6; indices[23] = 7;
 
-	pIndices[24] = 7; pIndices[25] = 6; pIndices[26] = 5;
-	pIndices[27] = 7; pIndices[28] = 5; pIndices[29] = 4;
+	indices[24] = 7; indices[25] = 6; indices[26] = 5;
+	indices[27] = 7; indices[28] = 5; indices[29] = 4;
 
-	pIndices[30] = 0; pIndices[31] = 1; pIndices[32] = 2;
-	pIndices[33] = 0; pIndices[34] = 2; pIndices[35] = 3;
-
-
-
-	D3D11_SUBRESOURCE_DATA			IndexInitialData{};
-	IndexInitialData.pSysMem = pIndices;
+	indices[30] = 0; indices[31] = 1; indices[32] = 2;
+	indices[33] = 0; indices[34] = 2; indices[35] = 3;
 
 
-	if (FAILED(m_pDevice->CreateBuffer(&IndexBufferDesc, &IndexInitialData, &m_pIB)))
+
+	D3D11_SUBRESOURCE_DATA			indexInitialData{};
+	indexInitialData.pSysMem = indices;
+
+
+	if (FAILED(m_device->CreateBuffer(&indexBufferDesc, &indexInitialData, &m_IB)))
 		return E_FAIL;
 
 
-	Safe_Delete_Array(pVertices);
-	Safe_Delete_Array(pIndices);
+	Safe_Delete_Array(vertices);
+	Safe_Delete_Array(indices);
 
 
 	return S_OK;
 
 }
 
-HRESULT CVIBuffer_Cube::Initialize(void* pArg)
+HRESULT CVIBuffer_Cube::Initialize(void* arg)
 {
 	return S_OK;
 
 }
 
-shared_ptr<CVIBuffer_Cube> CVIBuffer_Cube::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CVIBuffer_Cube> CVIBuffer_Cube::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CVIBuffer_Cube> pInstance(new CVIBuffer_Cube(pDevice, pContext), [](CVIBuffer_Cube* p) {p->Free(); delete p;});
+	shared_ptr<CVIBuffer_Cube> instance(new CVIBuffer_Cube(device, context), [](CVIBuffer_Cube* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CVIBuffer_Cube");
 	}
-	return pInstance;
+	return instance;
 }
 
-shared_ptr<CComponent> CVIBuffer_Cube::Clone(void* pArg)
+shared_ptr<CComponent> CVIBuffer_Cube::Clone(void* arg)
 {
-	shared_ptr<CVIBuffer_Cube> pInstance(new CVIBuffer_Cube(*this), [](CVIBuffer_Cube* p) {p->Free(); delete p;});
+	shared_ptr<CVIBuffer_Cube> instance(new CVIBuffer_Cube(*this), [](CVIBuffer_Cube* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CVIBuffer_Cube");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CVIBuffer_Cube::Free()

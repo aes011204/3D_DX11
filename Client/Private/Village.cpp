@@ -1,4 +1,4 @@
-#include "Village.h"
+ï»¿#include "Village.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "Bounding_AABB.h"
@@ -6,8 +6,8 @@
 #include "Client_Enum.h"
 #include "EventBus.h"
 
-CVillage::CVillage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CVillage::CVillage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -21,11 +21,11 @@ HRESULT CVillage::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CVillage::Initialize(void* pArg)
+HRESULT CVillage::Initialize(void* arg)
 {
 
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
@@ -48,46 +48,46 @@ HRESULT CVillage::Initialize(void* pArg)
 	//		3.5
 	//	] ,
 
-	m_pTransformCom->Set_Position(XMVectorSet(-3.3f, 2.2f, 0.f, 1.f));
-	m_pTransformCom->Set_RotationDegree(_float3{ -180.f, -1.3f, 180.f });
-	m_pTransformCom->Set_Scale(_float3{ 3.5f, 3.5f, 3.5f });
+	m_transformCom->Set_Position(XMVectorSet(-3.3f, 2.2f, 0.f, 1.f));
+	m_transformCom->Set_RotationDegree(_float3{ -180.f, -1.3f, 180.f });
+	m_transformCom->Set_Scale(_float3{ 3.5f, 3.5f, 3.5f });
 
 
 
 
 
-	for (_uint i = 0; i < ETOI(SHOPTAB::END); i++)
+	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
-		Evt_InvenStrageInit_Data e = {};
-		e.Inven_ptr = m_pShopCom[i];
-		e.inventype = m_pShopCom[i]->Get_Inventype();
-		e.ShopTabType = static_cast<SHOPTAB>(i);
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
+		Evt_InvenStorageInitData e = {};
+		e.invenPtr = m_shopCom[i];
+		e.invenType = m_shopCom[i]->Get_Inventype();
+		e.shopTabType = static_cast<EShopTab>(i);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStorageInitData>(e);
 	}
 
 	return S_OK;
 }
 
-void CVillage::Priority_Update(_float fTimeDelta)
+void CVillage::Priority_Update(_float timeDelta)
 {
 }
 
-void CVillage::Update(_float fTimeDelta)
+void CVillage::Update(_float timeDelta)
 {
-	if (m_bIsDirtyCom) {
-		RebindCom();      // "¹Ù²ï °Í"¸¸ ÇÑ ¹ø °»½Å
-		m_bIsDirtyCom = false;
+	if (m_isDirtyCom) {
+		RebindCom();      // "ë°”ë€ ê²ƒ"ë§Œ í•œ ë²ˆ ê°±ì‹ 
+		m_isDirtyCom = false;
 	}
 	int a = 1;
 
 	
 
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
-void CVillage::Late_Update(_float fTimeDelta)
+void CVillage::Late_Update(_float timeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CVillage::Render()
@@ -99,25 +99,25 @@ HRESULT CVillage::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for (size_t i = 0; i < iNumMesh; i++)
+	for (size_t i = 0; i < numMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
 		//m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
-		if (FAILED(m_pShaderCom->Begin(0)))
+		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		if (FAILED(m_shaderCom->Begin(0)))
 			return E_FAIL;
 
-		if (FAILED(m_pModelCom->Render(i)))
+		if (FAILED(m_modelCom->Render(i)))
 			return E_FAIL;
 	}
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_colliderCom);
 
 
 
@@ -138,26 +138,26 @@ void CVillage::OnGui()
 void CVillage::RebindCom()
 {
 	
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_modelCom = Get_Component<CModel>(L"Com_Model");
 	//m_pVIBufferCom = Get_Component<CVIBuffer>(L"Com_VIBuffer");
 	//m_pShaderCom = Get_Component<CShader>(L"Com_Shader");
 }
 
 HRESULT CVillage::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 	
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -174,12 +174,12 @@ HRESULT CVillage::Bind_ShaderResources()
 		return E_FAIL;*/
 
 	////
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return E_FAIL;
-	bool IsNight = m_pGameInstance.lock()->Get_IsNight();
-	_float emissivePower = IsNight ? 1.f : 0.f;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissivePower, sizeof(_float))))
+	bool isNight = m_gameInstance.lock()->Get_IsNight();
+	_float emissivePower = isNight ? 1.f : 0.f;
+	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &emissivePower, sizeof(_float))))
 		return E_FAIL;
 
 	return S_OK;
@@ -197,31 +197,31 @@ HRESULT CVillage::Ready_Components()
 	//	TEXT("Com_Model"), reinterpret_cast<CComponent**>(&m_pModelCom))))
 	//	return E_FAIL;
 
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	// ì‰ì´ë”ëŠ” í´ëž˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ìž„
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_Town"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìžˆì–´ì•¼ í•˜ì§€ë§Œ í´ëž˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìžˆì–´ì•¼ í•¨ 
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Model_Town"), TEXT("Com_Model"), &m_modelCom, nullptr)))
 		return E_FAIL;
 	//if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_BackGround_1"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
 	//	return E_FAIL;
 
-	CBounding_AABB::BOUNDING_AABB_DESC		AABBDesc{};
-	AABBDesc.vExtents = _float3(0.4f, 0.4f, 0.4f);
-	AABBDesc.vCenter = _float3(2.21f, -0.66f, 0.5f);
-	AABBDesc.MyLayer = COLLISION_LAYER::TRIGGER;
-	AABBDesc.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_Collider"), &m_pColliderCom, &AABBDesc)))
+	CBounding_AABB::BoundingAABBDesc		AABBDesc{};
+	AABBDesc.extents = _float3(0.4f, 0.4f, 0.4f);
+	AABBDesc.center = _float3(2.21f, -0.66f, 0.5f);
+	AABBDesc.myLayer = ECollisionLayer::TRIGGER;
+	AABBDesc.otherMask = ECollisionLayer::PLAYER;
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_AABB"), TEXT("Com_Collider"), &m_colliderCom, &AABBDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+	m_gameInstance.lock()->Add_Collider(m_colliderCom);
 
 
-	for(_uint i =0; i < ETOI(SHOPTAB::END) ; i++)
+	for(_uint i =0; i < ETOI(EShopTab::END) ; i++)
 	{
-		CInventory::INVEN_DESC storage_desc = {};
-		storage_desc.invenType = INVENTYPE::SHOP;
-		storage_desc.EquipType = static_cast<EQUIP_TYPE>(i);
-		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pShopCom[i], &storage_desc)))
+		CInventory::InvenDesc storageDesc = {};
+		storageDesc.invenType = EInvenType::SHOP;
+		storageDesc.equipType = static_cast<EEquipType>(i);
+		if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_shopCom[i], &storageDesc)))
 			return E_FAIL;
 
 	}
@@ -232,27 +232,27 @@ HRESULT CVillage::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CVillage> CVillage::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CVillage> CVillage::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CVillage> pInstance(new CVillage(pDevice, pContext), [](CVillage* p) {p->Free(); delete p; });
+	shared_ptr<CVillage> instance(new CVillage(device, context), [](CVillage* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CVillage");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CVillage::Clone(void* pArg)
+shared_ptr<CGameObject> CVillage::Clone(void* arg)
 {
-	shared_ptr<CVillage> pInstance(new CVillage(*this), [](CVillage* p) {p->Free(); delete p; });
+	shared_ptr<CVillage> instance(new CVillage(*this), [](CVillage* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CVillage");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CVillage::Free()

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Client_Enum.h"
 #include "MiniGame.h"
 
@@ -15,10 +15,10 @@ NS_BEGIN(Client)
 {
 public:
 	
-	struct MINIGAEMELOGIC_BALL_DESC 
+	struct MiniGameLogicBallDesc 
 	{
-		_uint CallNum = {};
-			_float2 Speed = {};
+		_uint callNum = {};
+			_float2 speed = {};
 
 
 	};
@@ -31,55 +31,55 @@ public:
 public:
 
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
-	virtual HRESULT Render(_uint iMeshIndex);
+	virtual HRESULT Initialize(void* arg);
+	virtual HRESULT Render(_uint meshIndex);
 	virtual void Update(const _float& timeDelta);
 
 	void ResetZoon();
 
 
-	_uint GetFishCount() const{return m_FishCount;}
+	_uint GetFishCount() const{return m_fishCount;}
 	float GetProgress01() const { return m_prograssBar01; }
 
-	float GetAngle() const { return m_Angle; }
+	float GetAngle() const { return m_angle; }
 
 
 	const Zone* GetZones() const { return m_zones; }
 	int GetZoneCount() const { return m_zoneCount; }
 
 
-	bool IsStart() const { return m_bStart; }
-	bool IsFinish() const { return m_bFin; }
+	bool IsStart() const { return m_isStart; }
+	bool IsFinish() const { return m_isFinished; }
 
-	_uint Get_DefID() { return m_DefID; };
+	_uint Get_DefID() { return m_defID; };
 
 	void OnInput();
 
-	INPUT_RESULT ConsumeInputResult() {
-		INPUT_RESULT result = m_LastInputResult;
-		m_LastInputResult = INPUT_RESULT::NONE;
+	EInputResult ConsumeInputResult() {
+		EInputResult result = m_lastInputResult;
+		m_lastInputResult = EInputResult::NONE;
 		return result;
 	}
-	MINIGAME Get_MiniGameType() { return m_MiniGameType; }
+	EMiniGameType Get_MiniGameType() { return m_miniGameType; }
 public:
 
-	INPUT_RESULT m_LastInputResult = INPUT_RESULT::NONE;
+	EInputResult m_lastInputResult = EInputResult::NONE;
 
 	Zone m_zones[8];
 	int m_zoneCount;
-	float m_AccTime = { 0 };
-	float m_Angle = { 0 };
-	float m_Speed = {};
-	_bool m_bStart = { false };
+	float m_accTime = { 0 };
+	float m_angle = { 0 };
+	float m_speed = {};
+	_bool m_isStart = { false };
 
 	float m_zoneSize = {};
 
-	_float2 m_InitZoonSize = {};
+	_float2 m_initZoneSize = {};
 
 	///
 	bool m_changeColor = { false };
-	float m_AccTime2 = { 0 };
-	float colortime = { 0 };
+	float m_accTime2 = { 0 };
+	float m_colorTime = { 0 };
 
 	///
 	float m_prograssBar01 = { 0 };
@@ -87,13 +87,13 @@ public:
 
 
 
-	_bool m_bFin = { false };
+	_bool m_isFinished = { false };
 
 	
 private:
 
 public:
-	static shared_ptr<CMiniGame_Logic_Ball> Create(void* pArg);
+	static shared_ptr<CMiniGame_Logic_Ball> Create(void* arg);
 	void Free() override;
 };
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 #include "UIPanel.h"
@@ -8,18 +8,18 @@ class CUI_Skill final :
     public CUIPanel
 {
 public:
-    struct SKILL_DESC : public CUIPanel::UIPANEL_DESC
+    struct SkillDesc : public CUIPanel::UIPanelDesc
     {
     };
 protected:
-    CUI_Skill(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_Skill(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_Skill(const CUIPanel& prototype);
 public:
     ~CUI_Skill() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -33,7 +33,7 @@ public:
 private:
 
 public:
-    static shared_ptr<CUI_Skill> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_Skill> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

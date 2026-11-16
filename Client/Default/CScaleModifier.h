@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "IModifier.h"
 #include "Client_Define.h"
 NS_BEGIN(Engine)
@@ -13,24 +13,24 @@ public:
 	virtual ~CScaleModifier();
 
 
-	// IModifier¿ª(∏¶) ≈Î«ÿ ªÛº”µ 
-	void Tick(float fDeltaTime, CUI* pOwner) override;
+	// IModifierÏùÑ(Î•º) ÌÜµÌï¥ ÏÉÅÏÜçÎê®
+	void Tick(float deltaTime, CUI* owner) override;
 
-	void OnAppear(float fDeltaTime, CUI* pOwner) override;
+	void OnAppear(float deltaTime, CUI* owner) override;
 
-	void OnDisappear(float fDeltaTime, CUI* pOwner) override;
+	void OnDisappear(float deltaTime, CUI* owner) override;
 
 	virtual bool IsFinished() {  return false; };
 
 private:
-	CUITransform* m_pOwnerTransform = {nullptr};
+	CUITransform* m_ownerTransform = {nullptr};
 
-	_float m_fAccTime = {};
-	_float m_Range = {};
-	_float m_Duration = {};
-	_float m_StartPosRad = {};
-	_float2 m_BaseScale = {};
-	_bool m_Continuous = {};
+	_float m_accTime = {};
+	_float m_range = {};
+	_float m_duration = {};
+	_float m_startPosRad = {};
+	_float2 m_baseScale = {};
+	_bool m_isContinuous = {};
 	_bool m_finsh = { false };
 };
 

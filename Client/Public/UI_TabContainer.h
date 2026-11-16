@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 #include "UIText.h"
 
 #include "UIPanel.h"
 #include "Client_Define.h"
 #include "PlayerBoat.h"
-//¿À¸¥ÂÊ¿¡¼­ ³ª¿À´Â È¿°úÀÖÀ½
-// ¿£Áø ·çÇÁ¿ë m_Children°ú´Â º°°³·Î, ³»°¡ Á÷Á¢ 'Á¶Á¾'ÇÒ ³à¼®µé¸¸ Æ÷ÀÎÅÍ·Î º¸°ü
-// ¹öÆ°Àº »óÅÂ¸¦ ¹Ù²Ü ÀÏÀÌ °ÅÀÇ ¾øÀ¸´Ï ±»ÀÌ ¾È µé°í ÀÖ¾îµµ µÇÁö¸¸, 
-// ÆĞ³Î(³»¿ë¹°)Àº ²¯´Ù Ä×´Ù ÇØ¾ß ÇÏ´Ï ¸®½ºÆ®·Î °ü¸®ÇÕ´Ï´Ù.
+//ì˜¤ë¥¸ìª½ì—ì„œ ë‚˜ì˜¤ëŠ” íš¨ê³¼ìˆìŒ
+// ì—”ì§„ ë£¨í”„ìš© m_Childrenê³¼ëŠ” ë³„ê°œë¡œ, ë‚´ê°€ ì§ì ‘ 'ì¡°ì¢…'í•  ë…€ì„ë“¤ë§Œ í¬ì¸í„°ë¡œ ë³´ê´€
+// ë²„íŠ¼ì€ ìƒíƒœë¥¼ ë°”ê¿€ ì¼ì´ ê±°ì˜ ì—†ìœ¼ë‹ˆ êµ³ì´ ì•ˆ ë“¤ê³  ìˆì–´ë„ ë˜ì§€ë§Œ, 
+// íŒ¨ë„(ë‚´ìš©ë¬¼)ì€ ê»ë‹¤ ì¼°ë‹¤ í•´ì•¼ í•˜ë‹ˆ ë¦¬ìŠ¤íŠ¸ë¡œ ê´€ë¦¬í•©ë‹ˆë‹¤.
 
 NS_BEGIN(Engine)
 
@@ -21,20 +21,20 @@ class CUI_TabContainer :
 {
 public:
 
-	struct TABCONTAINER_DESC : public CUIPanel::UIPANEL_DESC
+	struct TabContainerDesc : public CUIPanel::UIPanelDesc
 	{
 
 	};
 protected:
-	CUI_TabContainer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CUI_TabContainer(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	CUI_TabContainer(const CUIPanel& prototype);
 public:
 	~CUI_TabContainer() = default;
 
 public:
-	void UI_PanelActive(_uint iTabfig, TAB Active);
-	virtual void UI_Active() override; //  UI È°¼ºÈ°½Ã È£ÃâµÇ´Â ÇÔ¼ö// ÀÌ ÆĞ³ÎÀº ´Ù ÄÑÁö¸é ¾ÈµÇ±â‹š¹®¿¡ ¿À¹ö¶óÀÌµùÀ¸·Î È£Ãâ–P°í ¿©±â¼­ Ã³¸®
-	HRESULT OnInit(void* pArg) override;
+	void UI_PanelActive(_uint tabfig, ETab Active);
+	virtual void UI_Active() override; //  UI í™œì„±í™œì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜// ì´ íŒ¨ë„ì€ ë‹¤ ì¼œì§€ë©´ ì•ˆë˜ê¸°ë–„ë¬¸ì— ì˜¤ë²„ë¼ì´ë”©ìœ¼ë¡œ í˜¸ì¶œë»‡ê³  ì—¬ê¸°ì„œ ì²˜ë¦¬
+	HRESULT OnInit(void* arg) override;
 	void OnActive()override;
 	void OnInActive()override;
 	void OnDisabled()override;
@@ -43,31 +43,31 @@ public:
 	HRESULT OnRender()override;
 	void OnClear()override;
 
-	void SetActiveTab(TAB tab);
+	void SetActiveTab(ETab tab);
 public:
 
 
 private:
-	TAB m_Active = TAB::NONE;
+	ETab m_active = ETab::NONE;
 
-	shared_ptr<CUIImage> m_Line = {};
-	shared_ptr<CUIImage> m_TextIMG = {};
-	shared_ptr<CUIText> m_TextFont = {};
+	shared_ptr<CUIImage> m_line = {};
+	shared_ptr<CUIImage> m_textImg = {};
+	shared_ptr<CUIText> m_textFont = {};
 
-	shared_ptr<CUIButton> m_ButtonContents[32] = {};
-	shared_ptr<CUIPanel> m_TabContents[32] = {};
+	shared_ptr<CUIButton> m_buttonContents[32] = {};
+	shared_ptr<CUIPanel> m_tabContents[32] = {};
 
 
 	Vector2 m_vecAni = {};
-	_bool m_bStart = false;
-	float m_TimeAcc = {};
-	float m_fDuration = {};
+	_bool m_isStart = false;
+	float m_timeAcc = {};
+	float m_duration = {};
 
 
-	weak_ptr<CPlayerBoat> m_PlayerBoat = {  };
+	weak_ptr<CPlayerBoat> m_playerBoat = {  };
 
 public:
-	static shared_ptr<CUI_TabContainer> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	static shared_ptr<CUI_TabContainer> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 	void Free() override;
 };
 

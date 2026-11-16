@@ -1,12 +1,12 @@
-#include "Explosion.h"
+﻿#include "Explosion.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "VIBuffer_Particle_Point.h"
 #include "Texture.h"
 
 
-CExplosion::CExplosion(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CExplosion::CExplosion(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -20,33 +20,33 @@ HRESULT CExplosion::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CExplosion::Initialize(void* pArg)
+HRESULT CExplosion::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
-	m_pTransformCom->Set_Position( XMVectorSet(50.f, 5.f, 1.f, 1.f));
+	m_transformCom->Set_Position( XMVectorSet(50.f, 5.f, 1.f, 1.f));
 
 	//m_pSocketMatrix_AttackPoint = m_pModelCom->Get_BoneMatrixPtr(/*"l_botclaw_jnt"*/);
 
 	return S_OK;
 }
 
-void CExplosion::Priority_Update(_float fTimeDelta)
+void CExplosion::Priority_Update(_float timeDelta)
 {
 }
 
-void CExplosion::Update(_float fTimeDelta)
+void CExplosion::Update(_float timeDelta)
 {
-	m_pVIBufferCom->Spread(fTimeDelta);
+	m_VIBufferCom->Spread(timeDelta);
 }
 
-void CExplosion::Late_Update(_float fTimeDelta)
+void CExplosion::Late_Update(_float timeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONLIGHT, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONLIGHT, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CExplosion::Render()
@@ -57,14 +57,14 @@ HRESULT CExplosion::Render()
 		return E_FAIL;
 	
 	
-		if (FAILED(m_pShaderCom->Begin(0)))
+		if (FAILED(m_shaderCom->Begin(0)))
 			return E_FAIL;
 	
 	
-		if (FAILED(m_pVIBufferCom->Bind_Resources()))
+		if (FAILED(m_VIBufferCom->Bind_Resources()))
 			return E_FAIL;
 	
-		if (FAILED(m_pVIBufferCom->Render()))
+		if (FAILED(m_VIBufferCom->Render()))
 			return E_FAIL;
 	
 
@@ -88,20 +88,20 @@ void CExplosion::RebindCom()
 
 HRESULT CExplosion::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	/*const LIGHT_DESC* pLightDesc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -124,13 +124,13 @@ HRESULT CExplosion::Ready_Components()
 {
 
 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Shader_VtxParticlePoint"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
 
-		if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Snow"), TEXT("Com_Texture"), &m_pTextureCom, nullptr)))
+		if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_Snow"), TEXT("Com_Texture"), &m_textureCom, nullptr)))
 			return E_FAIL;
 	
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_Explosion"), TEXT("Com_VIBuffer"), &m_pVIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_VIBuffer_Particle_Point_Explosion"), TEXT("Com_VIBuffer"), &m_VIBufferCom, nullptr)))
 		return E_FAIL;
 	
 
@@ -139,27 +139,27 @@ HRESULT CExplosion::Ready_Components()
 	return S_OK;
 }
 
-shared_ptr<CExplosion> CExplosion::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CExplosion> CExplosion::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CExplosion> pInstance(new CExplosion(pDevice, pContext), [](CExplosion* p) {p->Free(); delete p; });
+	shared_ptr<CExplosion> instance(new CExplosion(device, context), [](CExplosion* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CExplosion");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CExplosion::Clone(void* pArg)
+shared_ptr<CGameObject> CExplosion::Clone(void* arg)
 {
-	shared_ptr<CExplosion> pInstance(new CExplosion(*this), [](CExplosion* p) {p->Free(); delete p; });
+	shared_ptr<CExplosion> instance(new CExplosion(*this), [](CExplosion* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CExplosion");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CExplosion::Free()

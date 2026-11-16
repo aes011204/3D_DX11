@@ -1,4 +1,4 @@
-#include "Box.h"
+ï»¿#include "Box.h"
 #include "GameInstance.h"
 #include "Model.h"
 #include "Collider.h"
@@ -8,8 +8,8 @@
 #include "Inventory.h"
 
 
-CBox::CBox(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: CGameObject{ pDevice ,pContext }
+CBox::CBox(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: CGameObject{ device ,context }
 {
 }
 
@@ -23,69 +23,69 @@ HRESULT CBox::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CBox::Initialize(void* pArg)
+HRESULT CBox::Initialize(void* arg)
 {
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 
 
-	m_AnimIndex = 1;
-	m_pModelCom->Set_Animation(m_AnimIndex, true);
-	m_State = STATE::IDLE;
+	m_animIndex = 1;
+	m_modelCom->Set_Animation(m_animIndex, true);
+	m_state = EState::IDLE;
 
 
 	{
-		Evt_InvenStrageInit_Data e = {};
-		e.Inven_ptr = m_pStorageCom;
-		e.inventype = m_pStorageCom->Get_Inventype();
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStrageInit_Data>(e);
+		Evt_InvenStorageInitData e = {};
+		e.invenPtr = m_storageCom;
+		e.invenType = m_storageCom->Get_Inventype();
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_InvenStorageInitData>(e);
 	}
 	_float3 pos = _float3(49.5f, -0.4f, -19.f);
-	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
-	m_pTransformCom->Set_RotationDegree(_float3(9.5f, 8.9f, 0.f));
-	m_pTransformCom->Update_WorldMatrix();
+	m_transformCom->Set_Position(XMLoadFloat3(&pos));
+	m_transformCom->Set_RotationDegree(_float3(9.5f, 8.9f, 0.f));
+	m_transformCom->Update_WorldMatrix();
 	
 	return S_OK;
 }
 
-void CBox::Priority_Update(_float fTimeDelta)
+void CBox::Priority_Update(_float timeDelta)
 {
 }
 
-void CBox::Update(_float fTimeDelta)
+void CBox::Update(_float timeDelta)
 {
-	m_pModelCom->Play_Animation(fTimeDelta);
+	m_modelCom->Play_Animation(timeDelta);
 
 
-	if(m_pModelCom->Get_IsFinishAnim() == true)
+	if(m_modelCom->Get_IsFinishAnim() == true)
 	{
 		int i = 0;
 	}
 
-	if(m_State == ATTACK && m_pModelCom->Get_IsFinishAnim()==true)
+	if(m_state == ATTACK && m_modelCom->Get_IsFinishAnim()==true)
 	{
-		m_AnimIndex = 2;
-		m_pModelCom->Set_Animation(m_AnimIndex, false);
-		m_State = STATE::RELEASE;
+		m_animIndex = 2;
+		m_modelCom->Set_Animation(m_animIndex, false);
+		m_state = EState::RELEASE;
 	}
-	else if(m_State == RELEASE && m_pModelCom->Get_IsFinishAnim() == true)
+	else if(m_state == RELEASE && m_modelCom->Get_IsFinishAnim() == true)
 	{
-		m_AnimIndex = 1;
-		m_pModelCom->Set_Animation(m_AnimIndex, true);
-		m_State = STATE::IDLE;
+		m_animIndex = 1;
+		m_modelCom->Set_Animation(m_animIndex, true);
+		m_state = EState::IDLE;
 	}
 
-	m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+	m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 
 
 }
 
-void CBox::Late_Update(_float fTimeDelta)
+void CBox::Late_Update(_float timeDelta)
 {
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CBox::Render()
@@ -94,19 +94,19 @@ HRESULT CBox::Render()
 	if (FAILED(Bind_ShaderResources()))
 		return E_FAIL;
 
-	size_t iNumMesh = m_pModelCom->Get_NumMeshes();
+	size_t numMesh = m_modelCom->Get_NumMeshes();
 
-	for(size_t i=0; i< iNumMesh; i++)
+	for(size_t i=0; i< numMesh; i++)
 	{
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
+		m_modelCom->Bind_Material(m_shaderCom, "g_EmissiveTexture", i, TextureType_EMISSIVE, 0);
 
-		m_pModelCom->Bind_Material(m_pShaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
-		m_pModelCom->Bind_BoneMatrices(m_pShaderCom, "g_BoneMatrices", i);
+		m_modelCom->Bind_Material(m_shaderCom, "g_DiffuseTexture", i, TextureType_DIFFUSE, 0);
+		m_modelCom->Bind_BoneMatrices(m_shaderCom, "g_BoneMatrices", i);
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pModelCom->Render(i)))
+	if (FAILED(m_modelCom->Render(i)))
 		return E_FAIL;
 	}
 
@@ -114,10 +114,10 @@ HRESULT CBox::Render()
 
 
 #ifdef _DEBUG
-	if (m_pGameInstance.lock()->Get_IsDebug() == false)
+	if (m_gameInstance.lock()->Get_IsDebug() == false)
 		return S_OK;
 	
-	m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+	m_gameInstance.lock()->Add_DebugenderGroup(m_colliderCom);
 
 #endif
 
@@ -170,33 +170,33 @@ void CBox::OnGui()
 void CBox::RebindCom()
 {
 
-	m_pTextureCom = Get_Component<CTexture>(L"Com_Texture");
-	m_pModelCom = Get_Component<CModel>(L"Com_Model");
+	m_textureCom = Get_Component<CTexture>(L"Com_Texture");
+	m_modelCom = Get_Component<CModel>(L"Com_Model");
 
 }
 
 HRESULT CBox::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 		return E_FAIL;
 
 	float emissive = 0.f;
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
+	if (FAILED(m_shaderCom->Bind_RawValue("g_EmissiveStrength", &emissive, sizeof(_float))))
 		return E_FAIL;
 	return S_OK;
 }
@@ -204,55 +204,55 @@ HRESULT CBox::Bind_ShaderResources()
 HRESULT CBox::Ready_Components()
 {
 
-	// ½¦ÀÌ´õ´Â Å¬·¡½º¸¦ °¥¾Æ³¢´Â°Ô ¾Æ´Ï¶ó ¾È¿¡ ¸®¼Ò½º¸¦ ¹Ù²Ù´Â °ÅÀÓ
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_pShaderCom, nullptr)))
+	// ì‰ì´ë”ëŠ” í´ëž˜ìŠ¤ë¥¼ ê°ˆì•„ë¼ëŠ”ê²Œ ì•„ë‹ˆë¼ ì•ˆì— ë¦¬ì†ŒìŠ¤ë¥¼ ë°”ê¾¸ëŠ” ê±°ìž„
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxAnimMesh"), TEXT("Com_Shader"), &m_shaderCom, nullptr)))
 		return E_FAIL;
-	// ÀÌ°Å´Â ÇÊ¼ö·Î ÀÖ¾î¾ß ÇÏÁö¸¸ Å¬·¡½º¸¦ °¥¾Æ ³¢¿ï¼ö ÀÖ¾î¾ß ÇÔ 
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Model_HalfBoat"), TEXT("Com_Model"), &m_pModelCom, nullptr)))
+	// ì´ê±°ëŠ” í•„ìˆ˜ë¡œ ìžˆì–´ì•¼ í•˜ì§€ë§Œ í´ëž˜ìŠ¤ë¥¼ ê°ˆì•„ ë¼ìš¸ìˆ˜ ìžˆì–´ì•¼ í•¨ 
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Model_HalfBoat"), TEXT("Com_Model"), &m_modelCom, nullptr)))
 		return E_FAIL;
 
 
-	CBounding_OBB::BOUNDING_OBB_DESC		OBBDesc{};
-	OBBDesc.vExtents = _float3(4.f, 1.5f, 3.f);
-	OBBDesc.vRadians = _float3(0.f, 0.f, 0.f);
-	OBBDesc.vCenter = _float3(0.f, 0.f, 0.f);
-	OBBDesc.MyLayer = COLLISION_LAYER::ITEM;
-	OBBDesc.OtherMask = COLLISION_LAYER::PLAYER;
-	if (FAILED(Add_Component(ETOI(LEVEL::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_pColliderCom, &OBBDesc)))
+	CBounding_OBB::BoundingOBBDesc		OBBDesc{};
+	OBBDesc.extents = _float3(4.f, 1.5f, 3.f);
+	OBBDesc.radians = _float3(0.f, 0.f, 0.f);
+	OBBDesc.center = _float3(0.f, 0.f, 0.f);
+	OBBDesc.myLayer = ECollisionLayer::ITEM;
+	OBBDesc.otherMask = ECollisionLayer::PLAYER;
+	if (FAILED(Add_Component(ETOI(ELevel::GAMEPLAY), TEXT("Prototype_Component_Collider_OBB"), TEXT("Com_Collider"), &m_colliderCom, &OBBDesc)))
 		return E_FAIL;
-	m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+	m_gameInstance.lock()->Add_Collider(m_colliderCom);
 
 
 
-	CInventory::INVEN_DESC storage_desc = {};
-	storage_desc.invenType = INVENTYPE::CHEST;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_pStorageCom, &storage_desc)))
+	CInventory::InvenDesc storageDesc = {};
+	storageDesc.invenType = EInvenType::CHEST;
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Inven"), TEXT("Com_Storage"), &m_storageCom, &storageDesc)))
 		return E_FAIL;
 
 	return S_OK;
 }
 
-shared_ptr<CBox> CBox::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CBox> CBox::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CBox> pInstance(new CBox(pDevice, pContext), [](CBox* p) {p->Free(); delete p;});
+	shared_ptr<CBox> instance(new CBox(device, context), [](CBox* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CBox");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CBox::Clone(void* pArg)
+shared_ptr<CGameObject> CBox::Clone(void* arg)
 {
-	shared_ptr<CBox> pInstance(new CBox(*this), [](CBox* p) {p->Free(); delete p;});
+	shared_ptr<CBox> instance(new CBox(*this), [](CBox* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CBox");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CBox::Free()

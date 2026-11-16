@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "UIRenderable.h"
 
 NS_BEGIN(Engine)
@@ -7,7 +7,7 @@ class ENGINE_DLL CUIImage :
     public CUIRenderable
 {
 public:
-    struct UIIMAGE_DESC : public CUIRenderable::RENDERABLE_DESC
+    struct UIImageDesc : public CUIRenderable::RenderableDesc
     {
   /*      _uint TextureComLevel = {};
         _wstring TextureProtoName =L"";*/
@@ -18,14 +18,14 @@ public:
         
     };
 protected:
-    CUIImage(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUIImage(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUIImage(const CUIImage& prototype);
 public:
     virtual ~CUIImage() = default;
 
 protected:
-    // uiÀÇ »ı¸íÁÖ±â Á¤Ã¥¿¡ µû¶ó ¾ØÁø »ı¸íÁÖ±â ¾È¿¡¼­ È£Ãâ ÇÔ
-    HRESULT OnInit(void* pArg)override;
+    // uiì˜ ìƒëª…ì£¼ê¸° ì •ì±…ì— ë”°ë¼ ì•¤ì§„ ìƒëª…ì£¼ê¸° ì•ˆì—ì„œ í˜¸ì¶œ í•¨
+    HRESULT OnInit(void* arg)override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -62,7 +62,7 @@ protected:
 
 
 public:
-    static shared_ptr<CUIImage> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUIImage> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     //virtual shared_ptr<CUI> Clone(void* pArg);
     void Free()override;
 };

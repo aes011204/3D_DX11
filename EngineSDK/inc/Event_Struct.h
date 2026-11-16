@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Editor_Define.h"
 
 
@@ -14,7 +14,7 @@ namespace Engine
 {
     struct EvtSelectEntity
     {
-        shared_ptr<Engine::CEntity> Entity;
+        shared_ptr<Engine::CEntity> entity;
     };
 
     struct EvtClearSelection {};
@@ -23,26 +23,26 @@ namespace Engine
     struct EvtCloneProto
     {
         //shared_ptr<Engine::CBase> Cloned;
-        _wstring Tag = {};
-        _uint iLevel = {};
+        _wstring tag = {};
+        _uint level = {};
     };
     struct DragDropProto
     {
         //shared_ptr<Engine::CBase> Cloned;
-        wchar_t szTag[256] = {};
-        _uint iLevel = {};
+        wchar_t tag[256] = {};
+        _uint level = {};
     };
 
    
     struct EvtTerrainPicking
     {
         _bool isOnPicking = false;
-        _wstring Tag = {};
-        _uint iLevel = {};
+        _wstring tag = {};
+        _uint level = {};
     };
     struct EvtControllerPoiner
     {
-        Client::CInventory_Controller* m_contrl_Pointer = {};
+        Client::CInventory_Controller* controlPointer = {};
     };
     
 

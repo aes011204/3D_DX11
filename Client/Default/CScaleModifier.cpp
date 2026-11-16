@@ -1,65 +1,65 @@
-#include "CScaleModifier.h"
+ï»¿#include "CScaleModifier.h"
 #include "UITransform.h"
 #include "UI.h"
 #include "Log_Manager.h"
 
 CScaleModifier::CScaleModifier(_float range, _float duration, _float startPosRad, _float2 baseScale, _bool continuous)
-	: m_Range (range),
-	m_StartPosRad(startPosRad),
-	m_BaseScale (baseScale),m_Continuous (continuous),
-	m_Duration(duration)
+	: m_range (range),
+	m_startPosRad(startPosRad),
+	m_baseScale (baseScale),m_isContinuous (continuous),
+	m_duration(duration)
 {
 
 }
 CScaleModifier::~CScaleModifier()
 {
 
-	m_fAccTime = 0.f;
+	m_accTime = 0.f;
 }
 
-void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
+void CScaleModifier::Tick(float deltaTime, CUI* owner)
 {
-	if (nullptr == m_pOwnerTransform) 
+	if (nullptr == m_ownerTransform) 
 	{
-		m_pOwnerTransform = dynamic_cast<CUITransform*>(pOwner->Get_Component(g_strUITransformTag).get());
+		m_ownerTransform = dynamic_cast<CUITransform*>(owner->Get_Component(g_strUITransformTag).get());
 	}
 
-	m_fAccTime += fDeltaTime;
+	m_accTime += deltaTime;
 
 
 
-	if (m_Continuous == true)
+	if (m_isContinuous == true)
 	{
-		// ÀÌ°Ç µà·¹ÀÌ¼Ç À» ½ºÇÇµå·Î
-		float CurSin = sinf(m_Duration * m_fAccTime + m_StartPosRad);
-		float sinValue = sinf(CurSin * PI / 2.0f);
+		// ì´ê±´ ë“€ë ˆì´ì…˜ ì„ ìŠ¤í”¼ë“œë¡œ
+		float curSin = sinf(m_duration * m_accTime + m_startPosRad);
+		float sinValue = sinf(curSin * PI / 2.0f);
 
 		Vector2 size = {};
 
-		_float sinX = m_Range * sinValue + m_BaseScale.x;
-		_float sinY = m_Range * sinValue + m_BaseScale.y;
-		m_pOwnerTransform->SetLocalScale({ sinX,sinY });
+		_float sinX = m_range * sinValue + m_baseScale.x;
+		_float sinY = m_range * sinValue + m_baseScale.y;
+		m_ownerTransform->SetLocalScale({ sinX,sinY });
 
 
 	}
 
-	if(m_Continuous == false)
+	if(m_isContinuous == false)
 	{
 
-		float fRatio = m_fAccTime / m_Duration;
-		if (fRatio >= 1.0f) fRatio = 1.0f;
+		float ratio = m_accTime / m_duration;
+		if (ratio >= 1.0f) ratio = 1.0f;
 
 		//float CurSin = sinf(m_Speed * m_fAccTime + m_StartPosRad);
-		float sinValue = sinf(fRatio * PI / 2.0f);
+		float sinValue = sinf(ratio * PI / 2.0f);
 
 		Vector2 size = {};
 
-		_float sinX = m_Range * sinValue + m_BaseScale.x;
-		_float sinY = m_Range * sinValue + m_BaseScale.y;
-		m_pOwnerTransform->SetLocalScale({ sinX,sinY });
+		_float sinX = m_range * sinValue + m_baseScale.x;
+		_float sinY = m_range * sinValue + m_baseScale.y;
+		m_ownerTransform->SetLocalScale({ sinX,sinY });
 
 
-		if (fRatio >= 1.0f)
+		if (ratio >= 1.0f)
 		{
 			m_finsh = true;
 
@@ -68,11 +68,11 @@ void CScaleModifier::Tick(float fDeltaTime, CUI* pOwner)
 	//CLog_Manager::GetInstance()->Add_Log_F(LOG_LEVEL::INFO,"dt: %.4f  acc: %.3f  scale: %.4f", fDeltaTime, m_fAccTime, sin);
 }
 
-void CScaleModifier::OnAppear(float fDeltaTime, CUI* pOwner)
+void CScaleModifier::OnAppear(float deltaTime, CUI* owner)
 {
 }
 
-void CScaleModifier::OnDisappear(float fDeltaTime, CUI* pOwner)
+void CScaleModifier::OnDisappear(float deltaTime, CUI* owner)
 {
 
 }

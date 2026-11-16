@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "UIPanel.h"
 #include "Client_Define.h"
 NS_BEGIN(Client)
@@ -6,7 +6,7 @@ class CUI_MainMenu final:
     public CUIPanel
 {
 public:
-    struct MAINMENU_DESC : public CUIPanel::UIPANEL_DESC
+    struct MainMenuDesc : public CUIPanel::UIPanelDesc
     {
        /* _uint TextureComLevel = {};
         _wstring TextureProtoName = L"";*/
@@ -16,14 +16,14 @@ public:
        //_bool IsUseLayout = {};
     };
 protected:
-    CUI_MainMenu(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CUI_MainMenu(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CUI_MainMenu(const CUIPanel& prototype);
 public:
     ~CUI_MainMenu() = default;
 
 public:
 
-    HRESULT OnInit(void* pArg) override;
+    HRESULT OnInit(void* arg) override;
     void OnActive()override;
     void OnInActive()override;
     void OnDisabled()override;
@@ -37,7 +37,7 @@ public:
 private:
 
 public:
-    static shared_ptr<CUI_MainMenu> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static shared_ptr<CUI_MainMenu> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

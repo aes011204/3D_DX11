@@ -1,4 +1,4 @@
-#include "ItemInfo.h"
+Ôªø#include "ItemInfo.h"
 
 #include <UIImage.h>
 
@@ -6,8 +6,8 @@
 #include "UIText.h"
 #include "EventBus.h"
 
-CItemInfo::CItemInfo(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CItemInfo::CItemInfo(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -16,17 +16,17 @@ CItemInfo::CItemInfo(const CUIPanel& prototype)
 {
 }
 
-void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE PlayerState, _bool IsPlayer)
+void CItemInfo::UI_PanelActive(_bool isHold, ItemInst itemInst, EPlayerState playerState, _bool isPlayer)
 {
-	wstring NameInfo = L"";
-	wstring LeftInfo = L"";
-	wstring RightInfo = L"";
-	wstring DescInfo = L"";
+	wstring nameInfo = L"";
+	wstring leftInfo = L"";
+	wstring rightInfo = L"";
+	wstring descInfo = L"";
 	//wstring KeyInfo = L"";
 
 
 
-	if (itemInst.ItemInst_ID == ID_Absence)
+	if (itemInst.itemInstID == kIDAbsence)
 	{
 
 		UI_InActive();
@@ -35,126 +35,126 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 
 	float cost = {};
 
-	float fCurrentY = -m_NamePadding;
+	float currentY = -m_namePadding;
 
-	Item_Def itemDef = CItemDB::GetInstance()->GetItemByID(itemInst.ItemDef_ID);
+	const ItemDef& itemDef = CItemDB::GetInstance()->GetItemByID(itemInst.itemDefID);
 
-	switch (itemInst.ItemType)
+	switch (itemInst.itemType)
 	{
-	case ITEM_TYPE::FISH:
+	case EItemType::FISH:
 
-		if (Fish_Inst* FishInst = get_if<Fish_Inst>(&itemInst.TypeDef))
+		if (FishInst* fishInst = get_if<FishInst>(&itemInst.typeDef))
 		{
-			Fish_Def* FishDef = get_if<Fish_Def>(&itemDef.TypeDef);
+			const FishDef* fishDef = get_if<FishDef>(&itemDef.typeDef);
 
-			if (FishInst->mutation_ID == ID_Absence)
+			if (fishInst->mutationID == kIDAbsence)
 			{
-				NameInfo = S2W(itemDef.ItemName);
-				DescInfo = S2W(itemDef.ItemDesc);
-				cost = FishDef->Cost;
+				nameInfo = S2W(itemDef.itemName);
+				descInfo = S2W(itemDef.itemDesc);
+				cost = fishDef->cost;
 			}
 			else
 			{
-				const int mutationIndex = static_cast<int>(FishInst->mutation_ID) - 1;
+				const int mutationIndex = static_cast<int>(fishInst->mutationID) - 1;
 
-				if (mutationIndex >= 0 && mutationIndex < static_cast<int>(FishDef->vec_Mutation.size()))
+				if (mutationIndex >= 0 && mutationIndex < static_cast<int>(fishDef->vecMutation.size()))
 				{
-					NameInfo = S2W(FishDef->vec_Mutation[mutationIndex].MutName);
-					DescInfo = S2W(FishDef->vec_Mutation[mutationIndex].MutDesc);
-					cost = FishDef->vec_Mutation[mutationIndex].MutCost;
+					nameInfo = S2W(fishDef->vecMutation[mutationIndex].mutName);
+					descInfo = S2W(fishDef->vecMutation[mutationIndex].mutDesc);
+					cost = fishDef->vecMutation[mutationIndex].mutCost;
 				}
 				else
 				{
-					NameInfo = S2W(itemDef.ItemName);
-					DescInfo = S2W(itemDef.ItemDesc);
-					cost = FishDef->Cost;
+					nameInfo = S2W(itemDef.itemName);
+					descInfo = S2W(itemDef.itemDesc);
+					cost = fishDef->cost;
 				}
 			}
 
-			LeftInfo = L"≈©±‚:\nªÛ≈¬:\n¿Ø«¸:";
-			RightInfo = format(L"{:.2f}cm\n{}\n{}", FishInst->size, freshToWstr(FishInst->freshness), OcceanToWstr(FishDef->SeaType_Mask));
+			leftInfo = L"ÌÅ¨Í∏∞:\nÏÉÅÌÉú:\nÏú†Ìòï:";
+			rightInfo = format(L"{:.2f}cm\n{}\n{}", fishInst->size, freshToWstr(fishInst->freshness), OcceanToWstr(fishDef->seaTypeMask));
 		}
 		if (isHold == true)
 			break;
 		break;
-	case ITEM_TYPE::EQUIP:
+	case EItemType::EQUIP:
 	{
 
-		Equip_Inst* EquipInst = get_if<Equip_Inst>(&itemInst.TypeDef);
-		Equip_Def* EquipDef = get_if<Equip_Def>(&itemDef.TypeDef);
+		EquipInst* equipInst = get_if<EquipInst>(&itemInst.typeDef);
+		const EquipDef* equipDef = get_if<EquipDef>(&itemDef.typeDef);
 
-		NameInfo = S2W(itemDef.ItemName);
+		nameInfo = S2W(itemDef.itemName);
 
-		DescInfo = S2W(itemDef.ItemDesc);
-		cost = EquipDef->Cost;
+		descInfo = S2W(itemDef.itemDesc);
+		cost = equipDef->cost;
 
 		if (isHold == true)
 			break;
 
-		if (Equip_Engine* EquipEngine = get_if<Equip_Engine>(&EquipDef->EquipType_Effect))
+		if (const EquipEngine* equipEngine = get_if<EquipEngine>(&equipDef->equipTypeEffect))
 		{
-			LeftInfo = L"º≥ƒ° Ω√∞£:\nªÛ≈¬:\nº”µµ:";
-			RightInfo = format(L"{}h\n{}\n+{}kn", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipEngine->Speed_Kn);
+			leftInfo = L"ÏÑ§Ïπò ÏãúÍ∞Ñ:\nÏÉÅÌÉú:\nÏÜçÎèÑ:";
+			rightInfo = format(L"{}h\n{}\n+{}kn", equipDef->installTime, GetBroken(equipInst->isBroken), equipEngine->speedKn);
 		}
-		else if (Equip_Light* EquipLight = get_if<Equip_Light>(&EquipDef->EquipType_Effect))
+		else if (const EquipLight* equipLight = get_if<EquipLight>(&equipDef->equipTypeEffect))
 		{
-			LeftInfo = L"º≥ƒ° Ω√∞£:\nªÛ≈¬:\n∑Á∏‡:\nπ¸¿ß";
-			RightInfo = format(L"{}h\n{}\n+{}lm\n{}m", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipLight->Lumen, EquipLight->Range);
+			leftInfo = L"ÏÑ§Ïπò ÏãúÍ∞Ñ:\nÏÉÅÌÉú:\nÎ£®Î©ò:\nÎ≤îÏúÑ";
+			rightInfo = format(L"{}h\n{}\n+{}lm\n{}m", equipDef->installTime, GetBroken(equipInst->isBroken), equipLight->lumen, equipLight->range);
 		}
-		else if (Equip_Rod* EquipRod = get_if<Equip_Rod>(&EquipDef->EquipType_Effect))
+		else if (const EquipRod* equipRod = get_if<EquipRod>(&equipDef->equipTypeEffect))
 		{
-			LeftInfo = L"º≥ƒ° Ω√∞£:\nªÛ≈¬:\n≥¨Ω√ º”µµ:\næÓ¡æ";
-			RightInfo = format(L"{}h\n{}\n+{}%\n{}", EquipDef->InstallTime, GetBroken(EquipInst->IsBroken), EquipRod->Speed_Per, OcceanToWstr(EquipRod->SeaType_Mask));
+			leftInfo = L"ÏÑ§Ïπò ÏãúÍ∞Ñ:\nÏÉÅÌÉú:\nÎÇöÏãú ÏÜçÎèÑ:\nÏñ¥Ï¢Ö";
+			rightInfo = format(L"{}h\n{}\n+{}%\n{}", equipDef->installTime, GetBroken(equipInst->isBroken), equipRod->speedPer, OcceanToWstr(equipRod->seaTypeMask));
 		}
 		else
 		{
-			//≥›∆Æ∂˚ ∞‘≈Îπﬂ¿∫ ∆–Ω∫ ±◊∞≈ ±Ó¡ˆ «“Ω√∞£ æ¯¿ªµÌ »ƒø° Ω√∞£ ≥≤¿∏∏È √ﬂ∞°
+			//ÎÑ∑Ìä∏Îûë Í≤åÌÜµÎ∞úÏùÄ Ìå®Ïä§ Í∑∏Í±∞ ÍπåÏßÄ Ìï†ÏãúÍ∞Ñ ÏóÜÏùÑÎìØ ÌõÑÏóê ÏãúÍ∞Ñ ÎÇ®ÏúºÎ©¥ Ï∂îÍ∞Ä
 		}
 
 		break;
 	}
-	case ITEM_TYPE::MATERIAL:
+	case EItemType::MATERIAL:
 	{
-		Material_Def* MatDef = get_if<Material_Def>(&itemDef.TypeDef);
-		NameInfo = S2W(itemDef.ItemName);
-		DescInfo = S2W(itemDef.ItemDesc);
-		cost = MatDef->Cost;
+		const MaterialDef* matDef = get_if<MaterialDef>(&itemDef.typeDef);
+		nameInfo = S2W(itemDef.itemName);
+		descInfo = S2W(itemDef.itemDesc);
+		cost = matDef->cost;
 		break;
 
 	}
 	}
-	m_NameText->Set_Text(NameInfo); //¿ßƒ°¡∂¡§ « ø‰ æ¯¿Ω
-	if (m_NameText->Get_UIState() != UI_STATE::ACTIVE)
-		m_NameText->UI_Active();
-	m_NameText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
-	fCurrentY -= (m_NameText->Get_TextSize().y + m_NamePadding);
+	m_nameText->Set_Text(nameInfo); //ÏúÑÏπòÏ°∞Ï†ï ÌïÑÏöî ÏóÜÏùå
+	if (m_nameText->Get_UIState() != EUIState::ACTIVE)
+		m_nameText->UI_Active();
+	m_nameText->GetUITransform()->SetAnchoredPos({ m_paddingX, currentY });
+	currentY -= (m_nameText->Get_TextSize().y + m_namePadding);
 
-	if (m_LineImg->Get_UIState() != UI_STATE::ACTIVE)
-		m_LineImg->UI_Active();
-	m_LineImg->GetUITransform()->SetAnchoredPos({ 0, fCurrentY });
-	fCurrentY -= (m_LineImg->GetUITransform()->Get_SizeDelta().y + m_PaddingY);
+	if (m_lineImg->Get_UIState() != EUIState::ACTIVE)
+		m_lineImg->UI_Active();
+	m_lineImg->GetUITransform()->SetAnchoredPos({ 0, currentY });
+	currentY -= (m_lineImg->GetUITransform()->Get_SizeDelta().y + m_paddingY);
 
-	m_LeftText->Set_Text(LeftInfo);
-	m_LeftText->GetUITransform()->SetAnchoredPos({ m_PaddingX, fCurrentY });
-	if (m_LeftText->Get_UIState() != UI_STATE::ACTIVE)
-		m_LeftText->UI_Active();
+	m_leftText->Set_Text(leftInfo);
+	m_leftText->GetUITransform()->SetAnchoredPos({ m_paddingX, currentY });
+	if (m_leftText->Get_UIState() != EUIState::ACTIVE)
+		m_leftText->UI_Active();
 
-	m_RightText->Set_Text(RightInfo);
-	m_RightText->GetUITransform()->SetAnchoredPos({ -m_PaddingX, fCurrentY });
-	if (m_RightText->Get_UIState() != UI_STATE::ACTIVE)
-		m_RightText->UI_Active();
-	fCurrentY -= (m_LeftText->Get_TextSize().y + m_PaddingY);
+	m_rightText->Set_Text(rightInfo);
+	m_rightText->GetUITransform()->SetAnchoredPos({ -m_paddingX, currentY });
+	if (m_rightText->Get_UIState() != EUIState::ACTIVE)
+		m_rightText->UI_Active();
+	currentY -= (m_leftText->Get_TextSize().y + m_paddingY);
 
 
-	m_DetailText->Set_Text(DescInfo);
-	m_DetailText->GetUITransform()->SetAnchoredPos({ -m_PaddingX, fCurrentY });
-	if (m_DetailText->Get_UIState() != UI_STATE::ACTIVE)
-		m_DetailText->UI_Active();
-	fCurrentY -= (m_DetailText->Get_TextSize().y + m_PaddingY);
+	m_detailText->Set_Text(descInfo);
+	m_detailText->GetUITransform()->SetAnchoredPos({ -m_paddingX, currentY });
+	if (m_detailText->Get_UIState() != EUIState::ACTIVE)
+		m_detailText->UI_Active();
+	currentY -= (m_detailText->Get_TextSize().y + m_paddingY);
 
 	for (auto& infoBtn : m_vecIcon)
 	{
-		if (infoBtn->Get_UIState() == UI_STATE::ACTIVE)
+		if (infoBtn->Get_UIState() == EUIState::ACTIVE)
 			infoBtn->UI_InActive();
 	}
 
@@ -163,61 +163,61 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 	if (isHold == true)
 	{
 
-		switch (PlayerState)
+		switch (playerState)
 		{
-		case E_PLAYERSTATE::FISHING:
-		case E_PLAYERSTATE::SEA:
-			// ≥ı±‚ »∏¿¸ πˆ∏Æ±‚
-			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f ,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+		case EPlayerState::FISHING:
+		case EPlayerState::SEA:
+			// ÎÜìÍ∏∞ ÌöåÏ†Ñ Î≤ÑÎ¶¨Í∏∞
+			sizeY = Active_ButtonInfo(EButtonInfo::RELEASE, { 40.f ,currentY });
+			currentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::ROTATION, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::ROTATION, { 40.f, currentY });
+			currentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::THROWUP, { 40.f, currentY });
+			currentY -= (sizeY + m_paddingY);
 
 			break;
-		case E_PLAYERSTATE::REPAIR_SHOP:
+		case EPlayerState::REPAIR_SHOP:
 		{
-			//º≥ƒ° »∏¿¸ √¢∞Ì∑Œ∫∏≥ª±‚ »Ø∫“
+			//ÏÑ§Ïπò ÌöåÏ†Ñ Ï∞ΩÍ≥†Î°úÎ≥¥ÎÇ¥Í∏∞ ÌôòÎ∂à
 
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::RELEASE, { 40.f,currentY });
+			currentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::ROTATION, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::ROTATION, { 40.f, currentY });
+			currentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
-			if (itemInst.ItemType == ITEM_TYPE::EQUIP)
+			sizeY = Active_ButtonInfo(EButtonInfo::STORAGE, { 40.f, currentY });
+			currentY -= (sizeY + m_paddingY);
+			if (itemInst.itemType == EItemType::EQUIP)
 			{
-				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 40.f, fCurrentY }, cost*.5f);
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::SELL, { 40.f, currentY }, cost*.5f);
+				currentY -= (sizeY + m_paddingY);
 			}
 			break;
 		}
-		case E_PLAYERSTATE::FISH_SHOP:
+		case EPlayerState::FISH_SHOP:
 
 		{
 
 
-			//º≥ƒ° »∏¿¸ √¢∞Ì∑Œ∫∏≥ª±‚ »Ø∫“
+			//ÏÑ§Ïπò ÌöåÏ†Ñ Ï∞ΩÍ≥†Î°úÎ≥¥ÎÇ¥Í∏∞ ÌôòÎ∂à
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::RELEASE, { 40.f,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::RELEASE, { 40.f,currentY });
+			currentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::ROTATION, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::ROTATION, { 40.f, currentY });
+			currentY -= (sizeY + m_paddingY);
 
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 40.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
-			if (itemInst.ItemType == ITEM_TYPE::FISH)
+			sizeY = Active_ButtonInfo(EButtonInfo::STORAGE, { 40.f, currentY });
+			currentY -= (sizeY + m_paddingY);
+			if (itemInst.itemType == EItemType::FISH)
 			{
-				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 40.f, fCurrentY }, cost);
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::SELL, { 40.f, currentY }, cost);
+				currentY -= (sizeY + m_paddingY);
 
 			}
 
@@ -229,37 +229,37 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 	else
 	{
 
-		switch (PlayerState)
+		switch (playerState)
 		{
-		case E_PLAYERSTATE::FISHING:
-		case E_PLAYERSTATE::SEA:
-			//¡˝±‚ πˆ∏Æ±‚
-			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+		case EPlayerState::FISHING:
+		case EPlayerState::SEA:
+			//ÏßëÍ∏∞ Î≤ÑÎ¶¨Í∏∞
+			sizeY = Active_ButtonInfo(EButtonInfo::PICK, { 50.f ,currentY });
+			currentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::THROWUP, { 50.f, currentY });
+			currentY -= (sizeY + m_paddingY);
 			break;
-			//case E_PLAYERSTATE::REPAIR_SHOP: // ¿Ã∞≈ ±∏∏≈ √¯
-			//	//±∏∏≈
+			//case E_PLAYERSTATE::REPAIR_SHOP: // Ïù¥Í±∞ Íµ¨Îß§ Ï∏°
+			//	//Íµ¨Îß§
 			//	sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f ,fCurrentY }, cost);
 			//	fCurrentY -= (sizeY + m_PaddingY);
 
 			//break;
-		case E_PLAYERSTATE::REPAIR_SHOP:
-			if (IsPlayer)
+		case EPlayerState::REPAIR_SHOP:
+			if (isPlayer)
 			{
-				sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::PICK, { 50.f ,currentY });
+				currentY -= (sizeY + m_paddingY);
 
-				sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
-				fCurrentY -= (sizeY + m_PaddingY);
-				sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
-				fCurrentY -= (sizeY + m_PaddingY);
-				if (itemInst.ItemType == ITEM_TYPE::EQUIP)
+				sizeY = Active_ButtonInfo(EButtonInfo::THROWUP, { 50.f, currentY });
+				currentY -= (sizeY + m_paddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::STORAGE, { 50.f ,currentY });
+				currentY -= (sizeY + m_paddingY);
+				if (itemInst.itemType == EItemType::EQUIP)
 				{
-					sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost * 0.5f);
-					fCurrentY -= (sizeY + m_PaddingY);
+					sizeY = Active_ButtonInfo(EButtonInfo::SELL, { 50.f, currentY }, cost * 0.5f);
+					currentY -= (sizeY + m_paddingY);
 
 				}
 			}
@@ -267,27 +267,27 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 			{
 
 
-				sizeY = Active_ButtonInfo(BUTTONINFO::BUY, { 50.f, fCurrentY }, cost);
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::BUY, { 50.f, currentY }, cost);
+				currentY -= (sizeY + m_paddingY);
 			}
-			//¡˝±‚ πˆ∏Æ±‚ √¢∞Ì∑Œ∫∏≥ª±‚ ∆«∏≈
+			//ÏßëÍ∏∞ Î≤ÑÎ¶¨Í∏∞ Ï∞ΩÍ≥†Î°úÎ≥¥ÎÇ¥Í∏∞ ÌåêÎß§
 
 			break;
 
 
-		case E_PLAYERSTATE::FISH_SHOP:
-			//¡˝±‚ πˆ∏Æ±‚ √¢∞Ì∑Œ∫∏≥ª±‚ ∆«∏≈
-			sizeY = Active_ButtonInfo(BUTTONINFO::PICK, { 50.f ,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
+		case EPlayerState::FISH_SHOP:
+			//ÏßëÍ∏∞ Î≤ÑÎ¶¨Í∏∞ Ï∞ΩÍ≥†Î°úÎ≥¥ÎÇ¥Í∏∞ ÌåêÎß§
+			sizeY = Active_ButtonInfo(EButtonInfo::PICK, { 50.f ,currentY });
+			currentY -= (sizeY + m_paddingY);
 
-			sizeY = Active_ButtonInfo(BUTTONINFO::THROWUP, { 50.f, fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
-			sizeY = Active_ButtonInfo(BUTTONINFO::STORAGE, { 50.f ,fCurrentY });
-			fCurrentY -= (sizeY + m_PaddingY);
-			if (itemInst.ItemType == ITEM_TYPE::FISH)
+			sizeY = Active_ButtonInfo(EButtonInfo::THROWUP, { 50.f, currentY });
+			currentY -= (sizeY + m_paddingY);
+			sizeY = Active_ButtonInfo(EButtonInfo::STORAGE, { 50.f ,currentY });
+			currentY -= (sizeY + m_paddingY);
+			if (itemInst.itemType == EItemType::FISH)
 			{
-				sizeY = Active_ButtonInfo(BUTTONINFO::SELL, { 50.f, fCurrentY }, cost);
-				fCurrentY -= (sizeY + m_PaddingY);
+				sizeY = Active_ButtonInfo(EButtonInfo::SELL, { 50.f, currentY }, cost);
+				currentY -= (sizeY + m_paddingY);
 			}
 
 			break;
@@ -302,17 +302,17 @@ void CItemInfo::UI_PanelActive(_bool isHold, Item_Inst itemInst, E_PLAYERSTATE P
 
 		}
 	}*/
-	m_Targetsize.y = abs(fCurrentY) + m_PaddingY;
+	m_targetSize.y = abs(currentY) + m_paddingY;
 	//m_Targetsize.y = rc.Bottom() - GetUITransform()->Get_WorldRect().Top() ;
 
 
-	const bool wasActive = Get_UIState() == UI_STATE::ACTIVE;
+	const bool wasActive = Get_UIState() == EUIState::ACTIVE;
 	Set_ActiveForCustom();
 	if (!wasActive)
-		m_bRenderReady = false;
+		m_isRenderReady = false;
 
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 
 	//m_bInteractable = true;
 	OnActive();
@@ -325,82 +325,82 @@ void CItemInfo::UI_Active()
 	CUIPanel::UI_Active();
 }
 
-HRESULT CItemInfo::OnInit(void* pArg)
+HRESULT CItemInfo::OnInit(void* arg)
 {
 
 
 	HRESULT hr = E_FAIL;
-	ITEMINFO_DESC* INFODesc = static_cast<ITEMINFO_DESC*>(pArg);
-	INFODesc->bUseNineSlice = true;
-	INFODesc->TextureComLevel = ETOI(LEVEL::STATIC);
-	INFODesc->TextureProtoName = L"Prototype_Component_Texture_PopupBackground";
-	INFODesc->vPivot = (_float2{ 0.f,0.f });
+	ItemInfoDesc* INFODesc = static_cast<ItemInfoDesc*>(arg);
+	INFODesc->useNineSlice = true;
+	INFODesc->textureComLevel = ETOI(ELevel::STATIC);
+	INFODesc->textureProtoName = L"Prototype_Component_Texture_PopupBackground";
+	INFODesc->pivot = (_float2{ 0.f,0.f });
 	hr = CUIPanel::OnInit(INFODesc);
 
 
-	//¿Ã∏ß - ∞Ì¡§
-	CUIText::TEXT_DESC ItemNameDesc = {};
-	ItemNameDesc.fontaline = CUIText::FONTALINE::LEFT;
-	ItemNameDesc.strFontTag = L"Noto_Sans_CJK_SC_32";
-	ItemNameDesc.strText = L"¿Ã∏ß";
-	ItemNameDesc.vPivot = (_float2{ 0.f,1.f });
-	ItemNameDesc.vAnchorPoint = (_float2{ 0.f,1.f });
+	//Ïù¥Î¶Ñ - Í≥†Ï†ï
+	CUIText::TextDesc itemNameDesc = {};
+	itemNameDesc.fontAlign = CUIText::EFontAlign::LEFT;
+	itemNameDesc.fontTag = L"Noto_Sans_CJK_SC_32";
+	itemNameDesc.text = L"Ïù¥Î¶Ñ";
+	itemNameDesc.pivot = (_float2{ 0.f,1.f });
+	itemNameDesc.anchorPoint = (_float2{ 0.f,1.f });
 
-	shared_ptr<CUIText> ItemNameText = CUIText::Create(m_pDevice, m_pContext);
-	ItemNameText->Initialize(&ItemNameDesc);
-	Add_Child(ItemNameText, L"ItemNameText", false);
-	m_NameText = ItemNameText;
+	shared_ptr<CUIText> itemNameText = CUIText::Create(m_device, m_context);
+	itemNameText->Initialize(&itemNameDesc);
+	Add_Child(itemNameText, L"ItemNameText", false);
+	m_nameText = itemNameText;
 
-	// º± - ∞Ì¡§
-	CUIImage::UIIMAGE_DESC LineDesc = {};
-	LineDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	LineDesc.TextureProtoName = L"Prototype_Component_Texture_TabDivider";
-	LineDesc.vPivot = (_float2{ 0.5f,0.5f });
-	LineDesc.vAnchorPoint = (_float2{ 0.5f,1.f });
+	// ÏÑ† - Í≥†Ï†ï
+	CUIImage::UIImageDesc lineDesc = {};
+	lineDesc.textureComLevel = ETOI(ELevel::STATIC);
+	lineDesc.textureProtoName = L"Prototype_Component_Texture_TabDivider";
+	lineDesc.pivot = (_float2{ 0.5f,0.5f });
+	lineDesc.anchorPoint = (_float2{ 0.5f,1.f });
 
-	shared_ptr<CUIImage> Line = CUIImage::Create(m_pDevice, m_pContext);
-	Line->Initialize(&LineDesc);
+	shared_ptr<CUIImage> Line = CUIImage::Create(m_device, m_context);
+	Line->Initialize(&lineDesc);
 	Add_Child(Line, L"Line", false);
-	m_LineImg = Line;
+	m_lineImg = Line;
 
 
-	//ø¿∏•¬  øﬁ¬  - ∫Øµø
-	CUIText::TEXT_DESC ItemLeftDesc = {};
-	ItemLeftDesc.fontaline = CUIText::FONTALINE::LEFT;
-	ItemLeftDesc.strFontTag = L"Noto_Sans_CJK_SC";
-	ItemLeftDesc.strText = L"øﬁ¬ ";
-	ItemLeftDesc.vPivot = (_float2{ 0.f,1.f });
-	ItemLeftDesc.vAnchorPoint = _float2{ 0.f,1.f };
-	shared_ptr<CUIText> ItemLeftText = CUIText::Create(m_pDevice, m_pContext);
-	ItemLeftText->Initialize(&ItemLeftDesc);
-	Add_Child(ItemLeftText, L"ItemLeftText", false);
-	m_LeftText = ItemLeftText;
+	//Ïò§Î•∏Ï™Ω ÏôºÏ™Ω - Î≥ÄÎèô
+	CUIText::TextDesc itemLeftDesc = {};
+	itemLeftDesc.fontAlign = CUIText::EFontAlign::LEFT;
+	itemLeftDesc.fontTag = L"Noto_Sans_CJK_SC";
+	itemLeftDesc.text = L"ÏôºÏ™Ω";
+	itemLeftDesc.pivot = (_float2{ 0.f,1.f });
+	itemLeftDesc.anchorPoint = _float2{ 0.f,1.f };
+	shared_ptr<CUIText> itemLeftText = CUIText::Create(m_device, m_context);
+	itemLeftText->Initialize(&itemLeftDesc);
+	Add_Child(itemLeftText, L"ItemLeftText", false);
+	m_leftText = itemLeftText;
 
-	CUIText::TEXT_DESC ItemRightDesc = {};
-	ItemRightDesc.fontaline = CUIText::FONTALINE::RIGHT;
-	ItemRightDesc.strFontTag = L"Noto_Sans_CJK_SC";
-	ItemRightDesc.strText = L"ø¿∏•¬ ";
-	ItemRightDesc.vPivot = (_float2{ 1.f,1.f });
-	ItemRightDesc.vAnchorPoint = _float2{ 1.f,1.f };
-	shared_ptr<CUIText> ItemRightText = CUIText::Create(m_pDevice, m_pContext);
-	ItemRightText->Initialize(&ItemRightDesc);
-	Add_Child(ItemRightText, L"ItemRightText", false);
-	m_RightText = ItemRightText;
+	CUIText::TextDesc itemRightDesc = {};
+	itemRightDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+	itemRightDesc.fontTag = L"Noto_Sans_CJK_SC";
+	itemRightDesc.text = L"Ïò§Î•∏Ï™Ω";
+	itemRightDesc.pivot = (_float2{ 1.f,1.f });
+	itemRightDesc.anchorPoint = _float2{ 1.f,1.f };
+	shared_ptr<CUIText> itemRightText = CUIText::Create(m_device, m_context);
+	itemRightText->Initialize(&itemRightDesc);
+	Add_Child(itemRightText, L"ItemRightText", false);
+	m_rightText = itemRightText;
 
-	// ªÛºº º≥∏Ì - ∫Øµø 
+	// ÏÉÅÏÑ∏ ÏÑ§Î™Ö - Î≥ÄÎèô 
 
-	CUIText::TEXT_DESC ItemDetailDesc = {};
-	ItemDetailDesc.fontaline = CUIText::FONTALINE::CENTER;
-	ItemDetailDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-	ItemDetailDesc.strText = L"ªÛºº º≥∏Ì";
-	ItemDetailDesc.TextColor = _float4{ 0.6f,0.6f,0.6f,1.f };
-	ItemDetailDesc.vPivot = (_float2{ 0.5f,1.f });
-	ItemDetailDesc.vAnchorPoint = (_float2{ 0.5f,1.f });
+	CUIText::TextDesc itemDetailDesc = {};
+	itemDetailDesc.fontAlign = CUIText::EFontAlign::CENTER;
+	itemDetailDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+	itemDetailDesc.text = L"ÏÉÅÏÑ∏ ÏÑ§Î™Ö";
+	itemDetailDesc.textColor = _float4{ 0.6f,0.6f,0.6f,1.f };
+	itemDetailDesc.pivot = (_float2{ 0.5f,1.f });
+	itemDetailDesc.anchorPoint = (_float2{ 0.5f,1.f });
 
-	shared_ptr<CUIText> ItemDetailText = CUIText::Create(m_pDevice, m_pContext);
-	ItemDetailText->Initialize(&ItemDetailDesc);
-	Add_Child(ItemDetailText, L"ItemDetailText", false);
-	m_DetailText = ItemDetailText;
+	shared_ptr<CUIText> itemDetailText = CUIText::Create(m_device, m_context);
+	itemDetailText->Initialize(&itemDetailDesc);
+	Add_Child(itemDetailText, L"ItemDetailText", false);
+	m_detailText = itemDetailText;
 
 
 
@@ -408,44 +408,44 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	{
 
 
-		m_vecIcon.resize(BUTTONINFO::END);
-		for (size_t i = 0; i < BUTTONINFO::END; i++)
+		m_vecIcon.resize(EButtonInfo::END);
+		for (size_t i = 0; i < EButtonInfo::END; i++)
 		{
-			BUTTONINFO currentBtn = static_cast<BUTTONINFO>(i);
+			EButtonInfo currentBtn = static_cast<EButtonInfo>(i);
 			string viewName = string(magic_enum::enum_name(currentBtn));
 			wstring wName = S2W(viewName);
 
-			//πˆ∆∞¿Œ∆˜ æ∆¿Ãƒ‹ - ∫Øµø
-			CUIImage::UIIMAGE_DESC ButtonIconDesc = {};
-			ButtonIconDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-			ButtonIconDesc.TextureProtoName = L"Prototype_Component_Texture_KEY";
-			ButtonIconDesc.TextureIndex = 119;
-			ButtonIconDesc.vPivot = (_float2{ 0.5f,1.f });
-			ButtonIconDesc.vAnchorPoint = (_float2{ 0.5f,1.f });
-			ButtonIconDesc.vScale = (_float2{ 0.6f,0.6f });
-			ButtonIconDesc.vAnchoredPos = _float2{ 10.f,0.f };
+			//Î≤ÑÌäºÏù∏Ìè¨ ÏïÑÏù¥ÏΩò - Î≥ÄÎèô
+			CUIImage::UIImageDesc buttonIconDesc = {};
+			buttonIconDesc.textureComLevel = ETOI(ELevel::STATIC);
+			buttonIconDesc.textureProtoName = L"Prototype_Component_Texture_KEY";
+			buttonIconDesc.textureIndex = 119;
+			buttonIconDesc.pivot = (_float2{ 0.5f,1.f });
+			buttonIconDesc.anchorPoint = (_float2{ 0.5f,1.f });
+			buttonIconDesc.scale = (_float2{ 0.6f,0.6f });
+			buttonIconDesc.anchoredPos = _float2{ 10.f,0.f };
 
-			shared_ptr<CUIImage> icon = CUIImage::Create(m_pDevice, m_pContext);
-			icon->Initialize(&ButtonIconDesc);
+			shared_ptr<CUIImage> icon = CUIImage::Create(m_device, m_context);
+			icon->Initialize(&buttonIconDesc);
 			Add_Child(icon, L"icon" + wName, false);
 			icon->UI_InActive();
 
-			// πˆ∆∞ ¿Œ∆˜
-			CUIText::TEXT_DESC ButtonInfoDesc = {};
-			ButtonInfoDesc.fontaline = CUIText::FONTALINE::RIGHT;
-			ButtonInfoDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-			ButtonInfoDesc.strText = L"πˆ∆∞¿Œ∆˜";
-			ButtonInfoDesc.vPivot = _float2{ 1.f,0.5f };
-			ButtonInfoDesc.vAnchorPoint = _float2{ 1.f,0.5f };
-			ButtonInfoDesc.vAnchoredPos = _float2{ -(icon->GetUITransform()->Get_FinalSize().x + 5.f),0.f };
+			// Î≤ÑÌäº Ïù∏Ìè¨
+			CUIText::TextDesc buttonInfoDesc = {};
+			buttonInfoDesc.fontAlign = CUIText::EFontAlign::RIGHT;
+			buttonInfoDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+			buttonInfoDesc.text = L"Î≤ÑÌäºÏù∏Ìè¨";
+			buttonInfoDesc.pivot = _float2{ 1.f,0.5f };
+			buttonInfoDesc.anchorPoint = _float2{ 1.f,0.5f };
+			buttonInfoDesc.anchoredPos = _float2{ -(icon->GetUITransform()->Get_FinalSize().x + 5.f),0.f };
 
-			shared_ptr<CUIText> ButtonInfoText = CUIText::Create(m_pDevice, m_pContext);
-			ButtonInfoText->Initialize(&ButtonInfoDesc);
+			shared_ptr<CUIText> buttonInfoText = CUIText::Create(m_device, m_context);
+			buttonInfoText->Initialize(&buttonInfoDesc);
 
 
 
-			icon->Add_Child(ButtonInfoText, wName, false);
-			ButtonInfoText->UI_InActive();
+			icon->Add_Child(buttonInfoText, wName, false);
+			buttonInfoText->UI_InActive();
 
 			m_vecIcon[i] = icon;
 		}
@@ -453,38 +453,38 @@ HRESULT CItemInfo::OnInit(void* pArg)
 	}
 	return hr;
 }
-void CItemInfo::GetButtonInfo(_uint buttonInfo, _uint& Texindex, wstring& str, _float extraInfo)
+void CItemInfo::GetButtonInfo(_uint buttonInfo, _uint& texIndex, wstring& str, _float extraInfo)
 {
-	// 119 - ¡˝±‚ / 213- z / 123 - √¢∞Ì / 53 - ∆«∏≈ /119 ≥ı±‚/ 121 »∏¿¸
+	// 119 - ÏßëÍ∏∞ / 213- z / 123 - Ï∞ΩÍ≥† / 53 - ÌåêÎß§ /119 ÎÜìÍ∏∞/ 121 ÌöåÏ†Ñ
 	switch (buttonInfo)
 	{
-	case ETOI(CItemInfo::BUTTONINFO::STORAGE):
-		Texindex = 123;
-		str = L"√¢∞Ì∑Œ ∫∏≥ª±‚";
+	case ETOI(CItemInfo::EButtonInfo::STORAGE):
+		texIndex = 123;
+		str = L"Ï∞ΩÍ≥†Î°ú Î≥¥ÎÇ¥Í∏∞";
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::BUY):
-		Texindex = 123;
-		str = format(L"±∏∏≈ [${:.2f}]", extraInfo);
+	case ETOI(CItemInfo::EButtonInfo::BUY):
+		texIndex = 123;
+		str = format(L"Íµ¨Îß§ [${:.2f}]", extraInfo);
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::PICK):
-		Texindex = 119;
-		str = L"¡˝±‚";
+	case ETOI(CItemInfo::EButtonInfo::PICK):
+		texIndex = 119;
+		str = L"ÏßëÍ∏∞";
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::RELEASE):
-		Texindex = 119;
-		str = L"≥ı±‚";
+	case ETOI(CItemInfo::EButtonInfo::RELEASE):
+		texIndex = 119;
+		str = L"ÎÜìÍ∏∞";
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::ROTATION):
-		Texindex = 121;
-		str = L"»∏¿¸";
+	case ETOI(CItemInfo::EButtonInfo::ROTATION):
+		texIndex = 121;
+		str = L"ÌöåÏ†Ñ";
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::SELL):
-		Texindex = 53;
-		str = format(L"∆«∏≈ [${:.2f}]", extraInfo);
+	case ETOI(CItemInfo::EButtonInfo::SELL):
+		texIndex = 53;
+		str = format(L"ÌåêÎß§ [${:.2f}]", extraInfo);
 		return;
-	case ETOI(CItemInfo::BUTTONINFO::THROWUP):
-		Texindex = 213;
-		str = L"πˆ∏Æ±‚";
+	case ETOI(CItemInfo::EButtonInfo::THROWUP):
+		texIndex = 213;
+		str = L"Î≤ÑÎ¶¨Í∏∞";
 		return;
 
 	}
@@ -509,8 +509,8 @@ void CItemInfo::OnDisabled()
 void CItemInfo::OnUpdate(const _float& timeDelta)
 {
 
-	GetUITransform()->SetLocalScale({ 1.4f, m_Targetsize.y / GetUITransform()->Get_SizeDelta().y });
-	m_LineImg->GetUITransform()->SetLocalScale({ GetUITransform()->Get_FinalSize().x / m_LineImg->GetUITransform()->Get_SizeDelta().x, 0.5f });
+	GetUITransform()->SetLocalScale({ 1.4f, m_targetSize.y / GetUITransform()->Get_SizeDelta().y });
+	m_lineImg->GetUITransform()->SetLocalScale({ GetUITransform()->Get_FinalSize().x / m_lineImg->GetUITransform()->Get_SizeDelta().x, 0.5f });
 
 
 	CUIPanel::OnUpdate(timeDelta);
@@ -525,7 +525,7 @@ void CItemInfo::OnPrepareRender()
 
 void CItemInfo::OnLateUpdate()
 {
-	GetUITransform()->SetAnchoredPos({ 0.f,m_pGameInstance.lock()->Get_MousePos().y - (m_pGameInstance.lock()->Get_WinSize().Bottom() / 2) });
+	GetUITransform()->SetAnchoredPos({ 0.f,m_gameInstance.lock()->Get_MousePos().y - (m_gameInstance.lock()->Get_WinSize().Bottom() / 2) });
 
 	CUIPanel::OnLateUpdate();
 }
@@ -540,17 +540,17 @@ void CItemInfo::OnClear()
 	CUIPanel::OnClear();
 }
 
-_float CItemInfo::Active_ButtonInfo(BUTTONINFO btnInfo, _float2 AnchoredPos, _float cost, _float2 Pivot)
+_float CItemInfo::Active_ButtonInfo(EButtonInfo btnInfo, _float2 anchoredPos, _float cost, _float2 pivot)
 {
 	wstring str = L"";
-	_uint TexIndex = {};
+	_uint texIndex = {};
 
-	AnchoredPos.x = 100.f;
+	anchoredPos.x = 100.f;
 
-	GetButtonInfo(btnInfo, TexIndex, str, cost);
-	m_vecIcon[ETOI(btnInfo)]->Set_TextureIndex(TexIndex);
-	m_vecIcon[ETOI(btnInfo)]->GetUITransform()->SetPivot(Pivot);
-	m_vecIcon[ETOI(btnInfo)]->GetUITransform()->SetAnchoredPos(AnchoredPos);
+	GetButtonInfo(btnInfo, texIndex, str, cost);
+	m_vecIcon[ETOI(btnInfo)]->Set_TextureIndex(texIndex);
+	m_vecIcon[ETOI(btnInfo)]->GetUITransform()->SetPivot(pivot);
+	m_vecIcon[ETOI(btnInfo)]->GetUITransform()->SetAnchoredPos(anchoredPos);
 	auto tex = dynamic_pointer_cast<CUIText>(m_vecIcon[ETOI(btnInfo)]->GetChildren()[0]);
 	tex->Set_Text(str);
 	m_vecIcon[ETOI(btnInfo)]->UI_Active();
@@ -563,19 +563,19 @@ _float CItemInfo::Active_ButtonInfo(BUTTONINFO btnInfo, _float2 AnchoredPos, _fl
 
 
 
-	return m_vecIcon[ETOI(btnInfo)]->GetUITransform()->Get_FinalSize().y;// ªÁ¿Ã¡Ó
+	return m_vecIcon[ETOI(btnInfo)]->GetUITransform()->Get_FinalSize().y;// ÏÇ¨Ïù¥Ï¶à
 }
 
-shared_ptr<CItemInfo> CItemInfo::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CItemInfo> CItemInfo::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CItemInfo> pInstance(new CItemInfo(pDevice, pContext), [](CItemInfo* p) {p->Free(); delete(p); });
+	shared_ptr<CItemInfo> instance(new CItemInfo(device, context), [](CItemInfo* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CItemInfo");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CItemInfo::Free()

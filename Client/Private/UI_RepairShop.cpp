@@ -1,4 +1,4 @@
-#include "UI_RepairShop.h"
+Ôªø#include "UI_RepairShop.h"
 
 #include <UIText.h>
 
@@ -10,8 +10,8 @@
 #include "EventBus.h"
 
 
-CUI_RepairShop::CUI_RepairShop(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_RepairShop::CUI_RepairShop(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -46,26 +46,26 @@ void CUI_RepairShop::UI_PanelActive()
 {
 	//m_Children.clear();
 	_uint numPanel = {};
-	// ¿œ¥‹ ±‚∫ª¿˚¿∏∑Œ ∆–≥Œ ¿∫ ¥Ÿ inactive, πˆ∆∞¿∫ iTabfig ø° µ˚∂Û active
-	//::OnActive() ø°º≠ ≈¨∏Ø«— ∞≈∏∏ »∞º∫»≠
+	// ÏùºÎã® Í∏∞Î≥∏Ï†ÅÏúºÎ°ú Ìå®ÎÑê ÏùÄ Îã§ inactive, Î≤ÑÌäºÏùÄ iTabfig Ïóê Îî∞Îùº active
+	//::OnActive() ÏóêÏÑú ÌÅ¥Î¶≠Ìïú Í±∞Îßå ÌôúÏÑ±Ìôî
 
-	for(auto Button: m_ButtonContents)
+	for(auto Button: m_buttonContents)
 	{
 		Button->UI_Active();
 	}
-	for (auto content : m_TabContents)
+	for (auto content : m_tabContents)
 	{
 		content->UI_InActive();
 		//dynamic_pointer_cast<CUI_Storage>(content)->Set_SlotNum(8, 8);
 	}
-	m_TabContents[ETOI(SHOPTAB::ROT)]->UI_Active();
+	m_tabContents[ETOI(EShopTab::ROT)]->UI_Active();
 	
-	m_Line->UI_Active();
-	m_Line2->UI_Active();
+	m_line->UI_Active();
+	m_line2->UI_Active();
 //	m_TextIMG->UI_Active();
-	m_BtnFix->UI_Active();
-	m_FixButtonTex->UI_Active();
-	/*_wstring strTag = format(L"∏µŒ ºˆ∏Æ[{:.2f}]", m_repairPrice);
+	m_btnFix->UI_Active();
+	m_fixButtonTex->UI_Active();
+	/*_wstring strTag = format(L"Î™®Îëê ÏàòÎ¶¨[{:.2f}]", m_repairPrice);
 	m_FixButtonTex->Set_Text(strTag);*/
 	Change_LayoutRawCol( 4,1);
 
@@ -74,154 +74,154 @@ void CUI_RepairShop::UI_PanelActive()
 	Set_ActiveForCustom();
 	
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 	
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 	
 	//m_bInteractable = true;
 	OnActive();
 
 }
 
-HRESULT CUI_RepairShop::OnInit(void* pArg)
+HRESULT CUI_RepairShop::OnInit(void* arg)
 {
-	m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_RepairCoat>([this](const Evt_RepairCoat& e)
+	m_gameInstance.lock()->Get_EventBus()->Subscribe<Evt_RepairCost>([this](const Evt_RepairCost& e)
 		{
-			_wstring strTag = format(L"∏µŒ ºˆ∏Æ[${}]", e.cost);
-			m_FixButtonTex->Set_Text(strTag);
+			_wstring tag = format(L"Î™®Îëê ÏàòÎ¶¨[${}]", e.cost);
+			m_fixButtonTex->Set_Text(tag);
 			m_repairPrice = e.cost;
 		});
 
 
 	HRESULT hr = E_FAIL;
-	REPAIR_DESC* TABpDesc = static_cast<REPAIR_DESC*>(pArg);
+	RepairDesc* TABpDesc = static_cast<RepairDesc*>(arg);
 	//TABCONTAINER_DESC pDesc = {};
-	TABpDesc->IsFullScreen = false;
-	TABpDesc->IsTransparent = false;
-	TABpDesc->TextureComLevel = ETOI(LEVEL::STATIC);
-	TABpDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
-	TABpDesc->IsUseLayout = true;
-	//pDesc.vAnchorPoint = ¿œ¥‹ ∆–Ω∫
+	TABpDesc->isFullScreen = false;
+	TABpDesc->isTransparent = false;
+	TABpDesc->textureComLevel = ETOI(ELevel::STATIC);
+	TABpDesc->textureProtoName = L"Prototype_Component_Texture_TabContainer";
+	TABpDesc->isUseLayout = true;
+	//pDesc.vAnchorPoint = ÏùºÎã® Ìå®Ïä§
 	//	pDesc.vPivot
 	//	pDesc.vAnchoredPos
 
 	hr = CUIPanel::OnInit(TABpDesc);
 
 
-	CUIImage::UIIMAGE_DESC img = {};
-	img.TextureComLevel = ETOI(LEVEL::STATIC);
-	img.TextureProtoName = L"Prototype_Component_Texture_TabDivider";
-	img.bUseNineSlice = true;
-	shared_ptr<CUIImage> Line = CUIImage::Create(m_pDevice, m_pContext);
+	CUIImage::UIImageDesc img = {};
+	img.textureComLevel = ETOI(ELevel::STATIC);
+	img.textureProtoName = L"Prototype_Component_Texture_TabDivider";
+	img.useNineSlice = true;
+	shared_ptr<CUIImage> Line = CUIImage::Create(m_device, m_context);
 	Line->Initialize(&img);
 	Line->Set_Zorder(1);
 
 	Add_Child(Line, L"Line", false); 
-	m_Line = Line;
+	m_line = Line;
 
-	CUIImage::UIIMAGE_DESC img2 = {};
-	img2.TextureComLevel = ETOI(LEVEL::STATIC);
-	img2.TextureProtoName = L"Prototype_Component_Texture_TabDivider";
-	img2.bUseNineSlice = true;
-	shared_ptr<CUIImage> Line2 = CUIImage::Create(m_pDevice, m_pContext);
-	Line2->Initialize(&img2);
-	Line2->Set_Zorder(1);
+	CUIImage::UIImageDesc img2 = {};
+	img2.textureComLevel = ETOI(ELevel::STATIC);
+	img2.textureProtoName = L"Prototype_Component_Texture_TabDivider";
+	img2.useNineSlice = true;
+	shared_ptr<CUIImage> line2 = CUIImage::Create(m_device, m_context);
+	line2->Initialize(&img2);
+	line2->Set_Zorder(1);
 
-	Add_Child(Line2, L"Line2", false);
-	m_Line2 = Line2;
+	Add_Child(line2, L"Line2", false);
+	m_line2 = line2;
 
-	for (_uint i = 0; i < ETOI(SHOPTAB::END); i++)
+	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
-		SHOPTAB eTab = static_cast<SHOPTAB>(i);
+		EShopTab tab = static_cast<EShopTab>(i);
 
-		/// πˆ∆∞
-		CUIButton::UIBUTTON_DESC ButDesc = {};
-		ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-		ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
+		/// Î≤ÑÌäº
+		CUIButton::UIButtonDesc butDesc = {};
+		butDesc.textureComLevel = ETOI(ELevel::STATIC);
+		butDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 
-		ButDesc.vScale = Vector2{ 3.28f, 1.25f };
-		ButDesc.TypeIndex = ETOI(eTab);
-		ButDesc.OverlapStartEvent = [this](CUIButton* pThis)
+		butDesc.scale = Vector2{ 3.28f, 1.25f };
+		butDesc.typeIndex = ETOI(tab);
+		butDesc.OverlapStartEvent = [this](CUIButton* self)
 		{
-				m_pGameInstance.lock()->Play_Once(L"Hover");
+				m_gameInstance.lock()->Play_Once(L"Hover");
 
 		};
-		ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
-		ButDesc.ClickEvent = [this,i](CUIButton* pThis)
+		butDesc.OverlapEndEvent = [](CUIButton* self) {};
+		butDesc.ClickEvent = [this,i](CUIButton* self)
 			{
 				SetActiveTab(i);
-				m_pGameInstance.lock()->Play_Once(L"Click");
+				m_gameInstance.lock()->Play_Once(L"Click");
 
 			};
-		shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
-		button->Initialize(&ButDesc);
+		shared_ptr<CUIButton> button = CUIButton::Create(m_device, m_context);
+		button->Initialize(&butDesc);
 		button->Set_Zorder(2);
 		button->UI_InActive();
 
 		{
 		
 			wstring texKey = {};
-			switch (eTab)
+			switch (tab)
 			{
-			case SHOPTAB::ROT:
+			case EShopTab::ROT:
 			
 				texKey = L"Prototype_Component_Texture_Shop_Rod";
 				break;
-			case SHOPTAB::ENGINE:
+			case EShopTab::ENGINE:
 				
 				texKey=L"Prototype_Component_Texture_Shop_Engine";
 				break;
-			case SHOPTAB::NET:
+			case EShopTab::NET:
 				
 				texKey = L"Prototype_Component_Texture_Shop_Net";
 				break;
-			case SHOPTAB::LIGHT:
+			case EShopTab::LIGHT:
 				
 				texKey = L"Prototype_Component_Texture_Shop_Light";
 				break;
 			}
 
-			CUIImage::UIIMAGE_DESC icon{};
-			icon.TextureComLevel = ETOI(LEVEL::STATIC);
-			icon.TextureProtoName = texKey;
-			shared_ptr<CUIImage> iconImg = CUIImage::Create(m_pDevice, m_pContext);
+			CUIImage::UIImageDesc icon{};
+			icon.textureComLevel = ETOI(ELevel::STATIC);
+			icon.textureProtoName = texKey;
+			shared_ptr<CUIImage> iconImg = CUIImage::Create(m_device, m_context);
 			iconImg->Initialize(&icon);
 
-			wstring NameTag = L"iconImg" + S2W(string(magic_enum::enum_name(eTab)));
-			button->Add_Child(iconImg, NameTag, false);
+			wstring nameTag = L"iconImg" + S2W(string(magic_enum::enum_name(tab)));
+			button->Add_Child(iconImg, nameTag, false);
 			
 		}
 
 		//Add_Child(pChild, NameTag, false);
-		wstring NameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(eTab)));
-		Add_Layout_Child(button, NameTag, false);
-		m_ButtonContents[ETOI(eTab)] = button;
+		wstring nameTag = L"BUTTON_" + S2W(string(magic_enum::enum_name(tab)));
+		Add_Layout_Child(button, nameTag, false);
+		m_buttonContents[ETOI(tab)] = button;
 
 	}
 
-	for (_uint i = 0; i < ETOI(SHOPTAB::END); i++)
+	for (_uint i = 0; i < ETOI(EShopTab::END); i++)
 	{
 		{
-			SHOPTAB eTab = static_cast<SHOPTAB>(i);
-			// ¿œ¥‹ ≈◊Ω∫∆Æ ¿Œ∫• 3∞≥
-			CUI_Storage::STORAGE_DESC StorageDesc = {};
-			StorageDesc.IsFullScreen = false;
-			StorageDesc.IsTransparent = true;
-			StorageDesc.bSetParentSize = true;
-			StorageDesc.Inventype = INVENTYPE::SHOP;
-			StorageDesc.shopTab = eTab;
+			EShopTab tab = static_cast<EShopTab>(i);
+			// ÏùºÎã® ÌÖåÏä§Ìä∏ Ïù∏Î≤§ 3Í∞ú
+			CUI_Storage::StorageDesc storageDesc = {};
+			storageDesc.isFullScreen = false;
+			storageDesc.isTransparent = true;
+			storageDesc.isSetParentSize = true;
+			storageDesc.invenType = EInvenType::SHOP;
+			storageDesc.shopTab = tab;
 			
 
-			shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
-			pStorage->Initialize(&StorageDesc);
+			shared_ptr<CUI_Storage> storage = CUI_Storage::Create(m_device, m_context);
+			storage->Initialize(&storageDesc);
 
 
 
-			wstring NameTag = S2W(string(magic_enum::enum_name(eTab)));
-			Add_Child(pStorage, NameTag, false);
-			m_TabContents[ETOI(eTab)] = pStorage;
-			pStorage->UI_InActive();
+			wstring nameTag = S2W(string(magic_enum::enum_name(tab)));
+			Add_Child(storage, nameTag, false);
+			m_tabContents[ETOI(tab)] = storage;
+			storage->UI_InActive();
 
 
 			Change_LayoutRawCol(8,8);
@@ -229,25 +229,25 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 	}
 		
 
-		///µ∑///
+		///Îèà///
 
 	{
-			CUIButton::UIBUTTON_DESC ButDesc = {};
-			ButDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-			ButDesc.TextureProtoName = L"Prototype_Component_Texture_Button_RED";
+			CUIButton::UIButtonDesc butDesc = {};
+			butDesc.textureComLevel = ETOI(ELevel::STATIC);
+			butDesc.textureProtoName = L"Prototype_Component_Texture_Button_RED";
 			//ButDesc.TypeIndex = ETOI(eTab);
-			ButDesc.OverlapStartEvent = [](CUIButton* pThis) {};
-			ButDesc.OverlapEndEvent = [](CUIButton* pThis) {};
-			ButDesc.ClickEvent = [this](CUIButton* pThis)
+			butDesc.OverlapStartEvent = [](CUIButton* self) {};
+			butDesc.OverlapEndEvent = [](CUIButton* self) {};
+			butDesc.ClickEvent = [this](CUIButton* self)
 				{
-					// ¿¸√ººˆ∏Æ
+					// Ï†ÑÏ≤¥ÏàòÎ¶¨
 
 					Evt_FixAll event{};
 					
 					CGameInstance::GetInstance()->Get_EventBus()->Publish(event);
 				};
-			shared_ptr<CUIButton> button = CUIButton::Create(m_pDevice, m_pContext);
-			button->Initialize(&ButDesc);
+			shared_ptr<CUIButton> button = CUIButton::Create(m_device, m_context);
+			button->Initialize(&butDesc);
 			button->Set_Zorder(2);
 			button->UI_InActive();
 			button->Set_SelectState(false);
@@ -255,19 +255,19 @@ HRESULT CUI_RepairShop::OnInit(void* pArg)
 			{
 			
 
-				CUIText::TEXT_DESC text_Desc = {};
-				text_Desc.strFontTag = L"Noto_Sans_CJK_SC_24";
-				text_Desc.strText = L"≈◊Ω∫∆Æ";
-				shared_ptr<CUIText> Text_storage = CUIText::Create(m_pDevice, m_pContext);
-				Text_storage->Initialize(&text_Desc);
-				button->Add_Child(Text_storage, L"Text_repairPrice", false);
-				m_FixButtonTex = Text_storage;
+				CUIText::TextDesc textDesc = {};
+				textDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+				textDesc.text = L"ÌÖåÏä§Ìä∏";
+				shared_ptr<CUIText> textStorage = CUIText::Create(m_device, m_context);
+				textStorage->Initialize(&textDesc);
+				button->Add_Child(textStorage, L"Text_repairPrice", false);
+				m_fixButtonTex = textStorage;
 			}
 
 			//Add_Child(pChild, NameTag, false);
-			wstring NameTag = L"BUTTON_repair";
-			Add_Child(button, NameTag, false);
-			m_BtnFix = button;
+			wstring nameTag = L"BUTTON_repair";
+			Add_Child(button, nameTag, false);
+			m_btnFix = button;
 	}
 
 	return hr;
@@ -286,10 +286,10 @@ void CUI_RepairShop::OnActive()
 	GetUITransform()->SetAnchoredPos(Vector2{ GetUITransform()->Get_FinalSize().x, 0.f });
 	//m_vecAni = Vector2{ GetUITransform()->Get_FinalSize().x, 0.f };
 	m_vecAni = Vector2{ -1200.f,0.f };
-	m_bStart = true;
-	m_fDuration = 1.5f;
+	m_isStart = true;
+	m_duration = 1.5f;
 
-	m_ButtonContents[ETOI(SHOPTAB::ROT)]->ChangeState(BUTTON_STATE::SELECT);
+	m_buttonContents[ETOI(EShopTab::ROT)]->ChangeState(EButtonState::SELECT);
 
 
 	CUIPanel::OnActive();
@@ -297,8 +297,8 @@ void CUI_RepairShop::OnActive()
 
 void CUI_RepairShop::OnInActive()
 {
-	m_bStart = false;
-	m_TimeAcc = 0;
+	m_isStart = false;
+	m_timeAcc = 0;
 	//m_Active = TAB::NONE;
 	CUIPanel::OnInActive();
 }
@@ -311,12 +311,12 @@ void CUI_RepairShop::OnDisabled()
 
 void CUI_RepairShop::OnUpdate(const _float& timeDelta)
 {
-	// ø©±‚ø°º≠ æ»∫∏ø¥¥Ÿ∞° øÕæﬂ«‘
-	if (m_bStart == true)
+	// Ïó¨Í∏∞ÏóêÏÑú ÏïàÎ≥¥ÏòÄÎã§Í∞Ä ÏôÄÏïºÌï®
+	if (m_isStart == true)
 	{
-		m_TimeAcc += timeDelta;
+		m_timeAcc += timeDelta;
 
-		float t = m_TimeAcc / m_fDuration;
+		float t = m_timeAcc / m_duration;
 
 		if (t >= 1.f) t = 1.f;
 		m_vecAni = Vector2{ lerp(m_vecAni.x,  -600.f, t),0.f };
@@ -324,8 +324,8 @@ void CUI_RepairShop::OnUpdate(const _float& timeDelta)
 		//LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
 
 		if (t >= 1.f) {
-			m_bStart = false;
-			m_TimeAcc = 0;
+			m_isStart = false;
+			m_timeAcc = 0;
 		}
 	}
 
@@ -353,41 +353,41 @@ void CUI_RepairShop::SetActiveTab(_uint btnIndex)
 {
 	
 
-	for (int i = 0; i < ETOI(SHOPTAB::END); i++)
+	for (int i = 0; i < ETOI(EShopTab::END); i++)
 	{
-		if (m_TabContents[i])
-			m_TabContents[i]->UI_InActive(); // ≈«¿∫ ¿Œø¢∆º∫Í∏¶ «ÿæﬂ«œ∞Ì 
+		if (m_tabContents[i])
+			m_tabContents[i]->UI_InActive(); // ÌÉ≠ÏùÄ Ïù∏ÏóëÌã∞Î∏åÎ•º Ìï¥ÏïºÌïòÍ≥† 
 
-		if (m_ButtonContents[i])
-			m_ButtonContents[i]->ChangeState(BUTTON_STATE::NORMAL); // πˆ∆∞¿∫ æºø∑∫∆Æ 
+		if (m_buttonContents[i])
+			m_buttonContents[i]->ChangeState(EButtonState::NORMAL); // Î≤ÑÌäºÏùÄ Ïñ∏ÏÖÄÎ†âÌä∏ 
 	}
 
-	if (m_TabContents[ETOI(btnIndex)])
-		m_TabContents[ETOI(btnIndex)]->UI_Active(); // «ÿ¥Á ∆–≥Œ »∞º∫»≠
+	if (m_tabContents[ETOI(btnIndex)])
+		m_tabContents[ETOI(btnIndex)]->UI_Active(); // Ìï¥Îãπ Ìå®ÎÑê ÌôúÏÑ±Ìôî
 
-	if (m_ButtonContents[ETOI(btnIndex)])
-		m_ButtonContents[ETOI(btnIndex)]->ChangeState(BUTTON_STATE::SELECT); // ºø∑∫∆Æ
+	if (m_buttonContents[ETOI(btnIndex)])
+		m_buttonContents[ETOI(btnIndex)]->ChangeState(EButtonState::SELECT); // ÏÖÄÎ†âÌä∏
 }
 
-shared_ptr<CUI_RepairShop> CUI_RepairShop::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_RepairShop> CUI_RepairShop::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_RepairShop> pInstance(new CUI_RepairShop(pDevice, pContext), [](CUI_RepairShop* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_RepairShop> instance(new CUI_RepairShop(device, context), [](CUI_RepairShop* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_RepairShop::Free()
 {
-	for (int i = 0; i < ETOI(SHOPTAB::END); ++i)
+	for (int i = 0; i < ETOI(EShopTab::END); ++i)
 	{
-		m_TabContents[i].reset();
-		m_ButtonContents[i].reset();
+		m_tabContents[i].reset();
+		m_buttonContents[i].reset();
 	}
 
 	CUIPanel::Free();

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 
 
@@ -12,23 +12,23 @@ public:
     virtual ~CAssimp_Animation() = default;
 
 public:
-    HRESULT Initialize(const aiAnimation* pAIAnimation, shared_ptr<class CAssimp_Model> pModel);
+    HRESULT Initialize(const aiAnimation* srcAIAnimation, shared_ptr<class CAssimp_Model> model);
 
-    _bool Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<class CAssimp_Bone>>& Bones, _bool isLoop);
+    _bool Update_TransformationMatrices(_float timeDelta, const vector<shared_ptr<class CAssimp_Bone>>& Bones, _bool isLoop);
     //_bool Update_TransformationMatrices(_float fTimeDelta, const vector<shared_ptr<class CAssimp_Bone>>& Bones, _bool isLoop)
 
 public:
  
-    _float m_fDuration = {};
-    _float m_fTickPerSecond = {};
+    _float m_duration = {};
+    _float m_tickPerSecond = {};
 
-    _float m_fCurrentTrackPosition = {};
+    _float m_currentTrackPosition = {};
 
-    _uint m_iNumChannels = {};
-    vector<shared_ptr<class CAssimp_Channel>> m_Channels;
+    _uint m_numChannels = {};
+    vector<shared_ptr<class CAssimp_Channel>> m_channels;
 
 public:
-    static shared_ptr<CAssimp_Animation> Create(const aiAnimation* pAIAnimation, shared_ptr<class CAssimp_Model> pModel);
+    static shared_ptr<CAssimp_Animation> Create(const aiAnimation* srcAIAnimation, shared_ptr<class CAssimp_Model> model);
     void Free() override;
 
 

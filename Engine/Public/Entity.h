@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 #include "GameInstance.h"
 
@@ -11,7 +11,7 @@ class ENGINE_DLL CEntity abstract:
     public CBase
 {
 protected:
-    CEntity(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CEntity(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CEntity(const CEntity& prototype);
 public:
     virtual ~CEntity() = default;
@@ -24,16 +24,16 @@ public:
     //virtual void Late_Update(_float fTimeDelta) {};
     virtual HRESULT Render() { return S_OK; }
 
-	shared_ptr<CComponent> Get_Component(const _wstring& strComponentTag);
+	shared_ptr<CComponent> Get_Component(const _wstring& componentTag);
 	template <typename T>
-	shared_ptr<T> Get_Component(const _wstring& strComponentTag)
+	shared_ptr<T> Get_Component(const _wstring& componentTag)
 	{
-		auto it = m_Components.find(strComponentTag);
-		if (it == m_Components.end())
+		auto it = m_components.find(componentTag);
+		if (it == m_components.end())
 			return nullptr;
-		shared_ptr<T> pCom = dynamic_pointer_cast<T>(it->second);
+		shared_ptr<T> com = dynamic_pointer_cast<T>(it->second);
 
-		return pCom;
+		return com;
 	}
 	virtual _vector Get_WorldPos() const
 	{
@@ -41,17 +41,17 @@ public:
 	}
 
 
-	HRESULT Remove_Component(const _wstring& strComponentTag);
+	HRESULT Remove_Component(const _wstring& componentTag);
 
 	virtual void Load_FromJson(nlohmann::json& j);
 	//virtual void Save_FromJson(nlohmann::json& j) {} ;
 
-	_bool IsSavableClass() { return m_bIsSavableClass; }
-	void Set_SaveType(SAVETYPE SaveType) { m_eSaveType = SaveType; }
-	SAVETYPE Get_SaveType() { return m_eSaveType; }
+	_bool IsSavableClass() { return m_isSavableClass; }
+	void Set_SaveType(ESaveType saveType) { m_saveType = saveType; }
+	ESaveType Get_SaveType() { return m_saveType; }
 
-	void Mark_Destroy() { m_bPendingDestroy = true; }
-	bool Is_PendingDestroy() { return m_bPendingDestroy; }
+	void Mark_Destroy() { m_isPendingDestroy = true; }
+	bool Is_PendingDestroy() { return m_isPendingDestroy; }
 
 	virtual void RebindCom() {};
 
@@ -59,68 +59,68 @@ public:
 
 /// <IMGUI>
 
-    map<const _wstring, class shared_ptr<CComponent> >& const Get_ComponentMap() {return m_Components;};
+    map<const _wstring, class shared_ptr<CComponent> >& const Get_ComponentMap() {return m_components;};
 /// </summary>
 protected:
-    ComPtr<ID3D11Device> m_pDevice = { nullptr };
-    ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-    weak_ptr<class CGameInstance> m_pGameInstance = { };
+    ComPtr<ID3D11Device> m_device = { nullptr };
+    ComPtr<ID3D11DeviceContext> m_context = { nullptr };
+    weak_ptr<class CGameInstance> m_gameInstance = { };
 
 public:
-    // ¿øÇü°´Ã¼¸¦ º¹Á¦ÇÏ¿© ¸Ê¿¡µµ Ãß°¡ÇÏ°í + ÀÚ½Ä°´Ã¼ÀÇ ¸â¹öº¯¼ö¿¡µµ ¼ÂÆÃÇØÁØ´Ù
+    // ì›í˜•ê°ì²´ë¥¼ ë³µì œí•˜ì—¬ ë§µì—ë„ ì¶”ê°€í•˜ê³  + ìì‹ê°ì²´ì˜ ë©¤ë²„ë³€ìˆ˜ì—ë„ ì…‹íŒ…í•´ì¤€ë‹¤
 	template <typename T>
-	HRESULT Add_Component(_uint iProtoLevelIndex, const _wstring& strProtoTag, const _wstring& strComponentTag,
-		shared_ptr<T>* pOut, void* pArg)
+	HRESULT Add_Component(_uint protoLevelIndex, const _wstring& protoTag, const _wstring& componentTag,
+		shared_ptr<T>* out, void* arg)
 	{
-		shared_ptr<CComponent> tmpComp = Get_Component(strComponentTag);
+		shared_ptr<CComponent> tmpComp = Get_Component(componentTag);
 		if (tmpComp != nullptr)
 		{
 			/*MSG_BOX("Failed Add Component : Same Key exist");
 			return E_FAIL;*/
-			if (FAILED(Remove_Component(strComponentTag)))
+			if (FAILED(Remove_Component(componentTag)))
 			{
 				return E_FAIL;
 			}
 		}
-		shared_ptr<CComponent> CloneComp = dynamic_pointer_cast<CComponent>(
-			m_pGameInstance.lock()->Clone_Prototype(PROTOTYPE::COMPONENT, iProtoLevelIndex, strProtoTag, pArg));
-		if (CloneComp == nullptr)
+		shared_ptr<CComponent> cloneComp = dynamic_pointer_cast<CComponent>(
+			m_gameInstance.lock()->Clone_Prototype(EPrototype::COMPONENT, protoLevelIndex, protoTag, arg));
+		if (cloneComp == nullptr)
 			return E_FAIL;
-		// ºÎ¸ğ¼³Á¤
-		CloneComp->Set_Owner(static_pointer_cast<Engine::CEntity>(shared_from_this()));
+		// ë¶€ëª¨ì„¤ì •
+		cloneComp->Set_Owner(static_pointer_cast<Engine::CEntity>(shared_from_this()));
 
-		shared_ptr<T> pCastComp = dynamic_pointer_cast<T>(CloneComp);
-		if (pCastComp == nullptr)
+		shared_ptr<T> castComp = dynamic_pointer_cast<T>(cloneComp);
+		if (castComp == nullptr)
 		{
 			MSG_BOX("Failed Add Component : Wrong Type(it's should Component's Child)");
 			return E_FAIL;
 		}
-		if (pOut != nullptr)
+		if (out != nullptr)
 		{
-			*pOut = pCastComp;
+			*out = castComp;
 
 		}
-		auto result = m_Components.emplace(strComponentTag, pCastComp);
+		auto result = m_components.emplace(componentTag, castComp);
 
-		// result.second°¡ false¸é »ğÀÔ ½ÇÆĞ (ÀÌ¹Ì °°Àº Tag°¡ Á¸ÀçÇÔ)
+		// result.secondê°€ falseë©´ ì‚½ì… ì‹¤íŒ¨ (ì´ë¯¸ ê°™ì€ Tagê°€ ì¡´ì¬í•¨)
 		if (result.second == false)
 		{
 			return E_FAIL;
 		}
-		m_bIsDirtyCom = true;
+		m_isDirtyCom = true;
 		return S_OK;
 	};
 
 protected:
-	_bool m_bIsDirtyCom = {true};// Ã³À½Àº ÇØ¾ßÇÏ´Ï±î
+	_bool m_isDirtyCom = {true};// ì²˜ìŒì€ í•´ì•¼í•˜ë‹ˆê¹Œ
 
-    map<const _wstring, class shared_ptr<CComponent> > m_Components;
+    map<const _wstring, class shared_ptr<CComponent> > m_components;
 
-	_bool m_bIsSavableClass = { false };
+	_bool m_isSavableClass = { false };
 
 private:
-	bool m_bPendingDestroy = false;
-	SAVETYPE m_eSaveType = { SAVETYPE::END }; // ÀÌ°Ç º¹»ç ¾ÈÇØµµ µÇ´Ï±î ÆĞ½º
+	bool m_isPendingDestroy = false;
+	ESaveType m_saveType = { ESaveType::END }; // ì´ê±´ ë³µì‚¬ ì•ˆí•´ë„ ë˜ë‹ˆê¹Œ íŒ¨ìŠ¤
 
 public:
     virtual void Free()override;

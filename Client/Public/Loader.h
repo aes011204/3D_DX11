@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #include "Client_Define.h"
 #include "Base.h"
 
-// ·ÎµùÀ» À§ÇÑ ¾²·¹µå¸¦ »ı¼ºÇÑ´Ù
-// ÁöÁ¤µÈ ·¹º§À» À§ÇÑ ÀÚ¿øÀ» ·Îµù ÇÑ´Ù
+// ë¡œë”©ì„ ìœ„í•œ ì“°ë ˆë“œë¥¼ ìƒì„±í•œë‹¤
+// ì§€ì •ëœ ë ˆë²¨ì„ ìœ„í•œ ìì›ì„ ë¡œë”© í•œë‹¤
 
 NS_BEGIN(Engine)
 class CGameInstance;
@@ -16,34 +16,34 @@ class CLoader :
     public CBase
 {
 private:
-    CLoader(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CLoader(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
     virtual ~CLoader() = default;
 
 public:
-    HRESULT Initialize(LEVEL eNextLevelID);
+    HRESULT Initialize(ELevel nextLevelID);
     HRESULT Loading();
 
 
-    _bool Is_Finished() { return m_bFinished; }
+    _bool Is_Finished() { return m_isFinished; }
 
 #ifdef _DEBUG
     void Print_LoadText();
 #endif
 
 private:
-    ComPtr<ID3D11Device> m_pDevice = { nullptr };
-    ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
-	// ÀÌ°Å ¾²·¹µå¿¡¼­ ¾²´Â°Ô ¾Æ´Ï¶ó »ı¼ºÇÒ °´Ã¼¿¡ Àü´ŞÇÏ´Â ¿ëµµ // ¾²·¹µå¿¡¼­ ¾²¸é Å«ÀÏ³²
+    ComPtr<ID3D11Device> m_device = { nullptr };
+    ComPtr<ID3D11DeviceContext> m_context = { nullptr };
+	// ì´ê±° ì“°ë ˆë“œì—ì„œ ì“°ëŠ”ê²Œ ì•„ë‹ˆë¼ ìƒì„±í•  ê°ì²´ì— ì „ë‹¬í•˜ëŠ” ìš©ë„ // ì“°ë ˆë“œì—ì„œ ì“°ë©´ í°ì¼ë‚¨
 
-    weak_ptr<CGameInstance> m_pGameInstance = {};
+    weak_ptr<CGameInstance> m_gameInstance = {};
 
     HANDLE m_hThread = {};
-    CRITICAL_SECTION m_CriticalSection = {};
+    CRITICAL_SECTION m_criticalSection = {};
 
-    LEVEL m_eNextLevelID = { LEVEL::END };
-    _tchar m_szLoadingText[MAX_PATH] = {};
-    _bool m_bFinished = { false };
+    ELevel m_nextLevelID = { ELevel::END };
+    _tchar m_loadingText[MAX_PATH] = {};
+    _bool m_isFinished = { false };
 private:
     HRESULT Loading_For_LogoLevel();
     HRESULT Loading_For_GamePlayLevel();
@@ -51,7 +51,7 @@ private:
     HRESULT Loading_For_EditorLevel();
 
 public:
-    static shared_ptr<CLoader> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, LEVEL eNextLevelID);
+    static shared_ptr<CLoader> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, ELevel nextLevelID);
     void Free() override;
 
 };

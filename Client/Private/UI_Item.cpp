@@ -1,11 +1,11 @@
-#include "UI_Item.h"
+ï»¿#include "UI_Item.h"
 #include "ItemDB.h"
 #include "GameInstance.h"
 #include "DInput_Manager.h"
 //#include "UIImage.h"
 
-CUI_Item::CUI_Item(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIImage(pDevice, pContext)
+CUI_Item::CUI_Item(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIImage(device, context)
 {
 }
 
@@ -14,78 +14,78 @@ CUI_Item::CUI_Item(const CUI_Item& prototype)
 {
 }
 
-void CUI_Item::HoldItem(Item_Inst HoldItemInst)
+void CUI_Item::HoldItem(ItemInst holdItemInst)
 {
-	if (HoldItemInst.ItemInst_ID == ID_Absence)
+	if (holdItemInst.itemInstID == kIDAbsence)
 		return;
 
 	//const Item_Def& def = CItemDB::GetInstance()->GetItemByID(HoldItemInst.ItemDef_ID);
 
-		m_bIsHold = true; 
-		m_HoldItem = HoldItemInst;
+		m_isHold = true; 
+		m_holdItem = holdItemInst;
 
-		Change_Texture(HoldItemInst.pCashingTexture);
+		Change_Texture(holdItemInst.cachingTexture);
 		Set_Transparent(false);
-		m_Children[0]->UI_Active();
-		static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(false);
+		m_children[0]->UI_Active();
+		static_pointer_cast<CUIRenderable>(m_children[0])->Set_Transparent(false);
 
 
-		if (HoldItemInst.ItemType == ITEM_TYPE::FISH)
-			m_pGameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
+		if (holdItemInst.itemType == EItemType::FISH)
+			m_gameInstance.lock()->Play_Once(L"OrganicItem_PickUp");
 		else
-			m_pGameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
+			m_gameInstance.lock()->Play_Once(L"InorganicItem_PickUp");
 	
 }
 
 void CUI_Item::ReleaseItem()
 {
 
-	if (m_HoldItem.ItemType == ITEM_TYPE::FISH)
-		m_pGameInstance.lock()->Play_Once(L"OrganicItem_Place");
+	if (m_holdItem.itemType == EItemType::FISH)
+		m_gameInstance.lock()->Play_Once(L"OrganicItem_Place");
 	else
-		m_pGameInstance.lock()->Play_Once(L"InorganicItem_Place");
+		m_gameInstance.lock()->Play_Once(L"InorganicItem_Place");
 
-	m_bIsHold = false;
+	m_isHold = false;
 	/*m_HoldItem = HoldItem;*/
-	Item_Inst NoInst = {};
-	m_HoldItem = NoInst;
+	ItemInst noInst = {};
+	m_holdItem = noInst;
 	//Change_Texture(CItemDB::GetInstance()->GetItemByID(HoldItem.ItemDef_ID).pTexture);
 	Set_Transparent(true);
-	m_Children[0]->UI_InActive();
-	static_pointer_cast<CUIRenderable>(m_Children[0])->Set_Transparent(true);
+	m_children[0]->UI_InActive();
+	static_pointer_cast<CUIRenderable>(m_children[0])->Set_Transparent(true);
 
 }
 
-HRESULT CUI_Item::OnInit(void* pArg)
+HRESULT CUI_Item::OnInit(void* arg)
 {
-	CUI_Item::ITEM_DESC pDesc{};
+	CUI_Item::ItemDesc desc{};
 
-	pDesc.IsTransparent = true;
+	desc.isTransparent = true;
 
 	Set_Zorder(1);
 
 
 	{
-	CUIImage::UIIMAGE_DESC selectImage{};
-	selectImage.TextureComLevel = ETOI(LEVEL::STATIC);
-	selectImage.TextureProtoName = L"Prototype_Component_Texture_Select";
-	selectImage.PxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
-	selectImage.bUseNineSlice = true;
+	CUIImage::UIImageDesc selectImage{};
+	selectImage.textureComLevel = ETOI(ELevel::STATIC);
+	selectImage.textureProtoName = L"Prototype_Component_Texture_Select";
+	selectImage.pxSliceLRTB = _float4{ 46.f,46.f,22.f,22.f };
+	selectImage.useNineSlice = true;
 
 	//selectImage.bSetParentSize = true;
-	shared_ptr<CUIImage> Select = CUIImage::Create(m_pDevice, m_pContext);
+	shared_ptr<CUIImage> Select = CUIImage::Create(m_device, m_context);
 	Select->Initialize(&selectImage);
 	Select->UI_InActive();
 	Select->Set_Transparent(true);
-	wstring NameTag1 = L"SELECT" ;
-	Add_Child(Select, NameTag1, false);
+	wstring nameTag1 = L"SELECT" ;
+	Add_Child(Select, nameTag1, false);
 	//
 	Select->Set_Zorder(6);
 	
 	}
 
 	Set_Interactive(false);
-	__super::OnInit(&pDesc);
+	__super::OnInit(&desc);
 
 
 	return S_OK;
@@ -110,20 +110,20 @@ void CUI_Item::OnDisabled()
 void CUI_Item::OnUpdate(const _float& timeDelta)
 {
 
-	_float2 musPos = m_pGameInstance.lock()->Get_DInput_Manger()->Get_MousePos();
-	_float2 screen = m_pGameInstance.lock()->Get_WinSize().Size();
-	m_pUITransformCom->SetAnchoredPos({ musPos.x-screen.x *0.5f, musPos.y-screen.y*0.5f});
-	m_pUITransformCom->SetRotation(m_HoldItem.Rotation * -90.f);
+	_float2 musPos = m_gameInstance.lock()->Get_DInput_Manager()->Get_MousePos();
+	_float2 screen = m_gameInstance.lock()->Get_WinSize().Size();
+	m_UITransformCom->SetAnchoredPos({ musPos.x-screen.x *0.5f, musPos.y-screen.y*0.5f});
+	m_UITransformCom->SetRotation(m_holdItem.rotation * -90.f);
 	//m_Children[0]->GetUITransform()->SetRotation(m_HoldItem.Rotation * 90.f);
-	_float2 sizeD = m_Children[0]->GetUITransform()->Get_SizeDelta();
+	_float2 sizeD = m_children[0]->GetUITransform()->Get_SizeDelta();
 
-	_float2 finalSize = m_pUITransformCom->Get_FinalSize();
+	_float2 finalSize = m_UITransformCom->Get_FinalSize();
 
-	if (m_HoldItem.Rotation % 2 != 0) // 90µµ È¤Àº 270µµÀÏ ¶§
+	if (m_holdItem.rotation % 2 != 0) // 90ë„ í˜¹ì€ 270ë„ì¼ ë•Œ
 	{
 		swap(finalSize.x, finalSize.y);
 	}
-	m_Children[0]->GetUITransform()->SetLocalScale(finalSize/ sizeD);
+	m_children[0]->GetUITransform()->SetLocalScale(finalSize/ sizeD);
 
 	__super::OnUpdate(timeDelta);
 }
@@ -150,15 +150,15 @@ void CUI_Item::OnClear()
 	__super::OnClear();
 }
 
-shared_ptr<CUI_Item> CUI_Item::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Item> CUI_Item::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Item> pInstance(new CUI_Item(pDevice, pContext), [](CUI_Item* p) {p->Free();delete(p);});
+	shared_ptr<CUI_Item> instance(new CUI_Item(device, context), [](CUI_Item* p) {p->Free();delete(p);});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIImage");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Item::Free()

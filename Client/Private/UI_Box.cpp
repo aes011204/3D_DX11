@@ -1,4 +1,4 @@
-#include "UI_Box.h"
+Ôªø#include "UI_Box.h"
 
 #include <UIText.h>
 
@@ -10,8 +10,8 @@
 #include "EventBus.h"
 
 
-CUI_Box::CUI_Box(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CUIPanel(pDevice, pContext)
+CUI_Box::CUI_Box(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CUIPanel(device, context)
 {
 }
 
@@ -42,40 +42,40 @@ void CUI_Box::UI_Active()
 
 }
 
-void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
+void CUI_Box::UI_PanelActive(_bool isStorage, _bool isBox, _uint boxNum )
 {
-	if(IsStorage == true)
+	if(isStorage == true)
 	{
-		m_Name_Text->Set_Text(L"≥ª π∞«∞ ∫∏∞¸«‘");
-		m_Storage->UI_Active();
-		m_pUITransformCom->SetLocalScale(_float2(2.56f, 3.21f));
+		m_nameText->Set_Text(L"ÎÇ¥ Î¨ºÌíà Î≥¥Í¥ÄÌï®");
+		m_storage->UI_Active();
+		m_UITransformCom->SetLocalScale(_float2(2.56f, 3.21f));
 	}
 	else
 	{
-		m_Name_Text->Set_Text(L"πﬂ∞ﬂ«— æ∆¿Ã≈€");
-		m_Box->UI_Active();
-		m_Box->Get_InvenPanel()->Set_Transparent(true);
-		m_pUITransformCom->SetLocalScale(_float2(2.56f, 1.7f));
+		m_nameText->Set_Text(L"Î∞úÍ≤¨Ìïú ÏïÑÏù¥ÌÖú");
+		m_box->UI_Active();
+		m_box->Get_InvenPanel()->Set_Transparent(true);
+		m_UITransformCom->SetLocalScale(_float2(2.56f, 1.7f));
 
 	}
 
 
 	//m_Children.clear();
 //	_uint numPanel = {};
-	// ¿œ¥‹ ±‚∫ª¿˚¿∏∑Œ ∆–≥Œ ¿∫ ¥Ÿ inactive, πˆ∆∞¿∫ iTabfig ø° µ˚∂Û active
-	//::OnActive() ø°º≠ ≈¨∏Ø«— ∞≈∏∏ »∞º∫»≠
-	m_NameBase->UI_Active();
-	m_Name_Text->UI_Active();
+	// ÏùºÎã® Í∏∞Î≥∏Ï†ÅÏúºÎ°ú Ìå®ÎÑê ÏùÄ Îã§ inactive, Î≤ÑÌäºÏùÄ iTabfig Ïóê Îî∞Îùº active
+	//::OnActive() ÏóêÏÑú ÌÅ¥Î¶≠Ìïú Í±∞Îßå ÌôúÏÑ±Ìôî
+	m_nameBase->UI_Active();
+	m_nameText->UI_Active();
 	/*m_Storage->UI_Active();*/
 
 
 
 	Set_ActiveForCustom();
 
-	m_bRenderReady = false;
+	m_isRenderReady = false;
 
-	if (m_pUITransformCom)
-		m_pUITransformCom->UpdateLayoutIfDirty();
+	if (m_UITransformCom)
+		m_UITransformCom->UpdateLayoutIfDirty();
 
 	//m_bInteractable = true;
 
@@ -87,81 +87,81 @@ void CUI_Box::UI_PanelActive(_bool IsStorage, _bool IsBox, _uint BoxNum )
 
 }
 
-HRESULT CUI_Box::OnInit(void* pArg)
+HRESULT CUI_Box::OnInit(void* arg)
 {
 
 
 
 
 	HRESULT hr = E_FAIL;
-	BOX_DESC* BoxDesc = static_cast<BOX_DESC*>(pArg);
+	BoxDesc* desc = static_cast<BoxDesc*>(arg);
 	//TABCONTAINER_DESC pDesc = {};
-	BoxDesc->IsFullScreen = false;
-	BoxDesc->IsTransparent = false;
-	BoxDesc->TextureComLevel = ETOI(LEVEL::STATIC);
-	BoxDesc->TextureProtoName = L"Prototype_Component_Texture_TabContainer";
+	desc->isFullScreen = false;
+	desc->isTransparent = false;
+	desc->textureComLevel = ETOI(ELevel::STATIC);
+	desc->textureProtoName = L"Prototype_Component_Texture_TabContainer";
 	//BoxDesc->IsUseLayout = true;
-	//pDesc.vAnchorPoint = ¿œ¥‹ ∆–Ω∫
+	//pDesc.vAnchorPoint = ÏùºÎã® Ìå®Ïä§
 	//	pDesc.vPivot
 	//	pDesc.vAnchoredPos
 
-	hr = CUIPanel::OnInit(BoxDesc);
+	hr = CUIPanel::OnInit(desc);
 
 
-	CUIImage::UIIMAGE_DESC nameBaseDesc = {};
-	nameBaseDesc.TextureComLevel = ETOI(LEVEL::STATIC);
-	nameBaseDesc.TextureProtoName = L"Prototype_Component_Texture_TitleBackground";
-	shared_ptr<CUIImage> NameBase = CUIImage::Create(m_pDevice, m_pContext);
-	NameBase->Initialize(&nameBaseDesc);
-	Add_Child(NameBase, L"NameBase", false);
-	m_NameBase = NameBase;
+	CUIImage::UIImageDesc nameBaseDesc = {};
+	nameBaseDesc.textureComLevel = ETOI(ELevel::STATIC);
+	nameBaseDesc.textureProtoName = L"Prototype_Component_Texture_TitleBackground";
+	shared_ptr<CUIImage> nameBase = CUIImage::Create(m_device, m_context);
+	nameBase->Initialize(&nameBaseDesc);
+	Add_Child(nameBase, L"NameBase", false);
+	m_nameBase = nameBase;
 	{
-		CUIText::TEXT_DESC nameDesc = {};
-		nameDesc.strFontTag = L"Noto_Sans_CJK_SC_24";
-		nameDesc.strText = L"≥ª π∞«∞ ∫∏∞¸«‘";
-		shared_ptr<CUIText> Name_Text = CUIText::Create(m_pDevice, m_pContext);
-		Name_Text->Initialize(&nameDesc);
+		CUIText::TextDesc nameDesc = {};
+		nameDesc.fontTag = L"Noto_Sans_CJK_SC_24";
+		nameDesc.text = L"ÎÇ¥ Î¨ºÌíà Î≥¥Í¥ÄÌï®";
+		shared_ptr<CUIText> nameText = CUIText::Create(m_device, m_context);
+		nameText->Initialize(&nameDesc);
 
-		NameBase->Add_Child(Name_Text, L"Name_Text", false);
-		m_Name_Text = Name_Text;
+		nameBase->Add_Child(nameText, L"Name_Text", false);
+		m_nameText = nameText;
 	}
 	
 
 
 	
 
-		// ¿Œ∫•
-		CUI_Storage::STORAGE_DESC StorageDesc = {};
-		StorageDesc.IsFullScreen = false;
-		StorageDesc.IsTransparent = true;
-		StorageDesc.bSetParentSize = true;
-		StorageDesc.Inventype = INVENTYPE::STORAGE;
+		// Ïù∏Î≤§
+		CUI_Storage::StorageDesc storageDesc = {};
+		storageDesc.isFullScreen = false;
+		storageDesc.isTransparent = true;
+		storageDesc.isSetParentSize = true;
+		storageDesc.invenType = EInvenType::STORAGE;
 
-		shared_ptr<CUI_Storage> pStorage = CUI_Storage::Create(m_pDevice, m_pContext);
-		pStorage->Initialize(&StorageDesc);
+		shared_ptr<CUI_Storage> storage = CUI_Storage::Create(m_device, m_context);
+		storage->Initialize(&storageDesc);
 
 
-		Add_Child(pStorage, L"Storage2", false);
-		m_Storage = pStorage;
-		pStorage->UI_InActive();
+		Add_Child(storage, L"Storage2", false);
+		m_storage = storage;
+		storage->UI_InActive();
 	
 
 		//////////////////////////////////////////
 
-		// ¿Œ∫•
-		CUI_Storage::STORAGE_DESC boxDesc = {};
-		boxDesc.IsFullScreen = false;
-		boxDesc.IsTransparent = true;
-		boxDesc.bSetParentSize = true;
-		boxDesc.Inventype = INVENTYPE::CHEST;
+		// Ïù∏Î≤§
+		CUI_Storage::StorageDesc boxDesc = {};
+		boxDesc.isFullScreen = false;
+		boxDesc.isTransparent = true;
+		boxDesc.isSetParentSize = true;
+		boxDesc.invenType = EInvenType::CHEST;
 	
-		shared_ptr<CUI_Storage> pBox = CUI_Storage::Create(m_pDevice, m_pContext);
-		pBox->Initialize(&boxDesc);
+		shared_ptr<CUI_Storage> box = CUI_Storage::Create(m_device, m_context);
+		box->Initialize(&boxDesc);
 
 
-		Add_Child(pBox, L"Box", false);
-		m_Box = pBox;
-		pBox->UI_InActive();
+		Add_Child(box, L"Box", false);
+		m_box = box;
+		box->UI_InActive();
 
 		GetUITransform()->SetAnchoredPos(Vector2{ -GetUITransform()->Get_FinalSize().x, 0.f });
 
@@ -174,16 +174,16 @@ void CUI_Box::OnActive()
 
 	GetUITransform()->SetAnchoredPos(Vector2{- GetUITransform()->Get_FinalSize().x, 0.f });
 	m_vecAni = Vector2{ -1200.f, 0.f };
-	m_bStart = true;
-	m_fDuration = 1.5f;
+	m_isStart = true;
+	m_duration = 1.5f;
 
 	CUIPanel::OnActive();
 }
 
 void CUI_Box::OnInActive()
 {
-	m_bStart = false;
-	m_TimeAcc = 0;
+	m_isStart = false;
+	m_timeAcc = 0;
 	
 	CUIPanel::OnInActive();
 }
@@ -196,12 +196,12 @@ void CUI_Box::OnDisabled()
 
 void CUI_Box::OnUpdate(const _float& timeDelta)
 {
-	// ø©±‚ø°º≠ æ»∫∏ø¥¥Ÿ∞° øÕæﬂ«‘
-	if (m_bStart == true)
+	// Ïó¨Í∏∞ÏóêÏÑú ÏïàÎ≥¥ÏòÄÎã§Í∞Ä ÏôÄÏïºÌï®
+	if (m_isStart == true)
 	{
-		m_TimeAcc += timeDelta;
+		m_timeAcc += timeDelta;
 
-		float t = m_TimeAcc / m_fDuration;
+		float t = m_timeAcc / m_duration;
 
 		if (t >= 1.f) t = 1.f;
 
@@ -210,8 +210,8 @@ void CUI_Box::OnUpdate(const _float& timeDelta)
 		//LOG_F(LOG_LEVEL::INFO, "m_vecAni%d", m_vecAni);
 
 		if (t >= 1.f) {
-			m_bStart = false;
-			m_TimeAcc = 0;
+			m_isStart = false;
+			m_timeAcc = 0;
 		}
 	}
 
@@ -235,17 +235,17 @@ void CUI_Box::OnClear()
 
 
 
-shared_ptr<CUI_Box> CUI_Box::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CUI_Box> CUI_Box::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CUI_Box> pInstance(new CUI_Box(pDevice, pContext), [](CUI_Box* p) {p->Free(); delete(p); });
+	shared_ptr<CUI_Box> instance(new CUI_Box(device, context), [](CUI_Box* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CUI_Box::Free()

@@ -1,10 +1,10 @@
-#pragma once
+ï»¿#pragma once
 #include "Base.h"
 
-/* 1.»çº»°´Ã¼µéÀ» º¸°üÇÑ´Ù. */
-/* 1-1. ·¹º§º°·Î ±¸ºĞÇÏ¿© º¸°üÇÑ´Ù. */
-/* 1-2. ³»°¡ ±¸ºĞÇÏ°í ½ÍÀº ±âÁØ(CLayer)À» µÎ°í ³ª´©¾î º¸°üÇÑ´Ù. */
-/* 2.º¸°üÇÏ°í ÀÖ´Â °´Ã¼µéÀÇ °»½Å(¾÷µ¥ÀÌÆ®)À» ´ã´çÇÑ´Ù.*/
+/* 1.ì‚¬ë³¸ê°ì²´ë“¤ì„ ë³´ê´€í•œë‹¤. */
+/* 1-1. ë ˆë²¨ë³„ë¡œ êµ¬ë¶„í•˜ì—¬ ë³´ê´€í•œë‹¤. */
+/* 1-2. ë‚´ê°€ êµ¬ë¶„í•˜ê³  ì‹¶ì€ ê¸°ì¤€(CLayer)ì„ ë‘ê³  ë‚˜ëˆ„ì–´ ë³´ê´€í•œë‹¤. */
+/* 2.ë³´ê´€í•˜ê³  ìˆëŠ” ê°ì²´ë“¤ì˜ ê°±ì‹ (ì—…ë°ì´íŠ¸)ì„ ë‹´ë‹¹í•œë‹¤.*/
 
 NS_BEGIN(Engine)
 
@@ -20,34 +20,34 @@ public:
 	virtual ~CObject_Manager() ;
 
 public:
-	HRESULT Initialize(_uint iNumLevels);
-	void Priority_Update(_float fTimeDelta);
-	void Update(_float fTimeDelta);
-	void Late_Update(_float fTimeDelta);
-	HRESULT Clear_Layers(_uint iLevelIndex);
+	HRESULT Initialize(_uint numLevels);
+	void Priority_Update(_float timeDelta);
+	void Update(_float timeDelta);
+	void Late_Update(_float timeDelta);
+	HRESULT Clear_Layers(_uint levelIndex);
 
-	shared_ptr<CGameObject> Add_GameObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag, _uint iLayerLevelIndex, const _wstring& strLayerTag, void* pArg);
-	shared_ptr<CGameObject> Get_GameObject(_uint iLevelIndex, const _wstring& strLayerTag, _uint GObjIndex);
+	shared_ptr<CGameObject> Add_GameObject(_uint prototypeLevelIndex, const _wstring& prototypeTag, _uint layerLevelIndex, const _wstring& layerTag, void* arg);
+	shared_ptr<CGameObject> Get_GameObject(_uint levelIndex, const _wstring& layerTag, _uint gameObjIndex);
 	/// IMGUI
 	virtual void Update_Gui();
 
 	const map<const _wstring, shared_ptr<CLayer>>& Get_GameObjects(_uint levelIndex) const;
 	///
 private:
-	_uint m_iNumLevel = {};
+	_uint m_numLevel = {};
 	// map<_wstring, list<shared_ptr<class CGameObject>>>* m_pLayers = { nullptr };
-	map<const _wstring, shared_ptr<CLayer>>* m_pLayers = { nullptr };
+	map<const _wstring, shared_ptr<CLayer>>* m_layers = { nullptr };
 	typedef map<const _wstring, shared_ptr<CLayer>> LAYERS;
 
-	// ¶Ç µ¿Àû ¹è¿­·Î ·¹º§º°·Î ºĞ¸®ÇØ¼­ º¸°ü, ±× ¾È¿¡ const _wstring, class shared_ptr<CLayer> ÀÌ°É·Î ·¹ÀÌ¾î·Î ºĞ¸®
+	// ë˜ ë™ì  ë°°ì—´ë¡œ ë ˆë²¨ë³„ë¡œ ë¶„ë¦¬í•´ì„œ ë³´ê´€, ê·¸ ì•ˆì— const _wstring, class shared_ptr<CLayer> ì´ê±¸ë¡œ ë ˆì´ì–´ë¡œ ë¶„ë¦¬
 
-	weak_ptr<class CGameInstance> m_pGameInstance = {};
-
-public:
-	class shared_ptr<CLayer> Find_Layer(_uint iLevelIndex, const _wstring& strLayerTag);
+	weak_ptr<class CGameInstance> m_gameInstance = {};
 
 public:
-	static unique_ptr<CObject_Manager> Create(_uint iNumLevels);
+	class shared_ptr<CLayer> Find_Layer(_uint levelIndex, const _wstring& layerTag);
+
+public:
+	static unique_ptr<CObject_Manager> Create(_uint numLevels);
 	void Free()override;
 
 };

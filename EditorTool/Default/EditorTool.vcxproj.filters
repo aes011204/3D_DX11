@@ -57,7 +57,7 @@
     <ClInclude Include="..\Public\Editor_Win.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\Public\Win_Mananger.h">
+    <ClInclude Include="..\Public\Win_Manager.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="..\Public\HierarchyWin.h">
@@ -125,7 +125,7 @@
     <ClCompile Include="..\Private\Editor_Win.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="..\Private\Win_Mananger.cpp">
+    <ClCompile Include="..\Private\Win_Manager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\Private\HierarchyWin.cpp">

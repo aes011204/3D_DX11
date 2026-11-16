@@ -1,4 +1,4 @@
-
+ï»¿
 #include "HierarchyWin.h"
 
 #include "GameObject.h"
@@ -18,8 +18,8 @@ using namespace Editor;
 CHierarchyWin::CHierarchyWin()
 	: CEditor_Win("Hierarchy")
 {
-	m_FilterBuf[0] = '\0';
-	m_RenameBuf[0] = '\0';
+	m_filterBuf[0] = '\0';
+	m_renameBuf[0] = '\0';
 }
 
 CHierarchyWin::~CHierarchyWin() {}
@@ -29,43 +29,43 @@ HRESULT CHierarchyWin::Initialize()
 	return S_OK;
 }
 
-void CHierarchyWin::Update(float fTimeDelta) {}
+void CHierarchyWin::Update(float timeDelta) {}
 
 void CHierarchyWin::Render()
 {
 	ImGui::Begin("Hierarchy");
 
-	//  (3) °Ë»ö(Filter)
-	ImGui::InputTextWithHint("##HierarchyFilter", "Search...", m_FilterBuf, sizeof(m_FilterBuf));
+	//  (3) ê²€ìƒ‰(Filter)
+	ImGui::InputTextWithHint("##HierarchyFilter", "Search...", m_filterBuf, sizeof(m_filterBuf));
 	ImGui::Separator();
 
-	UINT iCurrentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
-	auto pGameObjects = CGameInstance::GetInstance()->Get_GameObjects(iCurrentLevel);
+	UINT currentLevel = CGameInstance::GetInstance()->Get_Current_LevelIdx();
+	auto gameObjects = CGameInstance::GetInstance()->Get_GameObjects(currentLevel);
 
-	if (pGameObjects.empty())
+	if (gameObjects.empty())
 	{
 		ImGui::TextDisabled("(Empty)");
 
 	}
 	else
 	{
-		for (auto& pair : pGameObjects)
+		for (auto& pair : gameObjects)
 		{
-			_string strLayerTag = W2S(pair.first);
+			_string layerTag = W2S(pair.first);
 
-			if (ImGui::TreeNodeEx(strLayerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+			if (ImGui::TreeNodeEx(layerTag.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				auto vecObjects = pair.second.get()->Get_GameObject();
 
-				for (auto& pObj : vecObjects)
+				for (auto& obj : vecObjects)
 				{
-					if (!pObj)
+					if (!obj)
 						continue;
 
-					if (!PassFilter(pObj))
+					if (!PassFilter(obj))
 						continue;
 
-					DrawObjectRow(pObj);
+					DrawObjectRow(obj);
 				}
 
 				ImGui::TreePop();
@@ -76,51 +76,51 @@ void CHierarchyWin::Render()
 
 	ImGui::Separator();
 
-	// 1. Active UI Layers (ÇöÀç È­¸é¿¡ ¹èÄ¡µÈ UI)
+	// 1. Active UI Layers (í˜„ì¬ í™”ë©´ì— ë°°ì¹˜ëœ UI)
 	if (ImGui::TreeNodeEx("Active UI Layers", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		auto pUIManager = CGameInstance::GetInstance()->Get_UI_Manager();
+		auto UIManager = CGameInstance::GetInstance()->Get_UI_Manager();
 
-		// UI_LAYER::END ¸¸Å­ ¹İº¹ÇÏ¸ç °¢ ·¹ÀÌ¾î °Ë»ç
-		for (int i = 0; i < (int)UI_LAYER::END; ++i)
+		// UI_LAYER::END ë§Œí¼ ë°˜ë³µí•˜ë©° ê° ë ˆì´ì–´ ê²€ì‚¬
+		for (int i = 0; i < (int)EUILayer::END; ++i)
 		{
-			// ·¹ÀÌ¾î ÀÌ¸§ (¿¹: BACKGROUND, DEFAULT, POPUP µî)
-			string layerName = (string)magic_enum::enum_name<UI_LAYER>((UI_LAYER)i);
-			// TIP: UI_LAYER ÀÌ¸§À» ¹®ÀÚ¿­·Î ¹İÈ¯ÇÏ´Â ÇÔ¼ö°¡ ÀÖ´Ù¸é ±×°É »ç¿ëÇÏ¼¼¿ä.
+			// ë ˆì´ì–´ ì´ë¦„ (ì˜ˆ: BACKGROUND, DEFAULT, POPUP ë“±)
+			string layerName = (string)magic_enum::enum_name<EUILayer>((EUILayer)i);
+			// TIP: UI_LAYER ì´ë¦„ì„ ë¬¸ìì—´ë¡œ ë°˜í™˜í•˜ëŠ” í•¨ìˆ˜ê°€ ìˆë‹¤ë©´ ê·¸ê±¸ ì‚¬ìš©í•˜ì„¸ìš”.
 
 			if (ImGui::TreeNode(layerName.c_str()))
 			{
-				const auto& uiList = pUIManager->GetUIList((UI_LAYER)i); // ÇØ´ç ·¹ÀÌ¾îÀÇ vector<shared_ptr<CUI>>
+				const auto& UIList = UIManager->GetUIList((EUILayer)i); // í•´ë‹¹ ë ˆì´ì–´ì˜ vector<shared_ptr<CUI>>
 
-				if (uiList.empty()) {
+				if (UIList.empty()) {
 					ImGui::TextDisabled("(Empty)");
 				}
 				else {
-					for (auto& pUI : uiList)
+					for (auto& UI : UIList)
 					{
-						if (!pUI) continue;
+						if (!UI) continue;
 
-						// ImGui ID Ãæµ¹ ¹æÁö¸¦ À§ÇØ °íÀ¯ ÁÖ¼Ò »ç¿ë
-						string label = W2S(pUI->Get_Name()) + "##" + std::to_string((uint64_t)pUI.get());
+						// ImGui ID ì¶©ëŒ ë°©ì§€ë¥¼ ìœ„í•´ ê³ ìœ  ì£¼ì†Œ ì‚¬ìš©
+						string label = W2S(UI->Get_Name()) + "##" + std::to_string((uint64_t)UI.get());
 
 						ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-						if (m_pSelectedObject == pUI) flags |= ImGuiTreeNodeFlags_Selected;
+						if (m_selectedObject == UI) flags |= ImGuiTreeNodeFlags_Selected;
 
-						const auto& children = pUI->Get_mapChildren();
+						const auto& children = UI->Get_Children();
 						if (children.empty()) flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
 						bool opened = ImGui::TreeNodeEx(label.c_str(), flags);
 
-						// Å¬¸¯ ½Ã ¼±ÅÃ ÀÌº¥Æ® ¹ß»ı
+						// í´ë¦­ ì‹œ ì„ íƒ ì´ë²¤íŠ¸ ë°œìƒ
 						if (ImGui::IsItemClicked())
 						{
-							m_pSelectedObject = pUI;
+							m_selectedObject = UI;
 							EvtSelectEntity ev{};
-							ev.Entity = static_pointer_cast<Engine::CEntity>(pUI);
+							ev.entity = static_pointer_cast<Engine::CEntity>(UI);
 							CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
 						}
 
-						// ÀÚ½Ä UI°¡ ÀÖ´Ù¸é Àç±ÍÀûÀ¸·Î Ãâ·Â
+						// ìì‹ UIê°€ ìˆë‹¤ë©´ ì¬ê·€ì ìœ¼ë¡œ ì¶œë ¥
 						if (!children.empty() && opened)
 						{
 							for (auto& pair : children)
@@ -131,7 +131,7 @@ void CHierarchyWin::Render()
 								if (label.empty()) label = "UI_Child";
 
 								_string imguiLabel = label + "##UI" + std::to_string((uint64_t)pair.second.lock().get());
-								DrawUITree(pair.second.lock(), imguiLabel); // ±âÁ¸¿¡ Á¤ÀÇÇÏ½Å Àç±Í ÇÔ¼ö È£Ãâ
+								DrawUITree(pair.second.lock(), imguiLabel); // ê¸°ì¡´ì— ì •ì˜í•˜ì‹  ì¬ê·€ í•¨ìˆ˜ í˜¸ì¶œ
 							}
 
 							ImGui::TreePop();
@@ -143,18 +143,18 @@ void CHierarchyWin::Render()
 		}
 		ImGui::TreePop(); // Active UI Layers Pop
 	}
-	//  ºó °ø°£ Å¬¸¯ ½Ã ¼±ÅÃ ÇØÁ¦
+	//  ë¹ˆ ê³µê°„ í´ë¦­ ì‹œ ì„ íƒ í•´ì œ
 	if (ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows) &&
 		ImGui::IsMouseClicked(0) &&
 		!ImGui::IsAnyItemHovered())
 	{
-		m_pSelectedObject.reset();
+		m_selectedObject.reset();
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(EvtClearSelection{});
 	}
 	ImGui::End();
 }
 
-void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiLabel)
+void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& UI, _string imguiLabel)
 {
 	/*if (!ui) return;
 
@@ -163,13 +163,13 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiL
 
 	_string imguiLabel = label + "##UI" + std::to_string((uint64_t)ui.get());*/
 
-	const auto& children = ui->Get_mapChildren();
+	const auto& children = UI->Get_Children();
 
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-	if (m_pSelectedObject == ui) flags |= ImGuiTreeNodeFlags_Selected;
+	if (m_selectedObject == UI) flags |= ImGuiTreeNodeFlags_Selected;
 
-	//  Leaf¸é push ¾È ÇÏ°Ô
+	//  Leafë©´ push ì•ˆ í•˜ê²Œ
 	if (children.empty())
 		flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
@@ -177,15 +177,15 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiL
 
 	if (ImGui::IsItemClicked())
 	{
-		m_pSelectedObject = ui;
+		m_selectedObject = UI;
 		EvtSelectEntity ev{};
-		ev.Entity = std::static_pointer_cast<Engine::CEntity>(ui);
+		ev.entity = std::static_pointer_cast<Engine::CEntity>(UI);
 
 		CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
 
 	}
 
-	//  ÀÚ½ÄÀÌ ÀÖÀ» ¶§¸¸ TreePop
+	//  ìì‹ì´ ìˆì„ ë•Œë§Œ TreePop
 	if (!children.empty() && opened)
 	{
 
@@ -205,53 +205,53 @@ void CHierarchyWin::DrawUITree(const shared_ptr<Engine::CUI>& ui, _string imguiL
 		ImGui::TreePop();
 	}
 }
-bool CHierarchyWin::PassFilter(const shared_ptr<Engine::CGameObject>& pObj) const
+bool CHierarchyWin::PassFilter(const shared_ptr<Engine::CGameObject>& obj) const
 {
-	if (m_FilterBuf[0] == '\0')
+	if (m_filterBuf[0] == '\0')
 		return true;
 
-	// °£´Ü Æ÷ÇÔ °Ë»ö(´ë¼Ò¹®ÀÚ ¹Î°¨). ¿øÇÏ¸é tolower·Î °³¼± °¡´É.
-	// wstring -> utf8(string) º¯È¯Àº Render¿¡¼­ ConvertW2A »ç¿ëÇÏ´Ï±î ¿©±â¼± ´Ü¼øÈ­:
-	// (ÇÊÅÍ ÀÚÃ¼´Â char*¶ó¼­ obj nameÀ» A·Î ¸¸µé¾î ºñ±³)
-	//  const ÇÔ¼ö¶ó ConvertW2A°¡ const°¡ ¾Æ´Ï¸é ÄÄÆÄÀÏ °æ°í³¯ ¼ö ÀÖ´Âµ¥,
-	//   ±×·³ PassFilter¸¦ const »©°í ¾²°Å³ª ConvertW2A¸¦ const·Î ¹Ù²ãÁà.
-	return true; // PassFilter´Â DrawObjectRow¿¡¼­ Ã³¸®ÇØµµ µÊ.
+	// ê°„ë‹¨ í¬í•¨ ê²€ìƒ‰(ëŒ€ì†Œë¬¸ì ë¯¼ê°). ì›í•˜ë©´ tolowerë¡œ ê°œì„  ê°€ëŠ¥.
+	// wstring -> utf8(string) ë³€í™˜ì€ Renderì—ì„œ ConvertW2A ì‚¬ìš©í•˜ë‹ˆê¹Œ ì—¬ê¸°ì„  ë‹¨ìˆœí™”:
+	// (í•„í„° ìì²´ëŠ” char*ë¼ì„œ obj nameì„ Aë¡œ ë§Œë“¤ì–´ ë¹„êµ)
+	//  const í•¨ìˆ˜ë¼ ConvertW2Aê°€ constê°€ ì•„ë‹ˆë©´ ì»´íŒŒì¼ ê²½ê³ ë‚  ìˆ˜ ìˆëŠ”ë°,
+	//   ê·¸ëŸ¼ PassFilterë¥¼ const ë¹¼ê³  ì“°ê±°ë‚˜ ConvertW2Aë¥¼ constë¡œ ë°”ê¿”ì¤˜.
+	return true; // PassFilterëŠ” DrawObjectRowì—ì„œ ì²˜ë¦¬í•´ë„ ë¨.
 }
 
-void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
+void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& obj)
 {
-	const bool is_selected = (m_pSelectedObject == pObj);
-	const uint64_t id = PtrID(pObj);
+	const bool isSelected = (m_selectedObject == obj);
+	const uint64_t id = PtrID(obj);
 
-	// ÀÌ¸§
-	_string label = W2S(pObj->Get_Name());
+	// ì´ë¦„
+	_string label = W2S(obj->Get_Name());
 
-	//  Filter Ã³¸®(¿©±â¼­ ÇÏ´Â ¹öÀü - PassFilter const ¹®Á¦ È¸ÇÇ)
-	if (m_FilterBuf[0] != '\0')
+	//  Filter ì²˜ë¦¬(ì—¬ê¸°ì„œ í•˜ëŠ” ë²„ì „ - PassFilter const ë¬¸ì œ íšŒí”¼)
+	if (m_filterBuf[0] != '\0')
 	{
-		if (label.find(m_FilterBuf) == _string::npos)
+		if (label.find(m_filterBuf) == _string::npos)
 			return;
 	}
 
-	//  (4) Active Åä±Û
+	//  (4) Active í† ê¸€
 	//bool active = Engine_GetActive(pObj);
 	//ImGui::PushID((int)id);
 
-	//// Ã¼Å©¹Ú½º´Â ¡°º¸ÀÌÁö¸¸ ID´Â ºĞ¸®¡±
+	//// ì²´í¬ë°•ìŠ¤ëŠ” â€œë³´ì´ì§€ë§Œ IDëŠ” ë¶„ë¦¬â€
 	//if (ImGui::Checkbox("##active", &active))
 	//    Engine_SetActive(pObj, active);
 
    // ImGui::SameLine();
 
-	//  (1) Rename (´õºíÅ¬¸¯/F2 + InputText)
-	const bool renaming = (m_RenameTargetPtr == id);
+	//  (1) Rename (ë”ë¸”í´ë¦­/F2 + InputText)
+	const bool renaming = (m_renameTargetPtr == id);
 
 	if (renaming)
 	{
-		// ÃÖÃÊ ÁøÀÔ ÇÁ·¹ÀÓ: ¹öÆÛ ÃÊ±âÈ­ + Æ÷Ä¿½º
-		if (m_RenameBuf[0] == '\0')
+		// ìµœì´ˆ ì§„ì… í”„ë ˆì„: ë²„í¼ ì´ˆê¸°í™” + í¬ì»¤ìŠ¤
+		if (m_renameBuf[0] == '\0')
 		{
-			strncpy_s(m_RenameBuf, label.c_str(), sizeof(m_RenameBuf) - 1);
+			strncpy_s(m_renameBuf, label.c_str(), sizeof(m_renameBuf) - 1);
 			ImGui::SetKeyboardFocusHere();
 		}
 
@@ -260,75 +260,75 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
 			ImGuiInputTextFlags_EnterReturnsTrue |
 			ImGuiInputTextFlags_AutoSelectAll;
 
-		bool enter = ImGui::InputText("##rename", m_RenameBuf, sizeof(m_RenameBuf), flags);
+		bool enter = ImGui::InputText("##rename", m_renameBuf, sizeof(m_renameBuf), flags);
 
-		// Enter·Î È®Á¤
+		// Enterë¡œ í™•ì •
 		if (enter)
 		{
-			CommitRename(pObj, m_RenameBuf);
-			m_RenameTargetPtr = 0;
-			m_RenameBuf[0] = '\0';
+			CommitRename(obj, m_renameBuf);
+			m_renameTargetPtr = 0;
+			m_renameBuf[0] = '\0';
 		}
 
-		// ESC·Î Ãë¼Ò
+		// ESCë¡œ ì·¨ì†Œ
 		if (ImGui::IsItemActive() && ImGui::IsKeyPressed(ImGuiKey_Escape))
 		{
-			m_RenameTargetPtr = 0;
-			m_RenameBuf[0] = '\0';
+			m_renameTargetPtr = 0;
+			m_renameBuf[0] = '\0';
 		}
 
-		// Æ÷Ä¿½º ÀÒÀ¸¸é Á¾·á(Ãë¼Ò Á¤Ã¥)
+		// í¬ì»¤ìŠ¤ ìƒìœ¼ë©´ ì¢…ë£Œ(ì·¨ì†Œ ì •ì±…)
 		if (!ImGui::IsItemActive() && !ImGui::IsItemFocused())
 		{
-			m_RenameTargetPtr = 0;
-			m_RenameBuf[0] = '\0';
+			m_renameTargetPtr = 0;
+			m_renameBuf[0] = '\0';
 		}
 	}
 	else
 	{
-		//  ImGui ID Ãæµ¹ ¹æÁö: "##id" ºÙÀÌ±â (È­¸é¿¡´Â label¸¸ º¸ÀÓ)
-		_string imguiLabel = label + "##" + std::to_string((uint64_t)pObj.get());
+		//  ImGui ID ì¶©ëŒ ë°©ì§€: "##id" ë¶™ì´ê¸° (í™”ë©´ì—ëŠ” labelë§Œ ë³´ì„)
+		_string imguiLabel = label + "##" + std::to_string((uint64_t)obj.get());
 
 		//if (ImGui::Selectable(imguiLabel.c_str(), is_selected))
 		//    m_pSelectedObject = pObj;
 
-		if (ImGui::Selectable(imguiLabel.c_str(), is_selected))
+		if (ImGui::Selectable(imguiLabel.c_str(), isSelected))
 		{
-			m_pSelectedObject = pObj; // Hierarchy ÇÏÀÌ¶óÀÌÆ® À¯Áö¿ë(À¯ÁöÇØµµ µÊ)
+			m_selectedObject = obj; // Hierarchy í•˜ì´ë¼ì´íŠ¸ ìœ ì§€ìš©(ìœ ì§€í•´ë„ ë¨)
 
 
 			EvtSelectEntity ev{};
-			ev.Entity = std::static_pointer_cast<Engine::CEntity>(pObj);
+			ev.entity = std::static_pointer_cast<Engine::CEntity>(obj);
 
 			CGameInstance::GetInstance()->Get_EventBus()->Publish(ev);
 
 		}
 
-		// ´õºíÅ¬¸¯ ¡æ rename
-		if (is_selected && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+		// ë”ë¸”í´ë¦­ â†’ rename
+		if (isSelected && ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
 		{
-			m_RenameTargetPtr = id;
-			m_RenameBuf[0] = '\0';
+			m_renameTargetPtr = id;
+			m_renameBuf[0] = '\0';
 		}
 
-		// F2 ¡æ rename
-		if (is_selected && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
+		// F2 â†’ rename
+		if (isSelected && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows))
 		{
 			if (ImGui::IsKeyPressed(ImGuiKey_F2))
 			{
-				m_RenameTargetPtr = id;
-				m_RenameBuf[0] = '\0';
+				m_renameTargetPtr = id;
+				m_renameBuf[0] = '\0';
 			}
 		}
 	}
 
-	//  (2) ¿ìÅ¬¸¯ ¸Ş´º(Delete/Duplicate/Rename)
+	//  (2) ìš°í´ë¦­ ë©”ë‰´(Delete/Duplicate/Rename)
 	if (ImGui::BeginPopupContextItem("##obj_ctx"))
 	{
 		if (ImGui::MenuItem("Rename", "F2"))
 		{
-			m_RenameTargetPtr = id;
-			m_RenameBuf[0] = '\0';
+			m_renameTargetPtr = id;
+			m_renameBuf[0] = '\0';
 		}
 
 
@@ -337,18 +337,18 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
 		{
 			if (ImGui::MenuItem("Delete"))
 			{
-				if (m_pSelectedObject == pObj)
-					m_pSelectedObject.reset();
+				if (m_selectedObject == obj)
+					m_selectedObject.reset();
 
-				//  Inspector ¼±ÅÃµµ ÇØÁ¦
+				//  Inspector ì„ íƒë„ í•´ì œ
 				CGameInstance::GetInstance()->Get_EventBus()->Publish(EvtClearSelection{});
 
-				Engine_DeleteObject(pObj);
+				Engine_DeleteObject(obj);
 
-				if (m_RenameTargetPtr == id)
+				if (m_renameTargetPtr == id)
 				{
-					m_RenameTargetPtr = 0;
-					m_RenameBuf[0] = '\0';
+					m_renameTargetPtr = 0;
+					m_renameBuf[0] = '\0';
 				}
 			}
 		}
@@ -359,18 +359,18 @@ void CHierarchyWin::DrawObjectRow(const shared_ptr<Engine::CGameObject>& pObj)
 	// ImGui::PopID();
 }
 
-uint64_t CHierarchyWin::PtrID(const shared_ptr<Engine::CGameObject>& pObj) const
+uint64_t CHierarchyWin::PtrID(const shared_ptr<Engine::CGameObject>& obj) const
 {
-	return (uint64_t)pObj.get(); // ÀÓ½Ã: Æ÷ÀÎÅÍ
+	return (uint64_t)obj.get(); // ì„ì‹œ: í¬ì¸í„°
 }
 
 
-void CHierarchyWin::CommitRename(const shared_ptr<Engine::CGameObject>& pObj, const char* newNameUtf8)
+void CHierarchyWin::CommitRename(const shared_ptr<Engine::CGameObject>& obj, const char* newNameUtf8)
 {
-	if (!pObj || !newNameUtf8)
+	if (!obj || !newNameUtf8)
 		return;
 
-	// ºó ¹®ÀÚ¿­ ¹æÁö(¿øÇÏ¸é Á¤Ã¥ º¯°æ)
+	// ë¹ˆ ë¬¸ìì—´ ë°©ì§€(ì›í•˜ë©´ ì •ì±… ë³€ê²½)
 	if (newNameUtf8[0] == '\0')
 		return;
 
@@ -379,7 +379,7 @@ void CHierarchyWin::CommitRename(const shared_ptr<Engine::CGameObject>& pObj, co
 
 
 
-	pObj->Set_Name(w);
+	obj->Set_Name(w);
 }
 
 

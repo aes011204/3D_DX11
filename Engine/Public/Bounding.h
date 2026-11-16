@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 
@@ -6,39 +6,39 @@ class CBounding abstract:
     public CBase
 {
 public:
-    struct BOUNDING_DESC
+    struct BoundingDesc
     {
-        _float3 vCenter;
+        _float3 center;
 
-		COLLISION_MASK MyLayer = {0};
-		COLLISION_MASK OtherMask = {0};
+		CollisionMask myLayer = {0};
+		CollisionMask otherMask = {0};
     };
 
 
 protected:
-	CBounding(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CBounding(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
 	virtual ~CBounding() = default;
 
 public:
 	
-	virtual HRESULT Initialize(BOUNDING_DESC* pDesc);
-	virtual void Update(_fmatrix WorldMatrix)=0;
-	virtual _bool Intersect(shared_ptr<CBounding> pTarget)=0;
+	virtual HRESULT Initialize(BoundingDesc* desc);
+	virtual void Update(_fmatrix worldMatrix)=0;
+	virtual _bool Intersect(shared_ptr<CBounding> target)=0;
 
 
 
 
 #ifdef _DEBUG
 public:
-	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* pBatch, _fvector vColor)=0;
+	virtual HRESULT Render(PrimitiveBatch<VertexPositionColor>* batch, _fvector color)=0;
 
 
 
 #endif
 protected:
-	ComPtr<ID3D11Device> m_pDevice = { nullptr };
-	ComPtr<ID3D11DeviceContext> m_pContext = { nullptr };
+	ComPtr<ID3D11Device> m_device = { nullptr };
+	ComPtr<ID3D11DeviceContext> m_context = { nullptr };
 
 public:
 	virtual void Free() override;

@@ -1,12 +1,12 @@
-#include "ColliderObject.h"
+﻿#include "ColliderObject.h"
 
 #include "GameInstance.h"
 #include "Collider.h"
 #include "Bounding_AABB.h"
 #include "PlayerBoat.h"
 
-CColliderObject::CColliderObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    : CGameObject{ pDevice, pContext }
+CColliderObject::CColliderObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    : CGameObject{ device, context }
 {
 }
 
@@ -20,9 +20,9 @@ HRESULT CColliderObject::Initialize_Prototype()
     return S_OK;
 }
 
-HRESULT CColliderObject::Initialize(void* pArg)
+HRESULT CColliderObject::Initialize(void* arg)
 {
-    if (FAILED(__super::Initialize(pArg)))
+    if (FAILED(__super::Initialize(arg)))
         return E_FAIL;
 
     if (FAILED(Ready_Components()))
@@ -34,35 +34,35 @@ HRESULT CColliderObject::Initialize(void* pArg)
     return S_OK;
 }
 
-void CColliderObject::Priority_Update(_float fTimeDelta)
+void CColliderObject::Priority_Update(_float timeDelta)
 {
 }
 
-void CColliderObject::Update(_float fTimeDelta)
+void CColliderObject::Update(_float timeDelta)
 {
-    if (m_bIsDirtyCom)
+    if (m_isDirtyCom)
     {
         RebindCom();
-        m_bIsDirtyCom = false;
+        m_isDirtyCom = false;
     }
 
-    if (m_pColliderCom != nullptr)
-        m_pColliderCom->Update(XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrixPtr()));
+    if (m_colliderCom != nullptr)
+        m_colliderCom->Update(XMLoadFloat4x4(m_transformCom->Get_WorldMatrixPtr()));
 }
 
-void CColliderObject::Late_Update(_float fTimeDelta)
+void CColliderObject::Late_Update(_float timeDelta)
 {
-    m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
+    m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CEntity>(shared_from_this()));
 }
 
 HRESULT CColliderObject::Render()
 {
 #ifdef _DEBUG
-    if (m_pGameInstance.lock()->Get_IsDebug() == false)
+    if (m_gameInstance.lock()->Get_IsDebug() == false)
         return S_OK;
 
-    if (m_pColliderCom != nullptr && m_pColliderCom->Get_CollisionActive())
-        m_pGameInstance.lock()->Add_DebugenderGroup(m_pColliderCom);
+    if (m_colliderCom != nullptr && m_colliderCom->Get_CollisionActive())
+        m_gameInstance.lock()->Add_DebugenderGroup(m_colliderCom);
 #endif
 
     return S_OK;
@@ -73,11 +73,11 @@ void CColliderObject::OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCol
     if (other == nullptr)
         return;
 
-    if (other->Get_MyLayer() == COLLISION_LAYER::PLAYER)
+    if (other->Get_MyLayer() == ECollisionLayer::PLAYER)
     {
         auto player = dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner());
         if (player != nullptr)
-            player->Get_Demage();
+            player->Get_Damage();
     }
 }
 
@@ -86,7 +86,7 @@ void CColliderObject::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CColl
     if (self == nullptr || other == nullptr)
         return;
 
-    if (other->Get_MyLayer() != COLLISION_LAYER::PLAYER)
+    if (other->Get_MyLayer() != ECollisionLayer::PLAYER)
         return;
 
     auto player = dynamic_pointer_cast<CPlayerBoat>(other->Get_GOwner());
@@ -113,7 +113,7 @@ void CColliderObject::OnStayOverlap(shared_ptr<CCollider> self, shared_ptr<CColl
     float dirLength = XMVectorGetX(XMVector3Length(flatDir));
     if (dirLength < minDirLength)
     {
-        XMVECTOR fallbackDir = -player->Get_TransformCom()->Get_State(STATE::LOOK);
+        XMVECTOR fallbackDir = -player->Get_TransformCom()->Get_State(ETransformState::LOOK);
         flatDir = XMVectorSet(
             XMVectorGetX(fallbackDir),
             0.f,
@@ -150,8 +150,8 @@ void CColliderObject::OnEndOverlap(shared_ptr<CCollider> self, shared_ptr<CColli
 
 void CColliderObject::OnGui()
 {
-    if (m_pColliderCom != nullptr)
-        m_pColliderCom->OnGui();
+    if (m_colliderCom != nullptr)
+        m_colliderCom->OnGui();
 }
 
 void CColliderObject::RebindCom()
@@ -160,50 +160,50 @@ void CColliderObject::RebindCom()
 
 HRESULT CColliderObject::Ready_Components()
 {
-    CBounding_OBB::BOUNDING_OBB_DESC OBBDesc{};
-    OBBDesc.vExtents = _float3(2.0f, 2.f, 1.7f);
-    OBBDesc.vRadians = _float3(0.f, 52.5f, 0.f);
-    OBBDesc.vCenter = _float3(55.7f, 0.f, -22.2f);
-    OBBDesc.MyLayer = COLLISION_LAYER::MONSTERATT;
-    OBBDesc.OtherMask = COLLISION_LAYER::PLAYER;
+    CBounding_OBB::BoundingOBBDesc OBBDesc{};
+    OBBDesc.extents = _float3(2.0f, 2.f, 1.7f);
+    OBBDesc.radians = _float3(0.f, 52.5f, 0.f);
+    OBBDesc.center = _float3(55.7f, 0.f, -22.2f);
+    OBBDesc.myLayer = ECollisionLayer::MONSTERATT;
+    OBBDesc.otherMask = ECollisionLayer::PLAYER;
 
     if (FAILED(Add_Component(
-        ETOI(LEVEL::GAMEPLAY),
+        ETOI(ELevel::GAMEPLAY),
         TEXT("Prototype_Component_Collider_OBB"),
         TEXT("Com_Collider"),
-        &m_pColliderCom,
+        &m_colliderCom,
         &OBBDesc)))
         return E_FAIL;
 
-    m_pGameInstance.lock()->Add_Collider(m_pColliderCom);
+    m_gameInstance.lock()->Add_Collider(m_colliderCom);
 
     return S_OK;
 }
 
-shared_ptr<CColliderObject> CColliderObject::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CColliderObject> CColliderObject::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-    shared_ptr<CColliderObject> pInstance(new CColliderObject(pDevice, pContext),
+    shared_ptr<CColliderObject> instance(new CColliderObject(device, context),
         [](CColliderObject* p) { p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize_Prototype()))
+    if (FAILED(instance->Initialize_Prototype()))
     {
         MSG_BOX("Failed to Created : CColliderObject");
     }
 
-    return pInstance;
+    return instance;
 }
 
-shared_ptr<CGameObject> CColliderObject::Clone(void* pArg)
+shared_ptr<CGameObject> CColliderObject::Clone(void* arg)
 {
-    shared_ptr<CColliderObject> pInstance(new CColliderObject(*this),
+    shared_ptr<CColliderObject> instance(new CColliderObject(*this),
         [](CColliderObject* p) { p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(instance->Initialize(arg)))
     {
         MSG_BOX("Failed to Cloned : CColliderObject");
     }
 
-    return pInstance;
+    return instance;
 }
 
 void CColliderObject::Free()

@@ -1,4 +1,4 @@
-#include "MiniGame_Logic.h"
+﻿#include "MiniGame_Logic.h"
 
 
 #include <UIButton.h>
@@ -28,21 +28,21 @@ HRESULT CMiniGame_Logic::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMiniGame_Logic::Render(_uint iMeshIndex)
+HRESULT CMiniGame_Logic::Render(_uint meshIndex)
 {
 	return S_OK;
 
 }
 
-HRESULT CMiniGame_Logic::Initialize(void* pArg)
+HRESULT CMiniGame_Logic::Initialize(void* arg)
 {
-	m_MiniGameType = MINIGAME::BASIC_CIRCLE;
+	m_miniGameType = EMiniGameType::BASIC_CIRCLE;
 
-	MINIGAEMELOGIC_DESC* pDesc = static_cast<MINIGAEMELOGIC_DESC*>(pArg);
+	MiniGameLogicDesc* desc = static_cast<MiniGameLogicDesc*>(arg);
 
 
-	m_InitZoonCount = pDesc->zoneCount;
-	m_zoneCount = m_pGameInstance.lock()->RandomInt(pDesc->zoneCount.x, pDesc->zoneCount.y);
+	m_initZoneCount = desc->zoneCount;
+	m_zoneCount = m_gameInstance.lock()->RandomInt(desc->zoneCount.x, desc->zoneCount.y);
 	
 	//m_zoneSize = m_pGameInstance.lock()->Random(pDesc->zoneSize.x, pDesc->zoneSize.y);
                                                                                                                                                                                         
@@ -59,11 +59,11 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 	if (maxSize < minSize)
 		maxSize = minSize;
 
-	m_InitZoonSize = _float2(
+	m_initZoneSize = _float2(
 		minSize,
 		maxSize);
 
-	m_zoneSize= m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
+	m_zoneSize= m_gameInstance.lock()->Random(m_initZoneSize.x, m_initZoneSize.y);
 
 	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
 	//	[this](const Evt_FishingData& e) {
@@ -73,7 +73,7 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 
 
 
-	m_Speed = 100.f;
+	m_speed = 100.f;
 
 
 
@@ -88,12 +88,12 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 		float divideStart = i * divide;
 		float divideEnd = divideStart + divide;
 
-		float size = m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
+		float size = m_gameInstance.lock()->Random(m_initZoneSize.x, m_initZoneSize.y);
 		if (size > divide)
 			size = divide;
 
 		// 구간 안에서만 생성되게 제한
-		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - size);
+		float start = m_gameInstance.lock()->Random(divideStart, divideEnd - size);
 		float end = start + size;
 
 		m_zones[i].start = start;
@@ -101,7 +101,7 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 	}
 
 
-	__super::Initialize(pDesc);
+	__super::Initialize(desc);
 	return S_OK;
 
 }
@@ -111,7 +111,7 @@ HRESULT CMiniGame_Logic::Initialize(void* pArg)
 void CMiniGame_Logic::Update(const _float& timeDelta)
 {
 	//bool m_chose = false;
-	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F))
+	//if (m_pGameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_F))
 	//{
 	//	if (/*m_bFin == true &&*/ m_InvenCtrl.lock()->Is_Dragging() == true)
 	//	{
@@ -135,21 +135,21 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 
 
 	
-	if (m_bStart == true)
+	if (m_isStart == true)
 	{
-		m_prograssBar01 += m_RodSpeed * 0.005f * timeDelta;
+		m_prograssBar01 += m_rodSpeed * 0.005f * timeDelta;
 
 
 		////////////////////////////////////
-		m_AccTime += timeDelta;
-		m_Angle = m_Speed * m_AccTime;
+		m_accTime += timeDelta;
+		m_angle = m_speed * m_accTime;
 
 
-		if(m_bInputRequested)
+		if(m_isInputRequested)
 		{
 
 			float angle01 = {};
-			float currentAngle = fmod(m_Angle, 360.f);
+			float currentAngle = fmod(m_angle, 360.f);
 			if (currentAngle < 0) currentAngle += 360.f;
 
 			angle01 = (currentAngle / 360.f);
@@ -174,21 +174,21 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 				//m_bStart = false;
 
 					m_prograssBar01 += 0.2;
-					m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
+					m_gameInstance.lock()->Play_Once(L"Fishing_Success");
 
-					m_LastInputResult = INPUT_RESULT::SUCCESS;
+					m_lastInputResult = EInputResult::SUCCESS;
 				}
 				else
 				{
 					// 초록 영역 붉어지고 빨간 원 이팩트 밖으로 커짐 아주 짧게
 
 					m_prograssBar01 -= 0.2;
-					m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
+					m_gameInstance.lock()->Play_Once(L"Fishing_Failure");
 
-					m_LastInputResult = INPUT_RESULT::FAIL;
+					m_lastInputResult = EInputResult::FAIL;
 
 					m_changeColor = true;
-					colortime = .5f;
+					m_colorTime = .5f;
 				}
 			}
 
@@ -196,7 +196,7 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 
 
 
-			m_bInputRequested = false;
+			m_isInputRequested = false;
 
 		}
 
@@ -245,27 +245,27 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 		//}
 	}
 
-	if (m_prograssBar01 >= 1.f && !m_bFin)
+	if (m_prograssBar01 >= 1.f && !m_isFinished)
 	{
 		//진짜 성공 반환
-		m_bStart = false;
+		m_isStart = false;
 
-		m_bFin = true;
+		m_isFinished = true;
 
 		
 		Evt_GetFish  e = {};
-		e.DefID = m_DefID;
-		e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
-		auto& item = CItemDB::GetInstance()->GetItemByID(m_DefID);
-		if (auto fish = std::get_if<Fish_Def>(&item.TypeDef))
+		e.defID = m_defID;
+		e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
+		auto& item = CItemDB::GetInstance()->GetItemByID(m_defID);
+		if (auto fish = std::get_if<FishDef>(&item.typeDef))
 		{
-			e.fishInst.mutation_ID = SelectMutationNoRepeat(*fish);
+			e.fishInst.mutationID = SelectMutationNoRepeat(*fish);
 		}
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
-		m_pGameInstance.lock()->Play_Once(L"Fish_New");
-		m_pGameInstance.lock()->Stop(L"fishing_loop");
-		m_FishCount--;
+		m_gameInstance.lock()->Play_Once(L"Fish_New");
+		m_gameInstance.lock()->Stop(L"fishing_loop");
+		m_fishCount--;
 		
 		ResetZoon();
 
@@ -289,17 +289,17 @@ void CMiniGame_Logic::Update(const _float& timeDelta)
 
 void CMiniGame_Logic::ResetZoon()
 {
-	m_zoneCount = m_pGameInstance.lock()->RandomInt(m_InitZoonCount.x, m_InitZoonCount.y);
+	m_zoneCount = m_gameInstance.lock()->RandomInt(m_initZoneCount.x, m_initZoneCount.y);
 
 	float baseSegment = 1.f / m_zoneCount;
 	float minRatio = 0.05f;
 	float maxRatio = 0.3f;
 
-	m_InitZoonSize = _float2(
+	m_initZoneSize = _float2(
 		baseSegment * minRatio,
 		baseSegment * maxRatio);
 
-	m_zoneSize = m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
+	m_zoneSize = m_gameInstance.lock()->Random(m_initZoneSize.x, m_initZoneSize.y);
 
 	float divide = 1.f / m_zoneCount;
 
@@ -311,7 +311,7 @@ void CMiniGame_Logic::ResetZoon()
 		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
 
 		// 구간 안에서만 생성되게 제한
-		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
+		float start = m_gameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
 		float end = start + m_zoneSize;
 
 		m_zones[i].start = start;
@@ -321,37 +321,37 @@ void CMiniGame_Logic::ResetZoon()
 
 void CMiniGame_Logic::OnInput()
 {
-	bool isDragging = m_InvenCtrl.lock()->Is_Dragging();
+	bool isDragging = m_invenCtrl.lock()->Is_Dragging();
 	if (isDragging)
 	{
-		m_pGameInstance.lock()->Stop(L"fishing_loop");
-		m_bStart = false;
+		m_gameInstance.lock()->Stop(L"fishing_loop");
+		m_isStart = false;
 		return;
 	}
-	if (m_bFin && m_FishCount == 0)
+	if (m_isFinished && m_fishCount == 0)
 	{
-		m_pGameInstance.lock()->Play_Once(L"fishing_end");
-		m_bStart = false;
+		m_gameInstance.lock()->Play_Once(L"fishing_end");
+		m_isStart = false;
 		return;
 	}
-	if (m_bFin && m_FishCount > 0)
+	if (m_isFinished && m_fishCount > 0)
 	{
-		m_bFin = false;
+		m_isFinished = false;
 	}
 
 	// 시작
-	if (!m_bStart)
+	if (!m_isStart)
 	{
-		m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
-		m_bStart = true;
-		m_AccTime = 0.f;
+		m_gameInstance.lock()->Play_Loop(L"fishing_loop");
+		m_isStart = true;
+		m_accTime = 0.f;
 		m_prograssBar01 = 0.f;
-		m_bFin = false;
+		m_isFinished = false;
 		return;
 	}
 		
 		
-	m_bInputRequested = true;
+	m_isInputRequested = true;
 		//else { m_chose = true; }
 
 		
@@ -359,16 +359,16 @@ void CMiniGame_Logic::OnInput()
 }
 
 
-shared_ptr<CMiniGame_Logic> CMiniGame_Logic::Create(void* pArg)
+shared_ptr<CMiniGame_Logic> CMiniGame_Logic::Create(void* arg)
 {
-	shared_ptr<CMiniGame_Logic> pInstance(new CMiniGame_Logic(), [](CMiniGame_Logic* p) {p->Free(); delete(p); });
+	shared_ptr<CMiniGame_Logic> instance(new CMiniGame_Logic(), [](CMiniGame_Logic* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMiniGame_Logic::Free()

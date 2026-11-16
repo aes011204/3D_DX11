@@ -1,4 +1,4 @@
-#include "Sky_Controller.h"
+ï»¿#include "Sky_Controller.h"
 
 
 #include <numbers>
@@ -31,11 +31,11 @@ CSky_Controller::~CSky_Controller()
 
 }
 
-HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	m_pGameInstance = CGameInstance::GetInstance();
-	m_pDevice = pDevice;
-	m_pContext = pContext;
+	m_gameInstance = CGameInstance::GetInstance();
+	m_device = device;
+	m_context = context;
 
 
 	return S_OK;
@@ -45,12 +45,12 @@ HRESULT CSky_Controller::Initialize(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11D
 
 
 
-void CSky_Controller::Update(float TimeDelta)
+void CSky_Controller::Update(float timeDelta)
 {
-	auto pGameInstance = m_pGameInstance.lock();
+	auto gameInstance = m_gameInstance.lock();
 
-	// ºû
-	float t = pGameInstance->Get_TOD01();
+	// ë¹›
+	float t = gameInstance->Get_TOD01();
 	//auto lightDESC = pGameInstance->Get_LightDesc(0);
 
 	float offset = XMConvertToRadians(90);
@@ -61,11 +61,11 @@ void CSky_Controller::Update(float TimeDelta)
 	dir.y = -sin(angle);
 	dir.z = sin(angle );
 	dir.w = 0.f;
-	XMStoreFloat4( &m_Direction , XMVector4Normalize(XMLoadFloat4(&dir)));
+	XMStoreFloat4( &m_direction , XMVector4Normalize(XMLoadFloat4(&dir)));
 
 
 	//
-	_float3 skyColor = Night;
+	_float3 skyColor = m_nightColor;
 
 	auto smooth = [](float a, float b, float t)
 		{
@@ -74,50 +74,50 @@ void CSky_Controller::Update(float TimeDelta)
 			return w * w * (3.f - 2.f * w);
 		};
 
-	// ¹ã ¡æ »õº®
-	skyColor = Lerp3(skyColor, MidNight, smooth(NightT.x, NightT.y, t));
+	// ë°¤ â†’ ìƒˆë²½
+	skyColor = Lerp3(skyColor, m_midNightColor, smooth(m_nightRange.x, m_nightRange.y, t));
 
-	// »õº® ¡æ ³·
-	skyColor = Lerp3(skyColor, Day, smooth(MidNightT.x, MidNightT.y, t));
+	// ìƒˆë²½ â†’ ë‚®
+	skyColor = Lerp3(skyColor, m_dayColor, smooth(m_midNightRange.x, m_midNightRange.y, t));
 
-	// ³· ¡æ ³ëÀ»
-	skyColor = Lerp3(skyColor, Sunset, smooth(DayT.x, DayT.y, t));
+	// ë‚® â†’ ë…¸ì„
+	skyColor = Lerp3(skyColor, m_sunsetColor, smooth(m_dayRange.x, m_dayRange.y, t));
 
-	// ³ëÀ» ¡æ ¹ã
-	skyColor = Lerp3(skyColor, AfterSunset, smooth(SunsetT.x, SunsetT.y, t));
+	// ë…¸ì„ â†’ ë°¤
+	skyColor = Lerp3(skyColor, m_afterSunsetColor, smooth(m_sunsetRange.x, m_sunsetRange.y, t));
 	//
-	skyColor = Lerp3(skyColor, Night, smooth(NightT2.x, NightT2.y, t));
+	skyColor = Lerp3(skyColor, m_nightColor, smooth(m_nightRange2.x, m_nightRange2.y, t));
 
-	m_SkyColor = skyColor ;
+	m_skyColor = skyColor ;
 
 	_float3 sunColor = Lerp3(_float3(1, 1, 1), skyColor, 0.5f);
 	//_float3 ambient = skyColor * 0.25f;
 
 	//m_Ambient = _float4{ ambient.x,ambient.y,ambient.z,1.f };
-	m_Diffuse = _float4{ sunColor.x,sunColor.y,sunColor.z,1.f };
+	m_diffuse = _float4{ sunColor.x,sunColor.y,sunColor.z,1.f };
 
-	LIGHT_DESC light = {};
-	light.vDirection = m_Direction;
-	light.vDiffuse = m_Diffuse;
-	light.vAmbient = m_Ambient;
-	light.vSpecular = m_Specular;
-	pGameInstance->Set_LightDesc(0, light);
+	LightDesc light = {};
+	light.direction = m_direction;
+	light.diffuse = m_diffuse;
+	light.ambient = m_ambient;
+	light.specular = m_specular;
+	gameInstance->Set_LightDesc(0, light);
 
 
-	pGameInstance->Set_SkyColor(m_SkyColor);
+	gameInstance->Set_SkyColor(m_skyColor);
 
 }
 
 
 void CSky_Controller::OnGui()
 {
-	ImGui::ColorEdit3("Diffuse", (float*)&m_Diffuse);
-	ImGui::ColorEdit3("Ambient", (float*)&m_Ambient);
-	ImGui::ColorEdit3("Specular", (float*)&m_Specular);
+	ImGui::ColorEdit3("Diffuse", (float*)&m_diffuse);
+	ImGui::ColorEdit3("Ambient", (float*)&m_ambient);
+	ImGui::ColorEdit3("Specular", (float*)&m_specular);
 
-	ImGui::DragFloat3("Direction", (float*)&m_Direction, 0.01f, -1.f, 1.f);
-	XMVECTOR dir = XMVector3Normalize(XMLoadFloat4(&m_Direction));
-	XMStoreFloat4(&m_Direction, dir);
+	ImGui::DragFloat3("Direction", (float*)&m_direction, 0.01f, -1.f, 1.f);
+	XMVECTOR dir = XMVector3Normalize(XMLoadFloat4(&m_direction));
+	XMStoreFloat4(&m_direction, dir);
 }
 
 void CSky_Controller::Free()

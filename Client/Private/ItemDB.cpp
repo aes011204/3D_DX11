@@ -1,4 +1,4 @@
-
+Ôªø
 #include "ItemDB.h"
 #include "GameInstance.h"
 #include "Texture.h"
@@ -8,27 +8,27 @@
 
 IMPLEMENT_SINGLETON(CItemDB)
 
-CItemDB::CItemDB() : m_pGameInstance(CGameInstance::GetInstance())
+CItemDB::CItemDB() : m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
 HRESULT CItemDB::Initialize()
 {
-	if (FAILED(Load_ItemDate("Item_Fish.json")))
+	if (FAILED(Load_ItemData("Item_Fish.json")))
 		return E_FAIL;
-	if (FAILED(Load_ItemDate("Item_Equipment.json")))
+	if (FAILED(Load_ItemData("Item_Equipment.json")))
 		return E_FAIL;
-	if (FAILED(Load_ItemDate("Item_Material.json")))
+	if (FAILED(Load_ItemData("Item_Material.json")))
 		return E_FAIL;
 	return S_OK;
 }
 
-const Item_Def& CItemDB::GetItemByID(_uint ItemID)
+const ItemDef& CItemDB::GetItemByID(_uint itemID)
 {
-	return m_vec_ItemDefs[GetIndexByID(ItemID)];
+	return m_vecItemDefs[GetIndexByID(itemID)];
 }
 
-HRESULT CItemDB::Load_ItemDate(const string& fileName)
+HRESULT CItemDB::Load_ItemData(const string& fileName)
 {
 	ifstream file(fileName, ios_base::in);
 
@@ -40,28 +40,28 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 
 	nlohmann::json j;
 
-	//// BOM ¡¶∞≈ √≥∏Æ
+	//// BOM Ï†úÍ±∞ Ï≤òÎ¶¨
 	//char c;
 	//file.read(&c, 1);
 
-	//if (static_cast<unsigned char>(c) != 0xEF) // BOM¿« √π πŸ¿Ã∆Æ∞° 0xEF∞° æ∆¥œ∏È
+	//if (static_cast<unsigned char>(c) != 0xEF) // BOMÏùò Ï≤´ Î∞îÏù¥Ìä∏Í∞Ä 0xEFÍ∞Ä ÏïÑÎãàÎ©¥
 	//{
-	//    // BOM æ¯¿Ω °Ê ¥ŸΩ√ Ω∫∆Æ∏≤ √≥¿Ω¿∏∑Œ ¿Ãµø
+	//    // BOM ÏóÜÏùå ‚Üí Îã§Ïãú Ïä§Ìä∏Î¶º Ï≤òÏùåÏúºÎ°ú Ïù¥Îèô
 	//    file.seekg(0);
 	//}
 	//else
 	//{
-	//    // BOM ¡∏¿Á °Ê ≥™∏”¡ˆ 2πŸ¿Ã∆Æ ¡¶∞≈
+	//    // BOM Ï°¥Ïû¨ ‚Üí ÎÇòÎ®∏ÏßÄ 2Î∞îÏù¥Ìä∏ Ï†úÍ±∞
 	//    char c2, c3;
 	//    file.read(&c2, 1);
 	//    file.read(&c3, 1);
-	//    // ¿Ã¡¶ f¥¬ JSON ∫ªπÆ ¿ßƒ°ø° ¡§»Æ»˜ ¿÷¿Ω
+	//    // Ïù¥Ï†ú fÎäî JSON Î≥∏Î¨∏ ÏúÑÏπòÏóê Ï†ïÌôïÌûà ÏûàÏùå
 	//}
 
-	// ∆ƒ¿œ ¿–±‚
+	// ÌååÏùº ÏùΩÍ∏∞
 	try
 	{
-		file >> j;  // ø©±‚º≠ πÆπ˝ ¿ÃªÛ«œ∏È πŸ∑Œ øπø‹ πﬂª˝
+		file >> j;  // Ïó¨Í∏∞ÏÑú Î¨∏Î≤ï Ïù¥ÏÉÅÌïòÎ©¥ Î∞îÎ°ú ÏòàÏô∏ Î∞úÏÉù
 	}
 	catch (const nlohmann::json::parse_error& e)
 	{
@@ -72,21 +72,21 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 
 	for (auto& node : j["Items"])
 	{
-		Item_Def item_def; // ±∏¡∂√º ¡ˆø™¿∏∑Œ ª˝º∫
+		ItemDef itemDef; // Íµ¨Ï°∞Ï≤¥ ÏßÄÏó≠ÏúºÎ°ú ÏÉùÏÑ±
 
-		item_def.ItemID = node.value("ItemID", 0);//node["ItemID"].get<int> ¿Ã∑∏∞‘ «ÿµµµ«±‰ «‘
+		itemDef.itemID = node.value("ItemID", 0);//node["ItemID"].get<int> Ïù¥Î†áÍ≤å Ìï¥ÎèÑÎêòÍ∏¥ Ìï®
 
 		{
 			string str = node.value("ItemType", "END");
-			auto Enum_Result = magic_enum::enum_cast<ITEM_TYPE>(str, magic_enum::case_insensitive);
+			auto enumResult = magic_enum::enum_cast<EItemType>(str, magic_enum::case_insensitive);
 
 			// 
-			item_def.ItemType = Enum_Result.value();
+			itemDef.itemType = enumResult.value();
 		}
 
-		item_def.ItemName = node.value("ItemName", "NO_DATA");
-		item_def.ItemDesc = node.value("ItemDesc", "NO_DATA");
-		item_def.TexturePath = node.value("TexturePath", "NO_DATA");
+		itemDef.itemName = node.value("ItemName", "NO_DATA");
+		itemDef.itemDesc = node.value("ItemDesc", "NO_DATA");
+		itemDef.texturePath = node.value("TexturePath", "NO_DATA");
 
 		if (node.contains("ItemShape"))
 		{
@@ -95,81 +95,81 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 			//	
 			//auto& node = node["ItemShape"];
 
-			item_def.ItemShape.Width = node["ItemShape"].value("Width", 0);
-			item_def.ItemShape.Height = node["ItemShape"].value("Height", 0);
+			itemDef.itemShape.width = node["ItemShape"].value("Width", 0);
+			itemDef.itemShape.height = node["ItemShape"].value("Height", 0);
 
 			//vector<vector<_ubyte>> mask = node["Shape_Mask"];
 
-			item_def.ItemShape.Shape_Mask.resize(item_def.ItemShape.Width * item_def.ItemShape.Height);
+			itemDef.itemShape.shapeMask.resize(itemDef.itemShape.width * itemDef.itemShape.height);
 
-			for (int h = 0; h < item_def.ItemShape.Height; h++)
+			for (int h = 0; h < itemDef.itemShape.height; h++)
 			{
-				for (int w = 0; w < item_def.ItemShape.Width; w++)
+				for (int w = 0; w < itemDef.itemShape.width; w++)
 				{
-					int mask = node["ItemShape"]["Shape_Mask"][h][w].get<int>(); // ¿œ¥‹ int∑Œ πﬁ∞Ì ≥™¡ﬂø° «¸∫Ø»Ø
+					int mask = node["ItemShape"]["Shape_Mask"][h][w].get<int>(); // ÏùºÎã® intÎ°ú Î∞õÍ≥† ÎÇòÏ§ëÏóê ÌòïÎ≥ÄÌôò
 					if (mask != 1) { mask = 0; }
-					item_def.ItemShape.Shape_Mask[h * item_def.ItemShape.Width + w] = static_cast<_ubyte>(mask);
+					itemDef.itemShape.shapeMask[h * itemDef.itemShape.width + w] = static_cast<_ubyte>(mask);
 
 				}
 
 			}
-			// ¿Ã∞« ∫Ø»Ø «‘ºˆ « ø‰«‘
+			// Ïù¥Í±¥ Î≥ÄÌôò Ìï®Ïàò ÌïÑÏöîÌï®
 
 	/*			item_def.ItemShape.Occ[0] =
 				item_def.ItemShape.Occ[1] =
 				item_def.ItemShape.Occ[2] =
 				item_def.ItemShape.Occ[3] =*/
 				//}
-			Compute_Occ(item_def.ItemShape, item_def.ItemShape.Width, item_def.ItemShape.Height);
+			Compute_Occ(itemDef.itemShape, itemDef.itemShape.width, itemDef.itemShape.height);
 		}
-		item_def.SizeNum = node.value("SizeNum", 0);
-		//item_def.ItemShape.width * item_def.ItemShape.Height;// ¿Ã∞≈«œ∏È ∆Ø¿Ã«— ∏æÁ ∫“∞° ≥◊∏∏∏ ∞°¥…
+		itemDef.sizeNum = node.value("SizeNum", 0);
+		//item_def.ItemShape.width * item_def.ItemShape.Height;// Ïù¥Í±∞ÌïòÎ©¥ ÌäπÏù¥Ìïú Î™®Ïñë Î∂àÍ∞Ä ÎÑ§Î™®Îßå Í∞ÄÎä•
 
-		switch (item_def.ItemType)
+		switch (itemDef.itemType)
 		{
-		case ITEM_TYPE::FISH:
+		case EItemType::FISH:
 		{
-			Fish_Def fish_def;
-			Parse_Fish_Def(fish_def, node);
-			item_def.TypeDef = fish_def;
+			FishDef fishDef;
+			Parse_Fish_Def(fishDef, node);
+			itemDef.typeDef = fishDef;
 			break;
 		}
-		case ITEM_TYPE::EQUIP:
+		case EItemType::EQUIP:
 		{
-			Equip_Def equip_def;
-			Parse_Equip_Def(equip_def, node);
-			item_def.TypeDef = equip_def;
+			EquipDef equipDef;
+			Parse_Equip_Def(equipDef, node);
+			itemDef.typeDef = equipDef;
 			break;
 		}
-		case ITEM_TYPE::MATERIAL:
+		case EItemType::MATERIAL:
 		{
-			Material_Def material_def;
-			material_def.Cost = node.value("Cost", 0);
-			item_def.TypeDef = material_def;
+			MaterialDef materialDef;
+			materialDef.cost = node.value("Cost", 0);
+			itemDef.typeDef = materialDef;
 			break;
 		}
-		case ITEM_TYPE::PURSUIT:
-			// æ¯¿Ω ±◊≥… monostate∑Œ §°
+		case EItemType::PURSUIT:
+			// ÏóÜÏùå Í∑∏ÎÉ• monostateÎ°ú „Ñ±
 			break;
-		case ITEM_TYPE::TRINKET:
+		case EItemType::TRINKET:
 		{
-			Trinket_Def trinket_def;
-			trinket_def.Cost = node.value("Cost", 0);
-			item_def.TypeDef = trinket_def;
+			TrinketDef trinketDef;
+			trinketDef.cost = node.value("Cost", 0);
+			itemDef.typeDef = trinketDef;
 			break;
 		}
 		}
 
-		// ¿œ¥‹ ¿Ã∑Ø∏È ∫πªÁµ» ≈√Ω∫√ƒ¿« æË¿∫ ∫πªÁ¿Œµ• ¿œ¥‹ πÆ¡¶¥¬ æ¯¿ªµÌ πÆ¡¶ ª˝±‚∏È ºˆ¡§
-		item_def.pTexture = dynamic_pointer_cast<CTexture>(m_pGameInstance.lock()->
-			Clone_Prototype(PROTOTYPE::COMPONENT, ETOI(LEVEL::STATIC), S2W(item_def.TexturePath)));
+		// ÏùºÎã® Ïù¥Îü¨Î©¥ Î≥µÏÇ¨Îêú ÌÉùÏä§Ï≥êÏùò ÏñïÏùÄ Î≥µÏÇ¨Ïù∏Îç∞ ÏùºÎã® Î¨∏Ï†úÎäî ÏóÜÏùÑÎìØ Î¨∏Ï†ú ÏÉùÍ∏∞Î©¥ ÏàòÏ†ï
+		itemDef.texture = dynamic_pointer_cast<CTexture>(m_gameInstance.lock()->
+			Clone_Prototype(EPrototype::COMPONENT, ETOI(ELevel::STATIC), S2W(itemDef.texturePath)));
 
 
 
 
-		// ∏∂¡ˆ∏∑ vecø° ≥÷±‚
-		m_vec_ItemDefs.push_back(item_def);
-		m_map_ItemID.emplace(item_def.ItemID, m_vec_ItemDefs.size() - 1);
+		// ÎßàÏßÄÎßâ vecÏóê ÎÑ£Í∏∞
+		m_vecItemDefs.push_back(itemDef);
+		m_mapItemID.emplace(itemDef.itemID, m_vecItemDefs.size() - 1);
 
 	}
 
@@ -178,17 +178,17 @@ HRESULT CItemDB::Load_ItemDate(const string& fileName)
 
 }
 
-void CItemDB::Parse_Fish_Def(Fish_Def& fish_def, const nlohmann::json& node)
+void CItemDB::Parse_Fish_Def(FishDef& fishDef, const nlohmann::json& node)
 {
 
-	fish_def.Cost = node.value("Cost", 0);
+	fishDef.cost = node.value("Cost", 0);
 
 	_string str = node.value("FishTime", "END");
-	TIME timeEnum = magic_enum::enum_cast<TIME>(str).value();
-	fish_def.FishTime = timeEnum;
+	EDayTime timeEnum = magic_enum::enum_cast<EDayTime>(str).value();
+	fishDef.fishTime = timeEnum;
 
-	fish_def.SeaType_Mask = BitFlag_SeaType(node, "SeaType_Mask");
-	//for (const string& str : node["SeaType_Mask"]) //.get<_string>() ¿Ã∞« æ»µ  πËø≠∑Œ ¿˙¿Â µ«æÓ ¿÷¥¬∞≈∂Û
+	fishDef.seaTypeMask = BitFlag_SeaType(node, "SeaType_Mask");
+	//for (const string& str : node["SeaType_Mask"]) //.get<_string>() Ïù¥Í±¥ ÏïàÎê® Î∞∞Ïó¥Î°ú Ï†ÄÏû• ÎêòÏñ¥ ÏûàÎäîÍ±∞Îùº
 	//{
 	//	if (str == "COASTAL") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::COASTAL); }
 	//	else if (str == "SHALLOW") { fish_def.SeaType_Mask |= SEA_MASK(SEA_TYPE::SHALLOW); }
@@ -203,161 +203,161 @@ void CItemDB::Parse_Fish_Def(Fish_Def& fish_def, const nlohmann::json& node)
 
 	if (node.contains("Mutation"))
 	{
-		fish_def.vec_Mutation.resize(node["Mutation"].size());
+		fishDef.vecMutation.resize(node["Mutation"].size());
 		for (int i = 0; i < node["Mutation"].size(); i++)
 		{
 			auto& mut = node["Mutation"][i];
-			fish_def.vec_Mutation[i].Mutation_ID = i + 1;
-			fish_def.vec_Mutation[i].Species_ID = node.value("ItemID", 0);
+			fishDef.vecMutation[i].mutationID = i + 1;
+			fishDef.vecMutation[i].speciesID = node.value("ItemID", 0);
 
-			fish_def.vec_Mutation[i].MutName = mut.value("MutName", "a");
-			fish_def.vec_Mutation[i].MutDesc = mut.value("MutDesc", "a");
-			fish_def.vec_Mutation[i].MutTexturePath = mut.value("MutTexturePath", "a");
-			fish_def.vec_Mutation[i].MutCost = mut.value("MutCost", 0);
+			fishDef.vecMutation[i].mutName = mut.value("MutName", "a");
+			fishDef.vecMutation[i].mutDesc = mut.value("MutDesc", "a");
+			fishDef.vecMutation[i].mutTexturePath = mut.value("MutTexturePath", "a");
+			fishDef.vecMutation[i].mutCost = mut.value("MutCost", 0);
 
 
-			fish_def.vec_Mutation[i].pTexture = dynamic_pointer_cast<CTexture>(m_pGameInstance.lock()->
-				Clone_Prototype(PROTOTYPE::COMPONENT, ETOI(LEVEL::STATIC), S2W(fish_def.vec_Mutation[i].MutTexturePath)));
+			fishDef.vecMutation[i].texture = dynamic_pointer_cast<CTexture>(m_gameInstance.lock()->
+				Clone_Prototype(EPrototype::COMPONENT, ETOI(ELevel::STATIC), S2W(fishDef.vecMutation[i].mutTexturePath)));
 
 		}
 	}
 
-	fish_def.IsRod = node.value("IsRod", false);
-	fish_def.IsTrawl = node.value("IsTrawl", false);
-	fish_def.IsPot = node.value("IsPot", false);
+	fishDef.isRod = node.value("IsRod", false);
+	fishDef.isTrawl = node.value("IsTrawl", false);
+	fishDef.isPot = node.value("IsPot", false);
 }
-void CItemDB::Parse_Equip_Def(Equip_Def& equip_def, const nlohmann::json& node)
+void CItemDB::Parse_Equip_Def(EquipDef& equipDef, const nlohmann::json& node)
 {
 
-	equip_def.Cost = node.value("Cost", 0);
-	equip_def.InstallTime = node.value("InstallTime", 0);
+	equipDef.cost = node.value("Cost", 0);
+	equipDef.installTime = node.value("InstallTime", 0);
 
 
 	_string str = node.value("EquipType", "END");
-	EQUIP_TYPE typeEnum = magic_enum::enum_cast<EQUIP_TYPE>(str).value();
-	equip_def.EquipType = typeEnum;
+	EEquipType typeEnum = magic_enum::enum_cast<EEquipType>(str).value();
+	equipDef.equipType = typeEnum;
 
-	auto& EffNode = node["EquipType_Effect"];
+	auto& effNode = node["EquipType_Effect"];
 
-	switch (equip_def.EquipType)
+	switch (equipDef.equipType)
 	{
-	case EQUIP_TYPE::ENGINE:
+	case EEquipType::ENGINE:
 	{
-		Equip_Engine effect;
-		effect.Research_Lv = EffNode.value("Research_Lv", 0);
-		effect.Speed_Kn = EffNode.value("Speed_Kn", 0);
-		equip_def.EquipType_Effect = effect;
+		EquipEngine effect;
+		effect.researchLv = effNode.value("Research_Lv", 0);
+		effect.speedKn = effNode.value("Speed_Kn", 0);
+		equipDef.equipTypeEffect = effect;
 
 		break;
 	}
-	case EQUIP_TYPE::LIGHT:
+	case EEquipType::LIGHT:
 	{
-		Equip_Light effect;
-		effect.Lumen = EffNode.value("Lumen", 0);
-		effect.Range = EffNode.value("Range", 0);
-		equip_def.EquipType_Effect = effect;
+		EquipLight effect;
+		effect.lumen = effNode.value("Lumen", 0);
+		effect.range = effNode.value("Range", 0);
+		equipDef.equipTypeEffect = effect;
 
 		break;
 	}
-	case EQUIP_TYPE::ROD:
+	case EEquipType::ROD:
 	{
-		Equip_Rod effect;
-		effect.Research_Lv = EffNode.value("Research_Lv", 0);
-		effect.SeaType_Mask = BitFlag_SeaType(EffNode, "SeaType_Mask");
-		effect.Speed_Per = EffNode.value("Speed_Per", 0);
-		equip_def.EquipType_Effect = effect;
+		EquipRod effect;
+		effect.researchLv = effNode.value("Research_Lv", 0);
+		effect.seaTypeMask = BitFlag_SeaType(effNode, "SeaType_Mask");
+		effect.speedPer = effNode.value("Speed_Per", 0);
+		equipDef.equipTypeEffect = effect;
 
 		break;
 	}
-	case EQUIP_TYPE::NET:
+	case EEquipType::NET:
 	{
-		Equip_Net effect;
-		effect.Research_Lv = EffNode.value("Research_Lv", 0);
-		effect.SeaType_Mask = BitFlag_SeaType(EffNode, "SeaType_Mask");
-		effect.Cap_SizeX = EffNode.value("Cap_SizeX", 0);
-		effect.Cap_SizeY = EffNode.value("Cap_SizeY", 0);
-		effect.Yield = EffNode.value("Yield", 0);
-		effect.LastFor = EffNode.value("LastFor", 0);
+		EquipNet effect;
+		effect.researchLv = effNode.value("Research_Lv", 0);
+		effect.seaTypeMask = BitFlag_SeaType(effNode, "SeaType_Mask");
+		effect.capSizeX = effNode.value("Cap_SizeX", 0);
+		effect.capSizeY = effNode.value("Cap_SizeY", 0);
+		effect.yield = effNode.value("Yield", 0);
+		effect.lastFor = effNode.value("LastFor", 0);
 
-		equip_def.EquipType_Effect = effect;
+		equipDef.equipTypeEffect = effect;
 
 		break;
 	}
-	case EQUIP_TYPE::CRAP:
+	case EEquipType::CRAP:
 	{
-		Equip_CrapPot effect;
-		effect.Research_Lv = EffNode.value("Research_Lv", 0);
-		effect.Cap_SizeX = EffNode.value("Cap_SizeX", 0);
-		effect.Cap_SizeY = EffNode.value("Cap_SizeY", 0);
-		effect.Yield = EffNode.value("Yield", 0);
-		effect.LastFor = EffNode.value("LastFor", 0);
+		EquipCrabPot effect;
+		effect.researchLv = effNode.value("Research_Lv", 0);
+		effect.capSizeX = effNode.value("Cap_SizeX", 0);
+		effect.capSizeY = effNode.value("Cap_SizeY", 0);
+		effect.yield = effNode.value("Yield", 0);
+		effect.lastFor = effNode.value("LastFor", 0);
 
-		equip_def.EquipType_Effect = effect;
+		equipDef.equipTypeEffect = effect;
 
 		break;
 	}
 	}
 }
 
-SEA_MASK CItemDB::BitFlag_SeaType(const nlohmann::json& node, const string str)
+SeaMask CItemDB::BitFlag_SeaType(const nlohmann::json& node, const string str)
 {
-	SEA_MASK mask = 0;
+	SeaMask mask = 0;
 	if (!node.contains(str) || !node.at(str).is_array())
 		return mask;
-	for (const auto& v : node.at(str)) //.get<_string>() ¿Ã∞« æ»µ  πËø≠∑Œ ¿˙¿Â µ«æÓ ¿÷¥¬∞≈∂Û
+	for (const auto& v : node.at(str)) //.get<_string>() Ïù¥Í±¥ ÏïàÎê® Î∞∞Ïó¥Î°ú Ï†ÄÏû• ÎêòÏñ¥ ÏûàÎäîÍ±∞Îùº
 	{
 		string name = v.get<std::string>();
 
 
-		if (name == "COASTAL") { mask |= Set_SeaType_Mask(SEA_TYPE::COASTAL); }
-		else if (name == "SHALLOW") { mask |= Set_SeaType_Mask(SEA_TYPE::SHALLOW); }
-		else if (name == "OCEANIC") { mask |= Set_SeaType_Mask(SEA_TYPE::OCEANIC); }
-		else if (name == "ABYSSAL") { mask |= Set_SeaType_Mask(SEA_TYPE::ABYSSAL); }
-		else if (name == "HADAL") { mask |= Set_SeaType_Mask(SEA_TYPE::HADAL); }
-		else if (name == "MANGROVE") { mask |= Set_SeaType_Mask(SEA_TYPE::MANGROVE); }
-		else if (name == "VOLCANIC") { mask |= Set_SeaType_Mask(SEA_TYPE::VOLCANIC); }
-		else if (name == "ICE") { mask |= Set_SeaType_Mask(SEA_TYPE::ICE); }
-		else if (name == "CRAB") { mask |= Set_SeaType_Mask(SEA_TYPE::CRAB); }
+		if (name == "COASTAL") { mask |= Set_SeaType_Mask(ESeaType::COASTAL); }
+		else if (name == "SHALLOW") { mask |= Set_SeaType_Mask(ESeaType::SHALLOW); }
+		else if (name == "OCEANIC") { mask |= Set_SeaType_Mask(ESeaType::OCEANIC); }
+		else if (name == "ABYSSAL") { mask |= Set_SeaType_Mask(ESeaType::ABYSSAL); }
+		else if (name == "HADAL") { mask |= Set_SeaType_Mask(ESeaType::HADAL); }
+		else if (name == "MANGROVE") { mask |= Set_SeaType_Mask(ESeaType::MANGROVE); }
+		else if (name == "VOLCANIC") { mask |= Set_SeaType_Mask(ESeaType::VOLCANIC); }
+		else if (name == "ICE") { mask |= Set_SeaType_Mask(ESeaType::ICE); }
+		else if (name == "CRAB") { mask |= Set_SeaType_Mask(ESeaType::CRAB); }
 	}
 	return mask;
 }
 
 void CItemDB::Compute_Occ(Shape& shape, _uint w, _uint h)
 {
-	shape.Occ[0].clear();
-	shape.Occ[1].clear();
-	shape.Occ[2].clear();
-	shape.Occ[3].clear();
+	shape.occ[0].clear();
+	shape.occ[1].clear();
+	shape.occ[2].clear();
+	shape.occ[3].clear();
 
-	_uint _w = { w };
-	_uint _h = { h };
-	for (_uint y = 0; y < shape.Height; y++)
+	_uint width = { w };
+	_uint height = { h };
+	for (_uint y = 0; y < shape.height; y++)
 	{
-		for (_uint x = 0; x < shape.Width; x++)
+		for (_uint x = 0; x < shape.width; x++)
 		{
-			if (shape.Shape_Mask[y * w + x] == 1)
+			if (shape.shapeMask[y * w + x] == 1)
 			{
-				shape.Occ[0].push_back({ x,y });
+				shape.occ[0].push_back({ x,y });
 
 			}
 		}
 	}
 
-	// ∞¯Ωƒ 90µµ »∏¿¸ = [x,y]->[h-1-y,x]
+	// Í≥µÏãù 90ÎèÑ ÌöåÏ†Ñ = [x,y]->[h-1-y,x]
 	//Rotation 90
-	_w = h; _h = w;
+	width = h; height = w;
 
-	// 90µµ »∏¿¸: (x, y) -> (h-1-y, x) 
-	for (auto& pos : shape.Occ[0])
-		shape.Occ[1].push_back({ h - 1 - pos.dy, pos.dx });
+	// 90ÎèÑ ÌöåÏ†Ñ: (x, y) -> (h-1-y, x) 
+	for (auto& pos : shape.occ[0])
+		shape.occ[1].push_back({ h - 1 - pos.dy, pos.dx });
 
-	// 180µµ »∏¿¸: (x, y) -> (w-1-y, x) 
-	for (auto& pos : shape.Occ[1])
-		shape.Occ[2].push_back({ w - 1 - pos.dy, pos.dx });
+	// 180ÎèÑ ÌöåÏ†Ñ: (x, y) -> (w-1-y, x) 
+	for (auto& pos : shape.occ[1])
+		shape.occ[2].push_back({ w - 1 - pos.dy, pos.dx });
 
-	// 270µµ »∏¿¸: (x, y) -> (h-1-y, x) 
-	for (auto& pos : shape.Occ[2])
-		shape.Occ[3].push_back({ h - 1 - pos.dy, pos.dx });
+	// 270ÎèÑ ÌöåÏ†Ñ: (x, y) -> (h-1-y, x) 
+	for (auto& pos : shape.occ[2])
+		shape.occ[3].push_back({ h - 1 - pos.dy, pos.dx });
 
 }
 
@@ -367,11 +367,11 @@ wstring CItemDB::Utf8ToWstring(const string& str)
 	if (str.empty())
 		return wstring();
 
-	_int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
+	_int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
 
-	wstring result(size_needed, 0);
+	wstring result(sizeNeeded, 0);
 
-	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &result[0], size_needed);
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &result[0], sizeNeeded);
 
 	if (!result.empty() && result.back() == L'\0')
 		result.pop_back();
@@ -381,8 +381,8 @@ wstring CItemDB::Utf8ToWstring(const string& str)
 
 _uint CItemDB::GetIndexByID(_uint id)
 {
-	auto it = m_map_ItemID.find(id);
-	assert(it != m_map_ItemID.end());
+	auto it = m_mapItemID.find(id);
+	assert(it != m_mapItemID.end());
 	return it->second;
 }
 

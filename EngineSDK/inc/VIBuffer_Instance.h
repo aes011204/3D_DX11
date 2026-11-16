@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "VIBuffer.h"
 
 NS_BEGIN(Engine)
@@ -7,39 +7,39 @@ class CVIBuffer_Instance abstract:
 {
 
 public:
-	struct INSTANCE_DESC
+	struct InstanceDesc
 	{
-		_uint		iNumInstances = {};
-		_float3		vCenter;
-		_float3		vRange;
-		_float2		vScale;
+		_uint		numInstances = {};
+		_float3		center;
+		_float3		range;
+		_float2		scale;
 	};
 
 protected:
-	CVIBuffer_Instance(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-	CVIBuffer_Instance(const CVIBuffer_Instance& Prototype);
+	CVIBuffer_Instance(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+	CVIBuffer_Instance(const CVIBuffer_Instance& prototype);
 public:
 	virtual ~CVIBuffer_Instance() = default;
 
 public:
 	virtual HRESULT Initialize_Prototype();
-	virtual HRESULT Initialize(void* pArg);
+	virtual HRESULT Initialize(void* arg);
 	virtual HRESULT Bind_Resources();
 	virtual HRESULT Render();
 
 protected:
-	ComPtr<ID3D11Buffer>  m_pVBInstance = { nullptr };
-	D3D11_BUFFER_DESC m_InstanceBufferDesc{};
+	ComPtr<ID3D11Buffer>  m_VBInstance = { nullptr };
+	D3D11_BUFFER_DESC m_instanceBufferDesc{};
 
 protected:
-	_uint						m_iInstanceStride = {};
+	_uint						m_instanceStride = {};
 
-	_uint						m_iNumInstances = {};
-	_uint						m_iIndexCountPerInstance = {};
+	_uint						m_numInstances = {};
+	_uint						m_indexCountPerInstance = {};
 
 	
 public:
-	virtual shared_ptr<CComponent> Clone(void* pArg)=0;
+	virtual shared_ptr<CComponent> Clone(void* arg)=0;
 	virtual void Free() override;
 
 

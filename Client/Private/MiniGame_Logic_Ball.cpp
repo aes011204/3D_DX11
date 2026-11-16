@@ -1,4 +1,4 @@
-#include "MiniGame_Logic_Ball.h"
+ï»¿#include "MiniGame_Logic_Ball.h"
 
 
 #include <UIButton.h>
@@ -28,20 +28,20 @@ HRESULT CMiniGame_Logic_Ball::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMiniGame_Logic_Ball::Render(_uint iMeshIndex)
+HRESULT CMiniGame_Logic_Ball::Render(_uint meshIndex)
 {
 	return S_OK;
 
 }
 
-HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
+HRESULT CMiniGame_Logic_Ball::Initialize(void* arg)
 {
-	m_MiniGameType = MINIGAME::BASIC_CIRCLE;
+	m_miniGameType = EMiniGameType::BASIC_CIRCLE;
 
-	MINIGAEMELOGIC_BALL_DESC* pDesc = static_cast<MINIGAEMELOGIC_BALL_DESC*>(pArg);
+	MiniGameLogicBallDesc* desc = static_cast<MiniGameLogicBallDesc*>(arg);
 
 	                                                                                                                                                                             
-	m_Speed = m_pGameInstance.lock()->Random(pDesc->Speed.x, pDesc->Speed.y);
+	m_speed = m_gameInstance.lock()->Random(desc->speed.x, desc->speed.y);
 
 	//m_pGameInstance.lock()->Get_EventBus()->Subscribe<Evt_FishingData>(
 	//	[this](const Evt_FishingData& e) {
@@ -65,8 +65,8 @@ HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
 
 		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
 
-		// ±¸°£ ¾È¿¡¼­¸¸ »ý¼ºµÇ°Ô Á¦ÇÑ
-		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
+		// êµ¬ê°„ ì•ˆì—ì„œë§Œ ìƒì„±ë˜ê²Œ ì œí•œ
+		float start = m_gameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
 		float end = start + m_zoneSize;
 
 		m_zones[i].start = start;
@@ -84,7 +84,7 @@ HRESULT CMiniGame_Logic_Ball::Initialize(void* pArg)
 void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 {
 	//bool m_chose = false;
-	//if (m_pGameInstance.lock()->Get_DInput_Manger()->KeyDown(DIK_F))
+	//if (m_pGameInstance.lock()->Get_DInput_Manager()->KeyDown(DIK_F))
 	//{
 	//	if (/*m_bFin == true &&*/ m_InvenCtrl.lock()->Is_Dragging() == true)
 	//	{
@@ -108,14 +108,14 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 
 	
-	if (m_bStart == true)
+	if (m_isStart == true)
 	{
-		m_prograssBar01 += m_RodSpeed * timeDelta;
+		m_prograssBar01 += m_rodSpeed * timeDelta;
 
 
 		////////////////////////////////////
-		m_AccTime += timeDelta;
-		m_Angle = m_Speed * m_AccTime;
+		m_accTime += timeDelta;
+		m_angle = m_speed * m_accTime;
 		
 		/*float currentAngle = fmod(m_Angle, 360.f);
 		if (currentAngle < 0) currentAngle += 360.f;
@@ -137,7 +137,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 		//	if (isSuccess == true)
 		//	{
-		//		// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+		//		// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 		//	//m_bStart = false;
 
 		//		m_prograssBar01 += 0.2;
@@ -147,7 +147,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 		//	}
 		//	else
 		//	{
-		//		// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+		//		// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 		//		m_prograssBar01 -= 0.2;
 
@@ -161,21 +161,21 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 		//}
 	}
 
-	if (m_prograssBar01 >= 1.f && !m_bFin)
+	if (m_prograssBar01 >= 1.f && !m_isFinished)
 	{
-		//ÁøÂ¥ ¼º°ø ¹ÝÈ¯
-		m_bStart = false;
+		//ì§„ì§œ ì„±ê³µ ë°˜í™˜
+		m_isStart = false;
 
-		m_bFin = true;
+		m_isFinished = true;
 
 		
 		Evt_GetFish  e = {};
-		e.DefID = m_DefID;
-		e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
-		e.fishInst.mutation_ID = 2;
-		m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
+		e.defID = m_defID;
+		e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
+		e.fishInst.mutationID = 2;
+		m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
-		m_FishCount--;
+		m_fishCount--;
 
 		ResetZoon();
 
@@ -199,7 +199,7 @@ void CMiniGame_Logic_Ball::Update(const _float& timeDelta)
 
 void CMiniGame_Logic_Ball::ResetZoon()
 {
-	m_zoneSize = m_pGameInstance.lock()->Random(m_InitZoonSize.x, m_InitZoonSize.y);
+	m_zoneSize = m_gameInstance.lock()->Random(m_initZoneSize.x, m_initZoneSize.y);
 
 	float divide = 1.f / m_zoneCount;
 
@@ -210,8 +210,8 @@ void CMiniGame_Logic_Ball::ResetZoon()
 
 		//float size = m_pGameInstance.lock()->Random(m_zoneSize.x, m_zoneSize.y);
 
-		// ±¸°£ ¾È¿¡¼­¸¸ »ý¼ºµÇ°Ô Á¦ÇÑ
-		float start = m_pGameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
+		// êµ¬ê°„ ì•ˆì—ì„œë§Œ ìƒì„±ë˜ê²Œ ì œí•œ
+		float start = m_gameInstance.lock()->Random(divideStart, divideEnd - m_zoneSize);
 		float end = start + m_zoneSize;
 
 		m_zones[i].start = start;
@@ -222,25 +222,25 @@ void CMiniGame_Logic_Ball::ResetZoon()
 void CMiniGame_Logic_Ball::OnInput()
 {
 	//bool m_chose = false;
-	bool isDragging = m_InvenCtrl.lock()->Is_Dragging();
+	bool isDragging = m_invenCtrl.lock()->Is_Dragging();
 	if (isDragging)
 	{
-		m_bStart = false;
+		m_isStart = false;
 		return;
 	}
-	if (m_bFin && m_FishCount == 0)
+	if (m_isFinished && m_fishCount == 0)
 	{
-		m_bStart = false;
+		m_isStart = false;
 		return;
 	}
 
-	// 2. ½ÃÀÛ
-	if (!m_bStart)
+	// 2. ì‹œìž‘
+	if (!m_isStart)
 	{
-		m_bStart = true;
-		m_AccTime = 0.f;
+		m_isStart = true;
+		m_accTime = 0.f;
 		m_prograssBar01 = 0.f;
-		m_bFin = false;
+		m_isFinished = false;
 		return;
 	}
 		
@@ -249,7 +249,7 @@ void CMiniGame_Logic_Ball::OnInput()
 		//else { m_chose = true; }
 
 		float angle01 = {};
-		float currentAngle = fmod(m_Angle, 360.f);
+		float currentAngle = fmod(m_angle, 360.f);
 		if (currentAngle < 0) currentAngle += 360.f;
 
 		angle01 = (currentAngle / 360.f);
@@ -268,39 +268,39 @@ void CMiniGame_Logic_Ball::OnInput()
 
 			if (isSuccess == true)
 			{
-				// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+				// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 			//m_bStart = false;
 
 				m_prograssBar01 += 0.2;
 			
-				m_LastInputResult = INPUT_RESULT::SUCCESS;
+				m_lastInputResult = EInputResult::SUCCESS;
 			}
 			else
 			{
-				// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+				// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 				m_prograssBar01 -= 0.2;
 
-				m_LastInputResult = INPUT_RESULT::FAIL;
+				m_lastInputResult = EInputResult::FAIL;
 				
 				m_changeColor = true;
-				colortime = .5f;
+				m_colorTime = .5f;
 			}
 		}
 
 }
 
 
-shared_ptr<CMiniGame_Logic_Ball> CMiniGame_Logic_Ball::Create(void* pArg)
+shared_ptr<CMiniGame_Logic_Ball> CMiniGame_Logic_Ball::Create(void* arg)
 {
-	shared_ptr<CMiniGame_Logic_Ball> pInstance(new CMiniGame_Logic_Ball(), [](CMiniGame_Logic_Ball* p) {p->Free(); delete(p); });
+	shared_ptr<CMiniGame_Logic_Ball> instance(new CMiniGame_Logic_Ball(), [](CMiniGame_Logic_Ball* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMiniGame_Logic_Ball::Free()

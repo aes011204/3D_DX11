@@ -1,11 +1,11 @@
-#include "Level.h"
+﻿#include "Level.h"
 
 #include "GameInstance.h"
 
-CLevel::CLevel(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	: m_pDevice(pDevice)
-	, m_pContext(pContext)
-	,m_pGameInstance(CGameInstance::GetInstance())
+CLevel::CLevel(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	: m_device(device)
+	, m_context(context)
+	,m_gameInstance(CGameInstance::GetInstance())
 {
 }
 
@@ -19,7 +19,7 @@ HRESULT CLevel::Post_Initialize()
 	return S_OK;
 }
 
-void CLevel::Update(_float fTimeDelta)
+void CLevel::Update(_float timeDelta)
 {
 
 }

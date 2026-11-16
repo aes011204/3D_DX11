@@ -1,226 +1,226 @@
-#include "Assimp_Model.h"
+Ôªø#include "Assimp_Model.h"
 #include "Assimp_Mesh.h"
 #include "Assimp_Material.h"
 #include "Assimp_Bone.h"
 #include "Assimp_Animation.h"
 
-CAssimp_Model::CAssimp_Model(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    : CComponent(pDevice, pContext)
+CAssimp_Model::CAssimp_Model(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    : CComponent(device, context)
 {
 }
 
 CAssimp_Model::CAssimp_Model(const CAssimp_Model& Prototype)
     :CComponent{Prototype},
-    m_pAIScene{ Prototype.m_pAIScene }, 
-    m_eType{Prototype.m_eType},
-    m_PreLocalTransformMatrix{ Prototype.m_PreLocalTransformMatrix },
-    m_iNumMeshes{ Prototype.m_iNumMeshes },
-    m_Meshes{Prototype.m_Meshes},
-    m_iNumMaterials{ Prototype.m_iNumMaterials },
-    m_Materials{ Prototype.m_Materials },
-	m_Bones{Prototype.m_Bones},
-    m_iNumAnimations{ Prototype.m_iNumAnimations },
-    m_Animations{ Prototype.m_Animations }
+    m_AIScene{ Prototype.m_AIScene }, 
+    m_type{Prototype.m_type},
+    m_preLocalTransformMatrix{ Prototype.m_preLocalTransformMatrix },
+    m_numMeshes{ Prototype.m_numMeshes },
+    m_meshes{Prototype.m_meshes},
+    m_numMaterials{ Prototype.m_numMaterials },
+    m_materials{ Prototype.m_materials },
+	m_bones{Prototype.m_bones},
+    m_numAnimations{ Prototype.m_numAnimations },
+    m_animations{ Prototype.m_animations }
 
 {
 }
 
-HRESULT CAssimp_Model::Initialize_Prototype(const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix)
+HRESULT CAssimp_Model::Initialize_Prototype(const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix)
 {
-    _uint iFlag = { /*aiProcess_GlobalScale | aiProcess_PreTransformVertices |*/ aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
+    _uint flag = { /*aiProcess_GlobalScale | aiProcess_PreTransformVertices |*/ aiProcess_ConvertToLeftHanded | aiProcessPreset_TargetRealtime_Fast };
 
-    if (MODEL::NONANIM == eType)
+    if (EModelType::NONANIM == type)
     {
-        iFlag |= aiProcess_PreTransformVertices;
+        flag |= aiProcess_PreTransformVertices;
     }
 
-    // ∑ŒµÂ«ÿæﬂ«“ ∏µÁ µ•¿Ã≈Õ∏¶ ¥Ÿ ¿–æÓµÈ¿Ã∞Ì aiScene¿Ã∂Û¥¬ ≈∏¿‘æ»ø° ∫∏∞¸µ»¥Ÿ. 
-    m_pAIScene = m_Importer.ReadFile(pModelFilePath, iFlag);
-    if (nullptr == m_pAIScene)
+    // Î°úÎìúÌï¥ÏïºÌï† Î™®Îì† Îç∞Ïù¥ÌÑ∞Î•º Îã§ ÏùΩÏñ¥Îì§Ïù¥Í≥† aiSceneÏù¥ÎùºÎäî ÌÉÄÏûÖÏïàÏóê Î≥¥Í¥ÄÎêúÎã§. 
+    m_AIScene = m_importer.ReadFile(modelFilePath, flag);
+    if (nullptr == m_AIScene)
         return E_FAIL;
 
 
-    m_eType = eType;
-    XMStoreFloat4x4(&m_PreLocalTransformMatrix, PreLocalTransformMatrix);
+    m_type = type;
+    XMStoreFloat4x4(&m_preLocalTransformMatrix, preLocalTransformMatrix);
 
-    /* aiSceneæ»¿« µ•¿Ã≈Õ∏¶ DX»Ø∞Êø°º≠ ¿ÃøÎ«œ±‚ Ω±µµ∑œ ¡§∏Æ«œ¥¬ ¿€æ˜ ºˆ«‡.  */
+    /* aiSceneÏïàÏùò Îç∞Ïù¥ÌÑ∞Î•º DXÌôòÍ≤ΩÏóêÏÑú Ïù¥Ïö©ÌïòÍ∏∞ ÏâΩÎèÑÎ°ù Ï†ïÎ¶¨ÌïòÎäî ÏûëÏóÖ ÏàòÌñâ.  */
 
-        /* ∏ﬁΩ√∏¶ ª˝º∫«—¥Ÿ. */
-    if (FAILED(Ready_Bones(m_pAIScene->mRootNode, -1)))
+        /* Î©îÏãúÎ•º ÏÉùÏÑ±ÌïúÎã§. */
+    if (FAILED(Ready_Bones(m_AIScene->mRootNode, -1)))
         return E_FAIL;
-    if (FAILED(Ready_Meshes(eType)))
+    if (FAILED(Ready_Meshes(type)))
         return E_FAIL;
     if (FAILED(Ready_Animations()))
         return E_FAIL;
-    if (FAILED(Ready_Material(pModelFilePath)))
+    if (FAILED(Ready_Material(modelFilePath)))
         return E_FAIL;
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Initialize(void* pArg)
+HRESULT CAssimp_Model::Initialize(void* arg)
 {
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Render(_uint iMeshIndex)
+HRESULT CAssimp_Model::Render(_uint meshIndex)
 {
     //for (auto& pMesh : m_Meshes)
     //{
-    m_Meshes[iMeshIndex]->Bind_Resources();
-    m_Meshes[iMeshIndex]->Render();
+    m_meshes[meshIndex]->Bind_Resources();
+    m_meshes[meshIndex]->Render();
    // }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Ready_Meshes(MODEL eType)
+HRESULT CAssimp_Model::Ready_Meshes(EModelType type)
 {
-    m_iNumMeshes = m_pAIScene->mNumMeshes;
+    m_numMeshes = m_AIScene->mNumMeshes;
 
-    for (_uint i = 0; i < m_iNumMeshes; i++)
+    for (_uint i = 0; i < m_numMeshes; i++)
     {
-        shared_ptr<CAssimp_Mesh> pMesh = CAssimp_Mesh::Create(m_pDevice, m_pContext,
-            eType, m_pAIScene->mMeshes[i],
+        shared_ptr<CAssimp_Mesh> mesh = CAssimp_Mesh::Create(m_device, m_context,
+            type, m_AIScene->mMeshes[i],
             static_pointer_cast<CAssimp_Model>(shared_from_this()),
-            XMLoadFloat4x4(&m_PreLocalTransformMatrix));
+            XMLoadFloat4x4(&m_preLocalTransformMatrix));
 
-        if (nullptr == pMesh)
+        if (nullptr == mesh)
             return E_FAIL;
 
-        m_Meshes.push_back(pMesh);
+        m_meshes.push_back(mesh);
     }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Ready_Material(const _char* pModelFilePath)
+HRESULT CAssimp_Model::Ready_Material(const _char* modelFilePath)
 {
-    m_iNumMaterials = m_pAIScene->mNumMaterials;
+    m_numMaterials = m_AIScene->mNumMaterials;
 
-    for (_uint i = 0; i < m_iNumMaterials; i++)
+    for (_uint i = 0; i < m_numMaterials; i++)
     {
-        shared_ptr<CAssimp_Material> pMat = CAssimp_Material::Create(m_pDevice, m_pContext, m_pAIScene->mMaterials[i], pModelFilePath);
-        if (nullptr == pMat)
+        shared_ptr<CAssimp_Material> mat = CAssimp_Material::Create(m_device, m_context, m_AIScene->mMaterials[i], modelFilePath);
+        if (nullptr == mat)
             return E_FAIL;
 
-        m_Materials.push_back(pMat);
+        m_materials.push_back(mat);
     }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Bind_Material(shared_ptr<CShader> pShader,  const _char* pConstantName, _uint iMeshIndex, aiTextureType eMaterialType,
-                              _uint iTextureIndex)
+HRESULT CAssimp_Model::Bind_Material(shared_ptr<CShader> shader,  const _char* constantName, _uint meshIndex, aiTextureType materialType,
+                              _uint textureIndex)
 {
-    return m_Materials[m_Meshes[iMeshIndex]->Get_MaterialIndex()]->Bind_Material(pShader, pConstantName, eMaterialType, iTextureIndex);
+    return m_materials[m_meshes[meshIndex]->Get_MaterialIndex()]->Bind_Material(shader, constantName, materialType, textureIndex);
 }
 
 
 
-HRESULT CAssimp_Model::Ready_Bones(const aiNode* pAINode, _int iParentIndex)
+HRESULT CAssimp_Model::Ready_Bones(const aiNode* srcAINode, _int parentIndex)
 {
-    shared_ptr<CAssimp_Bone> pBone = CAssimp_Bone::Create(pAINode, iParentIndex);
-    if (nullptr == pBone)
+    shared_ptr<CAssimp_Bone> bone = CAssimp_Bone::Create(srcAINode, parentIndex);
+    if (nullptr == bone)
         return E_FAIL;
 
-	m_Bones.push_back(pBone);
+	m_bones.push_back(bone);
 
-    _int iPIndex = m_Bones.size() - 1; // ∫Œ∏¿Œµ¶Ω∫ = πÈ≈Õ ªÁ¿Ã¡Ó -1 
+    _int curBoneIndex = m_bones.size() - 1; // Î∂ÄÎ™®Ïù∏Îç±Ïä§ = Î∞±ÌÑ∞ ÏÇ¨Ïù¥Ï¶à -1 
 
-    for (_uint i = 0; i < pAINode->mNumChildren; i++)
+    for (_uint i = 0; i < srcAINode->mNumChildren; i++)
     {
-        Ready_Bones(pAINode->mChildren[i], iPIndex);
+        Ready_Bones(srcAINode->mChildren[i], curBoneIndex);
     }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Bind_BoneMatrices(shared_ptr<CShader> pShader, const _char* pConstantNamem, _uint iMeshIndex)
+HRESULT CAssimp_Model::Bind_BoneMatrices(shared_ptr<CShader> shader, const _char* constantNamem, _uint meshIndex)
 {
-    return m_Meshes[iMeshIndex]->Bind_BoneMatrices(pShader, pConstantNamem, m_Bones);
+    return m_meshes[meshIndex]->Bind_BoneMatrices(shader, constantNamem, m_bones);
 }
 
 HRESULT CAssimp_Model::Ready_Animations()
 {
-    m_iNumAnimations = m_pAIScene->mNumAnimations;
+    m_numAnimations = m_AIScene->mNumAnimations;
 
-    for (_uint i = 0; i < m_iNumAnimations; i++)
+    for (_uint i = 0; i < m_numAnimations; i++)
     {
-        shared_ptr<CAssimp_Animation> pAnimation = CAssimp_Animation::Create(m_pAIScene->mAnimations[i], static_pointer_cast<CAssimp_Model>(shared_from_this()));
-        if (nullptr == pAnimation)
+        shared_ptr<CAssimp_Animation> animation = CAssimp_Animation::Create(m_AIScene->mAnimations[i], static_pointer_cast<CAssimp_Model>(shared_from_this()));
+        if (nullptr == animation)
             return E_FAIL;
 
-        m_Animations.push_back(pAnimation);
+        m_animations.push_back(animation);
     }
 
     return S_OK;
 }
 
-HRESULT CAssimp_Model::Play_Animation(_float fTimeDelta)
+HRESULT CAssimp_Model::Play_Animation(_float timeDelta)
 {
-    // «ˆ¡¶ æ÷¥œ∏ﬁ¿Ãº«ø° ∏¬¥¬ ªÛ≈¬¥Î∑Œ ª¿¿« Transformation¿ª ∞ªΩ≈«ÿ¡ÿ¥Ÿ
+    // ÌòÑÏ†ú Ïï†ÎãàÎ©îÏù¥ÏÖòÏóê ÎßûÎäî ÏÉÅÌÉúÎåÄÎ°ú ÎºàÏùò TransformationÏùÑ Í∞±Ïã†Ìï¥Ï§ÄÎã§
     _bool       isFinish = { false };
-    isFinish = m_Animations[m_iCurrentAnimIndex]->Update_TransformationMatrices(fTimeDelta, m_Bones, m_isAnimLoop);
+    isFinish = m_animations[m_currentAnimIndex]->Update_TransformationMatrices(timeDelta, m_bones, m_isAnimLoop);
 
 
-    // ∏µÁª¿∏¶ º¯»∏«œ∏È CombinedTransformation¿ª º¬∆√ «ÿ¡ÿ¥Ÿ
+    // Î™®Îì†ÎºàÎ•º ÏàúÌöåÌïòÎ©¥ CombinedTransformationÏùÑ ÏÖãÌåÖ Ìï¥Ï§ÄÎã§
 
-    for (auto& pBone : m_Bones)
+    for (auto& bone : m_bones)
     {
-        pBone->Update_CombinedTransformMatrix(m_Bones, XMLoadFloat4x4(&m_PreLocalTransformMatrix));
+        bone->Update_CombinedTransformMatrix(m_bones, XMLoadFloat4x4(&m_preLocalTransformMatrix));
     }
 
     return S_OK;
 }
 
-_int CAssimp_Model::Get_BoneIndex(const _char* pBoneName)
+_int CAssimp_Model::Get_BoneIndex(const _char* boneName)
 {
-    _int iBoneIndex = -1;
+    _int boneIndex = -1;
 
 
-    auto iter = find_if(m_Bones.begin(), m_Bones.end(), [&](shared_ptr<CAssimp_Bone> pBone)->bool
+    auto iter = find_if(m_bones.begin(), m_bones.end(), [&](shared_ptr<CAssimp_Bone> bone)->bool
     {
-            ++iBoneIndex;
-            return pBone->isCompare(pBoneName);
+            ++boneIndex;
+            return bone->isCompare(boneName);
     });
 
-    if(iter == m_Bones.end())
+    if(iter == m_bones.end())
     {
         return -1;
     }
 
-    return iBoneIndex;
+    return boneIndex;
 }
 
-shared_ptr<CAssimp_Model> CAssimp_Model::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _char* pModelFilePath, MODEL eType, _fmatrix PreLocalTransformMatrix)
+shared_ptr<CAssimp_Model> CAssimp_Model::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, const _char* modelFilePath, EModelType type, _fmatrix preLocalTransformMatrix)
 {
-    shared_ptr<CAssimp_Model> pInstance(new CAssimp_Model(pDevice, pContext), [](CAssimp_Model* p) {p->Free(); delete p;});
+    shared_ptr<CAssimp_Model> instance(new CAssimp_Model(device, context), [](CAssimp_Model* p) {p->Free(); delete p;});
 
-    if (FAILED(pInstance->Initialize_Prototype(pModelFilePath, eType, PreLocalTransformMatrix)))
+    if (FAILED(instance->Initialize_Prototype(modelFilePath, type, preLocalTransformMatrix)))
     {
         MSG_BOX("Failed to Created : CAssimp_Model");
     }
-    return pInstance;
+    return instance;
 
 }
 
-shared_ptr<CComponent> CAssimp_Model::Clone(void* pArg)
+shared_ptr<CComponent> CAssimp_Model::Clone(void* arg)
 {
 
-    shared_ptr<CComponent> pInstance(new CAssimp_Model(*this), [](CAssimp_Model* p) {p->Free(); delete p;});
+    shared_ptr<CComponent> instance(new CAssimp_Model(*this), [](CAssimp_Model* p) {p->Free(); delete p;});
 
-    if (FAILED(pInstance->Initialize(pArg)))
+    if (FAILED(instance->Initialize(arg)))
     {
         MSG_BOX("Failed to Cloned : CAssimp_Model");
     }
-    return pInstance;
+    return instance;
 }
 
 void CAssimp_Model::Free()
 {
     __super::Free();
 
-    m_Meshes.clear();
+    m_meshes.clear();
 
-    m_Importer.FreeScene();
+    m_importer.FreeScene();
 }

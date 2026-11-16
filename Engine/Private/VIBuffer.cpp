@@ -1,20 +1,20 @@
-#include "VIBuffer.h"
+ï»¿#include "VIBuffer.h"
 
-CVIBuffer::CVIBuffer(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CComponent(pDevice, pContext)
+CVIBuffer::CVIBuffer(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CComponent(device, context)
 {
 }
 
 CVIBuffer::CVIBuffer(const CVIBuffer& Prototype)
 	:CComponent(Prototype)
-	, m_pVB{ Prototype.m_pVB }
-	, m_pIB{ Prototype.m_pIB }
-	, m_iNumVertexBuffers{ Prototype.m_iNumVertexBuffers }
-	, m_iVertexStride{ Prototype.m_iVertexStride }
-	, m_iNumVertices{ Prototype.m_iNumVertices }
-	, m_iIndexStride{ Prototype.m_iIndexStride }
-	, m_iNumIndices{ Prototype.m_iNumIndices }
-	, m_ePrimitiveType{ Prototype.m_ePrimitiveType }
+	, m_VB{ Prototype.m_VB }
+	, m_IB{ Prototype.m_IB }
+	, m_numVertexBuffers{ Prototype.m_numVertexBuffers }
+	, m_vertexStride{ Prototype.m_vertexStride }
+	, m_numVertices{ Prototype.m_numVertices }
+	, m_indexStride{ Prototype.m_indexStride }
+	, m_numIndices{ Prototype.m_numIndices }
+	, m_primitiveType{ Prototype.m_primitiveType }
 {
 }
 
@@ -25,7 +25,7 @@ HRESULT CVIBuffer::Initialize_Prototype()
 
 }
 
-HRESULT CVIBuffer::Initialize(void* pArg)
+HRESULT CVIBuffer::Initialize(void* arg)
 {
 	return S_OK;
 
@@ -33,32 +33,32 @@ HRESULT CVIBuffer::Initialize(void* pArg)
 
 HRESULT CVIBuffer::Bind_Resources()
 {
-	ID3D11Buffer* pVertexBuffers[] = {
-		m_pVB.Get(),
+	ID3D11Buffer* vertexBuffers[] = {
+		m_VB.Get(),
 		// m_pVBInstance, 
 	};
 
-	_uint			iVertexStrides[] = {
-		m_iVertexStride,
+	_uint			vertexStrides[] = {
+		m_vertexStride,
 
 	};
 
-	_uint			iOffsets[] = {
+	_uint			offsets[] = {
 		0
 	};
 
-	m_pContext->IASetVertexBuffers(0, m_iNumVertexBuffers, pVertexBuffers, iVertexStrides, iOffsets);
-	m_pContext->IASetIndexBuffer(m_pIB.Get(), 2 == m_iIndexStride ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
-	m_pContext->IASetPrimitiveTopology(m_ePrimitiveType);
+	m_context->IASetVertexBuffers(0, m_numVertexBuffers, vertexBuffers, vertexStrides, offsets);
+	m_context->IASetIndexBuffer(m_IB.Get(), 2 == m_indexStride ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+	m_context->IASetPrimitiveTopology(m_primitiveType);
 
-// ÀÌ ÀÌÈÄ¿¡ ½¦ÀÌ´õ¶û ¾ê±â ÇØ¼­ ¹öÆÛÀÇ À§Ä¡¸¦ È­Á¤
+// ì´ ì´í›„ì— ì‰ì´ë”ëž‘ ì–˜ê¸° í•´ì„œ ë²„í¼ì˜ ìœ„ì¹˜ë¥¼ í™”ì •
 
 	return S_OK;
 }
 
 HRESULT CVIBuffer::Render()
 {
-	m_pContext->DrawIndexed(m_iNumIndices, 0, 0);
+	m_context->DrawIndexed(m_numIndices, 0, 0);
 	return S_OK;
 
 }
@@ -66,6 +66,6 @@ HRESULT CVIBuffer::Render()
 void CVIBuffer::Free()
 {
 	__super::Free();
-	m_pVB.Reset();
-	m_pIB.Reset();
+	m_VB.Reset();
+	m_IB.Reset();
 }

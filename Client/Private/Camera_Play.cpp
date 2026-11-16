@@ -1,11 +1,11 @@
-#include "Camera_Play.h"
+ï»¿#include "Camera_Play.h"
 #include "DInput_Manager.h"
 #include "Transform.h"
 #include "EventBus.h"
 #include <cmath>
 
-CCamera_Play::CCamera_Play(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CCamera(pDevice, pContext)
+CCamera_Play::CCamera_Play(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CCamera(device, context)
 {
 }
 
@@ -19,52 +19,52 @@ HRESULT CCamera_Play::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CCamera_Play::Initialize(void* pArg)
+HRESULT CCamera_Play::Initialize(void* arg)
 {
-	CAMERAPLAY_DESC* pDesc = static_cast<CAMERAPLAY_DESC*>(pArg);
-	m_fMouseSensor = pDesc->fMouseSensor;
-	m_pTarget = pDesc->target;
+	CameraPlayDesc* desc = static_cast<CameraPlayDesc*>(arg);
+	m_mouseSensor = desc->mouseSensor;
+	m_target = desc->target;
 
-	if (FAILED(__super::Initialize(pArg)))
+	if (FAILED(__super::Initialize(arg)))
 		return E_FAIL;
 
-	m_pTargetTransform = dynamic_pointer_cast<CTransform>(m_pTarget.lock()->Get_Component(g_strTransformTag));
+	m_targetTransform = dynamic_pointer_cast<CTransform>(m_target.lock()->Get_Component(g_strTransformTag));
 
 	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_ChangeCam>(
 		[this](const Evt_ChangeCam& e)
 		{
-			m_CamCommands = e.commands;
+			m_camCommands = e.commands;
 			//m_bChange = true;
-			m_FirstFlag = false;
-			m_bFinish = false;
+			m_isFirstFlag = false;
+			m_isFinish = false;
 		}
 	);
 
-	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Demage>(
-		[this](const Evt_Demage& e)
+	CGameInstance::GetInstance()->Get_EventBus()->Subscribe<Evt_Damage>(
+		[this](const Evt_Damage& e)
 		{
 			if (m_isShack) return;
 
-			m_ShakePower = e.ShakePower;
-			m_ShakeTime = e.ShakeTime;
-			m_DeAc = e.ShakePower / e.ShakeTime;;
+			m_shakePower = e.shakePower;
+			m_shakeTime = e.shakeTime;
+			m_shakeDecay = e.shakePower / e.shakeTime;;
 
 
 			m_isShack = true;
 
 		}
 	);
-	m_fMouseSensor = 0.2f;
+	m_mouseSensor = 0.2f;
 
 
-	m_MinPitch = 5.f;
-	m_MaxPitch = 80.f;
+	m_minPitch = 5.f;
+	m_maxPitch = 80.f;
 
-	m_MinDistance = 7.f;
-	m_MaxDistance = 20.f;
+	m_minDistance = 7.f;
+	m_maxDistance = 20.f;
 	//m_MinDistance = 15.f;
 	//m_MaxDistance = 35.f;
-	m_fDistance = 18.f;
+	m_distance = 18.f;
 
 
 
@@ -73,13 +73,13 @@ HRESULT CCamera_Play::Initialize(void* pArg)
 	return S_OK;
 }
 
-void CCamera_Play::Priority_Update(_float fTimeDelta)
+void CCamera_Play::Priority_Update(_float timeDelta)
 {
 }
 
-void CCamera_Play::Update_AfterTarget(_float fTimeDelta)
+void CCamera_Play::Update_AfterTarget(_float timeDelta)
 {
-	if (m_CamCommands.empty())
+	if (m_camCommands.empty())
 		return;
 
 	/*if (m_bChange == true)
@@ -88,49 +88,49 @@ void CCamera_Play::Update_AfterTarget(_float fTimeDelta)
 		m_NextCamMode = m_ReservNextCamMode;
 		m_bChange = false;
 	}*/
-	auto pCurrentDesc = m_CamCommands.front();
-	CAM_MODE eMode = pCurrentDesc->eMode;
-	switch (eMode)
+	auto currentDesc = m_camCommands.front();
+	ECamMode mode = currentDesc->mode;
+	switch (mode)
 	{
-	case CAM_MODE::FOLLOW:
-		Update_Follow(fTimeDelta, pCurrentDesc);
+	case ECamMode::FOLLOW:
+		Update_Follow(timeDelta, currentDesc);
 
 		break;
-	case CAM_MODE::STOP:
+	case ECamMode::STOP:
 	//	__super::Update_TransformMatrices();
 		break;
-	case CAM_MODE::LERP:
-		if (false == Update_Lerp(fTimeDelta, pCurrentDesc))
-			m_bFinish = true;
+	case ECamMode::LERP:
+		if (false == Update_Lerp(timeDelta, currentDesc))
+			m_isFinish = true;
 
 
 		break;
 
-	case CAM_MODE::END:
+	case ECamMode::END:
 		break;
 	}
 
 
 
 
-	XMStoreFloat3(&m_BasePos, m_pTransformCom->Get_Position());
+	XMStoreFloat3(&m_basePos, m_transformCom->Get_Position());
 
-	Shake_Cam(fTimeDelta);
+	Shake_Cam(timeDelta);
 
 
-	// 4. ÃÖÁ¾ Çà·Ä ¾÷µ¥ÀÌÆ®
+	// 4. ìµœì¢… í–‰ë ¬ ì—…ë°ì´íŠ¸
 	__super::Update_TransformMatrices();
 
 
-	if (m_bFinish == true)
+	if (m_isFinish == true)
 	{
-		if(pCurrentDesc->OnComplete != nullptr)
+		if(currentDesc->OnComplete != nullptr)
 		{
-			pCurrentDesc->OnComplete();
+			currentDesc->OnComplete();
 		}
-		m_bFinish = false;
-		m_FirstFlag = false;
-		m_CamCommands.pop_front();
+		m_isFinish = false;
+		m_isFirstFlag = false;
+		m_camCommands.pop_front();
 		//m_CamMode = m_NextCamMode;
 
 	}
@@ -148,54 +148,54 @@ void CCamera_Play::Update_AfterTarget(_float fTimeDelta)
 //}
 
 
-void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
+void CCamera_Play::Update_Follow(_float timeDelta, shared_ptr<CamDesc>desc)
 {
 
-	CDInput_Manager* dinput = m_pGameInstance.lock()->Get_DInput_Manger();
-	_long dx = dinput->Get_DIMouseMove(DIMM::X);
-	_long dy = dinput->Get_DIMouseMove(DIMM::Y);
+	CDInput_Manager* dinput = m_gameInstance.lock()->Get_DInput_Manager();
+	_long dx = dinput->Get_DIMouseMove(EMouseMove::X);
+	_long dy = dinput->Get_DIMouseMove(EMouseMove::Y);
 
 
-	if (m_FirstFlag == false)
+	if (m_isFirstFlag == false)
 	{
-		auto pFollowDesc = dynamic_pointer_cast<CAM_FOLLOW_DESC>(pDesc);
-		if (!pFollowDesc) return;
+		auto followDesc = dynamic_pointer_cast<CamFollowDesc>(desc);
+		if (!followDesc) return;
 
 
-		_vector vTargetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
-		m_followTargetY = XMVectorGetY(vTargetPos);
-		_vector vCurrentPos = m_pTransformCom->Get_Position();
-		_vector vDir = vCurrentPos - vTargetPos;
+		_vector vecTargetPos = m_targetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+		m_followTargetY = XMVectorGetY(vecTargetPos);
+		_vector vecCurrentPos = m_transformCom->Get_Position();
+		_vector vecDir = vecCurrentPos - vecTargetPos;
 
-		_float3 fDir;
-		XMStoreFloat3(&fDir, XMVector3Normalize(vDir));
+		_float3 dir;
+		XMStoreFloat3(&dir, XMVector3Normalize(vecDir));
 
-		// ¿ª°è»ê
-		m_Yaw = XMConvertToDegrees(atan2f(fDir.x, fDir.z)) - 180.f;
-		m_Pitch = XMConvertToDegrees(asinf(fDir.y));
-		m_fDistance = XMVectorGetX(XMVector3Length(vDir));
+		// ì—­ê³„ì‚°
+		m_yaw = XMConvertToDegrees(atan2f(dir.x, dir.z)) - 180.f;
+		m_pitch = XMConvertToDegrees(asinf(dir.y));
+		m_distance = XMVectorGetX(XMVector3Length(vecDir));
 
 
-		m_FirstFlag = true;
+		m_isFirstFlag = true;
 		return;
 	}
 
 
 
-	// Å¸°ÙÀ» Ç×»ó º¸°íÀÖ´Ù
-	if (auto pTarget = m_pTarget.lock())
+	// íƒ€ê²Ÿì„ í•­ìƒ ë³´ê³ ìˆë‹¤
+	if (auto target = m_target.lock())
 	{
 
-		_vector targetLook = m_pTargetTransform.lock()->Get_State(STATE::LOOK);
-		_float3 vLook;
-		XMStoreFloat3(&vLook, XMVector3Normalize(targetLook));
+		_vector targetLook = m_targetTransform.lock()->Get_State(ETransformState::LOOK);
+		_float3 look;
+		XMStoreFloat3(&look, XMVector3Normalize(targetLook));
 
 
-		float targetDegree = XMConvertToDegrees(atan2f(vLook.x, vLook.z));
+		float targetDegree = XMConvertToDegrees(atan2f(look.x, look.z));
 
 
-		m_Pitch += dy * m_fMouseSensor;
-		m_Yaw += dx * m_fMouseSensor;
+		m_pitch += dy * m_mouseSensor;
+		m_yaw += dx * m_mouseSensor;
 
 		auto NormalizeAngle = [](float angle) {
 			while (angle > 180.f) angle -= 360.f;
@@ -203,107 +203,107 @@ void CCamera_Play::Update_Follow(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 			return angle;
 			};
 
-		m_Yaw = NormalizeAngle(m_Yaw);
+		m_yaw = NormalizeAngle(m_yaw);
 		targetDegree = NormalizeAngle(targetDegree);
 		//targetDegree = m_Yaw;
 
 		if (dx == 0 && dy == 0)
 		{
-			float delta = NormalizeAngle(targetDegree - m_Yaw);
-			m_Yaw += delta * 2.f * fTimeDelta; // ÃßÀû ¼Óµµ (Á¶Àı °¡´É)
+			float delta = NormalizeAngle(targetDegree - m_yaw);
+			m_yaw += delta * 2.f * timeDelta; // ì¶”ì  ì†ë„ (ì¡°ì ˆ ê°€ëŠ¥)
 		}
-		m_Yaw = NormalizeAngle(m_Yaw);
+		m_yaw = NormalizeAngle(m_yaw);
 
 
-		m_Pitch = clamp(m_Pitch, 1.f, 80.f);
-		_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
-		m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
+		m_pitch = clamp(m_pitch, 1.f, 80.f);
+		_float normalizePitch = (m_pitch - m_minPitch) / (m_maxPitch - m_minPitch);
+		m_distance = lerp(m_minDistance, m_maxDistance, normalizePitch);
 
 
-		float yawRad = XMConvertToRadians(m_Yaw + 180.f);
-		float pitchRad = XMConvertToRadians(m_Pitch);
+		float yawRad = XMConvertToRadians(m_yaw + 180.f);
+		float pitchRad = XMConvertToRadians(m_pitch);
 
-		float x = m_fDistance * cosf(pitchRad) * sinf(yawRad);
-		float y = m_fDistance * sinf(pitchRad);
-		float z = m_fDistance * cosf(pitchRad) * cosf(yawRad);
+		float x = m_distance * cosf(pitchRad) * sinf(yawRad);
+		float y = m_distance * sinf(pitchRad);
+		float z = m_distance * cosf(pitchRad) * cosf(yawRad);
 
 		_vector offset = XMVectorSet(x, y, z, 0.f);
 
 
-		_vector targetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+		_vector targetPos = m_targetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
 		constexpr float heightResponse = 2.f;
-		const float heightFollow = 1.f - std::exp(-heightResponse * max(fTimeDelta, 0.f));
+		const float heightFollow = 1.f - std::exp(-heightResponse * max(timeDelta, 0.f));
 		m_followTargetY += (XMVectorGetY(targetPos) - m_followTargetY) * heightFollow;
 		targetPos = XMVectorSetY(targetPos, m_followTargetY);
 		_vector camPos = targetPos + offset;
 
 
-		_vector currentPos = m_pTransformCom->Get_Position();
-		_vector newPos = XMVectorLerp(currentPos, camPos, 8.f * fTimeDelta);
+		_vector currentPos = m_transformCom->Get_Position();
+		_vector newPos = XMVectorLerp(currentPos, camPos, 8.f * timeDelta);
 
-		m_pTransformCom->Set_Position(newPos);
+		m_transformCom->Set_Position(newPos);
 		//XMStoreFloat3(&m_FinalPos, newPos);
-		m_pTransformCom->LookAt(targetPos);
+		m_transformCom->LookAt(targetPos);
 
 	}
 	//__super::Update_TransformMatrices();
 }
 
-bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
+bool CCamera_Play::Update_Lerp(_float timeDelta, shared_ptr<CamDesc>desc)
 {
-	//Lerp ÀÏ‹š´Â Ä«¸Ş¶ó ½¦ÀÌÅ© ¾øÀ½ -> ÀÌ°Å´Â Transform //
+	//Lerp ì¼ë–„ëŠ” ì¹´ë©”ë¼ ì‰ì´í¬ ì—†ìŒ -> ì´ê±°ëŠ” Transform //
 
-	// ÀÌ³ÑÀ¸·Î Å¸ÀÔ È®½ÇÇÑµ¥ ½ºÅ×Æ½À¸·Î ³ªÁß¿¡
-	auto pLerpDesc = dynamic_pointer_cast<CAM_LERP_DESC>(pDesc);
-	if (!pLerpDesc) return false;
+	// ì´ë„˜ìœ¼ë¡œ íƒ€ì… í™•ì‹¤í•œë° ìŠ¤í…Œí‹±ìœ¼ë¡œ ë‚˜ì¤‘ì—
+	auto lerpDesc = dynamic_pointer_cast<CamLerpDesc>(desc);
+	if (!lerpDesc) return false;
 
-	if (m_FirstFlag == false)
+	if (m_isFirstFlag == false)
 	{
-		if(pLerpDesc->IsLerpTarget ==true)
+		if(lerpDesc->isLerpTarget ==true)
 		{
 			_float3 cam, angle;
 			Get_Target_PosLook(cam, angle);
-			pLerpDesc->vTargetPos = cam;
-				pLerpDesc->vTargetRot = angle;
+			lerpDesc->targetPos = cam;
+				lerpDesc->targetRot = angle;
 		}
-		_vector vTargetPos = XMLoadFloat3(&pLerpDesc->vTargetPos);
+		_vector vecTargetPos = XMLoadFloat3(&lerpDesc->targetPos);
 
-		m_pTransformCom->Start_Lerp(vTargetPos, pLerpDesc->vTargetRot, pLerpDesc->fDuration);
-		m_FirstFlag = true;
+		m_transformCom->Start_Lerp(vecTargetPos, lerpDesc->targetRot, lerpDesc->duration);
+		m_isFirstFlag = true;
 
-		m_fStartFovy = m_fFovy;
+		m_startFOVY = m_fovy;
 
 		return true;
 	}
 
 
 
-	m_pTransformCom->Lerp_To(fTimeDelta);
+	m_transformCom->Lerp_To(timeDelta);
 
-	m_Acc += fTimeDelta;
-	if (m_Acc >= pLerpDesc->fDuration)
+	m_acc += timeDelta;
+	if (m_acc >= lerpDesc->duration)
 	{
-		m_Acc = pLerpDesc->fDuration;
+		m_acc = lerpDesc->duration;
 	}
 
 
-	if (pLerpDesc->fFov > 0)
+	if (lerpDesc->FOV > 0)
 	{
-		m_fFovy = lerp(m_fStartFovy, XMConvertToRadians(pLerpDesc->fFov) , m_Acc / pLerpDesc->fDuration);
+		m_fovy = lerp(m_startFOVY, XMConvertToRadians(lerpDesc->FOV) , m_acc / lerpDesc->duration);
 	}
 
 
 
-		if(auto pTarget = pLerpDesc->m_Target.lock())
+		if(auto target = lerpDesc->target.lock())
 		{
-			m_pTransformCom->LookAt(pTarget->Get_TransformCom()->Get_Position());
+			m_transformCom->LookAt(target->Get_TransformCom()->Get_Position());
 		}
 
 	//__super::Update_TransformMatrices();
-	if (m_pTransformCom->GetIsLerp() == false)
+	if (m_transformCom->GetIsLerp() == false)
 	{
-		m_Acc = 0.f;
-		m_FirstFlag = false;
+		m_acc = 0.f;
+		m_isFirstFlag = false;
 		return false;
 	}
 
@@ -315,7 +315,7 @@ bool CCamera_Play::Update_Lerp(_float fTimeDelta, shared_ptr<CAM_DESC>pDesc)
 
 }
 
-void CCamera_Play::Get_Target_PosLook(_float3& camPos, _float3& vTargetRot)
+void CCamera_Play::Get_Target_PosLook(_float3& camPos, _float3& targetRot)
 {
 	//_vector targetLook = m_pTargetTransform.lock()->Get_State(STATE::LOOK);
 	//_float3 vLook;
@@ -362,78 +362,78 @@ void CCamera_Play::Get_Target_PosLook(_float3& camPos, _float3& vTargetRot)
 	//	vTargetRot = _float3(finalPitch, finalYaw, finalRoll);
 	//
 
-	_vector targetLook = m_pTargetTransform.lock()->Get_State(STATE::LOOK);
-	_float3 vLook;
-	XMStoreFloat3(&vLook, XMVector3Normalize(targetLook));
-	float targetDegree = XMConvertToDegrees(atan2f(vLook.x, vLook.z));
+	_vector targetLook = m_targetTransform.lock()->Get_State(ETransformState::LOOK);
+	_float3 look;
+	XMStoreFloat3(&look, XMVector3Normalize(targetLook));
+	float targetDegree = XMConvertToDegrees(atan2f(look.x, look.z));
 
 	
-	m_Pitch = 30.f;
-	m_Yaw = targetDegree;
+	m_pitch = 30.f;
+	m_yaw = targetDegree;
 
 	
-	m_Pitch = clamp(m_Pitch, 0.f, 89.f);
-	_float normalizePitch = (m_Pitch - m_MinPitch) / (m_MaxPitch - m_MinPitch);
-	m_fDistance = lerp(m_MinDistance, m_MaxDistance, normalizePitch);
+	m_pitch = clamp(m_pitch, 0.f, 89.f);
+	_float normalizePitch = (m_pitch - m_minPitch) / (m_maxPitch - m_minPitch);
+	m_distance = lerp(m_minDistance, m_maxDistance, normalizePitch);
 
-	float yawRad = XMConvertToRadians(m_Yaw + 180.f); // ¹èÀÇ µÚÂÊ ÁÂÇ¥¸¦ ±¸ÇÏ±â À§ÇØ 180µµ ´õÇÔ
-	float pitchRad = XMConvertToRadians(m_Pitch);
+	float yawRad = XMConvertToRadians(m_yaw + 180.f); // ë°°ì˜ ë’¤ìª½ ì¢Œí‘œë¥¼ êµ¬í•˜ê¸° ìœ„í•´ 180ë„ ë”í•¨
+	float pitchRad = XMConvertToRadians(m_pitch);
 
-	float x = m_fDistance * cosf(pitchRad) * sinf(yawRad);
-	float y = m_fDistance * sinf(pitchRad);
-	float z = m_fDistance * cosf(pitchRad) * cosf(yawRad);
+	float x = m_distance * cosf(pitchRad) * sinf(yawRad);
+	float y = m_distance * sinf(pitchRad);
+	float z = m_distance * cosf(pitchRad) * cosf(yawRad);
 
 	_vector offset = XMVectorSet(x, y, z, 0.f);
-	_vector targetPos = m_pTargetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
+	_vector targetPos = m_targetTransform.lock()->Get_Position() + XMVectorSet(0.f, 2.0f, 0.f, 0.f);
 
 	
 	_vector camposVetor = targetPos + offset;
 	XMStoreFloat3(&camPos, camposVetor);
 
 
-	vTargetRot = _float3(m_Pitch, m_Yaw, 0.f);
+	targetRot = _float3(m_pitch, m_yaw, 0.f);
 }
 
-_float3 CCamera_Play::Shake_Cam(_float fTimeDelta)
+_float3 CCamera_Play::Shake_Cam(_float timeDelta)
 {
 
 	if(m_isShack == false)
 		return _float3{ 0.f, 0.f, 0.f };
 
 
-	if(m_ShakeTime > 0.f)
+	if(m_shakeTime > 0.f)
 	{
-		m_ShakeTime -= fTimeDelta;
+		m_shakeTime -= timeDelta;
 
-		float randX = m_pGameInstance.lock()->Random(-1.f, 1.f) * m_ShakePower;
-		float randY = m_pGameInstance.lock()->Random(-1.f, 1.f) * m_ShakePower;
+		float randX = m_gameInstance.lock()->Random(-1.f, 1.f) * m_shakePower;
+		float randY = m_gameInstance.lock()->Random(-1.f, 1.f) * m_shakePower;
 
-		m_ShakePower -= fTimeDelta  * (m_DeAc);
+		m_shakePower -= timeDelta  * (m_shakeDecay);
 
 		_float3 finalPos = _float3{ randX,randY,0.f };
 
-		if (m_ShakeTime <= 0)
+		if (m_shakeTime <= 0)
 			m_isShack = false;
 
-		m_pTransformCom->Set_Position(m_BasePos + _float3{ randX,randY,0.f });
-		return _float3{ randX, randY, 0.f }; // ¿ÀÇÁ¼Â¸¸ ¹İÈ¯
+		m_transformCom->Set_Position(m_basePos + _float3{ randX,randY,0.f });
+		return _float3{ randX, randY, 0.f }; // ì˜¤í”„ì…‹ë§Œ ë°˜í™˜
 	}
 	return _float3{ 0.f, 0.f, 0.f };
 
 
 }
 
-void CCamera_Play::SetTarget(weak_ptr<CGameObject> target, _float startPitchAngle, _float startYawAngle, _float startDistance, _float fTimeDelta)
+void CCamera_Play::SetTarget(weak_ptr<CGameObject> target, _float startPitchAngle, _float startYawAngle, _float startDistance, _float timeDelta)
 {
 
 }
 
-void CCamera_Play::Update(_float fTimeDelta)
+void CCamera_Play::Update(_float timeDelta)
 {
-	// ·¹ÀÌÃæµ¹·Î Àå¾Ö¹°ÀÌ ÀÖÀ»°æ¿ì ¾ÕÀ¸·Î ´ç±â´ø°¡ ÇØ¾ßÇÔ
+	// ë ˆì´ì¶©ëŒë¡œ ì¥ì• ë¬¼ì´ ìˆì„ê²½ìš° ì•ìœ¼ë¡œ ë‹¹ê¸°ë˜ê°€ í•´ì•¼í•¨
 }
 
-void CCamera_Play::Late_Update(_float fTimeDelta)
+void CCamera_Play::Late_Update(_float timeDelta)
 {
 }
 
@@ -447,26 +447,26 @@ void CCamera_Play::Start_Targetting(_float4 startPos, _float degree, _float dist
 
 }
 
-shared_ptr<CCamera_Play> CCamera_Play::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CCamera_Play> CCamera_Play::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CCamera_Play> pInstance(new CCamera_Play(pDevice, pContext), [](CCamera* p) {p->Free(); delete p; });
+	shared_ptr<CCamera_Play> instance(new CCamera_Play(device, context), [](CCamera* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CCamera_Play");
 	}
-	return pInstance;
+	return instance;
 }
 
-shared_ptr<CGameObject> CCamera_Play::Clone(void* pArg)
+shared_ptr<CGameObject> CCamera_Play::Clone(void* arg)
 {
-	shared_ptr<CCamera_Play> pInstance(new CCamera_Play(*this), [](CCamera* p) {p->Free(); delete p; });
+	shared_ptr<CCamera_Play> instance(new CCamera_Play(*this), [](CCamera* p) {p->Free(); delete p; });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : CCamera_Play");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CCamera_Play::Free()

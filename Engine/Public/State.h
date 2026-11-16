@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "Base.h"
 #include "Transform.h"
 NS_BEGIN(Engine)
@@ -31,23 +31,23 @@ public:
 
 
 public:
-    virtual _uint Get_StateKey() const { return m_dwCurStateKey; }
+    virtual _uint Get_StateKey() const { return m_curStateKey; }
 
 protected:
-    _uint m_dwCurStateKey = { 0 };
+    _uint m_curStateKey = { 0 };
 
-    _bool m_bStarted = {false};
-    _bool m_bExited = { false };
-    _bool m_bCanTransit = { false };
+    _bool m_isStarted = {false};
+    _bool m_isExited = { false };
+    _bool m_canTransit = { false };
 
 
-    weak_ptr<CTransform> m_pOwnerTransformCom = { };
+    weak_ptr<CTransform> m_ownerTransformCom = { };
    
 
 
-    _float      m_fCurStateElapsedTime = { 0.f }; // ¥©¿˚Ω√∞£
-    _float      m_fMinStateTime = { 0.f };
-    _bool       m_bMinStateTimePassed = { false };
+    _float      m_curStateElapsedTime = { 0.f }; // ÎàÑÏ†ÅÏãúÍ∞Ñ
+    _float      m_minStateTime = { 0.f };
+    _bool       m_isMinStateTimePassed = { false };
 
 
 };

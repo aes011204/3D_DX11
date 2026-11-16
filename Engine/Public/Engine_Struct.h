@@ -1,4 +1,4 @@
-#ifndef Engine_Struct_h__
+ï»¿#ifndef Engine_Struct_h__
 #define Engine_Struct_h__
 
 #include "Engine_Typedef.h"
@@ -9,17 +9,17 @@ namespace Engine
 	{
 		HWND hWnd;
         HINSTANCE hInst;
-        WINMODE eWinMode;
-        unsigned int iMaxLevelNum;
-        unsigned int iEditorLevel;
-		unsigned int iViewportWidth;
-		unsigned int iViewportHeight;
-	}ENGINE_DESC;
+        EWinMode winMode;
+        unsigned int maxLevelNum;
+        unsigned int editorLevel;
+		unsigned int viewportWidth;
+		unsigned int viewportHeight;
+	}EngineDesc;
 
 
     typedef struct tagVertexPosition
     {
-        XMFLOAT3			vPosition;
+        XMFLOAT3			position;
 
         static const _uint iNumElements = { 1 };
 
@@ -32,8 +32,8 @@ namespace Engine
 
 	typedef struct tagVertexPositionTexcoord
 	{
-		XMFLOAT3			vPosition;
-		XMFLOAT2			vTexcoord;
+		XMFLOAT3			position;
+		XMFLOAT2			texcoord;
 
         static const _uint iNumElements = { 2 };
 
@@ -46,8 +46,8 @@ namespace Engine
 
     typedef struct tagVertexCube
     {
-        XMFLOAT3			vPosition;
-        XMFLOAT3			vTexcoord;
+        XMFLOAT3			position;
+        XMFLOAT3			texcoord;
 
         static const _uint iNumElements = { 2 };
 
@@ -61,9 +61,9 @@ namespace Engine
 
     typedef struct tagVertexPositionNormalTexcoord
     {
-        XMFLOAT3			vPosition;
-        XMFLOAT3			vNormal;
-        XMFLOAT2			vTexcoord;
+        XMFLOAT3			position;
+        XMFLOAT3			normal;
+        XMFLOAT2			texcoord;
 
         static const _uint iNumElements = { 3 };
 
@@ -77,10 +77,10 @@ namespace Engine
 
     typedef struct tagVertexMesh
     {
-        XMFLOAT3			vPosition;
-        XMFLOAT3			vNormal;
-        XMFLOAT3			vTangent;
-        XMFLOAT2			vTexcoord;
+        XMFLOAT3			position;
+        XMFLOAT3			normal;
+        XMFLOAT3			tangent;
+        XMFLOAT2			texcoord;
 
         static const _uint iNumElements = { 4 };
 
@@ -95,13 +95,13 @@ namespace Engine
 
     typedef struct tagVertexAnimMesh
     {
-        XMFLOAT3			vPosition;
-        XMFLOAT3			vNormal;
-        XMFLOAT3			vTangent;
-        XMFLOAT2			vTexcoord;
+        XMFLOAT3			position;
+        XMFLOAT3			normal;
+        XMFLOAT3			tangent;
+        XMFLOAT2			texcoord;
 
-        XMUINT4             vBlendIndex;
-        XMFLOAT4            vBlendWeight;
+        XMUINT4             blendIndex;
+        XMFLOAT4            blendWeight;
 
         static const _uint iNumElements = { 6 };
 
@@ -119,11 +119,11 @@ namespace Engine
 
     typedef struct tagVertexParticleInstance
     {
-        XMFLOAT4			vRight;
-        XMFLOAT4			vUp;
-        XMFLOAT4			vLook;
-        XMFLOAT4			vTranslation;
-        XMFLOAT2			vLifeTime;
+        XMFLOAT4			right;
+        XMFLOAT4			up;
+        XMFLOAT4			look;
+        XMFLOAT4			translation;
+        XMFLOAT2			lifeTime;
     }VTXPARTICLE_INSTANCE;
 
     typedef struct tagVertexParticleRectInstanceDesc
@@ -179,62 +179,62 @@ namespace Engine
         Vector2 Pos() const { return { x,y }; };
         Vector2 Size() const { return { w - x, h - y }; };
 
-        // È÷Æ® ¹Ú½º Å×½ºÆ®¿ë
+        // ížˆíŠ¸ ë°•ìŠ¤ í…ŒìŠ¤íŠ¸ìš©
         bool Contains(float _x, float _y)
         {
             return (_x >= Left() && _x <= Right() && _y >= Top() && _y <= Bottom());
         }
     };
 
-    struct LIGHT_DESC
+    struct LightDesc
     {
-        LIGHT eType;
+        ELightType type;
 
-        XMFLOAT4 vDirection;
-        XMFLOAT4 vPosition;
-        float fRange;
+        XMFLOAT4 direction;
+        XMFLOAT4 position;
+        float range;
 
-        XMFLOAT4 vDiffuse;
-        XMFLOAT4 vAmbient;
-        XMFLOAT4 vSpecular;
+        XMFLOAT4 diffuse;
+        XMFLOAT4 ambient;
+        XMFLOAT4 specular;
      
     };
 
-    struct KEYFRAME
+    struct KeyFrame
     {
-        XMFLOAT3 vScale;
-        XMFLOAT4 vRotation;
-        XMFLOAT3 vTranslation;
+        XMFLOAT3 scale;
+        XMFLOAT4 rotation;
+        XMFLOAT3 translation;
 
-        float fTrackPosition;
+        float trackPosition;
     };
 
 
 
-    struct NINESLICE_DESC
+    struct NineSliceDesc
     {
-        _float2 TexOriginalSize = {};
-        _float2 TexCustomSize = {};
+        _float2 texOriginalSize = {};
+        _float2 texCustomSize = {};
         _float2 UISize = {};
-        _float4 PxSliceLRTB = {};
-        _float TileScale = {1.f};
+        _float4 pxSliceLRTB = {};
+        _float tileScale = {1.f};
 
     };
 
-    struct LAYOUT_DESC
+    struct LayoutDesc
     {
-        int m_Row = { 5 };
-        int m_Col = { 5 };
-        float m_SlotSize = { 20.f };
-        _float2 m_Spacing = {0.f, 0.f };
-        _float2 m_Padding = { 0.f, 0.f };
+        int row = { 5 };
+        int col = { 5 };
+        float slotSize = { 20.f };
+        _float2 spacing = {0.f, 0.f };
+        _float2 padding = { 0.f, 0.f };
 
-        _float2 m_Offset = { 0.f, 0.f };
+        _float2 offset = { 0.f, 0.f };
     };
 
 
 
-    enum class SOUND_CATEGORY : _ubyte
+    enum class ESoundCategory : _ubyte
     {
         BGM,
         SFX,
@@ -244,21 +244,21 @@ namespace Engine
         END
     };
 
-    // »ç¿îµå ·Îµå ¹æ½Ä
-    enum class SOUND_LOAD_MODE : _ubyte
+    // ì‚¬ìš´ë“œ ë¡œë“œ ë°©ì‹
+    enum class ESoundLoadMode : _ubyte
     {
         STATIC,
         STREAM,
         END
     };
 
-    using SOUND_ASSET_DESC = struct tSoundAssetDesc
+    using SoundAssetDesc = struct tSoundAssetDesc
     {
-        _wstring strSoundTag{};
-        _wstring strAssetPath{};
-        SOUND_CATEGORY eCategory{ SOUND_CATEGORY::SFX };
-        SOUND_LOAD_MODE eLoadMode{ SOUND_LOAD_MODE::STATIC };
-        _float fDefaultVolume{ 1.f };
+        _wstring soundTag{};
+        _wstring assetPath{};
+        ESoundCategory category{ ESoundCategory::SFX };
+        ESoundLoadMode loadMode{ ESoundLoadMode::STATIC };
+        _float defaultVolume{ 1.f };
     };
 
 

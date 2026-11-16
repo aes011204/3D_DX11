@@ -1,4 +1,4 @@
-#include"ConsoleWin.h"
+ï»¿#include"ConsoleWin.h"
 #include"Log_Manager.h"
 
 CConsoleWin::CConsoleWin()
@@ -15,32 +15,32 @@ CConsoleWin::~CConsoleWin()
 void CConsoleWin::Render()
 {
 
-    auto pLogMgr = CLog_Manager::GetInstance();
-    if (nullptr == pLogMgr) return;
+    auto logMgr = CLog_Manager::GetInstance();
+    if (nullptr == logMgr) return;
 
     if (ImGui::Begin("Console Log"))
     {
-        if (ImGui::Button("Clear")) pLogMgr->Clear();
+        if (ImGui::Button("Clear")) logMgr->Clear();
         ImGui::Separator();
 
         ImGui::BeginChild("LogScrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
-        auto& vecLogs = pLogMgr->Get_Logs();
+        auto& vecLogs = logMgr->Get_Logs();
         for (const auto& log : vecLogs)
         {
-            ImVec4 vColor = { 1.f, 1.f, 1.f, 1.f }; // INFO
+            ImVec4 color = { 1.f, 1.f, 1.f, 1.f }; // INFO
 
-            if (log.eLevel ==LOG_LEVEL::WARNING)
-                vColor = { 1.f, 1.f, 0.f, 1.f }; // WARNING (³ë¶õ»ö)
-            else if (log.eLevel == LOG_LEVEL::ERR)
-                vColor = { 1.f, 0.f, 0.f, 1.f }; // ERR (»¡°£»ö)
+            if (log.level ==ELogLevel::WARNING)
+                color = { 1.f, 1.f, 0.f, 1.f }; // WARNING (ë…¸ëž€ìƒ‰)
+            else if (log.level == ELogLevel::ERR)
+                color = { 1.f, 0.f, 0.f, 1.f }; // ERR (ë¹¨ê°„ìƒ‰)
 
-            ImGui::PushStyleColor(ImGuiCol_Text, vColor);
-            ImGui::TextUnformatted(log.strMessage.c_str());
+            ImGui::PushStyleColor(ImGuiCol_Text, color);
+            ImGui::TextUnformatted(log.message.c_str());
             ImGui::PopStyleColor();
         }
 
-        // ÃÖÇÏ´Ü ÀÚµ¿ ½ºÅ©·Ñ
+        // ìµœí•˜ë‹¨ ìžë™ ìŠ¤í¬ë¡¤
         if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
             ImGui::SetScrollHereY(1.0f);
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 
 #include "Component.h"
@@ -11,34 +11,33 @@ class ENGINE_DLL CCollider :
 	public CComponent
 {
 private:
-	CCollider(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+	CCollider(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
-	CCollider(const CCollider& Prototype);
+	CCollider(const CCollider& prototype);
 	virtual ~CCollider() = default;
 
 public:
-	virtual HRESULT Initialize_Prototype(COLLIDER eType);
-	virtual HRESULT Initialize(void* pArg) override;
+	virtual HRESULT Initialize_Prototype(EColliderType type);
+	virtual HRESULT Initialize(void* arg) override;
 	
 
-	void Set_MyLayer(COLLISION_MASK myLayer) { m_MyLayer = myLayer; }
-	void Set_OtherLayerMask(COLLISION_MASK otherLayer) { m_OtherMask = otherLayer; }
-	COLLISION_MASK Get_MyLayer() const { return m_MyLayer; }
-	COLLISION_MASK Get_OtherLayerMask() const { return m_OtherMask; }
-	const bool Get_CollisionActive() const { return m_IsCollisionActive; }
-	void Set_CollisionActive(_bool isActive) { m_IsCollisionActive = isActive; }
+	void Set_MyLayer(CollisionMask myLayer) { m_myLayer = myLayer; }
+	void Set_OtherLayerMask(CollisionMask otherLayer) { m_otherMask = otherLayer; }
+	CollisionMask Get_MyLayer() const { return m_myLayer; }
+	CollisionMask Get_OtherLayerMask() const { return m_otherMask; }
+	const bool Get_CollisionActive() const { return m_isCollisionActive; }
+	void Set_CollisionActive(_bool isActive) { m_isCollisionActive = isActive; }
 
 	void Set_IsColl(bool isColl) { m_isColl = isColl; }
 
-	void Set_isOverlap(){};
 
 	void OnGui() override;
 	void Save_ToJson(nlohmann::json& j) override;
 	void Load_FromJson(nlohmann::json& j) override;
 
 public:
-	void Update(_fmatrix WorldMatrix);
-	_bool Intersect(shared_ptr<CCollider> pTarget);
+	void Update(_fmatrix worldMatrix);
+	_bool Intersect(shared_ptr<CCollider> target);
 
 	bool Is_Overlap(shared_ptr<CCollider> other);
 	void Add_Overlap(shared_ptr<CCollider> otherColl){m_overlapColl.insert(otherColl);};
@@ -54,29 +53,29 @@ public:
 #endif
 
 private:
-	COLLIDER				m_eType = { COLLIDER::END };
-	shared_ptr<class CBounding> m_pBounding = { nullptr };
+	EColliderType				m_type = { EColliderType::END };
+	shared_ptr<class CBounding> m_bounding = { nullptr };
 	_bool					m_isColl = { false };
 
-	COLLISION_MASK m_MyLayer;
-	COLLISION_MASK m_OtherMask;
+	CollisionMask m_myLayer;
+	CollisionMask m_otherMask;
 
-	_bool m_IsCollisionActive = { true };
+	_bool m_isCollisionActive = { true };
 
 
-	_bool isOverlap = { false };
+	_bool m_isOverlap = { false };
 	set<weak_ptr<CCollider>, owner_less<>> m_overlapColl;
 
 #ifdef _DEBUG
 private:
-	PrimitiveBatch<VertexPositionColor>* m_pBatch = { nullptr };
-	BasicEffect* m_pEffect = { nullptr };
-	ComPtr<ID3D11InputLayout> m_pInputLayout = { nullptr };
+	PrimitiveBatch<VertexPositionColor>* m_batch = { nullptr };
+	BasicEffect* m_effect = { nullptr };
+	ComPtr<ID3D11InputLayout> m_inputLayout = { nullptr };
 
 #endif
 public:
-	static shared_ptr<CCollider> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, COLLIDER eType);
-	virtual shared_ptr<CComponent> Clone(void* pArg);
+	static shared_ptr<CCollider> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, EColliderType type);
+	virtual shared_ptr<CComponent> Clone(void* arg);
 	virtual void Free() override;
 
 

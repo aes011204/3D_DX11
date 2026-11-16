@@ -1,4 +1,4 @@
-#include "Terrain.h"
+ï»¿#include "Terrain.h"
 
 #include "GameInstance.h"
 #include "Transform.h"
@@ -10,8 +10,8 @@
 #include "VIBuffer_Terrain.h"
 
 
-CTerrain::CTerrain(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-	:CGameObject(pDevice, pContext)
+CTerrain::CTerrain(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+	:CGameObject(device, context)
 {
 }
 
@@ -28,31 +28,31 @@ HRESULT CTerrain::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CTerrain::Initialize(void* pArg)
+HRESULT CTerrain::Initialize(void* arg)
 {
-	/* ¹é±×¶ó¿îµåÀÇ ¸â¹ö¸¦ Ã¤¿ö³Ö¾î¾ßÇÑ´Ù¸é ¿©±â¼­ Ã¤¿î´Ù. */
-	TERRAIN_DESC			Desc{};
+	/* ë°±ê·¸ë¼ìš´ë“œì˜ ë©¤ë²„ë¥¼ ì±„ì›Œë„£ì–´ì•¼í•œë‹¤ë©´ ì—¬ê¸°ì„œ ì±„ìš´ë‹¤. */
+	TerrainDesc			desc{};
 
-	if (FAILED(__super::Initialize(&Desc)))
+	if (FAILED(__super::Initialize(&desc)))
 		return E_FAIL;
 
 	if (FAILED(Ready_Components()))
 		return E_FAIL;
 	_float3 pos = { -750.f, -100.f, -750.f };
 
-	m_pTransformCom->Set_Position(XMLoadFloat3(&pos));
+	m_transformCom->Set_Position(XMLoadFloat3(&pos));
 
 
-	CSea_Manager::GetInstance()->Set_TerrainBuffer(dynamic_pointer_cast<Engine::CVIBuffer_Terrain>(m_pVIBufferCom));
+	CSea_Manager::GetInstance()->Set_TerrainBuffer(dynamic_pointer_cast<Engine::CVIBuffer_Terrain>(m_VIBufferCom));
 	return S_OK;
 }
 
-void CTerrain::Priority_Update(_float fTimeDelta)
+void CTerrain::Priority_Update(_float timeDelta)
 {
 	int a = 1;
 }
 
-void CTerrain::Update(_float fTimeDelta)
+void CTerrain::Update(_float timeDelta)
 {
 
 	//m_fX += 10.f * fTimeDelta;
@@ -61,10 +61,10 @@ void CTerrain::Update(_float fTimeDelta)
 
 }
 
-void CTerrain::Late_Update(_float fTimeDelta)
+void CTerrain::Late_Update(_float timeDelta)
 {
 	int a = 1;
-	m_pGameInstance.lock()->Add_RenderGroup(RENDERGROUP::NONBLEND, static_pointer_cast<CTerrain>(shared_from_this()));
+	m_gameInstance.lock()->Add_RenderGroup(ERenderGroup::NONBLEND, static_pointer_cast<CTerrain>(shared_from_this()));
 }
 
 HRESULT CTerrain::Render()
@@ -74,13 +74,13 @@ HRESULT CTerrain::Render()
 		return E_FAIL;
 
 
-	if (FAILED(m_pShaderCom->Begin(0)))
+	if (FAILED(m_shaderCom->Begin(0)))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Bind_Resources()))
+	if (FAILED(m_VIBufferCom->Bind_Resources()))
 		return E_FAIL;
 
-	if (FAILED(m_pVIBufferCom->Render()))
+	if (FAILED(m_VIBufferCom->Render()))
 		return E_FAIL;
 
 	return S_OK;
@@ -93,11 +93,11 @@ void CTerrain::OnGui()
 
 HRESULT CTerrain::Ready_Components()
 {
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"),& m_pVIBufferCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_VIBuffer_Terrain"), TEXT("Com_VIBuffer"),& m_VIBufferCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"),& m_pShaderCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Shader_VtxNorTex"), TEXT("Com_Shader"),& m_shaderCom, nullptr)))
 		return E_FAIL;
-	if (FAILED(Add_Component(ETOI(LEVEL::STATIC), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"),& m_pTextureCom, nullptr)))
+	if (FAILED(Add_Component(ETOI(ELevel::STATIC), TEXT("Prototype_Component_Texture_Terrain"), TEXT("Com_Texture"),& m_textureCom, nullptr)))
 		return E_FAIL;
 
 	return S_OK;
@@ -105,20 +105,20 @@ HRESULT CTerrain::Ready_Components()
 
 HRESULT CTerrain::Bind_ShaderResources()
 {
-	if (FAILED(m_pTransformCom->Bind_ShaderResource(m_pShaderCom, "g_WorldMatrix")))
+	if (FAILED(m_transformCom->Bind_ShaderResource(m_shaderCom, "g_WorldMatrix")))
 		return E_FAIL;
 
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::VIEW, m_pShaderCom, "g_ViewMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::VIEW, m_shaderCom, "g_ViewMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_TransformMatrix(D3DTS::PROJ, m_pShaderCom, "g_ProjMatrix")))
+	if (FAILED(m_gameInstance.lock()->Bind_TransformMatrix(ED3DTS::PROJ, m_shaderCom, "g_ProjMatrix")))
 		return E_FAIL;
 
-	if (FAILED(m_pTextureCom->Bind_ShaderResourceView(m_pShaderCom, "g_DiffuseTexture", 0)))
+	if (FAILED(m_textureCom->Bind_ShaderResourceView(m_shaderCom, "g_DiffuseTexture", 0)))
 		return E_FAIL;
 
-	if (FAILED(m_pGameInstance.lock()->Bind_CamPosition(m_pShaderCom, "g_vCamPosition")))
+	if (FAILED(m_gameInstance.lock()->Bind_CamPosition(m_shaderCom, "g_vCamPosition")))
 		return E_FAIL;
 
 	//const LIGHT_DESC* desc = m_pGameInstance.lock()->Get_LightDesc(0);
@@ -135,44 +135,44 @@ HRESULT CTerrain::Bind_ShaderResources()
 	//	return E_FAIL;
 
 	//////////////////
-	_float4 vSandColor  = _float4(0.482f, 0.482f, 0.418f, 1.f);
-	_float4 vAlgaeColor = _float4(0.422f, 0.433f, 0.321f, 1.f);
-	_float4 vRockColor = _float4(0.283f, 0.283f, 0.283f, 1.f);
+	_float4 sandColor  = _float4(0.482f, 0.482f, 0.418f, 1.f);
+	_float4 algaeColor = _float4(0.422f, 0.433f, 0.321f, 1.f);
+	_float4 rockColor = _float4(0.283f, 0.283f, 0.283f, 1.f);
 	//_float fTiling = 80.f; 
 
-	m_pShaderCom->Bind_RawValue("g_vSandColor", &vSandColor, sizeof(_float4));
-	m_pShaderCom->Bind_RawValue("g_vAlgaeColor", &vAlgaeColor, sizeof(_float4));
-	m_pShaderCom->Bind_RawValue("g_vRockColor", &vRockColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vSandColor", &sandColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vAlgaeColor", &algaeColor, sizeof(_float4));
+	m_shaderCom->Bind_RawValue("g_vRockColor", &rockColor, sizeof(_float4));
 	//m_pShaderCom->Bind_RawValue("g_fTiling", &fTiling, sizeof(_float));
 
-	float fFar = m_pGameInstance.lock()->Get_Far();
-	if (FAILED(m_pShaderCom->Bind_RawValue("g_Far", &fFar, sizeof(_float))))
+	float farZ = m_gameInstance.lock()->Get_Far();
+	if (FAILED(m_shaderCom->Bind_RawValue("g_Far", &farZ, sizeof(_float))))
 
 	return S_OK;
 }
 
-shared_ptr<CTerrain> CTerrain::Create(ComPtr<ID3D11Device> pDevice,
-	ComPtr<ID3D11DeviceContext> pContext)
+shared_ptr<CTerrain> CTerrain::Create(ComPtr<ID3D11Device> device,
+	ComPtr<ID3D11DeviceContext> context)
 {
-	shared_ptr<CTerrain> pInstance(new CTerrain(pDevice, pContext), [](CTerrain* p) {p->Free(); delete p;});
+	shared_ptr<CTerrain> instance(new CTerrain(device, context), [](CTerrain* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize_Prototype()))
+	if (FAILED(instance->Initialize_Prototype()))
 	{
 		MSG_BOX("Failed to Created : CTerrain");
 	}
-	return pInstance;
+	return instance;
 }
 
 
-shared_ptr<CGameObject> CTerrain::Clone(void* pArg)
+shared_ptr<CGameObject> CTerrain::Clone(void* arg)
 {
-	shared_ptr<CTerrain> pInstance(new CTerrain(*this), [](CTerrain* p) {p->Free(); delete p;});
+	shared_ptr<CTerrain> instance(new CTerrain(*this), [](CTerrain* p) {p->Free(); delete p;});
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Cloned : BackGround");
 	}
-	return pInstance;
+	return instance;
 }
 
 void CTerrain::Free()

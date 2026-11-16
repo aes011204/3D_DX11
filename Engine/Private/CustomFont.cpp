@@ -1,62 +1,62 @@
-#include "CustomFont.h"
+﻿#include "CustomFont.h"
 
-CCustomFont::CCustomFont(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext)
-    : m_pDevice{ pDevice }
-    , m_pContext{ pContext }
+CCustomFont::CCustomFont(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context)
+    : m_device{ device }
+    , m_context{ context }
 {
 }
 
 
 
-HRESULT CCustomFont::Initialize(const _tchar* pFontFilePath)
+HRESULT CCustomFont::Initialize(const _tchar* fontFilePath)
 {
-    m_pBatch = make_unique<SpriteBatch>(m_pContext.Get());
-    m_pFont = make_unique<SpriteFont>(m_pDevice.Get(), pFontFilePath);
+    m_batch = make_unique<SpriteBatch>(m_context.Get());
+    m_font = make_unique<SpriteFont>(m_device.Get(), fontFilePath);
     return S_OK;
 }
 
-void CCustomFont::Draw(const _tchar* pText, const _float2& vPosition, _fvector vColor)
+void CCustomFont::Draw(const _tchar* text, const _float2& position, _fvector color)
 {
-    m_pBatch->Begin();
+    m_batch->Begin();
 
-    m_pFont->DrawString(m_pBatch.get(), pText, vPosition, vColor);
+    m_font->DrawString(m_batch.get(), text, position, color);
 
-    m_pBatch->End();
+    m_batch->End();
 }
 
-shared_ptr<CCustomFont> CCustomFont::Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext, const _tchar* pFontFilePath)
+shared_ptr<CCustomFont> CCustomFont::Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context, const _tchar* fontFilePath)
 {
-    shared_ptr<CCustomFont> pInstance(new CCustomFont(pDevice, pContext), [](CCustomFont* p) {p->Free(); delete p;});
+    shared_ptr<CCustomFont> instance(new CCustomFont(device, context), [](CCustomFont* p) {p->Free(); delete p;});
 
 
-    if (FAILED(pInstance->Initialize(pFontFilePath)))
+    if (FAILED(instance->Initialize(fontFilePath)))
     {
         MSG_BOX("Failed to Created : CCustomFont");
 
     }
-    return pInstance;
+    return instance;
 
 }
 
-_float2 CCustomFont::Measure_String(const _tchar* pText)
+_float2 CCustomFont::Measure_String(const _tchar* text)
 {
     
-    XMVECTOR vSize = m_pFont->MeasureString(pText);
+    XMVECTOR size = m_font->MeasureString(text);
 
-    _float2 vResult;
-    XMStoreFloat2(&vResult, vSize);
+    _float2 result;
+    XMStoreFloat2(&result, size);
 
  
-    return vResult;
+    return result;
 }
 
 void CCustomFont::Free()
 {
     __super::Free();
 
-    m_pBatch.reset();
-    m_pFont.reset();
+    m_batch.reset();
+    m_font.reset();
 
-    m_pDevice.Reset();
-    m_pContext.Reset();
+    m_device.Reset();
+    m_context.Reset();
 }

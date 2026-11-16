@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 
 #include "PartObject.h"
@@ -10,34 +10,34 @@ class ENGINE_DLL CContainerObject :
 
 {
 public:
-    struct ContainerOBJ_DESC : public CGameObject::GAMEOBJECT_DESC
+    struct ContainerObjDesc : public CGameObject::GameObjectDesc
     {
       
     };
 protected:
-    CContainerObject(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CContainerObject(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CContainerObject(const CContainerObject& prototype);
 public:
     virtual ~CContainerObject() = default;
 public:
     virtual HRESULT Initialize_Prototype();
-    virtual HRESULT Initialize(void* pArg);
-    virtual void Priority_Update(_float fTimeDelta);
-    virtual void Update(_float fTimeDelta);
-    virtual void Late_Update(_float fTimeDelta);
+    virtual HRESULT Initialize(void* arg);
+    virtual void Priority_Update(_float timeDelta);
+    virtual void Update(_float timeDelta);
+    virtual void Late_Update(_float timeDelta);
     virtual HRESULT Render();
 
 protected:
 
-    map<const _wstring, shared_ptr<class CPartObject>> m_PartObjects;
+    map<const _wstring, shared_ptr<class CPartObject>> m_partObjects;
 
 protected:
-    HRESULT Add_PartObject(_uint iPrototypeLevelIndex, const _wstring& strPrototypeTag,
-        const _wstring& strPartTag, void* pArg);
-    shared_ptr<class CPartObject> Find_PartObject(const _wstring& strPartTag);
+    HRESULT Add_PartObject(_uint prototypeLevelIndex, const _wstring& prototypeTag,
+        const _wstring& partTag, void* arg);
+    shared_ptr<class CPartObject> Find_PartObject(const _wstring& partTag);
 public:
-    //void* pArg : »çº»°´Ã¼ÀÇ Ãß°¡ÀûÀÎ ÃÊ±âÈ­°¡ ÇÊ¿ä ÇÒ¼ö ÀÖÀ½ ·±Å¸ÀÓ ÇÒ´ç µÇ´Â ÁÖ¼Ò °°Àº°Å
-    virtual shared_ptr<CGameObject> Clone(void* pArg) = 0;
+    //void* pArg : ì‚¬ë³¸ê°ì²´ì˜ ì¶”ê°€ì ì¸ ì´ˆê¸°í™”ê°€ í•„ìš” í• ìˆ˜ ìˆìŒ ëŸ°íƒ€ì„ í• ë‹¹ ë˜ëŠ” ì£¼ì†Œ ê°™ì€ê±°
+    virtual shared_ptr<CGameObject> Clone(void* arg) = 0;
     void Free() override;
 };
 

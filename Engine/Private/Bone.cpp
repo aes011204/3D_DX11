@@ -1,61 +1,61 @@
-#include "Bone.h"
+Ôªø#include "Bone.h"
 
 CBone::CBone()
 {
 }
 
-HRESULT CBone::Initialize(const Cvt_Bone& BoneDesc)
+HRESULT CBone::Initialize(const Cvt_Bone& boneDesc)
 {
-    strcpy_s(m_szName, BoneDesc.szName);
+    strcpy_s(m_name, boneDesc.name);
 
-    m_iParentBoneIndex = BoneDesc.iParentBoneIndex;
+    m_parentBoneIndex = boneDesc.parentBoneIndex;
 
-    memcpy(&m_TransformationMatrix, &BoneDesc.TransformationMatrix, sizeof(_float4x4));
+    memcpy(&m_transformationMatrix, &boneDesc.transformationMatrix, sizeof(_float4x4));
    // XMStoreFloat4x4(&m_TransformationMatrix, XMMatrixTranspose(XMLoadFloat4x4(&m_TransformationMatrix)));
-    // ¿¸ƒ° « ºˆ -> ≥ª∫Œø°º≠ «ﬁ¿Ω 
+    // Ï†ÑÏπò ÌïÑÏàò -> ÎÇ¥Î∂ÄÏóêÏÑú ÌñáÏùå 
 
-    XMStoreFloat4x4(&m_CombinedTransformationMatrix, XMMatrixIdentity());
+    XMStoreFloat4x4(&m_combinedTransformationMatrix, XMMatrixIdentity());
 
     return S_OK;
 }
 
-void CBone::Update_CombinedTransformMatrix(const vector<shared_ptr<CBone>> Bones, _fmatrix PreTransformMatrix)
+void CBone::Update_CombinedTransformMatrix(const vector<shared_ptr<CBone>> Bones, _fmatrix preTransformMatrix)
 {
-    if(-1 == m_iParentBoneIndex)
+    if(-1 == m_parentBoneIndex)
     {
-        XMStoreFloat4x4(&m_CombinedTransformationMatrix,
-            XMLoadFloat4x4(&m_TransformationMatrix) * PreTransformMatrix);
+        XMStoreFloat4x4(&m_combinedTransformationMatrix,
+            XMLoadFloat4x4(&m_transformationMatrix) * preTransformMatrix);
     }
     else
     {
-        XMStoreFloat4x4(&m_CombinedTransformationMatrix,
-            XMLoadFloat4x4(&m_TransformationMatrix) * XMLoadFloat4x4(&Bones[m_iParentBoneIndex]->m_CombinedTransformationMatrix));
+        XMStoreFloat4x4(&m_combinedTransformationMatrix,
+            XMLoadFloat4x4(&m_transformationMatrix) * XMLoadFloat4x4(&Bones[m_parentBoneIndex]->m_combinedTransformationMatrix));
     }
 }
 
-void CBone::Update_TransformationMatrix(_fmatrix TransformMatrix)
+void CBone::Update_TransformationMatrix(_fmatrix transformMatrix)
 {
-    XMStoreFloat4x4(&m_TransformationMatrix, TransformMatrix);
+    XMStoreFloat4x4(&m_transformationMatrix, transformMatrix);
 }
 
 
-shared_ptr<CBone> CBone::Create(const Cvt_Bone& BoneDesc)
+shared_ptr<CBone> CBone::Create(const Cvt_Bone& boneDesc)
 {
-    shared_ptr<CBone> pInstance(new CBone(), [](CBone* p) {p->Free(); delete p; });
+    shared_ptr<CBone> instance(new CBone(), [](CBone* p) {p->Free(); delete p; });
 
-    if (FAILED(pInstance->Initialize(BoneDesc)))
+    if (FAILED(instance->Initialize(boneDesc)))
     {
         MSG_BOX("Failed to Created : CBone");
     }
-    return pInstance;
+    return instance;
 
 }
 
 shared_ptr<CBone> CBone::Clone()
 {
 
-        shared_ptr<CBone> pInstance(new CBone(*this), [](CBone* p) {p->Free(); delete p; });
-        return pInstance;
+        shared_ptr<CBone> instance(new CBone(*this), [](CBone* p) {p->Free(); delete p; });
+        return instance;
     
 
 }

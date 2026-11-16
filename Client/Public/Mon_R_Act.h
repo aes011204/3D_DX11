@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObject.h"
 #include "Client_Define.h"
 
@@ -13,20 +13,20 @@ class CMon_R_Act :
     public CGameObject
 {
 public:
-    enum STATE { ATTACK, IDLE, RELEASE, END };
+    enum EState { ATTACK, IDLE, RELEASE, END };
 
 private:
-    CMon_R_Act(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CMon_R_Act(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     CMon_R_Act(const CMon_R_Act& prototype);
 public:
     virtual ~CMon_R_Act() = default;
 
 public:
     virtual HRESULT Initialize_Prototype() override;
-    virtual HRESULT Initialize(void* pArg) override;
-    virtual void Priority_Update(_float fTimeDelta) override;
-    virtual void Update(_float fTimeDelta) override;
-    virtual void Late_Update(_float fTimeDelta) override;
+    virtual HRESULT Initialize(void* arg) override;
+    virtual void Priority_Update(_float timeDelta) override;
+    virtual void Update(_float timeDelta) override;
+    virtual void Late_Update(_float timeDelta) override;
     virtual HRESULT Render() override;
 
     virtual void OnBeginOverlap(shared_ptr<CCollider> self, shared_ptr<CCollider> other) override;
@@ -41,38 +41,38 @@ public:
 protected:
     HRESULT Ready_Components();
 
-    // ¼Õ¿¡ ÄÝ¶óÀÌ´õ
-    const _float4x4* m_pSocketMatrix = { nullptr };
+    // ì†ì— ì½œë¼ì´ë”
+    const _float4x4* m_socketMatrix = { nullptr };
 
 
-    XMMATRIX CombinedWorldMatrix(_fmatrix ChildrenMatrix)
+    XMMATRIX CombinedWorldMatrix(_fmatrix childrenMatrix)
     {
-        return ChildrenMatrix * XMLoadFloat4x4(m_pTransformCom->Get_WorldMatrix());
+        return childrenMatrix * XMLoadFloat4x4(m_transformCom->Get_WorldMatrix());
     }
 
 private:
 
-    float m_TurnSpeed = {};
-    _bool m_IsColl = { false };
+    float m_turnSpeed = {};
+    _bool m_isColl = { false };
 
-    _uint m_AnimIndex = {};
-    STATE m_State = {};
+    _uint m_animIndex = {};
+    EState m_state = {};
 private:
 
-    shared_ptr<CShader> m_pShaderCom = { nullptr };
-    shared_ptr<CModel> m_pModelCom = { nullptr };
-    shared_ptr<CTexture> m_pTextureCom = { nullptr };
+    shared_ptr<CShader> m_shaderCom = { nullptr };
+    shared_ptr<CModel> m_modelCom = { nullptr };
+    shared_ptr<CTexture> m_textureCom = { nullptr };
     //shared_ptr<CCollider> m_pColliderCom = { nullptr };
 
-    shared_ptr<CCollider> m_Collider = { nullptr };
+    shared_ptr<CCollider> m_collider = { nullptr };
   
 
-    _vector m_pCurRot = {};
-    weak_ptr<CGameObject> m_pPlayer = {  };
+    _vector m_curRot = {};
+    weak_ptr<CGameObject> m_player = {  };
 public:
 
-    static shared_ptr<CMon_R_Act> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
-    shared_ptr<CGameObject> Clone(void* pArg) override;
+    static shared_ptr<CMon_R_Act> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
+    shared_ptr<CGameObject> Clone(void* arg) override;
     void Free() override;
 
 

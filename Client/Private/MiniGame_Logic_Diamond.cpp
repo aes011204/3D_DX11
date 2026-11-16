@@ -1,4 +1,4 @@
-#include "MiniGame_Logic_Diamond.h"
+ï»¿#include "MiniGame_Logic_Diamond.h"
 
 
 #include <UIButton.h>
@@ -29,21 +29,21 @@ HRESULT CMiniGame_Logic_Diamond::Initialize_Prototype()
 	return S_OK;
 }
 
-HRESULT CMiniGame_Logic_Diamond::Render(_uint iMeshIndex)
+HRESULT CMiniGame_Logic_Diamond::Render(_uint meshIndex)
 {
 
 	return S_OK;
 
 }
 
-HRESULT CMiniGame_Logic_Diamond::Initialize(void* pArg)
+HRESULT CMiniGame_Logic_Diamond::Initialize(void* arg)
 {
-	m_MiniGameType = MINIGAME::DIAMOND;
+	m_miniGameType = EMiniGameType::DIAMOND;
 
-	MINIGAEMELOGIC_DIAMOND_DESC* pDesc = static_cast<MINIGAEMELOGIC_DIAMOND_DESC*>(pArg);
+	MiniGameLogicDiamondDesc* desc = static_cast<MiniGameLogicDiamondDesc*>(arg);
 
-	m_Speed = 1.f;
-	__super::Initialize(pDesc);
+	m_speed = 1.f;
+	__super::Initialize(desc);
 
 	return S_OK;
 
@@ -60,89 +60,89 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 
 
-	if (m_bStart == true)
+	if (m_isStart == true)
 	{
-		m_prograssBar01 += m_RodSpeed * 0.005f * timeDelta;
+		m_prograssBar01 += m_rodSpeed * 0.005f * timeDelta;
 
 
 		////////////////////////////////////
-		m_AccTime += timeDelta;
-		float t = m_Speed * m_AccTime;
+		m_accTime += timeDelta;
+		float t = m_speed * m_accTime;
 
 		float loop = fmod(t, 1.f);
-		m_Size = t;
-		m_Angle = loop * 90.f;
-		if (m_bInputRequested)
+		m_size = t;
+		m_angle = loop * 90.f;
+		if (m_isInputRequested)
 		{
 
 			/*if (m_chose == true)
 			{*/
 				bool isSuccess = false;
 
-				if (m_Size > 1.f && m_Size < 1.2f)
+				if (m_size > 1.f && m_size < 1.2f)
 				{
 					isSuccess = true;
 				}
 
 				if (isSuccess == true)
 				{
-					// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+					// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 				//m_bStart = false;
 
 					m_prograssBar01 += 0.2;
-					m_pGameInstance.lock()->Play_Once(L"Fishing_Success");
+					m_gameInstance.lock()->Play_Once(L"Fishing_Success");
 
-					m_LastInputResult = INPUT_RESULT::SUCCESS;
+					m_lastInputResult = EInputResult::SUCCESS;
 				}
 				else
 				{
-					// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+					// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 					m_prograssBar01 -= 0.2;
 
-					m_LastInputResult = INPUT_RESULT::FAIL;
-					m_pGameInstance.lock()->Play_Once(L"Fishing_Failure");
+					m_lastInputResult = EInputResult::FAIL;
+					m_gameInstance.lock()->Play_Once(L"Fishing_Failure");
 
 					m_changeColor = true;
-					colortime = .5f;
+					m_colorTime = .5f;
 				}
 			//}
 
 
-			m_bInputRequested = false;
+			m_isInputRequested = false;
 
 		}
 
-		if (m_Size > 2)
+		if (m_size > 2)
 		{
-			m_Size = 0.f;
-			m_AccTime = 0.f;
-			m_LastInputResult = INPUT_RESULT::START;
+			m_size = 0.f;
+			m_accTime = 0.f;
+			m_lastInputResult = EInputResult::START;
 		}
 
-		if (m_prograssBar01 >= 1.f && !m_bFin)
+		if (m_prograssBar01 >= 1.f && !m_isFinished)
 		{
-			//ÁøÂ¥ ¼º°ø ¹İÈ¯
-			m_bStart = false;
+			//ì§„ì§œ ì„±ê³µ ë°˜í™˜
+			m_isStart = false;
 
-			m_bFin = true;
+			m_isFinished = true;
 
 
 			Evt_GetFish  e = {};
-			e.DefID = m_DefID;
-			e.fishInst.size = static_cast<int>(m_pGameInstance.lock()->Random(20.f, 35.f));
-			auto& item = CItemDB::GetInstance()->GetItemByID(m_DefID);
-			if (auto fish = std::get_if<Fish_Def>(&item.TypeDef))
+			e.defID = m_defID;
+			e.fishInst.size = static_cast<int>(m_gameInstance.lock()->Random(20.f, 35.f));
+			auto& item = CItemDB::GetInstance()->GetItemByID(m_defID);
+			if (auto fish = std::get_if<FishDef>(&item.typeDef))
 			{
-				e.fishInst.mutation_ID = SelectMutationNoRepeat(*fish);
+				e.fishInst.mutationID = SelectMutationNoRepeat(*fish);
 			}
-			m_pGameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
+			m_gameInstance.lock()->Get_EventBus()->Publish<Evt_GetFish>(e);
 
 
-			m_pGameInstance.lock()->Play_Once(L"Fish_New");
-			m_pGameInstance.lock()->Stop(L"fishing_loop");
+			m_gameInstance.lock()->Play_Once(L"Fish_New");
+			m_gameInstance.lock()->Stop(L"fishing_loop");
 
-			m_FishCount--;
+			m_fishCount--;
 
 
 
@@ -154,42 +154,42 @@ void CMiniGame_Logic_Diamond::Update(const _float& timeDelta)
 
 void CMiniGame_Logic_Diamond::OnInput()
 {
-	bool isDragging = m_InvenCtrl.lock()->Is_Dragging();
+	bool isDragging = m_invenCtrl.lock()->Is_Dragging();
 	if (isDragging)
 	{
-		m_bStart = false;
-		m_pGameInstance.lock()->Stop(L"fishing_loop");
+		m_isStart = false;
+		m_gameInstance.lock()->Stop(L"fishing_loop");
 
 		return;
 	}
-	if (m_bFin && m_FishCount == 0)
+	if (m_isFinished && m_fishCount == 0)
 	{
-		m_bStart = false;
-		m_pGameInstance.lock()->Play_Once(L"fishing_end");
+		m_isStart = false;
+		m_gameInstance.lock()->Play_Once(L"fishing_end");
 
 		return;
 	}
-	if (m_bFin && m_FishCount > 0)
+	if (m_isFinished && m_fishCount > 0)
 	{
-		m_bFin = false;
+		m_isFinished = false;
 	}
 
-	//½ÃÀÛ
-	if (!m_bStart)
+	//ì‹œì‘
+	if (!m_isStart)
 	{
-		m_pGameInstance.lock()->Play_Loop(L"fishing_loop");
+		m_gameInstance.lock()->Play_Loop(L"fishing_loop");
 
-		m_LastInputResult = INPUT_RESULT::START;
-		m_bStart = true;
-		m_AccTime = 0.f;
-		m_Size = 0.f;
+		m_lastInputResult = EInputResult::START;
+		m_isStart = true;
+		m_accTime = 0.f;
+		m_size = 0.f;
 		m_prograssBar01 = 0.f;
-		m_bFin = false;
+		m_isFinished = false;
 		return;
 	}
 
 
-	m_bInputRequested = true;
+	m_isInputRequested = true;
 	//else { m_chose = true; }
 
 
@@ -205,7 +205,7 @@ void CMiniGame_Logic_Diamond::OnInput()
 
 	//	if (isSuccess == true)
 	//	{
-	//		// È¿°ú ÃÊ·Ï ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü
+	//		// íš¨ê³¼ ì´ˆë¡ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§
 	//	//m_bStart = false;
 
 	//		m_prograssBar01 += 0.2;
@@ -214,7 +214,7 @@ void CMiniGame_Logic_Diamond::OnInput()
 	//	}
 	//	else
 	//	{
-	//		// ÃÊ·Ï ¿µ¿ª ºÓ¾îÁö°í »¡°£ ¿ø ÀÌÆÑÆ® ¹ÛÀ¸·Î Ä¿Áü ¾ÆÁÖ Âª°Ô
+	//		// ì´ˆë¡ ì˜ì—­ ë¶‰ì–´ì§€ê³  ë¹¨ê°„ ì› ì´íŒ©íŠ¸ ë°–ìœ¼ë¡œ ì»¤ì§ ì•„ì£¼ ì§§ê²Œ
 
 	//		m_prograssBar01 -= 0.2;
 
@@ -228,16 +228,16 @@ void CMiniGame_Logic_Diamond::OnInput()
 }
 
 
-shared_ptr<CMiniGame_Logic_Diamond> CMiniGame_Logic_Diamond::Create(void* pArg)
+shared_ptr<CMiniGame_Logic_Diamond> CMiniGame_Logic_Diamond::Create(void* arg)
 {
-	shared_ptr<CMiniGame_Logic_Diamond> pInstance(new CMiniGame_Logic_Diamond(), [](CMiniGame_Logic_Diamond* p) {p->Free(); delete(p); });
+	shared_ptr<CMiniGame_Logic_Diamond> instance(new CMiniGame_Logic_Diamond(), [](CMiniGame_Logic_Diamond* p) {p->Free(); delete(p); });
 
-	if (FAILED(pInstance->Initialize(pArg)))
+	if (FAILED(instance->Initialize(arg)))
 	{
 		MSG_BOX("Failed to Created : CUIPanel");
 
 	}
-	return pInstance;
+	return instance;
 }
 
 void CMiniGame_Logic_Diamond::Free()

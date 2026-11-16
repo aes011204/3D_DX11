@@ -1,34 +1,34 @@
-#pragma once
+Ôªø#pragma once
 #include "Base.h"
 NS_BEGIN(Engine)
 class CPicking_Manager :
     public CBase
 {
 private:
-    CPicking_Manager(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    CPicking_Manager(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
 public:
     virtual ~CPicking_Manager();
 
 public:
     HRESULT Initialize(); 
 public:
-    void Update();   // ø©±‚º≠ π´∞≈øÓ∞≈ «— π¯∏∏ ∞ËªÍ »ƒ ƒ≥ΩÃ
-    _bool Culaulate_Terrain(class CVIBuffer_Terrain* pBuffer,class CTransform* pTransform, _float3* pOutPos);
-    _bool Picking_Terrain(_wstring layerTag, _uint TerrainIndex, _float3* Out);
-    _float Calculate_HeightOnTerrain(_fvector pPos, _fvector vPointA, _fvector vPointB, _fvector vPointC);
-    _bool Compute_HeightOnTerrain(_wstring layerTag, _uint TerrainIndex, _fvector pCurPos, _float* Out);
+    void Update();   // Ïó¨Í∏∞ÏÑú Î¨¥Í±∞Ïö¥Í±∞ Ìïú Î≤àÎßå Í≥ÑÏÇ∞ ÌõÑ Ï∫êÏã±
+    _bool Culaulate_Terrain(class CVIBuffer_Terrain* buffer,class CTransform* transform, _float3* outPos);
+    _bool Picking_Terrain(_wstring layerTag, _uint terrainIndex, _float3* Out);
+    _float Calculate_HeightOnTerrain(_fvector pos, _fvector pointA, _fvector pointB, _fvector pointC);
+    _bool Compute_HeightOnTerrain(_wstring layerTag, _uint terrainIndex, _fvector curPos, _float* Out);
    
 
-    const Ray& GetRay() const { return m_CurrentRay; }
+    const Ray& GetRay() const { return m_currentRay; }
 private:
-    Ray m_CurrentRay;
+    Ray m_currentRay;
 
 private:
-    ComPtr<ID3D11Device> m_pDevice;
-    ComPtr<ID3D11DeviceContext> m_pContext;
-    weak_ptr<class CGameInstance> m_pGameInstance = {};
+    ComPtr<ID3D11Device> m_device;
+    ComPtr<ID3D11DeviceContext> m_context;
+    weak_ptr<class CGameInstance> m_gameInstance = {};
 public:
-    static unique_ptr<CPicking_Manager> Create(ComPtr<ID3D11Device> pDevice, ComPtr<ID3D11DeviceContext> pContext);
+    static unique_ptr<CPicking_Manager> Create(ComPtr<ID3D11Device> device, ComPtr<ID3D11DeviceContext> context);
     void Free() override;
 };
 

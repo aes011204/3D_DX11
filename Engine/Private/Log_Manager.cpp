@@ -1,4 +1,4 @@
-#include "Log_Manager.h"
+ï»¿#include "Log_Manager.h"
 
 IMPLEMENT_SINGLETON(CLog_Manager)
 
@@ -10,27 +10,27 @@ CLog_Manager::~CLog_Manager()
 {
 
 }
-void CLog_Manager::Add_Log_F(LOG_LEVEL eLevel, const char* pFormat, ...) {
-    if (nullptr == pFormat) return;
+void CLog_Manager::Add_Log_F(ELogLevel level, const char* format, ...) {
+    if (nullptr == format) return;
 
     char szBuf[1024] = { 0 };
     va_list args;
-    va_start(args, pFormat);
-    vsprintf_s(szBuf, 1024, pFormat, args);
+    va_start(args, format);
+    vsprintf_s(szBuf, 1024, format, args);
     va_end(args);
 
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_vecLogs.push_back({ eLevel, std::string(szBuf) });
+    m_vecLogs.push_back({ level, std::string(szBuf) });
 
     if (m_vecLogs.size() > 500) m_vecLogs.erase(m_vecLogs.begin());
 }
 
-// 2. ´Ü¼ø ¹®ÀÚ¿­ ¹öÀü (¿À¹ö·Îµù)
-void CLog_Manager::Add_Log(LOG_LEVEL eLevel, const char* pMessage) {
-    if (nullptr == pMessage) return;
+// 2. ë‹¨ìˆœ ë¬¸ìì—´ ë²„ì „ (ì˜¤ë²„ë¡œë”©)
+void CLog_Manager::Add_Log(ELogLevel level, const char* message) {
+    if (nullptr == message) return;
 
     std::lock_guard<std::mutex> lock(m_mutex);
-    m_vecLogs.push_back({ eLevel, std::string(pMessage) });
+    m_vecLogs.push_back({ level, std::string(message) });
 
     if (m_vecLogs.size() > 500) m_vecLogs.erase(m_vecLogs.begin());
 }
